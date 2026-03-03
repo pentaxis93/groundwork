@@ -18,25 +18,34 @@ methodology.
 
 | Phase | What it governs | Skills |
 |-------|----------------|--------|
-| **Foundation** | How to think before acting | `ground` |
+| **Foundation** | How to think before acting | `ground`, `research` |
 | **Specification** | Defining done before starting | `bdd` |
-| **Decomposition** | Breaking goals into executable work | `planning` |
+| **Decomposition** | Breaking goals into executable work | `planning`, `issue-craft` |
 | **Execution** | How to build well | *planned* |
 | **Verification** | How to know work is correct | *planned* |
 | **Completion** | How work lands so others can build on it | `land` |
 
 ## Installation
 
-Each skill is a self-contained `SKILL.md` file. Copy the ones you need into
-your agent's skill directory:
+Groundwork uses [skills-supply](https://github.com/803/skills-supply) to
+install skills into your agent's skill directory.
+
+Add groundwork as a dependency in your project's `agents.toml`:
+```toml
+[dependencies]
+groundwork = { gh = "pentaxis93/groundwork" }
+```
+
+Then sync:
 ```bash
-# Claude Code
-cp skills/foundation/ground/SKILL.md .claude/skills/ground.md
+sk sync
+```
 
-# OpenCode
-cp skills/foundation/ground/SKILL.md .opencode/skill/ground/SKILL.md
-
-# Or use loadout (https://github.com/pentaxis93/agent-skills)
+To install individual phases instead of all skills:
+```toml
+[dependencies]
+foundation = { gh = "pentaxis93/groundwork", path = "skills/foundation" }
+decomposition = { gh = "pentaxis93/groundwork", path = "skills/decomposition" }
 ```
 
 ## Philosophy
