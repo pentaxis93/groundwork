@@ -10,11 +10,17 @@ use toml_edit::{value, DocumentMut, InlineTable, Item, Table, Value};
 
 const AGENTS_TOML: &str = "agents.toml";
 const LOCK_PATH: &str = ".groundwork/installed.lock.toml";
-const ORIGINALS_ALIAS: &str = "groundwork_originals";
 const ORIGINALS_REPO: &str = "pentaxis93/groundwork";
-const ORIGINALS_PATH: &str = "skills";
 const MANAGED_PREFIX: &str = "groundwork_";
 const CURATION_MANIFEST_TOML: &str = include_str!("../../../manifests/curation.v1.toml");
+const ORIGINAL_SKILLS: [(&str, &str); 6] = [
+    ("ground", "skills/foundation/ground"),
+    ("research", "skills/foundation/research"),
+    ("bdd", "skills/specification/bdd"),
+    ("planning", "skills/decomposition/planning"),
+    ("issue-craft", "skills/decomposition/issue-craft"),
+    ("land", "skills/completion/land"),
+];
 
 #[derive(Parser)]
 #[command(name = "groundwork", version, about = "Groundwork installer")]
@@ -249,7 +255,7 @@ fn run_list() -> Result<()> {
 
     for entry in lock.entries {
         let ref_str = entry.pinned_ref.as_deref().map_or("unpinned", |r| r);
-        let skill_str = entry.skill.as_deref().unwrap_or("(all originals)");
+        let skill_str = entry.skill.as_deref().unwrap_or("(unspecified)");
         println!(
             "  - {}: {} {} path={} skill={} ref={}",
             entry.alias,
@@ -409,15 +415,17 @@ fn ensure_dependencies_table(doc: &mut DocumentMut) {
 fn build_managed_specs(manifest: &CurationManifest) -> Vec<ManagedDependencySpec> {
     let mut specs = Vec::new();
 
-    specs.push(ManagedDependencySpec {
-        alias: ORIGINALS_ALIAS.to_string(),
-        origin: "original".to_string(),
-        source_key: "gh".to_string(),
-        repo: ORIGINALS_REPO.to_string(),
-        dependency_path: ORIGINALS_PATH.to_string(),
-        skill: None,
-        pin: None,
-    });
+    for (skill_name, dependency_path) in ORIGINAL_SKILLS {
+        specs.push(ManagedDependencySpec {
+            alias: managed_alias("original", skill_name),
+            origin: "original".to_string(),
+            source_key: "gh".to_string(),
+            repo: ORIGINALS_REPO.to_string(),
+            dependency_path: dependency_path.to_string(),
+            skill: Some(skill_name.to_string()),
+            pin: None,
+        });
+    }
 
     for source in &manifest.curated_sources {
         for skill in &source.skills {
@@ -752,6 +760,7 @@ claude-code = true
 
 [dependencies]
 groundwork_obsolete = { gh = "foo/bar", path = "x" }
+groundwork_originals = { gh = "pentaxis93/groundwork", path = "skills" }
 external_dep = { gh = "org/repo", path = "y" }
 "#,
         );
@@ -761,10 +770,16 @@ external_dep = { gh = "org/repo", path = "y" }
 
         let deps = doc["dependencies"].as_table().expect("deps table");
         assert!(!deps.contains_key("groundwork_obsolete"));
+        assert!(!deps.contains_key("groundwork_originals"));
         assert!(deps.contains_key("external_dep"));
-        assert!(deps.contains_key(ORIGINALS_ALIAS));
+        assert!(deps.contains_key("groundwork_original_ground"));
+        assert!(deps.contains_key("groundwork_original_research"));
+        assert!(deps.contains_key("groundwork_original_bdd"));
+        assert!(deps.contains_key("groundwork_original_planning"));
+        assert!(deps.contains_key("groundwork_original_issue_craft"));
+        assert!(deps.contains_key("groundwork_original_land"));
         assert!(deps.contains_key("groundwork_superpowers_test_driven_development"));
-        assert_eq!(result.pruned, 1);
+        assert_eq!(result.pruned, 2);
     }
 
     #[test]

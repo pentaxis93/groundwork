@@ -29,6 +29,11 @@ Pinned source in v0.1:
 Failure mode prevented:
 - building before design is clarified and pressure-tested
 
+## `writing-skills`
+Failure mode prevented:
+- deploying skills without pressure-scenario validation
+- skill edits that silently break existing compliance
+
 ## `writing-plans`
 Failure mode prevented:
 - vague implementation plans that are not directly executable
