@@ -13,13 +13,14 @@ const LOCK_PATH: &str = ".groundwork/installed.lock.toml";
 const ORIGINALS_REPO: &str = "pentaxis93/groundwork";
 const MANAGED_PREFIX: &str = "groundwork_";
 const CURATION_MANIFEST_TOML: &str = include_str!("../../../manifests/curation.v1.toml");
-const ORIGINAL_SKILLS: [(&str, &str); 6] = [
+const ORIGINAL_SKILLS: [(&str, &str); 7] = [
     ("ground", "skills/foundation/ground"),
     ("research", "skills/foundation/research"),
     ("bdd", "skills/specification/bdd"),
     ("planning", "skills/decomposition/planning"),
     ("issue-craft", "skills/decomposition/issue-craft"),
     ("land", "skills/completion/land"),
+    ("using-groundwork", "skills/using-groundwork"),
 ];
 
 #[derive(Parser)]
@@ -778,6 +779,7 @@ external_dep = { gh = "org/repo", path = "y" }
         assert!(deps.contains_key("groundwork_original_planning"));
         assert!(deps.contains_key("groundwork_original_issue_craft"));
         assert!(deps.contains_key("groundwork_original_land"));
+        assert!(deps.contains_key("groundwork_original_using_groundwork"));
         assert!(deps.contains_key("groundwork_superpowers_test_driven_development"));
         assert_eq!(result.pruned, 2);
     }

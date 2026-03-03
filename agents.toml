@@ -10,6 +10,7 @@ foundation = { path = "./skills/foundation" }
 specification = { path = "./skills/specification" }
 decomposition = { path = "./skills/decomposition" }
 completion = { path = "./skills/completion" }
+using-groundwork = { path = "./skills/using-groundwork" }
 groundwork_original_ground = { gh = "pentaxis93/groundwork", path = "skills/foundation/ground" }
 groundwork_original_research = { gh = "pentaxis93/groundwork", path = "skills/foundation/research" }
 groundwork_original_bdd = { gh = "pentaxis93/groundwork", path = "skills/specification/bdd" }
