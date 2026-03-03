@@ -1,78 +1,68 @@
-# groundwork
+# Groundwork
 
-An opinionated development methodology for AI coding agents.
+Groundwork is a methodology distribution for AI coding agents.
 
-Most agent skill systems enforce workflow — do step 1, then step 2, then step 3.
-Groundwork is different. It teaches agents *how to think* before they act.
+It curates methodology skills from multiple upstream sources into one coherent workflow, while maintaining a strict boundary:
+- This repo contains Groundwork's original skills and curation metadata.
+- Curated skills stay in their upstream repositories and are fetched at install time.
 
-The core insight: LLMs exaggerate human cognitive biases. They anchor on the first
-information in context. They pattern-match from training data instead of reasoning
-from requirements. They preserve complexity because removing it seems risky. Without
-deliberate cognitive discipline, agents produce fluent, confident, wrong output.
+## v0.1 Architecture
 
-Groundwork addresses this with skills organized across six phases of the development
-lifecycle. Each skill is independently useful. Together, they form a complete
-methodology.
+Groundwork v0.1 uses:
+- **Groundwork originals**: `ground`, `bdd`, `planning`, `issue-craft`, `land`
+- **Superpowers middle** (curated): planning/execution/verification discipline skills
 
-## Phases
+Pipeline invariant for v0.1:
+- **There is one pipeline, not two.** `bdd` defines and maintains the behavior contract; curated implementation skills execute and verify that same contract.
 
-| Phase | What it governs | Skills |
-|-------|----------------|--------|
-| **Foundation** | How to think before acting | `ground`, `research` |
-| **Specification** | Defining done before starting | `bdd` |
-| **Decomposition** | Breaking goals into executable work | `planning`, `issue-craft` |
-| **Execution** | How to build well | *planned* |
-| **Verification** | How to know work is correct | *planned* |
-| **Completion** | How work lands so others can build on it | `land` |
+Kata Orchestrator was evaluated as an integrated middle layer. For v0.1, Superpowers is selected because it currently provides a cleaner minimum path across Claude Code, Codex, and OpenCode while preserving strict execution guardrails.
 
-## Installation
+## One-Command Install
 
-Groundwork uses [skills-supply](https://github.com/803/skills-supply) to
-install skills into your agent's skill directory.
+Install with a single command:
 
-Add groundwork as a dependency in your project's `agents.toml`:
-```toml
-[dependencies]
-groundwork = { gh = "pentaxis93/groundwork" }
-```
-
-Then sync:
 ```bash
-sk sync
+groundwork init
 ```
 
-To install individual phases instead of all skills:
-```toml
-[dependencies]
-foundation = { gh = "pentaxis93/groundwork", path = "skills/foundation" }
-decomposition = { gh = "pentaxis93/groundwork", path = "skills/decomposition" }
+`groundwork init` will:
+1. Read Groundwork's curated manifest.
+2. Auto-install `sk` if needed (npm-first, `npx` fallback).
+3. Update your `agents.toml` with Groundwork-managed dependencies.
+4. Run `sk sync`.
+5. Report what it installed and from where.
+
+Re-run safely anytime:
+
+```bash
+groundwork update
 ```
 
-## Philosophy
+## Build the CLI Locally
 
-**Ground before you build.** Every skill in this system traces back to one
-principle: establish what the work must enable before generating anything.
-Agents that skip this step produce work shaped by their training data, not
-by the actual need.
+```bash
+cargo run -p groundwork-cli -- init
+cargo run -p groundwork-cli -- update
+cargo run -p groundwork-cli -- list
+cargo run -p groundwork-cli -- doctor
+```
 
-**Descriptive vs. normative.** What exists is not what's needed. The most
-common agent failure is treating the current system as the definition of
-what the system should do. Groundwork trains agents to distinguish between
-the two.
+## Key Documents
 
-**Work completes on landing.** Work isn't done when it's written. It's done
-when the recipient can act on it without asking clarifying questions. A
-brilliant artifact only its maker can understand is a wall, not a door.
+- [WORKFLOW.md](WORKFLOW.md) - integrated alpha-to-omega workflow guide
+- [docs/architecture/pipeline-contract.md](docs/architecture/pipeline-contract.md) - canonical pipeline and handoff contract
+- [CURATED.md](CURATED.md) - curated skill selection and failure modes
+- [ATTRIBUTION.md](ATTRIBUTION.md) - source, author, license, and pinning details
+- [`manifests/curation.v1.toml`](manifests/curation.v1.toml) - installer source-of-truth
 
-## Current State
+## Original Skills in This Repo
 
-Groundwork is a personal experiment. Three of six phases have skills. The foundation,
-specification, and completion phases are battle-tested from production use.
-Decomposition is functional but evolving. Execution and verification are
-planned but not yet written.
-
-Contributions welcome — especially in the empty phases.
+- `skills/foundation/ground`
+- `skills/specification/bdd`
+- `skills/decomposition/planning`
+- `skills/decomposition/issue-craft`
+- `skills/completion/land`
 
 ## License
 
-Apache-2.0
+Apache-2.0.
