@@ -39,6 +39,19 @@ Canonical contract: [docs/architecture/pipeline-contract.md](docs/architecture/p
 
 ## 1. Foundation
 
+### `using-groundwork` (original)
+Trigger: session start, task initiation, or methodology-framing moments.
+
+Purpose:
+- establish the workflow as one connected system rather than isolated skills
+- clarify handoffs between original groundwork skills and curated execution skills
+- preserve sovereignty by teaching routing logic instead of enforcing rigid sequencing
+
+Prevents:
+- skill-by-keyword usage without methodology context
+- losing BDD/TDD/verification handoff integrity
+- treating Groundwork as a static checklist
+
 ### `ground` (original)
 Trigger: before creating designs/specs/architectures/processes.
 
@@ -143,8 +156,9 @@ groundwork init
 ```
 
 Then run your task through one coherent pipeline:
-1. Ground with `ground`
-2. Define/refine behavior contract with `bdd`
-3. Decompose with `planning` + `issue-craft`
-4. Execute and verify the behavior contract with curated middle skills
-5. Complete with `land`
+1. Bootstrap the map with `using-groundwork`
+2. Ground with `ground`
+3. Define/refine behavior contract with `bdd`
+4. Decompose with `planning` + `issue-craft`
+5. Execute and verify the behavior contract with curated middle skills
+6. Complete with `land`

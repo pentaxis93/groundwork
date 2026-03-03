@@ -9,7 +9,7 @@ It curates methodology skills from multiple upstream sources into one coherent w
 ## v0.1 Architecture
 
 Groundwork v0.1 uses:
-- **Groundwork originals**: `ground`, `bdd`, `planning`, `issue-craft`, `land`
+- **Groundwork originals**: `using-groundwork`, `ground`, `bdd`, `planning`, `issue-craft`, `land`
 - **Superpowers middle** (curated): planning/execution/verification discipline skills
 
 Pipeline invariant for v0.1:
@@ -74,6 +74,7 @@ cargo run -p groundwork-cli -- doctor
 
 ## Original Skills in This Repo
 
+- `skills/foundation/using-groundwork`
 - `skills/foundation/ground`
 - `skills/specification/bdd`
 - `skills/decomposition/planning`
