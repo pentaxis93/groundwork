@@ -1,0 +1,12 @@
+[agents]
+amp = false
+claude-code = true
+codex = false
+factory = false
+opencode = false
+
+[dependencies]
+foundation = { path = "./skills/foundation" }
+specification = { path = "./skills/specification" }
+decomposition = { path = "./skills/decomposition" }
+completion = { path = "./skills/completion" }
