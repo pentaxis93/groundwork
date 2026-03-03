@@ -10,3 +10,18 @@ foundation = { path = "./skills/foundation" }
 specification = { path = "./skills/specification" }
 decomposition = { path = "./skills/decomposition" }
 completion = { path = "./skills/completion" }
+groundwork_original_ground = { gh = "pentaxis93/groundwork", path = "skills/foundation/ground" }
+groundwork_original_research = { gh = "pentaxis93/groundwork", path = "skills/foundation/research" }
+groundwork_original_bdd = { gh = "pentaxis93/groundwork", path = "skills/specification/bdd" }
+groundwork_original_planning = { gh = "pentaxis93/groundwork", path = "skills/decomposition/planning" }
+groundwork_original_issue_craft = { gh = "pentaxis93/groundwork", path = "skills/decomposition/issue-craft" }
+groundwork_original_land = { gh = "pentaxis93/groundwork", path = "skills/completion/land" }
+groundwork_superpowers_brainstorming = { gh = "obra/superpowers", path = "skills/brainstorming", rev = "e4a2375cb705ca5800f0833528ce36a3faf9017a" }
+groundwork_superpowers_writing_skills = { gh = "obra/superpowers", path = "skills/writing-skills", rev = "e4a2375cb705ca5800f0833528ce36a3faf9017a" }
+groundwork_superpowers_writing_plans = { gh = "obra/superpowers", path = "skills/writing-plans", rev = "e4a2375cb705ca5800f0833528ce36a3faf9017a" }
+groundwork_superpowers_subagent_driven_development = { gh = "obra/superpowers", path = "skills/subagent-driven-development", rev = "e4a2375cb705ca5800f0833528ce36a3faf9017a" }
+groundwork_superpowers_test_driven_development = { gh = "obra/superpowers", path = "skills/test-driven-development", rev = "e4a2375cb705ca5800f0833528ce36a3faf9017a" }
+groundwork_superpowers_systematic_debugging = { gh = "obra/superpowers", path = "skills/systematic-debugging", rev = "e4a2375cb705ca5800f0833528ce36a3faf9017a" }
+groundwork_superpowers_verification_before_completion = { gh = "obra/superpowers", path = "skills/verification-before-completion", rev = "e4a2375cb705ca5800f0833528ce36a3faf9017a" }
+groundwork_superpowers_requesting_code_review = { gh = "obra/superpowers", path = "skills/requesting-code-review", rev = "e4a2375cb705ca5800f0833528ce36a3faf9017a" }
+groundwork_superpowers_receiving_code_review = { gh = "obra/superpowers", path = "skills/receiving-code-review", rev = "e4a2375cb705ca5800f0833528ce36a3faf9017a" }

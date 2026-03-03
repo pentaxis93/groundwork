@@ -9,7 +9,7 @@ It curates methodology skills from multiple upstream sources into one coherent w
 ## v0.1 Architecture
 
 Groundwork v0.1 uses:
-- **Groundwork originals**: `ground`, `bdd`, `planning`, `issue-craft`, `land`
+- **Groundwork originals**: `ground`, `research`, `bdd`, `planning`, `issue-craft`, `land`
 - **Superpowers middle** (curated): planning/execution/verification discipline skills
 
 Pipeline invariant for v0.1:
@@ -51,6 +51,7 @@ groundwork update --dry-run
 ## CLI Behavior Notes
 
 - `groundwork init` / `groundwork update` reconcile Groundwork-managed dependencies in `agents.toml`.
+- Groundwork originals are managed as per-skill aliases (`groundwork_original_*`) that point to pinned GitHub paths.
 - `groundwork update` prunes obsolete managed aliases (`groundwork_*`) that are no longer present in the current curation manifest.
 - `groundwork list` reports from `.groundwork/installed.lock.toml`.
 - The curation manifest is embedded in the CLI binary at build time; commands do not require `manifests/curation.v1.toml` in the target project directory.
@@ -75,6 +76,7 @@ cargo run -p groundwork-cli -- doctor
 ## Original Skills in This Repo
 
 - `skills/foundation/ground`
+- `skills/foundation/research`
 - `skills/specification/bdd`
 - `skills/decomposition/planning`
 - `skills/decomposition/issue-craft`

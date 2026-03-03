@@ -3,7 +3,7 @@
 Groundwork is a full-path methodology from first problem framing to shipped change.
 
 This workflow intentionally combines:
-- **Original Groundwork skills** for cognitive discipline, behavioral contracts, decomposition, and closure.
+- **Original Groundwork skills** for cognitive discipline, research discipline, behavioral contracts, decomposition, and closure.
 - **Curated middle-layer skills** for high-discipline implementation and verification.
 
 ## Philosophy
@@ -50,6 +50,17 @@ Purpose:
 Prevents:
 - anchoring on existing implementation
 - category inheritance and pattern copy-paste
+
+### `research` (original)
+Trigger: when reliable external evidence is needed for decisions.
+
+Purpose:
+- run systematic multi-source research with citation discipline
+- synthesize findings into actionable constraints for design and execution
+
+Prevents:
+- single-source conclusions and stale assumptions
+- unverified claims driving architecture or implementation choices
 
 ## 2. Specification
 
