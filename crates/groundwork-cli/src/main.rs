@@ -1,17 +1,19 @@
 use anyhow::{anyhow, bail, Context, Result};
 use chrono::Utc;
-use clap::{Parser, Subcommand};
+use clap::{Args, Parser, Subcommand};
 use serde::{Deserialize, Serialize};
+use std::collections::HashSet;
 use std::fs;
 use std::path::Path;
 use std::process::{Command, Stdio};
-use toml_edit::{value, DocumentMut, Item, Table};
+use toml_edit::{value, DocumentMut, InlineTable, Item, Table, Value};
 
 const AGENTS_TOML: &str = "agents.toml";
 const LOCK_PATH: &str = ".groundwork/installed.lock.toml";
 const ORIGINALS_ALIAS: &str = "groundwork_originals";
 const ORIGINALS_REPO: &str = "pentaxis93/groundwork";
 const ORIGINALS_PATH: &str = "skills";
+const MANAGED_PREFIX: &str = "groundwork_";
 const CURATION_MANIFEST_TOML: &str = include_str!("../../../manifests/curation.v1.toml");
 
 #[derive(Parser)]
@@ -23,10 +25,53 @@ struct Cli {
 
 #[derive(Subcommand)]
 enum Commands {
-    Init,
-    Update,
+    Init(InstallArgs),
+    Update(InstallArgs),
     List,
     Doctor,
+}
+
+#[derive(Args, Debug, Clone, Default)]
+struct InstallArgs {
+    #[arg(long)]
+    dry_run: bool,
+}
+
+#[derive(Debug, Clone, Default)]
+struct InstallOptions {
+    dry_run: bool,
+}
+
+#[derive(Debug, Clone, Default)]
+struct InstallResult {
+    upserted: usize,
+    pruned: usize,
+    total_managed: usize,
+}
+
+#[derive(Debug)]
+struct ReconcileResult {
+    upserted: usize,
+    pruned: usize,
+    total_managed: usize,
+    lock_entries: Vec<LockEntry>,
+}
+
+#[derive(Debug, Clone)]
+struct ManagedDependencySpec {
+    alias: String,
+    origin: String,
+    source_key: String,
+    repo: String,
+    dependency_path: String,
+    skill: Option<String>,
+    pin: Option<PinRef>,
+}
+
+#[derive(Debug, Clone)]
+struct PinRef {
+    key: String,
+    value: String,
 }
 
 #[derive(Debug, Deserialize)]
@@ -71,7 +116,7 @@ struct LockSk {
     version: String,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 struct LockEntry {
     alias: String,
     origin: String,
@@ -96,51 +141,60 @@ struct SkRunner {
 fn main() -> Result<()> {
     let cli = Cli::parse();
     match cli.command {
-        Commands::Init => run_install(true),
-        Commands::Update => run_install(false),
+        Commands::Init(args) => run_install(true, &InstallOptions::from(args)),
+        Commands::Update(args) => run_install(false, &InstallOptions::from(args)),
         Commands::List => run_list(),
         Commands::Doctor => run_doctor(),
     }
 }
 
-fn run_install(is_init: bool) -> Result<()> {
+impl From<InstallArgs> for InstallOptions {
+    fn from(value: InstallArgs) -> Self {
+        Self {
+            dry_run: value.dry_run,
+        }
+    }
+}
+
+fn run_install(is_init: bool, options: &InstallOptions) -> Result<()> {
     let cwd = std::env::current_dir().context("failed to determine current directory")?;
+    run_install_in_directory(&cwd, is_init, options).map(|_| ())
+}
+
+fn run_install_in_directory(
+    base_path: &Path,
+    is_init: bool,
+    options: &InstallOptions,
+) -> Result<InstallResult> {
     let manifest = read_manifest()?;
     validate_manifest(&manifest)?;
 
-    let agents_path = cwd.join(AGENTS_TOML);
+    let managed_specs = build_managed_specs(&manifest);
+
+    let agents_path = base_path.join(AGENTS_TOML);
     let mut doc = load_or_init_agents_toml(&agents_path)?;
 
     ensure_agents_table(&mut doc);
     ensure_dependencies_table(&mut doc);
 
-    upsert_originals_dependency(&mut doc);
+    let reconcile = reconcile_manifest_to_doc(&mut doc, &managed_specs)?;
 
-    let mut lock_entries = Vec::new();
-    lock_entries.push(LockEntry {
-        alias: ORIGINALS_ALIAS.to_string(),
-        origin: "original".to_string(),
-        source: "gh".to_string(),
-        repo: ORIGINALS_REPO.to_string(),
-        path: Some(ORIGINALS_PATH.to_string()),
-        skill: None,
-        pinned_ref: None,
-    });
+    let result = InstallResult {
+        upserted: reconcile.upserted,
+        pruned: reconcile.pruned,
+        total_managed: reconcile.total_managed,
+    };
 
-    for source in &manifest.curated_sources {
-        for skill in &source.skills {
-            let alias = managed_alias(&source.id, &skill.name);
-            upsert_curated_dependency(&mut doc, &alias, source, skill);
-            lock_entries.push(LockEntry {
-                alias,
-                origin: "curated".to_string(),
-                source: source.source.clone(),
-                repo: source.repo.clone(),
-                path: Some(skill.path.clone()),
-                skill: Some(skill.name.clone()),
-                pinned_ref: source.rev.clone().or_else(|| source.tag.clone()),
-            });
-        }
+    if options.dry_run {
+        println!(
+            "dry-run {} complete. planned upserts={}, planned prunes={}, managed aliases={}",
+            if is_init { "init" } else { "update" },
+            result.upserted,
+            result.pruned,
+            result.total_managed
+        );
+        print_manifest_summary(&manifest);
+        return Ok(result);
     }
 
     fs::write(&agents_path, doc.to_string())
@@ -152,21 +206,24 @@ fn run_install(is_init: bool) -> Result<()> {
     let sk_version = sk_runner
         .version()
         .unwrap_or_else(|_| "unknown".to_string());
-    write_lock(&cwd, sk_runner.mode, &sk_version, lock_entries)?;
+    write_lock(
+        base_path,
+        sk_runner.mode,
+        &sk_version,
+        reconcile.lock_entries,
+    )?;
 
     println!(
-        "{} complete. Installed 1 originals package + {} curated skills.",
+        "{} complete. managed upserts={}, managed prunes={}, managed aliases={}",
         if is_init { "init" } else { "update" },
-        manifest
-            .curated_sources
-            .iter()
-            .map(|s| s.skills.len())
-            .sum::<usize>()
+        result.upserted,
+        result.pruned,
+        result.total_managed
     );
     println!("Installed with {} ({})", sk_runner.mode_name(), sk_version);
     print_manifest_summary(&manifest);
 
-    Ok(())
+    Ok(result)
 }
 
 fn run_list() -> Result<()> {
@@ -349,48 +406,138 @@ fn ensure_dependencies_table(doc: &mut DocumentMut) {
     }
 }
 
-fn upsert_originals_dependency(doc: &mut DocumentMut) {
-    let deps = doc["dependencies"]
-        .as_table_mut()
-        .expect("dependencies table exists");
+fn build_managed_specs(manifest: &CurationManifest) -> Vec<ManagedDependencySpec> {
+    let mut specs = Vec::new();
 
-    let mut inline = toml_edit::InlineTable::new();
-    inline.insert("gh", toml_edit::Value::from(ORIGINALS_REPO));
-    inline.insert("path", toml_edit::Value::from(ORIGINALS_PATH));
-    deps[ORIGINALS_ALIAS] = Item::Value(toml_edit::Value::InlineTable(inline));
+    specs.push(ManagedDependencySpec {
+        alias: ORIGINALS_ALIAS.to_string(),
+        origin: "original".to_string(),
+        source_key: "gh".to_string(),
+        repo: ORIGINALS_REPO.to_string(),
+        dependency_path: ORIGINALS_PATH.to_string(),
+        skill: None,
+        pin: None,
+    });
+
+    for source in &manifest.curated_sources {
+        for skill in &source.skills {
+            let alias = managed_alias(&source.id, &skill.name);
+            let dependency_path = resolve_curated_path(source.path.as_deref(), &skill.path);
+            let pin = source
+                .rev
+                .as_ref()
+                .map(|v| PinRef {
+                    key: "rev".to_string(),
+                    value: v.clone(),
+                })
+                .or_else(|| {
+                    source.tag.as_ref().map(|v| PinRef {
+                        key: "tag".to_string(),
+                        value: v.clone(),
+                    })
+                });
+
+            specs.push(ManagedDependencySpec {
+                alias,
+                origin: "curated".to_string(),
+                source_key: source.source.clone(),
+                repo: source.repo.clone(),
+                dependency_path,
+                skill: Some(skill.name.clone()),
+                pin,
+            });
+        }
+    }
+
+    specs
 }
 
-fn upsert_curated_dependency(
+fn resolve_curated_path(source_root: Option<&str>, skill_path: &str) -> String {
+    match source_root {
+        Some(root) => format!("{}/{}", root.trim_end_matches('/'), skill_path),
+        None => skill_path.to_string(),
+    }
+}
+
+fn reconcile_manifest_to_doc(
     doc: &mut DocumentMut,
-    alias: &str,
-    source: &CuratedSource,
-    skill: &CuratedSkill,
-) {
+    specs: &[ManagedDependencySpec],
+) -> Result<ReconcileResult> {
+    ensure_dependencies_table(doc);
+
+    let desired_aliases: HashSet<String> = specs.iter().map(|s| s.alias.clone()).collect();
     let deps = doc["dependencies"]
         .as_table_mut()
-        .expect("dependencies table exists");
+        .ok_or_else(|| anyhow!("dependencies table missing after ensure"))?;
 
-    let mut inline = toml_edit::InlineTable::new();
-    inline.insert(
-        source.source.as_str(),
-        toml_edit::Value::from(source.repo.as_str()),
-    );
+    let pruned = prune_stale_managed_dependencies(deps, &desired_aliases);
 
-    if let Some(root_path) = source.path.as_deref() {
-        let merged = format!("{}/{}", root_path.trim_end_matches('/'), skill.path);
-        inline.insert("path", toml_edit::Value::from(merged));
-    } else {
-        inline.insert("path", toml_edit::Value::from(skill.path.as_str()));
+    let mut upserted = 0;
+    for spec in specs {
+        if upsert_dependency(deps, spec) {
+            upserted += 1;
+        }
     }
 
-    if let Some(rev) = source.rev.as_deref() {
-        inline.insert("rev", toml_edit::Value::from(rev));
-    }
-    if let Some(tag) = source.tag.as_deref() {
-        inline.insert("tag", toml_edit::Value::from(tag));
+    let lock_entries = specs
+        .iter()
+        .map(|spec| LockEntry {
+            alias: spec.alias.clone(),
+            origin: spec.origin.clone(),
+            source: spec.source_key.clone(),
+            repo: spec.repo.clone(),
+            path: Some(spec.dependency_path.clone()),
+            skill: spec.skill.clone(),
+            pinned_ref: spec.pin.as_ref().map(|p| p.value.clone()),
+        })
+        .collect();
+
+    Ok(ReconcileResult {
+        upserted,
+        pruned,
+        total_managed: specs.len(),
+        lock_entries,
+    })
+}
+
+fn prune_stale_managed_dependencies(deps: &mut Table, desired_aliases: &HashSet<String>) -> usize {
+    let to_remove: Vec<String> = deps
+        .iter()
+        .filter_map(|(k, _)| {
+            if k.starts_with(MANAGED_PREFIX) && !desired_aliases.contains(k) {
+                Some(k.to_string())
+            } else {
+                None
+            }
+        })
+        .collect();
+
+    for k in &to_remove {
+        deps.remove(k);
     }
 
-    deps[alias] = Item::Value(toml_edit::Value::InlineTable(inline));
+    to_remove.len()
+}
+
+fn upsert_dependency(deps: &mut Table, spec: &ManagedDependencySpec) -> bool {
+    let mut inline = InlineTable::new();
+    inline.insert(spec.source_key.as_str(), Value::from(spec.repo.as_str()));
+    inline.insert("path", Value::from(spec.dependency_path.as_str()));
+    if let Some(pin) = &spec.pin {
+        inline.insert(pin.key.as_str(), Value::from(pin.value.as_str()));
+    }
+
+    let new_item = Item::Value(Value::InlineTable(inline));
+    let changed = deps
+        .get(spec.alias.as_str())
+        .map(|existing| existing.to_string() != new_item.to_string())
+        .unwrap_or(true);
+
+    if changed {
+        deps[spec.alias.as_str()] = new_item;
+    }
+
+    changed
 }
 
 fn managed_alias(source_id: &str, skill_name: &str) -> String {
@@ -550,5 +697,145 @@ fn print_manifest_summary(manifest: &CurationManifest) {
         for skill in &source.skills {
             println!("    - {} ({})", skill.name, skill.path);
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use tempfile::TempDir;
+
+    fn parse_doc(input: &str) -> DocumentMut {
+        input.parse::<DocumentMut>().expect("valid toml")
+    }
+
+    fn test_manifest() -> CurationManifest {
+        CurationManifest {
+            version: "1".to_string(),
+            curated_sources: vec![CuratedSource {
+                id: "superpowers".to_string(),
+                source: "gh".to_string(),
+                repo: "obra/superpowers".to_string(),
+                path: Some("bundle".to_string()),
+                rev: Some("abc123".to_string()),
+                tag: None,
+                license: "MIT".to_string(),
+                attribution: "x".to_string(),
+                url: "https://example.com".to_string(),
+                skills: vec![CuratedSkill {
+                    name: "test-driven-development".to_string(),
+                    path: "skills/test-driven-development".to_string(),
+                    reason: "reason".to_string(),
+                }],
+            }],
+        }
+    }
+
+    #[test]
+    fn resolve_curated_path_merges_root_and_skill_path() {
+        assert_eq!(
+            resolve_curated_path(Some("bundle"), "skills/test"),
+            "bundle/skills/test"
+        );
+        assert_eq!(
+            resolve_curated_path(Some("bundle/"), "skills/test"),
+            "bundle/skills/test"
+        );
+        assert_eq!(resolve_curated_path(None, "skills/test"), "skills/test");
+    }
+
+    #[test]
+    fn update_prunes_stale_groundwork_aliases_and_preserves_external() {
+        let mut doc = parse_doc(
+            r#"[agents]
+claude-code = true
+
+[dependencies]
+groundwork_obsolete = { gh = "foo/bar", path = "x" }
+external_dep = { gh = "org/repo", path = "y" }
+"#,
+        );
+
+        let specs = build_managed_specs(&test_manifest());
+        let result = reconcile_manifest_to_doc(&mut doc, &specs).expect("reconcile ok");
+
+        let deps = doc["dependencies"].as_table().expect("deps table");
+        assert!(!deps.contains_key("groundwork_obsolete"));
+        assert!(deps.contains_key("external_dep"));
+        assert!(deps.contains_key(ORIGINALS_ALIAS));
+        assert!(deps.contains_key("groundwork_superpowers_test_driven_development"));
+        assert_eq!(result.pruned, 1);
+    }
+
+    #[test]
+    fn lock_entry_path_matches_written_dependency_path_with_source_root() {
+        let mut doc = parse_doc(
+            r#"[agents]
+claude-code = true
+
+[dependencies]
+"#,
+        );
+
+        let specs = build_managed_specs(&test_manifest());
+        let result = reconcile_manifest_to_doc(&mut doc, &specs).expect("reconcile ok");
+
+        let alias = "groundwork_superpowers_test_driven_development";
+        let deps_str = doc.to_string();
+        assert!(deps_str.contains("path = \"bundle/skills/test-driven-development\""));
+
+        let lock_entry = result
+            .lock_entries
+            .iter()
+            .find(|e| e.alias == alias)
+            .expect("lock entry exists");
+
+        assert_eq!(
+            lock_entry.path.as_deref(),
+            Some("bundle/skills/test-driven-development")
+        );
+    }
+
+    #[test]
+    fn second_reconcile_is_idempotent() {
+        let mut doc = parse_doc(
+            r#"[agents]
+claude-code = true
+
+[dependencies]
+"#,
+        );
+
+        let specs = build_managed_specs(&test_manifest());
+
+        let first = reconcile_manifest_to_doc(&mut doc, &specs).expect("first reconcile ok");
+        assert!(first.upserted > 0);
+
+        let second = reconcile_manifest_to_doc(&mut doc, &specs).expect("second reconcile ok");
+        assert_eq!(second.upserted, 0);
+        assert_eq!(second.pruned, 0);
+    }
+
+    #[test]
+    fn dry_run_makes_no_filesystem_changes() {
+        let temp = TempDir::new().expect("tempdir");
+        let base = temp.path();
+
+        let agents_path = base.join(AGENTS_TOML);
+        fs::write(
+            &agents_path,
+            "[agents]\nclaude-code=true\n\n[dependencies]\n",
+        )
+        .expect("write agents");
+
+        let before = fs::read_to_string(&agents_path).expect("read before");
+
+        let result = run_install_in_directory(base, false, &InstallOptions { dry_run: true })
+            .expect("dry run succeeds");
+
+        let after = fs::read_to_string(&agents_path).expect("read after");
+        assert_eq!(before, after);
+        assert!(result.upserted > 0);
+        assert!(!base.join(LOCK_PATH).exists());
     }
 }

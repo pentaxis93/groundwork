@@ -38,6 +38,15 @@ Re-run safely anytime:
 groundwork update
 ```
 
+`groundwork update` converges Groundwork-managed dependencies to the current manifest,
+including pruning obsolete `groundwork_*` entries that are no longer curated.
+
+Preview changes without writing:
+
+```bash
+groundwork update --dry-run
+```
+
 ## Build the CLI Locally
 
 ```bash
