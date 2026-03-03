@@ -75,6 +75,7 @@ cargo run -p groundwork-cli -- doctor
 
 ## Original Skills in This Repo
 
+- `skills/using-groundwork`
 - `skills/foundation/ground`
 - `skills/foundation/research`
 - `skills/specification/bdd`

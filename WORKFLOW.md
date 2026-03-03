@@ -35,6 +35,20 @@ Handoff rules:
 
 Canonical contract: [docs/architecture/pipeline-contract.md](docs/architecture/pipeline-contract.md)
 
+## Methodology Orientation
+
+### `using-groundwork` (original)
+Trigger: session start, task initiation, or any moment requiring methodology orientation.
+
+Purpose:
+- activate the full skill system as one connected methodology
+- show how skills relate and hand off to each other
+- provide routing guidance for which skill fits which situation
+
+Prevents:
+- using skills by keyword match without methodology context
+- treating groundwork as isolated tools rather than a connected pipeline
+
 ## Phases
 
 ## 1. Foundation

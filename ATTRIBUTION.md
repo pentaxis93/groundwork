@@ -8,7 +8,9 @@ License: Apache-2.0
 Repository: `pentaxis93/groundwork`
 
 Original skills maintained here:
+- `using-groundwork`
 - `ground`
+- `research`
 - `bdd`
 - `planning`
 - `issue-craft`
