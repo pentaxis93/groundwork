@@ -7,12 +7,12 @@ use std::path::Path;
 use std::process::{Command, Stdio};
 use toml_edit::{value, DocumentMut, Item, Table};
 
-const MANIFEST_PATH: &str = "manifests/curation.v1.toml";
 const AGENTS_TOML: &str = "agents.toml";
 const LOCK_PATH: &str = ".groundwork/installed.lock.toml";
 const ORIGINALS_ALIAS: &str = "groundwork_originals";
 const ORIGINALS_REPO: &str = "pentaxis93/groundwork";
 const ORIGINALS_PATH: &str = "skills";
+const CURATION_MANIFEST_TOML: &str = include_str!("../../../manifests/curation.v1.toml");
 
 #[derive(Parser)]
 #[command(name = "groundwork", version, about = "Groundwork installer")]
@@ -105,7 +105,7 @@ fn main() -> Result<()> {
 
 fn run_install(is_init: bool) -> Result<()> {
     let cwd = std::env::current_dir().context("failed to determine current directory")?;
-    let manifest = read_manifest(&cwd)?;
+    let manifest = read_manifest()?;
     validate_manifest(&manifest)?;
 
     let agents_path = cwd.join(AGENTS_TOML);
@@ -209,7 +209,7 @@ fn run_list() -> Result<()> {
 
 fn run_doctor() -> Result<()> {
     let cwd = std::env::current_dir().context("failed to determine current directory")?;
-    let manifest = read_manifest(&cwd)?;
+    let manifest = read_manifest()?;
     validate_manifest(&manifest)?;
 
     let agents_path = cwd.join(AGENTS_TOML);
@@ -249,12 +249,9 @@ fn run_doctor() -> Result<()> {
     Ok(())
 }
 
-fn read_manifest(cwd: &Path) -> Result<CurationManifest> {
-    let manifest_path = cwd.join(MANIFEST_PATH);
-    let manifest_text = fs::read_to_string(&manifest_path)
-        .with_context(|| format!("failed to read {}", manifest_path.display()))?;
-    toml::from_str::<CurationManifest>(&manifest_text)
-        .with_context(|| format!("failed to parse {}", manifest_path.display()))
+fn read_manifest() -> Result<CurationManifest> {
+    toml::from_str::<CurationManifest>(CURATION_MANIFEST_TOML)
+        .context("failed to parse embedded curation manifest")
 }
 
 fn validate_manifest(manifest: &CurationManifest) -> Result<()> {
