@@ -4,7 +4,7 @@ Groundwork is a full-path methodology from first problem framing to shipped chan
 
 This workflow intentionally combines:
 - **Original Groundwork skills** for cognitive discipline, research discipline, behavioral contracts, decomposition, and closure.
-- **Curated middle-layer skills** for high-discipline implementation and verification.
+- **Upstream execution skills** for high-discipline implementation and verification.
 
 ## Philosophy
 
@@ -24,7 +24,7 @@ Groundwork exists to prevent common AI coding failure modes:
 
 `bdd` runs through the full pipeline:
 - **Specification**: define behavior in Given/When/Then terms.
-- **Execution**: curated TDD implements those behaviors via RED-GREEN-REFACTOR.
+- **Execution**: `test-driven-development` implements those behaviors via RED-GREEN-REFACTOR.
 - **Verification**: completion evidence is checked against those behaviors, not just command success.
 
 Handoff rules:
@@ -113,9 +113,9 @@ Prevents:
 - ambiguous issue descriptions requiring clarifications mid-execution
 - non-verifiable "done" statements
 
-## 4. Execution + Verification Middle (curated)
+## 4. Execution + Verification (upstream)
 
-Groundwork v0.1 curates these Superpowers skills:
+Groundwork v0.1 includes these upstream Superpowers skills:
 - `brainstorming`
 - `writing-plans`
 - `subagent-driven-development`
@@ -127,7 +127,7 @@ Groundwork v0.1 curates these Superpowers skills:
 
 Contract model:
 - Groundwork skills define constraints and behavior contract.
-- Curated middle skills implement and verify that contract.
+- Execution skills implement and verify that contract.
 
 Prevents:
 - coding without design pressure-testing
@@ -150,11 +150,11 @@ Purpose:
 Prevents:
 - half-finished closure (merged but issue still stale, branches left behind)
 
-## Original vs Curated Transparency
+## Original vs Upstream Transparency
 
 Groundwork is explicit about ownership:
 - Original skills are maintained in this repository.
-- Curated skills are fetched from upstream repositories at pinned revisions.
+- Upstream skills are fetched from their repositories at pinned revisions.
 
 See:
 - `CURATED.md` for inclusion rationale
@@ -171,5 +171,5 @@ Then run your task through one coherent pipeline:
 1. Ground with `ground`
 2. Define/refine behavior contract with `bdd`
 3. Decompose with `planning` + `issue-craft`
-4. Execute and verify the behavior contract with curated middle skills
+4. Execute and verify the behavior contract with execution skills
 5. Complete with `land`

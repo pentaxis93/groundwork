@@ -55,3 +55,4 @@ This skill teaches the map; agent judgment navigates it. The behavior contract m
 - Forgetting `ground` re-fires on new generative work mid-session
 - Using individual skills by keyword match without methodology context
 - Claiming completion with command output but no behavior-level evidence
+
