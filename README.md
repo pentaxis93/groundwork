@@ -44,8 +44,16 @@ including pruning obsolete `groundwork_*` entries that are no longer curated.
 Preview changes without writing:
 
 ```bash
+groundwork init --dry-run
 groundwork update --dry-run
 ```
+
+## CLI Behavior Notes
+
+- `groundwork init` / `groundwork update` reconcile Groundwork-managed dependencies in `agents.toml`.
+- `groundwork update` prunes obsolete managed aliases (`groundwork_*`) that are no longer present in the current curation manifest.
+- `groundwork list` reports from `.groundwork/installed.lock.toml`.
+- The curation manifest is embedded in the CLI binary at build time; commands do not require `manifests/curation.v1.toml` in the target project directory.
 
 ## Build the CLI Locally
 
