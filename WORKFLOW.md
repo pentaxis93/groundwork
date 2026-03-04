@@ -8,15 +8,13 @@ This workflow intentionally combines:
 
 ## Philosophy
 
-Start from what the work must enable, not from inherited implementation patterns.
+Groundwork gives you a full-path methodology from first problem framing to shipped change:
 
-Groundwork exists to prevent common AI coding failure modes:
-- accepting the prompt frame uncritically
-- coding before behavior is defined
-- vague or non-executable task decomposition
-- ad-hoc execution without discipline
-- completion claims without fresh evidence
-- shipping without closure hygiene
+- Start from what the work must enable, not from inherited implementation patterns.
+- Maintain a stable behavioral contract from first framing through verification.
+- Persist intent and progress across sessions via the issue graph, so any agent can resume from truthful state.
+- Execute and verify against that contract with implementation discipline.
+- Close cleanly with evidence of what shipped and what remains.
 
 ## Cross-Cutting Thread: Behavioral Contract (`bdd`)
 
@@ -44,10 +42,6 @@ Purpose:
 - activate the full skill system as one connected methodology
 - show how skills relate and hand off to each other
 - provide routing guidance for which skill fits which situation
-
-Prevents:
-- using skills by keyword match without methodology context
-- treating groundwork as isolated tools rather than a connected pipeline
 
 ## Issue-Based Development
 
@@ -115,8 +109,6 @@ Epics with 4+ tasks include a dependency graph in two representations:
 - **Validation after mutation**: after adding, closing, splitting, or merging
   issues, verify the graph has no orphaned dependencies or cycles.
 
-## Phases
-
 ## 1. Foundation
 
 ### `ground` (original)
@@ -127,20 +119,12 @@ Purpose:
 - separate requirements from inherited conventions
 - reconstruct solutions from verified constraints
 
-Prevents:
-- anchoring on existing implementation
-- category inheritance and pattern copy-paste
-
 ### `research` (original)
 Trigger: when reliable external evidence is needed for decisions.
 
 Purpose:
 - run systematic multi-source research with citation discipline
 - synthesize findings into actionable constraints for design and execution
-
-Prevents:
-- single-source conclusions and stale assumptions
-- unverified claims driving architecture or implementation choices
 
 ## 2. Specification
 
@@ -151,22 +135,14 @@ Purpose:
 - define behavior as executable expectations (Given/When/Then style)
 - maintain a stable behavior contract from design through verification
 
-Prevents:
-- implementation-first drift
-- contract drift between spec, implementation, and verification
-
 ## 3. Decomposition
 
 ### `planning` (original)
-Trigger: selecting session-sized work from issue graph.
+Trigger: selecting session-sized work from issue graph, or when a task feels too big to hold in one session.
 
 Purpose:
-- choose the next meaningful unit of progress
-- avoid over-scoping a single session
-
-Prevents:
-- context overrun from oversized tasks
-- random task switching
+- choose the next meaningful unit of progress and confirm it fits one session
+- establish clear scope boundaries that prevent context overrun and task switching
 
 ### `issue-craft` (original)
 Trigger: creating/refining task/epic/bug/spike issues.
@@ -175,39 +151,47 @@ Purpose:
 - create agent-executable issues with binary acceptance criteria
 - preserve dependency clarity
 
-Prevents:
-- ambiguous issue descriptions requiring clarifications mid-execution
-- non-verifiable "done" statements
-
 ### Local Issue Mirroring
 
 Issues are mirrored locally via `gh-issue-sync`. The `.issues/` directory is
 gitignored — it is a working surface, not a second source of truth. Skills
 sync at natural boundaries: pull before reading, push after writing.
 
-## 4. Execution + Verification (upstream)
+## 4. Execution + Verification
 
-Groundwork v0.1 includes these upstream Superpowers skills:
-- `brainstorming`
-- `writing-plans`
-- `subagent-driven-development`
-- `test-driven-development`
-- `systematic-debugging`
-- `verification-before-completion`
-- `requesting-code-review`
-- `receiving-code-review`
+Groundwork v0.1 includes these upstream Superpowers execution skills. Each has a Trigger — use it when you reach that moment in your session.
 
-Contract model:
-- Groundwork skills define constraints and behavior contract.
+### `brainstorming`
+Trigger: before designing a solution or making a significant architectural choice.
+
+### `writing-plans`
+Trigger: when you have a spec or requirements and need a structured implementation plan before touching code.
+
+### `subagent-driven-development`
+Trigger: when executing a plan whose tasks are independent and can run in parallel.
+
+### `test-driven-development`
+Trigger: when implementing any feature or bugfix. RED → GREEN → REFACTOR.
+
+### `systematic-debugging`
+Trigger: when a test fails or behavior is unexpected, before proposing any fix.
+
+### `verification-before-completion`
+Trigger: before claiming work is complete, fixed, or passing. Evidence first.
+
+### `requesting-code-review`
+Trigger: after implementation, before merging.
+
+### `receiving-code-review`
+Trigger: when receiving review feedback, before implementing suggestions.
+
+### Contract Model
+
+- Groundwork skills define constraints and the behavioral contract.
 - Execution skills implement and verify that contract.
-
-Prevents:
-- coding without design pressure-testing
-- task execution drift
-- skipping TDD loops against the behavior contract
-- non-root-cause debugging
-- completion claims without command evidence and behavior mapping
-- shallow/unstructured code review handling
+- Avoid coding without design pressure-testing, task execution drift, or TDD skipping.
+- Require root-cause debugging, command evidence, and behavior mapping before completion claims.
+- Seek and respond to code review with structural rigor.
 
 ## 5. Completion
 
@@ -219,19 +203,10 @@ Purpose:
 - ensure shipped changes are discoverable and traceable
 - preserve what behavior coverage shipped and what remains
 
-Prevents:
-- half-finished closure (merged but issue still stale, branches left behind)
+## Original vs Upstream Skills
 
-## Original vs Upstream Transparency
-
-Groundwork is explicit about ownership:
 - Original skills are maintained in this repository.
-- Upstream skills are fetched from their repositories at pinned revisions.
-
-See:
-- `CURATED.md` for inclusion rationale
-- `ATTRIBUTION.md` for source/license/pinning details
-- `manifests/curation.v1.toml` for machine-readable curation
+- Upstream skills are fetched from their source repositories at install time.
 
 ## Install and Run
 
