@@ -1,1 +1,1 @@
-# Verification skills — planned
+# Verification skills

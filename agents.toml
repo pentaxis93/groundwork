@@ -10,6 +10,7 @@ foundation = { path = "./skills/foundation" }
 specification = { path = "./skills/specification" }
 decomposition = { path = "./skills/decomposition" }
 completion = { path = "./skills/completion" }
+verification = { path = "./skills/verification" }
 using-groundwork = { path = "./skills/using-groundwork" }
 ground = { gh = "pentaxis93/groundwork", path = "skills/foundation/ground" }
 research = { gh = "pentaxis93/groundwork", path = "skills/foundation/research" }
@@ -18,6 +19,7 @@ next_issue = { gh = "pentaxis93/groundwork", path = "skills/decomposition/next-i
 plan = { gh = "pentaxis93/groundwork", path = "skills/decomposition/plan" }
 issue_craft = { gh = "pentaxis93/groundwork", path = "skills/decomposition/issue-craft" }
 land = { gh = "pentaxis93/groundwork", path = "skills/completion/land" }
+documentation = { gh = "pentaxis93/groundwork", path = "skills/verification/documentation" }
 using_groundwork = { gh = "pentaxis93/groundwork", path = "skills/using-groundwork" }
 brainstorming = { gh = "obra/superpowers", path = "skills/brainstorming", rev = "e4a2375cb705ca5800f0833528ce36a3faf9017a" }
 writing_skills = { gh = "obra/superpowers", path = "skills/writing-skills", rev = "e4a2375cb705ca5800f0833528ce36a3faf9017a" }
