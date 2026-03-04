@@ -257,6 +257,7 @@ fn run_install_in_directory(
 
     let sk_version = sk_runner
         .version()
+        .map(|v| v.lines().next().unwrap_or("unknown").to_string())
         .unwrap_or_else(|_| "unknown".to_string());
     write_lock(
         base_path,
@@ -304,7 +305,7 @@ fn run_list() -> Result<()> {
     println!("- installed_at: {}", lock.installed_at);
     println!("- sk: {} ({})", lock.sk.mode, lock.sk.version);
     if let Some(ref is) = lock.issue_sync {
-        println!("- gh-issue-sync: {} ({})", is.mode, is.version);
+        println!("- gh-issue-sync: {} ({})", is.mode.mode_name(), is.version);
     } else {
         println!("- gh-issue-sync: not installed");
     }
@@ -788,6 +789,7 @@ fn bootstrap_issue_sync(base_path: &Path) -> Option<(IssueSyncMode, String)> {
     let mode = ensure_issue_sync_available()?;
 
     let version = run_command_capture(&["gh-issue-sync", "--version"])
+        .map(|v| v.lines().next().unwrap_or("unknown").to_string())
         .unwrap_or_else(|_| "unknown".to_string());
 
     let issues_dir = base_path.join(".issues");
@@ -1149,8 +1151,10 @@ unrelated = { gh = "org/repo", path = "y" }
 
         let toml_str = toml::to_string_pretty(&lock).expect("serialize");
         assert!(!toml_str.contains("issue_sync"));
+        assert!(toml_str.contains("mode = \"npx\""));
         let parsed: InstallLock = toml::from_str(&toml_str).expect("deserialize");
         assert!(parsed.issue_sync.is_none());
+        assert_eq!(parsed.sk.mode, SkMode::Npx);
     }
 
     #[test]
