@@ -10,6 +10,8 @@ agent-executable without clarification.
 
 For concrete task/epic/bug templates, see
 [references/templates.md](references/templates.md).
+For the issue state model, dependency graph format, and operational definitions,
+see WORKFLOW.md § Issue-Based Development.
 
 ## Goal
 Produce and maintain issues that autonomous agents can execute end-to-end
@@ -58,11 +60,12 @@ without clarification.
 1. Extract deliverables (artifacts that must exist when done).
 2. Split into vertical slices that are independently verifiable.
 3. Group by module boundary where it clarifies ownership.
-4. Build dependency graph using hard blockers only.
+4. Build dependency graph using hard blockers only (Mermaid `graph TD` +
+   layered text summary — see WORKFLOW.md § Dependency Graph Format).
 5. Size-check each candidate:
 - split if oversized
 - merge if trivial
-6. Create topologically ordered task issues.
+6. Create task issues in topological order (lowest execution layer first).
 7. Validate each task has binary acceptance criteria.
 8. Create parent epic with checklist and graph.
 
@@ -103,7 +106,9 @@ Prefer strict mode when type is known:
 3. Create topological execution layers.
 4. Apply labels (`size:*`, module/area).
 5. Assign milestones.
-6. Flag stale issues for review.
+6. Flag stale issues (no progress comment for 14+ days) for review.
+   Resolution: resume work, split into smaller issues, or close as wont-fix
+   with rationale.
 
 ### close-issue
 1. Verify all acceptance criteria against implementation.
@@ -130,6 +135,8 @@ Prefer strict mode when type is known:
 - `premature-issues`: filing work too far out.
 - `test-afterthought`: no testing expectation.
 - `docs-afterthought`: user-facing change without docs criterion.
+- `graph-omission`: epic with 4+ tasks missing dependency graph or layered
+  execution order.
 
 ## Principles
 - `contract-not-conversation`: issue must stand alone.
