@@ -113,11 +113,19 @@ struct InstallLock {
     installer_version: String,
     installed_at: String,
     sk: LockSk,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    issue_sync: Option<LockIssueSync>,
     entries: Vec<LockEntry>,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
 struct LockSk {
+    mode: String,
+    version: String,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+struct LockIssueSync {
     mode: String,
     version: String,
 }
@@ -137,6 +145,12 @@ struct LockEntry {
 enum SkMode {
     Binary,
     Npx,
+}
+
+#[derive(Clone, Copy, Debug)]
+enum IssueSyncMode {
+    Binary,
+    GoInstall,
 }
 
 #[derive(Debug)]
@@ -210,7 +224,7 @@ fn run_install_in_directory(
     let sk_runner = ensure_sk_available()?;
     sk_runner.sync()?;
 
-    bootstrap_issue_sync(base_path);
+    let issue_sync_info = bootstrap_issue_sync(base_path);
 
     let sk_version = sk_runner
         .version()
@@ -219,6 +233,9 @@ fn run_install_in_directory(
         base_path,
         sk_runner.mode,
         &sk_version,
+        issue_sync_info
+            .as_ref()
+            .map(|(mode, ver)| (*mode, ver.as_str())),
         reconcile.lock_entries,
     )?;
 
@@ -230,6 +247,16 @@ fn run_install_in_directory(
         result.total_managed
     );
     println!("Installed with {} ({})", sk_runner.mode_name(), sk_version);
+    if let Some((mode, ref ver)) = issue_sync_info {
+        println!(
+            "Installed gh-issue-sync via {} ({})",
+            match mode {
+                IssueSyncMode::Binary => "binary",
+                IssueSyncMode::GoInstall => "go install",
+            },
+            ver
+        );
+    }
     print_manifest_summary(&manifest);
 
     Ok(result)
@@ -254,6 +281,11 @@ fn run_list() -> Result<()> {
     println!("- installer: {}", lock.installer_version);
     println!("- installed_at: {}", lock.installed_at);
     println!("- sk: {} ({})", lock.sk.mode, lock.sk.version);
+    if let Some(ref is) = lock.issue_sync {
+        println!("- gh-issue-sync: {} ({})", is.mode, is.version);
+    } else {
+        println!("- gh-issue-sync: not installed");
+    }
     println!("- entries: {}", lock.entries.len());
 
     for entry in lock.entries {
@@ -306,14 +338,31 @@ fn run_doctor() -> Result<()> {
         println!("ok: bootstrap prerequisites satisfied");
     }
 
+    if command_exists("gh") {
+        let ver =
+            run_command_capture(&["gh", "--version"]).unwrap_or_else(|_| "unknown".into());
+        let first_line = ver.lines().next().unwrap_or("unknown");
+        println!("ok: gh CLI available ({})", first_line.trim());
+    } else {
+        println!("warn: gh CLI not found (prerequisite for gh-issue-sync)");
+    }
+
     if command_exists("gh-issue-sync") {
         let ver = run_command_capture(&["gh-issue-sync", "--version"])
             .unwrap_or_else(|_| "unknown".into());
         println!("ok: gh-issue-sync available ({})", ver.trim());
     } else {
-        println!(
-            "warn: gh-issue-sync not found (install from https://github.com/mitsuhiko/gh-issue-sync)"
-        );
+        let curl = command_exists("curl");
+        let go = command_exists("go");
+        println!("warn: gh-issue-sync not found");
+        println!("info: auto-install capability: curl={} go={}", curl, go);
+        if !curl && !go {
+            println!(
+                "info: install manually from https://github.com/mitsuhiko/gh-issue-sync"
+            );
+        } else {
+            println!("info: will auto-install on next init/update");
+        }
     }
 
     println!(
@@ -660,48 +709,94 @@ impl SkRunner {
     }
 }
 
-fn bootstrap_issue_sync(base_path: &Path) {
-    if !command_exists("gh-issue-sync") {
-        println!(
-            "note: install gh-issue-sync for local issue mirroring (https://github.com/mitsuhiko/gh-issue-sync)"
-        );
-        return;
+fn ensure_issue_sync_available() -> Option<IssueSyncMode> {
+    if command_exists("gh-issue-sync") {
+        return Some(IssueSyncMode::Binary);
     }
+
+    if !command_exists("gh") {
+        println!("warn: gh CLI not found (prerequisite for gh-issue-sync)");
+        return None;
+    }
+
+    if command_exists("curl") {
+        println!("info: installing gh-issue-sync via install script...");
+        let install = Command::new("sh")
+            .args([
+                "-c",
+                "curl -sSfL https://github.com/mitsuhiko/gh-issue-sync/releases/latest/download/install.sh | sh",
+            ])
+            .stdout(Stdio::inherit())
+            .stderr(Stdio::inherit())
+            .status();
+
+        if install.map(|s| s.success()).unwrap_or(false) && command_exists("gh-issue-sync") {
+            return Some(IssueSyncMode::Binary);
+        }
+    }
+
+    if command_exists("go") {
+        println!("info: installing gh-issue-sync via go install...");
+        let install = Command::new("go")
+            .args([
+                "install",
+                "github.com/mitsuhiko/gh-issue-sync/cmd/gh-issue-sync@latest",
+            ])
+            .stdout(Stdio::inherit())
+            .stderr(Stdio::inherit())
+            .status();
+
+        if install.map(|s| s.success()).unwrap_or(false) && command_exists("gh-issue-sync") {
+            return Some(IssueSyncMode::GoInstall);
+        }
+    }
+
+    println!(
+        "note: could not auto-install gh-issue-sync; install manually from https://github.com/mitsuhiko/gh-issue-sync"
+    );
+    None
+}
+
+fn bootstrap_issue_sync(base_path: &Path) -> Option<(IssueSyncMode, String)> {
+    let mode = ensure_issue_sync_available()?;
+
+    let version = run_command_capture(&["gh-issue-sync", "--version"])
+        .unwrap_or_else(|_| "unknown".to_string());
 
     let issues_dir = base_path.join(".issues");
-    if issues_dir.exists() {
-        return;
-    }
+    if !issues_dir.exists() {
+        let init_status = Command::new("gh-issue-sync")
+            .arg("init")
+            .current_dir(base_path)
+            .stdout(Stdio::null())
+            .stderr(Stdio::inherit())
+            .status();
 
-    let init_status = Command::new("gh-issue-sync")
-        .arg("init")
-        .current_dir(base_path)
-        .stdout(Stdio::null())
-        .stderr(Stdio::inherit())
-        .status();
-
-    if !init_status.map(|s| s.success()).unwrap_or(false) {
-        println!("warn: gh-issue-sync init failed");
-        return;
-    }
-
-    let pull_output = Command::new("gh-issue-sync")
-        .arg("pull")
-        .current_dir(base_path)
-        .output();
-
-    match pull_output {
-        Ok(output) if output.status.success() => {
-            let count = issues_dir
-                .read_dir()
-                .map(|entries| entries.filter_map(|e| e.ok()).count())
-                .unwrap_or(0);
-            println!("ok: synced {} issues to .issues/", count);
+        if !init_status.map(|s| s.success()).unwrap_or(false) {
+            println!("warn: gh-issue-sync init failed");
+            return Some((mode, version));
         }
-        _ => {
-            println!("warn: gh-issue-sync pull failed");
+
+        let pull_output = Command::new("gh-issue-sync")
+            .arg("pull")
+            .current_dir(base_path)
+            .output();
+
+        match pull_output {
+            Ok(output) if output.status.success() => {
+                let count = issues_dir
+                    .read_dir()
+                    .map(|entries| entries.filter_map(|e| e.ok()).count())
+                    .unwrap_or(0);
+                println!("ok: synced {} issues to .issues/", count);
+            }
+            _ => {
+                println!("warn: gh-issue-sync pull failed");
+            }
         }
     }
+
+    Some((mode, version))
 }
 
 fn run_command_capture(args: &[&str]) -> Result<String> {
@@ -735,6 +830,7 @@ fn write_lock(
     cwd: &Path,
     sk_mode: SkMode,
     sk_version: &str,
+    issue_sync_info: Option<(IssueSyncMode, &str)>,
     entries: Vec<LockEntry>,
 ) -> Result<()> {
     let lock = InstallLock {
@@ -748,6 +844,13 @@ fn write_lock(
             },
             version: sk_version.to_string(),
         },
+        issue_sync: issue_sync_info.map(|(mode, ver)| LockIssueSync {
+            mode: match mode {
+                IssueSyncMode::Binary => "binary".to_string(),
+                IssueSyncMode::GoInstall => "go-install".to_string(),
+            },
+            version: ver.to_string(),
+        }),
         entries,
     };
 
@@ -959,5 +1062,76 @@ unrelated = { gh = "org/repo", path = "y" }
         assert_eq!(pruned, 1);
         assert!(!deps.contains_key("old_skill"));
         assert!(deps.contains_key("unrelated"));
+    }
+
+    #[test]
+    fn lock_round_trips_with_issue_sync() {
+        let lock = InstallLock {
+            version: 1,
+            installer_version: "0.1.0".to_string(),
+            installed_at: "2026-01-01T00:00:00Z".to_string(),
+            sk: LockSk {
+                mode: "binary".to_string(),
+                version: "1.0.0".to_string(),
+            },
+            issue_sync: Some(LockIssueSync {
+                mode: "binary".to_string(),
+                version: "0.3.0".to_string(),
+            }),
+            entries: vec![],
+        };
+
+        let toml_str = toml::to_string_pretty(&lock).expect("serialize");
+        assert!(toml_str.contains("[issue_sync]"));
+        let parsed: InstallLock = toml::from_str(&toml_str).expect("deserialize");
+        let is = parsed.issue_sync.expect("issue_sync present");
+        assert_eq!(is.mode, "binary");
+        assert_eq!(is.version, "0.3.0");
+    }
+
+    #[test]
+    fn lock_round_trips_without_issue_sync() {
+        let lock = InstallLock {
+            version: 1,
+            installer_version: "0.1.0".to_string(),
+            installed_at: "2026-01-01T00:00:00Z".to_string(),
+            sk: LockSk {
+                mode: "npx".to_string(),
+                version: "1.0.0".to_string(),
+            },
+            issue_sync: None,
+            entries: vec![],
+        };
+
+        let toml_str = toml::to_string_pretty(&lock).expect("serialize");
+        assert!(!toml_str.contains("issue_sync"));
+        let parsed: InstallLock = toml::from_str(&toml_str).expect("deserialize");
+        assert!(parsed.issue_sync.is_none());
+    }
+
+    #[test]
+    fn old_lock_without_issue_sync_deserializes() {
+        let old_toml = r#"
+version = 1
+installer_version = "0.1.0"
+installed_at = "2026-01-01T00:00:00Z"
+
+[sk]
+mode = "binary"
+version = "1.0.0"
+
+[[entries]]
+alias = "ground"
+origin = "original"
+source = "gh"
+repo = "pentaxis93/groundwork"
+path = "skills/foundation/ground"
+skill = "ground"
+"#;
+
+        let parsed: InstallLock = toml::from_str(old_toml).expect("deserialize old lock");
+        assert!(parsed.issue_sync.is_none());
+        assert_eq!(parsed.sk.mode, "binary");
+        assert_eq!(parsed.entries.len(), 1);
     }
 }
