@@ -87,7 +87,7 @@ columns). An issue's state is what its body and comments say it is.
 
 Epics with 4+ tasks include a dependency graph in two representations:
 
-1. **Mermaid diagram** for visual reading:
+1. **Mermaid diagram** for visual reading (arrows mean "must complete before"):
    ```mermaid
    graph TD
      A[#1 task-title] --> B[#2 task-title]
