@@ -24,9 +24,9 @@ Use `next-issue` to select session-sized work from the issue graph. It reads unb
 
 Use `issue-craft` to create, decompose, refine, and close issues. It produces agent-executable issues with binary acceptance criteria, explicit dependencies, and bounded scope. For epics with 4+ tasks, it builds dependency graphs with execution layers.
 
-Use `plan` to converge from exploration to a decision-complete implementation design before modifying code. It explores the codebase, resolves intent, and produces a plan where every design choice is explicit — the implementer does not need to make any decisions. Based on Codex CLI plan mode (MIT), adapted for autonomous execution.
-
 Use `brainstorming` before designing a solution or making a significant architectural choice. It explores 2-3 approaches with trade-offs and produces an approved design document.
+
+Use `plan` to converge from exploration to a decision-complete implementation design before modifying code. It explores the codebase, resolves intent, and produces a plan where every design choice is explicit — the implementer does not need to make any decisions. Based on Codex CLI plan mode (MIT), adapted for autonomous execution.
 
 Use `writing-plans` when you have a decision-complete design and need a structured implementation plan before touching code. It translates the design into bite-sized implementation steps — each step names exact files, code, commands, and expected output. Every plan item maps to one or more behavior statements from the `bdd` contract.
 
@@ -133,16 +133,16 @@ Issues are mirrored locally via `gh-issue-sync`. The `.issues/` directory is git
 | `research` | when reliable external evidence is needed for decisions |
 | `bdd` | when defining or refining behavior expectations |
 | `next-issue` | selecting session-sized work from issue graph, or when a task feels too big to hold in one session |
-| `plan` | implementation needs design convergence — multiple approaches, unclear scope, or cross-cutting changes |
 | `issue-craft` | creating/refining task/epic/bug/spike issues |
 | `brainstorming` | before designing a solution or making a significant architectural choice |
-| `writing-plans` | when you have a spec or requirements and need a structured implementation plan before touching code |
-| `subagent-driven-development` | when executing a plan whose tasks are independent and can run in parallel |
+| `plan` | implementation needs design convergence — multiple approaches, unclear scope, or cross-cutting changes |
+| `writing-plans` | when you have a decision-complete design and need a structured implementation plan before touching code |
 | `test-driven-development` | when implementing any feature or bugfix — RED → GREEN → REFACTOR |
+| `subagent-driven-development` | when executing a plan whose tasks are independent and can run in parallel |
 | `systematic-debugging` | when a test fails or behavior is unexpected, before proposing any fix |
-| `verification-before-completion` | before claiming work is complete, fixed, or passing — evidence first |
 | `requesting-code-review` | after implementation, before merging |
 | `receiving-code-review` | when receiving review feedback, before implementing suggestions |
+| `verification-before-completion` | before claiming work is complete, fixed, or passing — evidence first |
 | `land` | merge-and-close completion events: `land`, `merge and close`, `ship it` |
 
 ## Install
