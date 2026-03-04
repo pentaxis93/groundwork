@@ -1,113 +1,114 @@
 # Groundwork
 
-Groundwork is a methodology distribution for AI coding agents.
+A methodology library for AI coding agents. One connected pipeline from problem framing through shipped change to closed loop.
 
-It curates methodology skills from multiple upstream sources into one coherent workflow, while maintaining a strict boundary:
-- This repo contains Groundwork's original skills and curation metadata.
-- Curated skills stay in their upstream repositories and are fetched at install time.
+## The Problem
 
-## v0.1 Architecture
+AI agents fail in predictable ways between receiving a task and delivering working code:
 
-Groundwork v0.1 uses:
-- **Groundwork originals**: `ground`, `research`, `bdd`, `planning`, `issue-craft`, `land`
-- **Superpowers middle** (curated): planning/execution/verification discipline skills
+- **Inherited framing** — accepting problem statements without questioning scope, premises, or fit
+- **Premature generation** — coding before the design exists
+- **Vague specifications** — behavior contracts that don't survive contact with implementation
+- **Non-executable work** — issues that agents can't complete without clarification
+- **Unverified claims** — declaring "done" without behavior-level evidence
+- **Incomplete shipping** — merged code with no closure, no cleanup, no record
 
-Pipeline invariant for v0.1:
-- **There is one pipeline, not two.** `bdd` defines and maintains the behavior contract; curated implementation skills execute and verify that same contract.
+These aren't random. They're structural failure modes of agents operating without cognitive discipline. Groundwork prevents each one with a specific skill at the point where the failure occurs.
 
-Kata Orchestrator was evaluated as an integrated middle layer. For v0.1, Superpowers is selected because it currently provides a cleaner minimum path across Claude Code, Codex, and OpenCode while preserving strict execution guardrails.
+## The Pipeline
 
-## One-Command Install
+There is one path, not a menu. Every piece of work flows through five stages:
 
-Install with a single command:
+**1. Frame constraints** — `ground` establishes what the work must enable before any design begins. It strips inherited assumptions and builds from verified constraints. This fires on every new generative act, not just once at the start.
+
+**2. Define behavior** — `bdd` defines the behavior contract in Given/When/Then scenarios. This contract threads through every subsequent stage — it is the integration mechanism, not a planning artifact.
+
+**3. Decompose** — `issue-craft` produces agent-executable issues with binary acceptance criteria from the behavior contract. `next-issue` selects session-sized work from the issue graph. `brainstorming` explores design approaches. `plan` converges to a decision-complete implementation design. `writing-plans` translates it into concrete steps. The issue graph is the project's working memory across sessions.
+
+**4. Execute and verify** — `test-driven-development` implements behavior through RED-GREEN-REFACTOR — each RED test maps to a named scenario from stage 2. `systematic-debugging` finds root cause before proposing fixes. Code review and `verification-before-completion` gate completion with behavior-level evidence.
+
+**5. Land** — `land` closes the loop: merge, push, delete branch, comment on issue, close issue. Closure records behavior coverage and remaining gaps. Do not stop after merge.
+
+For the full integration manual, see [WORKFLOW.md](WORKFLOW.md). For formal handoff contracts and anti-divergence rules, see [docs/architecture/pipeline-contract.md](docs/architecture/pipeline-contract.md).
+
+## Skills
+
+| Skill | Stage | What it prevents |
+|---|---|---|
+| `ground` | Foundation | Inherited framing, anchoring, premature assumptions |
+| `research` | Foundation | Unsubstantiated decisions, hallucinated facts |
+| `bdd` | Specification | Vague specs, testing implementation instead of behavior |
+| `issue-craft` | Decomposition | Non-executable tasks, vague acceptance criteria |
+| `next-issue` | Decomposition | Recency drift, scope creep, blocker bypass |
+| `brainstorming` | Decomposition | Coding before design is approved |
+| `plan` | Decomposition | Unclear scope, design choices left to implementer |
+| `writing-plans` | Decomposition | Vague execution plans without file-level specificity |
+| `test-driven-development` | Execution | Implementation-first regressions |
+| `subagent-driven-development` | Execution | Context drift in parallel work |
+| `systematic-debugging` | Execution | Thrashing and symptom-fixing |
+| `requesting-code-review` | Verification | Unreviewed changes reaching main |
+| `receiving-code-review` | Verification | Performative agreement with review feedback |
+| `verification-before-completion` | Verification | False completion claims without evidence |
+| `documentation` | Verification | Drifted docs, missing artifact updates |
+| `land` | Completion | Branch rot, unclosed issues, incomplete delivery |
+| `writing-skills` | Meta | Deploying untested process documentation |
+| `using-groundwork` | Meta | Using skills in isolation instead of as a connected pipeline |
+
+## Install
 
 ```bash
 groundwork init
 ```
 
-`groundwork init` will:
-1. Read Groundwork's curated manifest.
-2. Auto-install `sk` if needed (npm-first, `npx` fallback).
-3. Update your `agents.toml` with Groundwork-managed dependencies.
-4. Run `sk sync`.
-5. Report what it installed and from where.
+This reads the curated manifest, fetches skills from their upstream sources via [`sk`](https://github.com/nickarora/sk), populates `agents.toml`, and syncs skills into your agent's skill directory.
 
-Re-run safely anytime:
+Prerequisites: Node.js (for `sk`). Optional: `gh-issue-sync` (auto-installed if `curl` or `go` is available).
+
+### Other commands
 
 ```bash
-groundwork update
+groundwork update    # Re-sync to latest manifest
+groundwork list      # Show installed skills and versions
+groundwork doctor    # Check prerequisites and configuration
 ```
 
-`groundwork update` converges Groundwork-managed dependencies to the current manifest,
-including pruning obsolete `groundwork_*` entries that are no longer curated.
+## Project Layout
 
-Preview changes without writing:
+```
+skills/                     # Groundwork skills
+  foundation/               #   ground, research
+  specification/            #   bdd
+  decomposition/            #   issue-craft, next-issue, plan
+  completion/               #   land
+  verification/             #   documentation
+  using-groundwork/         #   methodology orientation
 
-```bash
-groundwork init --dry-run
-groundwork update --dry-run
+manifests/
+  curation.v1.toml          # Curated upstream skills with pinned refs
+
+crates/
+  groundwork-cli/           # Rust installer (groundwork init/update/list/doctor)
+
+docs/
+  architecture/             # Pipeline contract, integration rules
+  research/                 # Ecosystem analysis, design rationale
+
+WORKFLOW.md                 # Integration manual — the authoritative reference
+agents.toml                 # Skill system configuration (sk-compatible)
 ```
 
-## Local Issue Mirroring
+## Design Principles
 
-Groundwork integrates with [gh-issue-sync](https://github.com/mitsuhiko/gh-issue-sync)
-for local issue mirroring. Issues are synced to a gitignored `.issues/` directory —
-GitHub remains the source of truth; the local copy is a working surface.
+**One pipeline, not a menu.** Skills are not independently selectable utilities. They form a single path with handoff contracts between stages. Skipping a stage means the next stage receives malformed input.
 
-### Setup
+**BDD threads everything.** Behavior contracts defined in stage 2 thread through planning, execution, verification, and closure. Completion evidence is behavior-level, not "tests pass."
 
-Install gh-issue-sync ([installation options](https://github.com/mitsuhiko/gh-issue-sync#installation)),
-then run `groundwork init`. The CLI will detect the tool and initialize `.issues/` automatically.
+**Issues are working memory.** Agent sessions end. Context windows close. The issue graph survives. Work from the graph, not from memory.
 
-Or initialize manually:
+**Ground re-fires.** `ground` is not step-one-once. Any new generative work — a design, a spec, an architecture — requires re-grounding. The trigger is creation, not sequence position.
 
-    gh-issue-sync init
-    gh-issue-sync pull
-
-### How it works
-
-Groundwork skills handle sync at the right moments:
-- `planning` pulls fresh issues at session-open, pushes state updates at session-close
-- `issue-craft` pushes after creating or closing issues
-- `land` pulls after closing to update the local mirror
-
-For manual sync: `gh-issue-sync pull`, `gh-issue-sync push`, or `gh-issue-sync sync` (bidirectional).
-
-## CLI Behavior Notes
-
-- `groundwork init` / `groundwork update` reconcile Groundwork-managed dependencies in `agents.toml`.
-- Groundwork originals are managed as per-skill aliases (`groundwork_original_*`) that point to pinned GitHub paths.
-- `groundwork update` prunes obsolete managed aliases (`groundwork_*`) that are no longer present in the current curation manifest.
-- `groundwork list` reports from `.groundwork/installed.lock.toml`.
-- The curation manifest is embedded in the CLI binary at build time; commands do not require `manifests/curation.v1.toml` in the target project directory.
-
-## Build the CLI Locally
-
-```bash
-cargo run -p groundwork-cli -- init
-cargo run -p groundwork-cli -- update
-cargo run -p groundwork-cli -- list
-cargo run -p groundwork-cli -- doctor
-```
-
-## Key Documents
-
-- [WORKFLOW.md](WORKFLOW.md) - integrated alpha-to-omega workflow guide
-- [docs/architecture/pipeline-contract.md](docs/architecture/pipeline-contract.md) - canonical pipeline and handoff contract
-- [CURATED.md](CURATED.md) - curated skill selection and failure modes
-- [ATTRIBUTION.md](ATTRIBUTION.md) - source, author, license, and pinning details
-- [`manifests/curation.v1.toml`](manifests/curation.v1.toml) - installer source-of-truth
-
-## Original Skills in This Repo
-
-- `skills/using-groundwork`
-- `skills/foundation/ground`
-- `skills/foundation/research`
-- `skills/specification/bdd`
-- `skills/decomposition/planning`
-- `skills/decomposition/issue-craft`
-- `skills/completion/land`
+**Sovereignty.** Each boundary has an owner. Skills don't override agent judgment. Agents don't override human intent. The principle is fractal — it applies at every interface, not just the human-agent boundary.
 
 ## License
 
-MIT.
+[MIT](LICENSE)

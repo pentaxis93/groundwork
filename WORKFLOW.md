@@ -20,9 +20,9 @@ Invoke `bdd` to define the behavior contract in Given/When/Then scenarios. Each 
 
 ### 3. Decompose into executable work
 
-Use `next-issue` to select session-sized work from the issue graph. It reads unblocked issues, ranks by value and unblock leverage, and declares a session goal with a binary done condition and explicit scope gate.
-
 Use `issue-craft` to create, decompose, refine, and close issues. It produces agent-executable issues with binary acceptance criteria, explicit dependencies, and bounded scope. For epics with 4+ tasks, it builds dependency graphs with execution layers.
+
+Use `next-issue` to select session-sized work from the issue graph. It reads unblocked issues, ranks by value and unblock leverage, and declares a session goal with a binary done condition and explicit scope gate.
 
 Use `brainstorming` before designing a solution or making a significant architectural choice. It explores 2-3 approaches with trade-offs and produces an approved design document.
 
@@ -151,8 +151,8 @@ Issues are mirrored locally via `gh-issue-sync`. The `.issues/` directory is git
 | `ground` | before creating designs/specs/architectures/processes |
 | `research` | when reliable external evidence is needed for decisions |
 | `bdd` | when defining or refining behavior expectations |
-| `next-issue` | selecting session-sized work from issue graph, or when a task feels too big to hold in one session |
 | `issue-craft` | creating/refining task/epic/bug/spike issues |
+| `next-issue` | selecting session-sized work from issue graph, or when a task feels too big to hold in one session |
 | `brainstorming` | before designing a solution or making a significant architectural choice |
 | `plan` | implementation needs design convergence — multiple approaches, unclear scope, or cross-cutting changes |
 | `writing-plans` | when you have a decision-complete design and need a structured implementation plan before touching code |

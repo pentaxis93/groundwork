@@ -186,6 +186,11 @@ When encountering existing documentation (e.g., onboarding to a project):
   drift compounds. Documentation review is part of completion, not a separate
   phase. If velocity makes full review impractical, reduce documentation scope
   to what can be maintained — less accurate docs beat more stale ones.
+- `sequence-without-dependency`: workflows or skills presented in an order
+  that assumes outputs exist before the step that creates them. Selection
+  listed before creation, verification before the thing it verifies. When
+  documenting a sequence of workflows, the presentation order must respect
+  the dependency graph — outputs of one step are inputs to the next.
 
 ## Principles
 
