@@ -116,7 +116,7 @@ agents.toml                 # Skill system configuration (sk-compatible)
 
 **Ground re-fires.** `ground` is not step-one-once. Any new generative work — a design, a spec, an architecture — requires re-grounding. The trigger is creation, not sequence position.
 
-**Sovereignty.** Humans own WHAT. Agents own HOW.
+**Sovereignty.** Each boundary has an owner. Skills don't override agent judgment. Agents don't override human intent. The principle is fractal — it applies at every interface, not just the human-agent boundary.
 
 ## License
 
