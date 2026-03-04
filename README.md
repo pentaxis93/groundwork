@@ -85,4 +85,4 @@ cargo run -p groundwork-cli -- doctor
 
 ## License
 
-Apache-2.0.
+MIT.
