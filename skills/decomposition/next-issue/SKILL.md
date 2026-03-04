@@ -1,6 +1,6 @@
 ---
-name: planning
-description: Session planning discipline for issue-tracker-first execution. Use for selecting next work, declaring a concrete session goal, and closing with explicit state updates.
+name: next-issue
+description: Session work-selection discipline for issue-tracker-first execution. Use for selecting next work, declaring a concrete session goal, and closing with explicit state updates.
 ---
 
 # Planning

@@ -12,11 +12,12 @@ const AGENTS_TOML: &str = "agents.toml";
 const LOCK_PATH: &str = ".groundwork/installed.lock.toml";
 const ORIGINALS_REPO: &str = "pentaxis93/groundwork";
 const CURATION_MANIFEST_TOML: &str = include_str!("../../../manifests/curation.v1.toml");
-const ORIGINAL_SKILLS: [(&str, &str); 7] = [
+const ORIGINAL_SKILLS: [(&str, &str); 8] = [
     ("ground", "skills/foundation/ground"),
     ("research", "skills/foundation/research"),
     ("bdd", "skills/specification/bdd"),
-    ("planning", "skills/decomposition/planning"),
+    ("next-issue", "skills/decomposition/next-issue"),
+    ("plan", "skills/decomposition/plan"),
     ("issue-craft", "skills/decomposition/issue-craft"),
     ("land", "skills/completion/land"),
     ("using-groundwork", "skills/using-groundwork"),
@@ -983,7 +984,8 @@ external_dep = { gh = "org/repo", path = "y" }
         assert!(deps.contains_key("ground"));
         assert!(deps.contains_key("research"));
         assert!(deps.contains_key("bdd"));
-        assert!(deps.contains_key("planning"));
+        assert!(deps.contains_key("next_issue"));
+        assert!(deps.contains_key("plan"));
         assert!(deps.contains_key("issue_craft"));
         assert!(deps.contains_key("land"));
         assert!(deps.contains_key("using_groundwork"));

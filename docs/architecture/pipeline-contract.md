@@ -7,7 +7,7 @@ This file defines the canonical integration contract for Groundwork's methodolog
 Groundwork has one coherent path:
 1. `ground` frames constraints.
 2. `bdd` defines and maintains behavior contract.
-3. `planning` + `issue-craft` decompose executable work.
+3. `next-issue` + `issue-craft` decompose executable work; `plan` converges the implementation design.
 4. Curated middle skills implement and verify the same behavior contract.
 5. `land` closes work with behavior coverage visibility.
 
