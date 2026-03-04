@@ -19,6 +19,15 @@ Groundwork is one connected methodology, not a skill collection. Every skill clo
 
 `ground` fires first — establishing what the work must enable. Local issues (`.issues/`) mirror the forge — `gh-issue-sync pull` before reading, `push` after writing. From grounded constraints, `bdd` defines the behavior contract — executable expectations threading through every step. `planning` and `issue-craft` decompose that contracted behavior into session-sized, agent-executable work. `writing-plans` translates behavior into implementation steps. `test-driven-development` implements them through RED-GREEN-REFACTOR — each RED test maps to a named behavior scenario. `subagent-driven-development` parallelizes independent tasks when the plan supports it. `verification-before-completion` demands behavior-level evidence before any completion claim. `land` closes the loop: merge, cleanup, and behavior coverage record.
 
+## Why Issues Are Central
+
+Agent sessions are bounded — context windows end, sessions close, agents
+rotate. Issues are the persistence layer that survives those boundaries. The
+issue graph is the project's working memory: it holds what remains to be done,
+what blocks what, and what state each piece of work is in. Working from the
+issue graph instead of from memory is what makes multi-session progress
+reliable. See WORKFLOW.md § Issue-Based Development for operational definitions.
+
 ## Cross-Cutting Disciplines
 
 **Ground re-fires.** `ground` is not step-one-once. New generative work mid-session requires re-grounding. The trigger is creation, not sequence position.
@@ -34,7 +43,8 @@ Groundwork is one connected methodology, not a skill collection. Every skill clo
 - About to design, spec, or architect? → `ground`
 - Outcomes unclear or behavior undefined? → `bdd`
 - Need reliable external evidence? → `research`
-- Work too broad for one session? → `planning` + `issue-craft`
+- Selecting next work from the issue graph? → `planning`
+- Creating, decomposing, or refining issues? → `issue-craft`
 - Ready to translate spec into steps? → `writing-plans`
 - Implementing behavior? → `test-driven-development`
 - Multiple independent tasks to parallelize? → `subagent-driven-development`
@@ -55,4 +65,7 @@ This skill teaches the map; agent judgment navigates it. The behavior contract m
 - Forgetting `ground` re-fires on new generative work mid-session
 - Using individual skills by keyword match without methodology context
 - Claiming completion with command output but no behavior-level evidence
+- Working from memory or context instead of reading the issue graph
+- Treating issues as documentation artifacts rather than the project's working memory
+- Starting work without checking issue state and dependencies
 

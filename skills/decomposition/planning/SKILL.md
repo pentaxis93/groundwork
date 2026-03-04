@@ -8,6 +8,9 @@ description: Session planning discipline for issue-tracker-first execution. Use 
 Plan from the issue graph, not from memory. The goal is always a single,
 verifiable increment that can be completed in one focused session.
 
+Key terms — *issue graph*, *unblocked*, *execution layer*, *session-sized* —
+are defined in WORKFLOW.md § Issue-Based Development.
+
 For issue decomposition and boundary contracts, use `issue-craft`.
 For first-principles design decisions, use `ground`.
 
@@ -34,7 +37,8 @@ increment, and leave the next session a truthful handoff.
 ### session-open
 0. Sync local issues: `gh-issue-sync pull`.
 1. Read operator request and relevant issue thread(s).
-2. Identify all ready (unblocked) candidate issues.
+2. Identify all ready (unblocked) candidate issues — an issue is ready when
+   its body is agent-executable and every hard dependency is closed.
 3. Apply force filters first: direct operator request or hard deadline.
 4. Rank top candidates by:
 - value
@@ -47,7 +51,7 @@ increment, and leave the next session a truthful handoff.
 ### choose-next-issue
 Decision stack (<=3 minutes):
 1. Force filter: operator request or deadline cliff wins immediately.
-2. Shortlist 3-5 unblocked issues.
+2. Shortlist 3-5 unblocked issues from the lowest available execution layer.
 3. Score with WSJF-lite:
 `(Value + TimeCriticality + UnblockLeverage) / Effort`
 4. Prefer the highest score that can be completed this session.
@@ -62,10 +66,10 @@ Write:
 ### session-close
 1. Reach stable checkpoint (done increment or explicit WIP note).
 2. Update issue state and leave a concise progress comment.
-2a. Sync changes to remote: `gh-issue-sync push`.
 3. Record decisions, blockers, and the exact next step.
 4. Ensure any follow-up work is represented as issue(s).
-5. Sync workspace and close.
+5. Sync all changes to remote: `gh-issue-sync push`.
+6. Sync workspace and close.
 
 ## Corruption Modes
 - `recency-drift`: picking last-touched work instead of highest leverage.
@@ -74,6 +78,8 @@ Write:
 - `blocker-bypass`: beginning blocked work anyway.
 - `state-lag`: issue tracker not reflecting real implementation state.
 - `open-loop-close`: ending session without a concrete next step.
+- `undefined-state`: using terms like "unblocked" or "session-sized" without
+  operational definitions — see WORKFLOW.md § Issue-Based Development.
 
 ## Principles
 - `clarity-over-volume`: fewer, sharper goals beat broad, vague activity.
