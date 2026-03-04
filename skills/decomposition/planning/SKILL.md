@@ -66,9 +66,9 @@ Write:
 ### session-close
 1. Reach stable checkpoint (done increment or explicit WIP note).
 2. Update issue state and leave a concise progress comment.
-3. Sync changes to remote: `gh-issue-sync push`.
-4. Record decisions, blockers, and the exact next step.
-5. Ensure any follow-up work is represented as issue(s).
+3. Record decisions, blockers, and the exact next step.
+4. Ensure any follow-up work is represented as issue(s).
+5. Sync all changes to remote: `gh-issue-sync push`.
 6. Sync workspace and close.
 
 ## Corruption Modes
