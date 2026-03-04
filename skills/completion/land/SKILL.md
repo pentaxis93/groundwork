@@ -113,6 +113,12 @@ curl -sf -X PATCH \
   "https://weforge.build/api/v1/repos/${OWNER}/${REPO}/issues/${ISSUE_NUMBER}" >/dev/null
 ```
 
+### 5a. Sync issue state to local mirror
+
+```bash
+gh-issue-sync pull
+```
+
 ### 6. Verify and report
 
 ```bash

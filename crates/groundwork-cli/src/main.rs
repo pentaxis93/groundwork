@@ -210,6 +210,8 @@ fn run_install_in_directory(
     let sk_runner = ensure_sk_available()?;
     sk_runner.sync()?;
 
+    bootstrap_issue_sync(base_path);
+
     let sk_version = sk_runner
         .version()
         .unwrap_or_else(|_| "unknown".to_string());
@@ -302,6 +304,16 @@ fn run_doctor() -> Result<()> {
             );
         }
         println!("ok: bootstrap prerequisites satisfied");
+    }
+
+    if command_exists("gh-issue-sync") {
+        let ver = run_command_capture(&["gh-issue-sync", "--version"])
+            .unwrap_or_else(|_| "unknown".into());
+        println!("ok: gh-issue-sync available ({})", ver.trim());
+    } else {
+        println!(
+            "warn: gh-issue-sync not found (install from https://github.com/mitsuhiko/gh-issue-sync)"
+        );
     }
 
     println!(
@@ -644,6 +656,50 @@ impl SkRunner {
         match self.mode {
             SkMode::Binary => "sk",
             SkMode::Npx => "npx @skills-supply/sk",
+        }
+    }
+}
+
+fn bootstrap_issue_sync(base_path: &Path) {
+    if !command_exists("gh-issue-sync") {
+        println!(
+            "note: install gh-issue-sync for local issue mirroring (https://github.com/mitsuhiko/gh-issue-sync)"
+        );
+        return;
+    }
+
+    let issues_dir = base_path.join(".issues");
+    if issues_dir.exists() {
+        return;
+    }
+
+    let init_status = Command::new("gh-issue-sync")
+        .arg("init")
+        .current_dir(base_path)
+        .stdout(Stdio::null())
+        .stderr(Stdio::inherit())
+        .status();
+
+    if !init_status.map(|s| s.success()).unwrap_or(false) {
+        println!("warn: gh-issue-sync init failed");
+        return;
+    }
+
+    let pull_output = Command::new("gh-issue-sync")
+        .arg("pull")
+        .current_dir(base_path)
+        .output();
+
+    match pull_output {
+        Ok(output) if output.status.success() => {
+            let count = issues_dir
+                .read_dir()
+                .map(|entries| entries.filter_map(|e| e.ok()).count())
+                .unwrap_or(0);
+            println!("ok: synced {} issues to .issues/", count);
+        }
+        _ => {
+            println!("warn: gh-issue-sync pull failed");
         }
     }
 }

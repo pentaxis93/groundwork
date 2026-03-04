@@ -32,6 +32,7 @@ increment, and leave the next session a truthful handoff.
 ## Procedures
 
 ### session-open
+0. Sync local issues: `gh-issue-sync pull`.
 1. Read operator request and relevant issue thread(s).
 2. Identify all ready (unblocked) candidate issues.
 3. Apply force filters first: direct operator request or hard deadline.
@@ -61,6 +62,7 @@ Write:
 ### session-close
 1. Reach stable checkpoint (done increment or explicit WIP note).
 2. Update issue state and leave a concise progress comment.
+2a. Sync changes to remote: `gh-issue-sync push`.
 3. Record decisions, blockers, and the exact next step.
 4. Ensure any follow-up work is represented as issue(s).
 5. Sync workspace and close.

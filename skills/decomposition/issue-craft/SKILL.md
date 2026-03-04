@@ -52,6 +52,7 @@ without clarification.
 8. Run deterministic lint:
 `python scripts/issue_lint.py --type <task|epic|bug|spike> <issue.md>`.
 9. Assemble using template from `references/templates.md`.
+10. Push to remote: `gh-issue-sync push`.
 
 ### decompose-epic
 1. Extract deliverables (artifacts that must exist when done).
@@ -96,6 +97,7 @@ Prefer strict mode when type is known:
 `python scripts/issue_lint.py --type <task|epic|bug|spike> <issue.md>`.
 
 ### triage-issues
+0. Sync local issues: `gh-issue-sync pull`.
 1. Refine non-ready issues first.
 2. Build dependency graph for backlog.
 3. Create topological execution layers.
@@ -108,6 +110,7 @@ Prefer strict mode when type is known:
 2. Check scope deviations and split unintended extra work.
 3. Update parent epic/task checklist.
 4. Close with commit/PR reference (`Closes #N`).
+5. Sync closure to remote: `gh-issue-sync push`.
 
 ## Triggers
 - creating issues

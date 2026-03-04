@@ -48,6 +48,31 @@ groundwork init --dry-run
 groundwork update --dry-run
 ```
 
+## Local Issue Mirroring
+
+Groundwork integrates with [gh-issue-sync](https://github.com/mitsuhiko/gh-issue-sync)
+for local issue mirroring. Issues are synced to a gitignored `.issues/` directory —
+GitHub remains the source of truth; the local copy is a working surface.
+
+### Setup
+
+Install gh-issue-sync ([installation options](https://github.com/mitsuhiko/gh-issue-sync#installation)),
+then run `groundwork init`. The CLI will detect the tool and initialize `.issues/` automatically.
+
+Or initialize manually:
+
+    gh-issue-sync init
+    gh-issue-sync pull
+
+### How it works
+
+Groundwork skills handle sync at the right moments:
+- `planning` pulls fresh issues at session-open, pushes state updates at session-close
+- `issue-craft` pushes after creating or closing issues
+- `land` pulls after closing to update the local mirror
+
+For manual sync: `gh-issue-sync pull`, `gh-issue-sync push`, or `gh-issue-sync sync` (bidirectional).
+
 ## CLI Behavior Notes
 
 - `groundwork init` / `groundwork update` reconcile Groundwork-managed dependencies in `agents.toml`.

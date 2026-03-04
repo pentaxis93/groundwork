@@ -17,7 +17,7 @@ Groundwork is one connected methodology, not a skill collection. Every skill clo
 
 ## The Flow
 
-`ground` fires first — establishing what the work must enable. From grounded constraints, `bdd` defines the behavior contract — executable expectations threading through every step. `planning` and `issue-craft` decompose that contracted behavior into session-sized, agent-executable work. `writing-plans` translates behavior into implementation steps. `test-driven-development` implements them through RED-GREEN-REFACTOR — each RED test maps to a named behavior scenario. `subagent-driven-development` parallelizes independent tasks when the plan supports it. `verification-before-completion` demands behavior-level evidence before any completion claim. `land` closes the loop: merge, cleanup, and behavior coverage record.
+`ground` fires first — establishing what the work must enable. Local issues (`.issues/`) mirror the forge — `gh-issue-sync pull` before reading, `push` after writing. From grounded constraints, `bdd` defines the behavior contract — executable expectations threading through every step. `planning` and `issue-craft` decompose that contracted behavior into session-sized, agent-executable work. `writing-plans` translates behavior into implementation steps. `test-driven-development` implements them through RED-GREEN-REFACTOR — each RED test maps to a named behavior scenario. `subagent-driven-development` parallelizes independent tasks when the plan supports it. `verification-before-completion` demands behavior-level evidence before any completion claim. `land` closes the loop: merge, cleanup, and behavior coverage record.
 
 ## Cross-Cutting Disciplines
 

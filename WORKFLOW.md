@@ -113,6 +113,12 @@ Prevents:
 - ambiguous issue descriptions requiring clarifications mid-execution
 - non-verifiable "done" statements
 
+### Local Issue Mirroring
+
+Issues are mirrored locally via `gh-issue-sync`. The `.issues/` directory is
+gitignored — it is a working surface, not a second source of truth. Skills
+sync at natural boundaries: pull before reading, push after writing.
+
 ## 4. Execution + Verification (upstream)
 
 Groundwork v0.1 includes these upstream Superpowers skills:
