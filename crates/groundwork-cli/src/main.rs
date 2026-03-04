@@ -141,14 +141,14 @@ struct LockEntry {
     pinned_ref: Option<String>,
 }
 
-#[derive(Clone, Copy, Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "kebab-case")]
 enum SkMode {
     Binary,
     Npx,
 }
 
-#[derive(Clone, Copy, Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "kebab-case")]
 enum IssueSyncMode {
     Binary,
@@ -1108,6 +1108,29 @@ unrelated = { gh = "org/repo", path = "y" }
         let is = parsed.issue_sync.expect("issue_sync present");
         assert_eq!(is.mode, IssueSyncMode::Binary);
         assert_eq!(is.version, "0.3.0");
+    }
+
+    #[test]
+    fn lock_round_trips_go_install_mode() {
+        let lock = InstallLock {
+            version: 1,
+            installer_version: "0.1.0".to_string(),
+            installed_at: "2026-01-01T00:00:00Z".to_string(),
+            sk: LockSk {
+                mode: SkMode::Npx,
+                version: "1.0.0".to_string(),
+            },
+            issue_sync: Some(LockIssueSync {
+                mode: IssueSyncMode::GoInstall,
+                version: "0.5.0".to_string(),
+            }),
+            entries: vec![],
+        };
+
+        let toml_str = toml::to_string_pretty(&lock).expect("serialize");
+        assert!(toml_str.contains("mode = \"go-install\""));
+        let parsed: InstallLock = toml::from_str(&toml_str).expect("deserialize");
+        assert_eq!(parsed.issue_sync.unwrap().mode, IssueSyncMode::GoInstall);
     }
 
     #[test]
