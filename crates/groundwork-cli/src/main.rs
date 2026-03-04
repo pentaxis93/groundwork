@@ -11,7 +11,6 @@ use toml_edit::{value, DocumentMut, InlineTable, Item, Table, Value};
 const AGENTS_TOML: &str = "agents.toml";
 const LOCK_PATH: &str = ".groundwork/installed.lock.toml";
 const ORIGINALS_REPO: &str = "pentaxis93/groundwork";
-const MANAGED_PREFIX: &str = "groundwork_";
 const CURATION_MANIFEST_TOML: &str = include_str!("../../../manifests/curation.v1.toml");
 const ORIGINAL_SKILLS: [(&str, &str); 7] = [
     ("ground", "skills/foundation/ground"),
@@ -184,7 +183,8 @@ fn run_install_in_directory(
     ensure_agents_table(&mut doc);
     ensure_dependencies_table(&mut doc);
 
-    let reconcile = reconcile_manifest_to_doc(&mut doc, &managed_specs)?;
+    let previously_managed = read_previous_managed_aliases(base_path);
+    let reconcile = reconcile_manifest_to_doc(&mut doc, &managed_specs, &previously_managed)?;
 
     let result = InstallResult {
         upserted: reconcile.upserted,
@@ -418,7 +418,7 @@ fn build_managed_specs(manifest: &CurationManifest) -> Vec<ManagedDependencySpec
 
     for (skill_name, dependency_path) in ORIGINAL_SKILLS {
         specs.push(ManagedDependencySpec {
-            alias: managed_alias("original", skill_name),
+            alias: managed_alias(skill_name),
             origin: "original".to_string(),
             source_key: "gh".to_string(),
             repo: ORIGINALS_REPO.to_string(),
@@ -430,7 +430,7 @@ fn build_managed_specs(manifest: &CurationManifest) -> Vec<ManagedDependencySpec
 
     for source in &manifest.curated_sources {
         for skill in &source.skills {
-            let alias = managed_alias(&source.id, &skill.name);
+            let alias = managed_alias(&skill.name);
             let dependency_path = resolve_curated_path(source.path.as_deref(), &skill.path);
             let pin = source
                 .rev
@@ -471,6 +471,7 @@ fn resolve_curated_path(source_root: Option<&str>, skill_path: &str) -> String {
 fn reconcile_manifest_to_doc(
     doc: &mut DocumentMut,
     specs: &[ManagedDependencySpec],
+    previously_managed: &HashSet<String>,
 ) -> Result<ReconcileResult> {
     ensure_dependencies_table(doc);
 
@@ -479,7 +480,7 @@ fn reconcile_manifest_to_doc(
         .as_table_mut()
         .ok_or_else(|| anyhow!("dependencies table missing after ensure"))?;
 
-    let pruned = prune_stale_managed_dependencies(deps, &desired_aliases);
+    let pruned = prune_stale_managed_dependencies(deps, &desired_aliases, previously_managed);
 
     let mut upserted = 0;
     for spec in specs {
@@ -509,11 +510,26 @@ fn reconcile_manifest_to_doc(
     })
 }
 
-fn prune_stale_managed_dependencies(deps: &mut Table, desired_aliases: &HashSet<String>) -> usize {
+fn read_previous_managed_aliases(base_path: &Path) -> HashSet<String> {
+    let lock_path = base_path.join(LOCK_PATH);
+    let Ok(text) = fs::read_to_string(&lock_path) else {
+        return HashSet::new();
+    };
+    let Ok(lock) = toml::from_str::<InstallLock>(&text) else {
+        return HashSet::new();
+    };
+    lock.entries.iter().map(|e| e.alias.clone()).collect()
+}
+
+fn prune_stale_managed_dependencies(
+    deps: &mut Table,
+    desired_aliases: &HashSet<String>,
+    previously_managed: &HashSet<String>,
+) -> usize {
     let to_remove: Vec<String> = deps
         .iter()
         .filter_map(|(k, _)| {
-            if k.starts_with(MANAGED_PREFIX) && !desired_aliases.contains(k) {
+            if previously_managed.contains(k) && !desired_aliases.contains(k) {
                 Some(k.to_string())
             } else {
                 None
@@ -549,10 +565,8 @@ fn upsert_dependency(deps: &mut Table, spec: &ManagedDependencySpec) -> bool {
     changed
 }
 
-fn managed_alias(source_id: &str, skill_name: &str) -> String {
-    let src = source_id.replace('-', "_");
-    let skill = skill_name.replace('-', "_");
-    format!("groundwork_{}_{}", src, skill)
+fn managed_alias(skill_name: &str) -> String {
+    skill_name.replace('-', "_")
 }
 
 fn ensure_sk_available() -> Result<SkRunner> {
@@ -754,33 +768,37 @@ mod tests {
     }
 
     #[test]
-    fn update_prunes_stale_groundwork_aliases_and_preserves_external() {
+    fn update_prunes_stale_aliases_and_preserves_external() {
         let mut doc = parse_doc(
             r#"[agents]
 claude-code = true
 
 [dependencies]
-groundwork_obsolete = { gh = "foo/bar", path = "x" }
-groundwork_originals = { gh = "pentaxis93/groundwork", path = "skills" }
+old_bdd = { gh = "pentaxis93/groundwork", path = "skills/specification/bdd" }
+old_ground = { gh = "pentaxis93/groundwork", path = "skills/foundation/ground" }
 external_dep = { gh = "org/repo", path = "y" }
 "#,
         );
 
+        let previously_managed: HashSet<String> =
+            ["old_bdd", "old_ground"].iter().map(|s| s.to_string()).collect();
+
         let specs = build_managed_specs(&test_manifest());
-        let result = reconcile_manifest_to_doc(&mut doc, &specs).expect("reconcile ok");
+        let result =
+            reconcile_manifest_to_doc(&mut doc, &specs, &previously_managed).expect("reconcile ok");
 
         let deps = doc["dependencies"].as_table().expect("deps table");
-        assert!(!deps.contains_key("groundwork_obsolete"));
-        assert!(!deps.contains_key("groundwork_originals"));
+        assert!(!deps.contains_key("old_bdd"));
+        assert!(!deps.contains_key("old_ground"));
         assert!(deps.contains_key("external_dep"));
-        assert!(deps.contains_key("groundwork_original_ground"));
-        assert!(deps.contains_key("groundwork_original_research"));
-        assert!(deps.contains_key("groundwork_original_bdd"));
-        assert!(deps.contains_key("groundwork_original_planning"));
-        assert!(deps.contains_key("groundwork_original_issue_craft"));
-        assert!(deps.contains_key("groundwork_original_land"));
-        assert!(deps.contains_key("groundwork_original_using_groundwork"));
-        assert!(deps.contains_key("groundwork_superpowers_test_driven_development"));
+        assert!(deps.contains_key("ground"));
+        assert!(deps.contains_key("research"));
+        assert!(deps.contains_key("bdd"));
+        assert!(deps.contains_key("planning"));
+        assert!(deps.contains_key("issue_craft"));
+        assert!(deps.contains_key("land"));
+        assert!(deps.contains_key("using_groundwork"));
+        assert!(deps.contains_key("test_driven_development"));
         assert_eq!(result.pruned, 2);
     }
 
@@ -795,9 +813,11 @@ claude-code = true
         );
 
         let specs = build_managed_specs(&test_manifest());
-        let result = reconcile_manifest_to_doc(&mut doc, &specs).expect("reconcile ok");
+        let previously_managed = HashSet::new();
+        let result =
+            reconcile_manifest_to_doc(&mut doc, &specs, &previously_managed).expect("reconcile ok");
 
-        let alias = "groundwork_superpowers_test_driven_development";
+        let alias = "test_driven_development";
         let deps_str = doc.to_string();
         assert!(deps_str.contains("path = \"bundle/skills/test-driven-development\""));
 
@@ -824,11 +844,16 @@ claude-code = true
         );
 
         let specs = build_managed_specs(&test_manifest());
+        let empty: HashSet<String> = HashSet::new();
 
-        let first = reconcile_manifest_to_doc(&mut doc, &specs).expect("first reconcile ok");
+        let first =
+            reconcile_manifest_to_doc(&mut doc, &specs, &empty).expect("first reconcile ok");
         assert!(first.upserted > 0);
 
-        let second = reconcile_manifest_to_doc(&mut doc, &specs).expect("second reconcile ok");
+        let after_first: HashSet<String> =
+            first.lock_entries.iter().map(|e| e.alias.clone()).collect();
+        let second =
+            reconcile_manifest_to_doc(&mut doc, &specs, &after_first).expect("second reconcile ok");
         assert_eq!(second.upserted, 0);
         assert_eq!(second.pruned, 0);
     }
@@ -854,5 +879,29 @@ claude-code = true
         assert_eq!(before, after);
         assert!(result.upserted > 0);
         assert!(!base.join(LOCK_PATH).exists());
+    }
+
+    #[test]
+    fn prune_only_removes_previously_managed_aliases() {
+        let mut doc = parse_doc(
+            r#"[agents]
+claude-code = true
+
+[dependencies]
+old_skill = { gh = "foo/bar", path = "x" }
+unrelated = { gh = "org/repo", path = "y" }
+"#,
+        );
+
+        let previously_managed: HashSet<String> =
+            ["old_skill"].iter().map(|s| s.to_string()).collect();
+        let desired: HashSet<String> = ["bdd"].iter().map(|s| s.to_string()).collect();
+
+        let deps = doc["dependencies"].as_table_mut().expect("deps table");
+        let pruned = prune_stale_managed_dependencies(deps, &desired, &previously_managed);
+
+        assert_eq!(pruned, 1);
+        assert!(!deps.contains_key("old_skill"));
+        assert!(deps.contains_key("unrelated"));
     }
 }
