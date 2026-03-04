@@ -45,12 +45,36 @@ Requirement:
 Fail condition:
 - merged work with no behavior coverage summary.
 
+## `documentation -> issue-craft`
+Requirement:
+- user-facing changes include documentation updates as explicit acceptance criteria.
+
+Fail condition:
+- issue for a user-facing change has no documentation criterion.
+
+## `documentation -> verification-before-completion`
+Requirement:
+- completion claims include documentation accuracy evidence from `documentation-review`.
+
+Fail condition:
+- work claimed complete without documentation review; drifted docs remain untracked.
+
+## `documentation -> land`
+Requirement:
+- landing records documentation coverage status: which docs were updated, which were verified accurate, which were flagged with tracking issues.
+
+Fail condition:
+- user-visible change landed without CHANGELOG entry or documentation coverage statement.
+
 ## Anti-Divergence Rules
 
 1. Do not document BDD as specification-only.
 2. Do not present BDD and TDD as user-selectable alternatives.
 3. Do not accept completion evidence that lacks behavior mapping.
 4. Do not allow plan decomposition to lose behavior traceability.
+5. Do not accept completion evidence that lacks documentation review.
+6. Do not land user-visible changes without a CHANGELOG entry.
+7. Do not treat stale documentation as authoritative over code behavior.
 
 ## Quick Compliance Checklist
 
@@ -59,3 +83,6 @@ Fail condition:
 - [ ] Execution tests map to behavior statements.
 - [ ] Verification cites behavior-level evidence.
 - [ ] Completion records behavior coverage/gaps.
+- [ ] Documentation review completed before verification.
+- [ ] User-facing changes include CHANGELOG entry.
+- [ ] Documentation coverage status recorded at completion.

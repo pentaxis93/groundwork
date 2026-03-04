@@ -67,6 +67,25 @@ BDD is a cross-cutting integration mechanism, not a pipeline phase. It runs thro
 
 For fail conditions and anti-divergence rules, see [docs/architecture/pipeline-contract.md](docs/architecture/pipeline-contract.md).
 
+## Documentation Thread
+
+Documentation is a cross-cutting communication discipline, not a pipeline phase. It threads through every stage:
+
+- **Frame constraints**: `ground`'s Orient identifies who this serves and what it must enable — that output defines the documentation audience. Capture grounded constraints in ARCHITECTURE.md. Record significant decisions as ADRs.
+- **Define behavior**: behavior contracts from `bdd` are the authoritative source for API documentation. Public behaviors should be reflected in user-facing docs, not only test files.
+- **Decompose**: `issue-craft` requires `criteria-include-docs`. The `documentation` skill defines what that means: identify which artifacts need creation or update and include those as acceptance criteria.
+- **Execute**: inline documentation (doc comments, type annotations) is written alongside code during implementation. Doc comments are implementation work, not afterthought.
+- **Verify**: `documentation-review` fires before `verification-before-completion`. Documentation accuracy is completion evidence.
+- **Land**: CHANGELOG entry required for user-visible changes. Documentation coverage is recorded alongside behavior coverage.
+
+### Handoff Rules
+
+1. `documentation -> issue-craft`: user-facing changes include documentation updates as acceptance criteria.
+2. `documentation -> verification-before-completion`: completion claims include documentation accuracy evidence.
+3. `documentation -> land`: landing records documentation coverage status.
+
+For fail conditions and anti-divergence rules, see [docs/architecture/pipeline-contract.md](docs/architecture/pipeline-contract.md).
+
 ## Issue-Based Development
 
 The issue graph is the persistence layer across sessions. Agent sessions end, context windows close, agents rotate — the issue graph survives. Work from the graph, not from memory.
@@ -142,6 +161,7 @@ Issues are mirrored locally via `gh-issue-sync`. The `.issues/` directory is git
 | `systematic-debugging` | when a test fails or behavior is unexpected, before proposing any fix |
 | `requesting-code-review` | after implementation, before merging |
 | `receiving-code-review` | when receiving review feedback, before implementing suggestions |
+| `documentation` | after code changes that may cause drift, at project initialization, when architectural decisions are made, or when docs fail the audience test |
 | `verification-before-completion` | before claiming work is complete, fixed, or passing — evidence first |
 | `land` | merge-and-close completion events: `land`, `merge and close`, `ship it` |
 
