@@ -173,6 +173,15 @@ impl std::fmt::Display for IssueSyncMode {
     }
 }
 
+impl SkMode {
+    fn mode_name(&self) -> &'static str {
+        match self {
+            SkMode::Binary => "binary",
+            SkMode::Npx => "npx",
+        }
+    }
+}
+
 impl IssueSyncMode {
     fn mode_name(&self) -> &'static str {
         match self {
@@ -255,10 +264,7 @@ fn run_install_in_directory(
 
     let issue_sync_info = bootstrap_issue_sync(base_path);
 
-    let sk_version = sk_runner
-        .version()
-        .map(|v| v.lines().next().unwrap_or("unknown").to_string())
-        .unwrap_or_else(|_| "unknown".to_string());
+    let sk_version = first_line_version(sk_runner.version());
     write_lock(
         base_path,
         sk_runner.mode,
@@ -303,7 +309,7 @@ fn run_list() -> Result<()> {
     println!("Groundwork install lock");
     println!("- installer: {}", lock.installer_version);
     println!("- installed_at: {}", lock.installed_at);
-    println!("- sk: {} ({})", lock.sk.mode, lock.sk.version);
+    println!("- sk: {} ({})", lock.sk.mode.mode_name(), lock.sk.version);
     if let Some(ref is) = lock.issue_sync {
         println!("- gh-issue-sync: {} ({})", is.mode.mode_name(), is.version);
     } else {
@@ -345,8 +351,8 @@ fn run_doctor() -> Result<()> {
     }
 
     if command_exists("sk") {
-        let ver = run_command_capture(&["sk", "--version"]).unwrap_or_else(|_| "unknown".into());
-        println!("ok: sk available ({})", ver.trim());
+        let ver = first_line_version(run_command_capture(&["sk", "--version"]));
+        println!("ok: sk available ({})", ver);
     } else {
         let node = command_exists("node");
         let npm = command_exists("npm");
@@ -362,18 +368,15 @@ fn run_doctor() -> Result<()> {
     }
 
     if command_exists("gh") {
-        let ver =
-            run_command_capture(&["gh", "--version"]).unwrap_or_else(|_| "unknown".into());
-        let first_line = ver.lines().next().unwrap_or("unknown");
-        println!("ok: gh CLI available ({})", first_line.trim());
+        let ver = first_line_version(run_command_capture(&["gh", "--version"]));
+        println!("ok: gh CLI available ({})", ver);
     } else {
         println!("warn: gh CLI not found (prerequisite for gh-issue-sync)");
     }
 
     if command_exists("gh-issue-sync") {
-        let ver = run_command_capture(&["gh-issue-sync", "--version"])
-            .unwrap_or_else(|_| "unknown".into());
-        println!("ok: gh-issue-sync available ({})", ver.trim());
+        let ver = first_line_version(run_command_capture(&["gh-issue-sync", "--version"]));
+        println!("ok: gh-issue-sync available ({})", ver);
     } else {
         let (has_curl, has_go) = issue_sync_install_methods_available();
         println!("warn: gh-issue-sync not found");
@@ -788,9 +791,7 @@ fn ensure_issue_sync_available() -> Option<IssueSyncMode> {
 fn bootstrap_issue_sync(base_path: &Path) -> Option<(IssueSyncMode, String)> {
     let mode = ensure_issue_sync_available()?;
 
-    let version = run_command_capture(&["gh-issue-sync", "--version"])
-        .map(|v| v.lines().next().unwrap_or("unknown").to_string())
-        .unwrap_or_else(|_| "unknown".to_string());
+    let version = first_line_version(run_command_capture(&["gh-issue-sync", "--version"]));
 
     let issues_dir = base_path.join(".issues");
     if !issues_dir.exists() {
@@ -845,6 +846,12 @@ fn run_command_capture(args: &[&str]) -> Result<String> {
     }
 
     Ok(String::from_utf8_lossy(&output.stdout).trim().to_string())
+}
+
+fn first_line_version(result: Result<String>) -> String {
+    result
+        .map(|v| v.lines().next().unwrap_or("unknown").to_string())
+        .unwrap_or_else(|_| "unknown".to_string())
 }
 
 fn command_exists(name: &str) -> bool {
