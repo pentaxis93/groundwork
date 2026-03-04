@@ -23,9 +23,9 @@ There is one path, not a menu. Every piece of work flows through five stages:
 
 **2. Define behavior** — `bdd` defines the behavior contract in Given/When/Then scenarios. This contract threads through every subsequent stage — it is the integration mechanism, not a planning artifact.
 
-**3. Decompose** — `next-issue` selects session-sized work from the issue graph. `issue-craft` produces agent-executable issues with binary acceptance criteria. `plan` converges to a decision-complete implementation design. The issue graph is the project's working memory across sessions.
+**3. Decompose** — `issue-craft` produces agent-executable issues with binary acceptance criteria from the behavior contract. `next-issue` selects session-sized work from the issue graph. `plan` converges to a decision-complete implementation design. The issue graph is the project's working memory across sessions.
 
-**4. Execute and verify** — Curated skills from [Superpowers](https://github.com/obra/superpowers) handle the middle: `test-driven-development`, `systematic-debugging`, `subagent-driven-development`, `verification-before-completion`, and code review. Each RED test maps to a named behavior scenario from stage 2.
+**4. Execute and verify** — Curated skills from [Superpowers](https://github.com/obra/superpowers) handle the middle: `test-driven-development`, `subagent-driven-development`, `systematic-debugging`, `requesting-code-review`, `receiving-code-review`, and `verification-before-completion`. Each RED test maps to a named behavior scenario from stage 2.
 
 **5. Land** — `land` closes the loop: merge, push, delete branch, comment on issue, close issue. Closure records behavior coverage and remaining gaps. Do not stop after merge.
 
@@ -33,17 +33,17 @@ For the full integration manual, see [WORKFLOW.md](WORKFLOW.md). For formal hand
 
 ## Skills
 
-Groundwork ships 9 original skills and curates 9 from [Superpowers](https://github.com/obra/superpowers).
+Groundwork ships 9 skills and curates 9 from [Superpowers](https://github.com/obra/superpowers).
 
-### Original
+### Groundwork
 
 | Skill | Stage | What it prevents |
 |---|---|---|
 | `ground` | Foundation | Inherited framing, anchoring, premature assumptions |
 | `research` | Foundation | Unsubstantiated decisions, hallucinated facts |
 | `bdd` | Specification | Vague specs, testing implementation instead of behavior |
-| `next-issue` | Decomposition | Recency drift, scope creep, blocker bypass |
 | `issue-craft` | Decomposition | Non-executable tasks, vague acceptance criteria |
+| `next-issue` | Decomposition | Recency drift, scope creep, blocker bypass |
 | `plan` | Decomposition | Unclear scope, design choices left to implementer |
 | `documentation` | Verification | Drifted docs, missing artifact updates |
 | `land` | Completion | Branch rot, unclosed issues, incomplete delivery |
@@ -84,10 +84,10 @@ groundwork doctor    # Check prerequisites and configuration
 ## Project Layout
 
 ```
-skills/                     # Original Groundwork skills
+skills/                     # Groundwork skills
   foundation/               #   ground, research
   specification/            #   bdd
-  decomposition/            #   next-issue, issue-craft, plan
+  decomposition/            #   issue-craft, next-issue, plan
   completion/               #   land
   verification/             #   documentation
   using-groundwork/         #   methodology orientation
