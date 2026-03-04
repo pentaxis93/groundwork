@@ -120,13 +120,13 @@ struct InstallLock {
 
 #[derive(Debug, Serialize, Deserialize)]
 struct LockSk {
-    mode: String,
+    mode: SkMode,
     version: String,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
 struct LockIssueSync {
-    mode: String,
+    mode: IssueSyncMode,
     version: String,
 }
 
@@ -141,16 +141,45 @@ struct LockEntry {
     pinned_ref: Option<String>,
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "kebab-case")]
 enum SkMode {
     Binary,
     Npx,
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "kebab-case")]
 enum IssueSyncMode {
     Binary,
     GoInstall,
+}
+
+impl std::fmt::Display for SkMode {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            SkMode::Binary => write!(f, "binary"),
+            SkMode::Npx => write!(f, "npx"),
+        }
+    }
+}
+
+impl std::fmt::Display for IssueSyncMode {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            IssueSyncMode::Binary => write!(f, "binary"),
+            IssueSyncMode::GoInstall => write!(f, "go-install"),
+        }
+    }
+}
+
+impl IssueSyncMode {
+    fn mode_name(&self) -> &'static str {
+        match self {
+            IssueSyncMode::Binary => "binary",
+            IssueSyncMode::GoInstall => "go install",
+        }
+    }
 }
 
 #[derive(Debug)]
@@ -248,14 +277,7 @@ fn run_install_in_directory(
     );
     println!("Installed with {} ({})", sk_runner.mode_name(), sk_version);
     if let Some((mode, ref ver)) = issue_sync_info {
-        println!(
-            "Installed gh-issue-sync via {} ({})",
-            match mode {
-                IssueSyncMode::Binary => "binary",
-                IssueSyncMode::GoInstall => "go install",
-            },
-            ver
-        );
+        println!("Installed gh-issue-sync via {} ({})", mode.mode_name(), ver);
     }
     print_manifest_summary(&manifest);
 
@@ -352,11 +374,10 @@ fn run_doctor() -> Result<()> {
             .unwrap_or_else(|_| "unknown".into());
         println!("ok: gh-issue-sync available ({})", ver.trim());
     } else {
-        let curl = command_exists("curl");
-        let go = command_exists("go");
+        let (has_curl, has_go) = issue_sync_install_methods_available();
         println!("warn: gh-issue-sync not found");
-        println!("info: auto-install capability: curl={} go={}", curl, go);
-        if !curl && !go {
+        println!("info: auto-install capability: curl={} go={}", has_curl, has_go);
+        if !has_curl && !has_go {
             println!(
                 "info: install manually from https://github.com/mitsuhiko/gh-issue-sync"
             );
@@ -709,6 +730,10 @@ impl SkRunner {
     }
 }
 
+fn issue_sync_install_methods_available() -> (bool, bool) {
+    (command_exists("curl"), command_exists("go"))
+}
+
 fn ensure_issue_sync_available() -> Option<IssueSyncMode> {
     if command_exists("gh-issue-sync") {
         return Some(IssueSyncMode::Binary);
@@ -719,7 +744,9 @@ fn ensure_issue_sync_available() -> Option<IssueSyncMode> {
         return None;
     }
 
-    if command_exists("curl") {
+    let (has_curl, has_go) = issue_sync_install_methods_available();
+
+    if has_curl {
         println!("info: installing gh-issue-sync via install script...");
         let install = Command::new("sh")
             .args([
@@ -735,7 +762,7 @@ fn ensure_issue_sync_available() -> Option<IssueSyncMode> {
         }
     }
 
-    if command_exists("go") {
+    if has_go {
         println!("info: installing gh-issue-sync via go install...");
         let install = Command::new("go")
             .args([
@@ -838,17 +865,11 @@ fn write_lock(
         installer_version: env!("CARGO_PKG_VERSION").to_string(),
         installed_at: Utc::now().to_rfc3339(),
         sk: LockSk {
-            mode: match sk_mode {
-                SkMode::Binary => "binary".to_string(),
-                SkMode::Npx => "npx".to_string(),
-            },
+            mode: sk_mode,
             version: sk_version.to_string(),
         },
         issue_sync: issue_sync_info.map(|(mode, ver)| LockIssueSync {
-            mode: match mode {
-                IssueSyncMode::Binary => "binary".to_string(),
-                IssueSyncMode::GoInstall => "go-install".to_string(),
-            },
+            mode,
             version: ver.to_string(),
         }),
         entries,
@@ -1071,11 +1092,11 @@ unrelated = { gh = "org/repo", path = "y" }
             installer_version: "0.1.0".to_string(),
             installed_at: "2026-01-01T00:00:00Z".to_string(),
             sk: LockSk {
-                mode: "binary".to_string(),
+                mode: SkMode::Binary,
                 version: "1.0.0".to_string(),
             },
             issue_sync: Some(LockIssueSync {
-                mode: "binary".to_string(),
+                mode: IssueSyncMode::Binary,
                 version: "0.3.0".to_string(),
             }),
             entries: vec![],
@@ -1085,7 +1106,7 @@ unrelated = { gh = "org/repo", path = "y" }
         assert!(toml_str.contains("[issue_sync]"));
         let parsed: InstallLock = toml::from_str(&toml_str).expect("deserialize");
         let is = parsed.issue_sync.expect("issue_sync present");
-        assert_eq!(is.mode, "binary");
+        assert_eq!(is.mode, IssueSyncMode::Binary);
         assert_eq!(is.version, "0.3.0");
     }
 
@@ -1096,7 +1117,7 @@ unrelated = { gh = "org/repo", path = "y" }
             installer_version: "0.1.0".to_string(),
             installed_at: "2026-01-01T00:00:00Z".to_string(),
             sk: LockSk {
-                mode: "npx".to_string(),
+                mode: SkMode::Npx,
                 version: "1.0.0".to_string(),
             },
             issue_sync: None,
@@ -1131,7 +1152,7 @@ skill = "ground"
 
         let parsed: InstallLock = toml::from_str(old_toml).expect("deserialize old lock");
         assert!(parsed.issue_sync.is_none());
-        assert_eq!(parsed.sk.mode, "binary");
+        assert_eq!(parsed.sk.mode, SkMode::Binary);
         assert_eq!(parsed.entries.len(), 1);
     }
 }
