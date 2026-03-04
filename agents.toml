@@ -14,7 +14,8 @@ using-groundwork = { path = "./skills/using-groundwork" }
 ground = { gh = "pentaxis93/groundwork", path = "skills/foundation/ground" }
 research = { gh = "pentaxis93/groundwork", path = "skills/foundation/research" }
 bdd = { gh = "pentaxis93/groundwork", path = "skills/specification/bdd" }
-planning = { gh = "pentaxis93/groundwork", path = "skills/decomposition/planning" }
+next_issue = { gh = "pentaxis93/groundwork", path = "skills/decomposition/next-issue" }
+plan = { gh = "pentaxis93/groundwork", path = "skills/decomposition/plan" }
 issue_craft = { gh = "pentaxis93/groundwork", path = "skills/decomposition/issue-craft" }
 land = { gh = "pentaxis93/groundwork", path = "skills/completion/land" }
 using_groundwork = { gh = "pentaxis93/groundwork", path = "skills/using-groundwork" }
