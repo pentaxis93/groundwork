@@ -1,0 +1,12 @@
+name: test-driven-development
+description: >-
+  Behaviour-driven TDD wrapper that translates a behavior contract
+  into a tested implementation through red-green-refactor cycles.
+groundwork:
+  stage: execution
+  requires:
+    - artifact: behavior-contract
+      schema: schemas/behavior-contract.schema.json
+  produces:
+    - artifact: tested-implementation
+      schema: schemas/tested-implementation.schema.json
