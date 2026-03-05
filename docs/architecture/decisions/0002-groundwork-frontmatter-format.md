@@ -38,7 +38,7 @@ The `stage` field accepts exactly five values: `specification`, `decomposition`,
 
 ### 4. String-level type constraints
 
-Artifact names are constrained to kebab-case (`^[a-z][a-z0-9]*(-[a-z0-9]+)*$`) and schema paths must begin with a lowercase alphanumeric character (`^[a-z0-9]`, `minLength: 1`). These patterns enforce what the prose in decisions 2 and 3 already states: artifact names are stable identifiers (not free text) and schema paths are relative to `.groundwork/` (not absolute or traversal paths).
+Artifact names are constrained to kebab-case (`^[a-z][a-z0-9]*(-[a-z0-9]+)*$`) and schema paths must begin with a lowercase alphanumeric character (`^[a-z0-9]`, `minLength: 1`). These patterns enforce what the prose in decisions 2 and 3 already states: artifact names are stable identifiers (not free text) and schema paths are relative to `.groundwork/` (not absolute or traversal paths). The pattern blocks leading `../` and `/` but not mid-path traversal segments (e.g., `a/../b`); runtime path resolution must canonicalize.
 
 ## Consequences
 

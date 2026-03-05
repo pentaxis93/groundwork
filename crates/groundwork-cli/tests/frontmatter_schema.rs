@@ -136,3 +136,15 @@ fn rejects_absolute_schema_path() {
         "absolute schema path should be rejected"
     );
 }
+
+#[test]
+fn rejects_traversal_schema_path() {
+    let validator = load_schema();
+    let instance = yaml_to_json(
+        "groundwork:\n  stage: specification\n  requires: []\n  produces:\n    - artifact: foo\n      schema: ../../../etc/passwd\n",
+    );
+    assert!(
+        !validator.is_valid(&instance),
+        "traversal schema path should be rejected"
+    );
+}
