@@ -36,7 +36,7 @@ description: >-
 To add a new core skill:
 
 1. Create `skills/<stage>/<skill-name>/SKILL.md`
-2. Add the skill to the core skills array in `crates/groundwork-cli/src/main.rs`
+2. Add the skill to `ORIGINAL_SKILLS` in `crates/groundwork-cli/src/main.rs` (rename to `CORE_SKILLS` pending #22)
 3. Add a `gh` dependency entry in `agents.toml`
 4. Add the skill to the skills table in `README.md` and the routing table in `WORKFLOW.md`
 5. If the skill participates in handoff contracts, update `docs/architecture/pipeline-contract.md`

@@ -70,8 +70,8 @@ Prerequisites: Node.js (for `sk`). Optional: `gh-issue-sync` (auto-installed if 
 |---------|-------------|------|
 | `groundwork init` | Reads the curated manifest, populates `agents.toml`, fetches skills via `sk sync`, bootstraps `gh-issue-sync` if available | `--dry-run` |
 | `groundwork update` | Re-syncs to the latest manifest — upserts new or changed skills, prunes removed ones | `--dry-run` |
-| `groundwork list` | Shows installed skills, versions, and pinned refs from the lock file | |
-| `groundwork doctor` | Checks prerequisites (`sk`, `agents.toml`, manifest) and reports status | |
+| `groundwork list` | Shows installed skills, their sources, and pinned refs from the lock file | |
+| `groundwork doctor` | Checks prerequisites (`sk`, `gh`, `gh-issue-sync`, `agents.toml`, manifest) and reports status | |
 
 Both `init` and `update` are idempotent. They reconcile the manifest against `agents.toml`, writing only what changed. State is tracked in `.groundwork/installed.lock.toml`.
 

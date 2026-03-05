@@ -54,15 +54,15 @@ This model works when upstream skills have general context assumptions (TDD, deb
 
 The five stages are not a taxonomy — they are an integration architecture. Each stage produces artifacts that the next stage consumes:
 
-1. **Frame constraints** (`ground`) produces verified constraints
+1. **Frame constraints** (`ground`, `research`) produces verified constraints and substantiated evidence
 2. **Define behavior** (`bdd`) produces Given/When/Then behavior contracts
 3. **Decompose** (`issue-craft`, `next-issue`, `plan`) produces executable issues and implementation designs
 4. **Execute and verify** (curated skills) produces tested implementations and review evidence
 5. **Land** (`land`) produces closed issues, merged code, and behavior coverage records
 
-Two cross-cutting threads run through all stages:
+Two cross-cutting disciplines run through all stages rather than belonging to one:
 - **BDD thread**: behavior contracts from stage 2 thread through planning, execution, verification, and closure
-- **Documentation thread**: documentation review fires at every stage, not just at the end
+- **Documentation thread** (`documentation`): documentation review fires at every stage, not just at the end
 
 Formal handoff contracts and anti-divergence rules are defined in `docs/architecture/pipeline-contract.md`.
 
