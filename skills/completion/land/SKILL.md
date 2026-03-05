@@ -30,6 +30,8 @@ Do not stop after merge.
 - Issue number must be known:
   - Prefer explicit user-provided issue number.
   - Else infer from branch name pattern `issue-<number>`.
+  - Note: `land` currently handles single-issue branches only. For multi-issue
+    batches (from `next-issue`), close additional issues manually.
 - Use WeForge API token from `pass`:
   - Default: `pass show weforge/fulcrum-token`
 

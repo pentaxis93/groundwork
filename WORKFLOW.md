@@ -107,7 +107,7 @@ State is determined by reading issue content, not forge metadata (labels, column
 |-------------|----------------------------------------------|------------------------------------|-------------------------------------|
 | draft       | Intent captured, not yet agent-executable     | Issue created without full criteria | Criteria, scope, and size filled in |
 | ready       | Agent-executable and unblocked                | All fields complete, deps closed   | Session claims it                   |
-| in-progress | Active session is working on it               | Session declares goal against it   | Session closes or blocks            |
+| in-progress | Active session is working on it               | Session begins working on it       | Session closes or blocks            |
 | blocked     | Waiting on one or more open dependencies      | Dependency discovered or reopened  | All blocking issues closed          |
 | closed      | All acceptance criteria verified              | Verified and merged                | Reopened for regression             |
 | stale       | No progress for 14+ days while still open     | Clock expires                      | Resumed, split, or closed as wont-fix |

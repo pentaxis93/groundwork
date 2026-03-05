@@ -6,14 +6,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
-### Changed
-
-- Broadened `next-issue` from work selection to work initiation — now covers selection, workspace preparation (branch + draft PR), and session open/close as the opening bookend to `land`
-- `next-issue` accepts issue number(s) directly (skipping selection) or a topic string (narrowing selection), in addition to no-args full selection
-- Multi-issue batching into a single PR is an explicitly supported pattern
-- Session open captures starting direction instead of requiring a rigid binary done condition upfront
-- Added `next-issue -> execution` and `next-issue <-> land` handoff contracts to pipeline contract
-
 ### Added
 
 - Five-stage methodology pipeline: frame constraints, define behavior, decompose, execute and verify, land
@@ -27,6 +19,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Changed
 
+- Broadened `next-issue` from work selection to work initiation — now covers selection, workspace preparation (branch + draft PR), and session open/close as the opening bookend to `land`
+- `next-issue` accepts issue number(s) directly (skipping selection) or a topic string (narrowing selection), in addition to no-args full selection
+- Multi-issue batching into a single PR is an explicitly supported pattern
+- Session open captures starting direction instead of requiring a rigid binary done condition upfront
+- Added `next-issue -> execution` and `next-issue <-> land` handoff contracts to pipeline contract
 - Migrated license from Apache-2.0 to MIT
 - Rewrote README from first principles around the pipeline concept
 - Renamed `planning` skill to `next-issue`; added separate `plan` skill for design convergence

@@ -89,6 +89,7 @@ Fail condition:
 5. Do not accept completion evidence that lacks documentation review.
 6. Do not land user-visible changes without a CHANGELOG entry.
 7. Do not treat stale documentation as authoritative over code behavior.
+8. Do not begin implementation without a prepared workspace (branch and draft PR).
 
 ## Quick Compliance Checklist
 
@@ -100,3 +101,5 @@ Fail condition:
 - [ ] Documentation review completed before verification.
 - [ ] User-facing changes include CHANGELOG entry.
 - [ ] Documentation coverage status recorded at completion.
+- [ ] Feature branch and draft PR exist before implementation begins.
+- [ ] Work initiated with preparation (next-issue) and closed with full delivery (land).
