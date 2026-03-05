@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/pentaxis93/groundwork/main/schemas/implementation-plan.schema.json",
+  "title": "Implementation Plan",
+  "description": "Validates the content of an implementation-plan artifact. Matches the plan skill's write-plan output structure. Allows additional properties so different skills can extend the base structure.",
+  "type": "object",
+  "required": ["title", "summary", "key-changes", "test-strategy", "assumptions"],
+  "properties": {
+    "title": {
+      "type": "string",
+      "description": "Human-readable title for the implementation plan.",
+      "minLength": 1
+    },
+    "summary": {
+      "type": "string",
+      "description": "Brief summary of what the plan accomplishes.",
+      "minLength": 1
+    },
+    "key-changes": {
+      "type": "array",
+      "description": "List of key changes the plan introduces.",
+      "items": {
+        "type": "string"
+      }
+    },
+    "test-strategy": {
+      "type": "string",
+      "description": "How the implementation will be tested.",
+      "minLength": 1
+    },
+    "assumptions": {
+      "type": "array",
+      "description": "Assumptions the plan depends on.",
+      "items": {
+        "type": "string"
+      }
+    }
+  }
+}

@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/pentaxis93/groundwork/main/schemas/test-evidence.schema.json",
+  "title": "Test Evidence",
+  "description": "Validates the content of a test-evidence artifact. Records test results against behavior-contract scenarios.",
+  "type": "object",
+  "required": ["evidence"],
+  "additionalProperties": false,
+  "properties": {
+    "evidence": {
+      "type": "array",
+      "description": "Test result entries, each referencing a behavior-contract scenario.",
+      "items": {
+        "$ref": "#/$defs/evidence-entry"
+      }
+    }
+  },
+  "$defs": {
+    "evidence-entry": {
+      "type": "object",
+      "description": "A single test result for a scenario.",
+      "required": ["scenario", "result", "command", "output-summary"],
+      "additionalProperties": false,
+      "properties": {
+        "scenario": {
+          "type": "string",
+          "description": "The scenario name from the behavior contract.",
+          "minLength": 1
+        },
+        "result": {
+          "type": "string",
+          "description": "Test outcome.",
+          "enum": ["pass", "fail"]
+        },
+        "command": {
+          "type": "string",
+          "description": "The command that was executed.",
+          "minLength": 1
+        },
+        "output-summary": {
+          "type": "string",
+          "description": "Summary of the command output.",
+          "minLength": 1
+        }
+      }
+    }
+  }
+}

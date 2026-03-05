@@ -1,0 +1,6 @@
+topic: json schema draft comparison
+findings:
+  - Draft 2020-12 supports dynamic references
+sources:
+  - url: https://json-schema.org/draft/2020-12/release-notes
+date: "2026-03-04"
