@@ -1,0 +1,59 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/pentaxis93/groundwork/main/schemas/artifact-frontmatter.schema.json",
+  "title": "Artifact Frontmatter",
+  "description": "Validates the YAML frontmatter on pipeline artifacts in .groundwork/artifacts/. Defines freshness, approval, provenance, and dynamic dependencies.",
+  "type": "object",
+  "required": ["schema", "freshness", "produced_by", "produced_at"],
+  "additionalProperties": false,
+  "properties": {
+    "schema": {
+      "type": "string",
+      "description": "Path to the artifact type's schema, relative to .groundwork/.",
+      "pattern": "^[a-z0-9]",
+      "minLength": 1
+    },
+    "freshness": {
+      "type": "string",
+      "description": "Agent-determined staleness axis.",
+      "enum": ["fresh", "stale"]
+    },
+    "produced_by": {
+      "type": "string",
+      "description": "The skill name that produced this artifact.",
+      "pattern": "^[a-z][a-z0-9]*(-[a-z0-9]+)*$"
+    },
+    "produced_at": {
+      "type": "string",
+      "description": "ISO 8601 datetime with mandatory timezone offset.",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(Z|[+-]\\d{2}:\\d{2})$"
+    },
+    "depends_on": {
+      "type": "array",
+      "description": "Dynamic dependencies declared by the producing agent.",
+      "items": {
+        "$ref": "#/$defs/dependency-entry"
+      }
+    },
+    "approval": {
+      "type": "string",
+      "description": "Human-determined approval axis. Present only when pipeline.toml requires it.",
+      "enum": ["pending", "approved", "rejected"]
+    }
+  },
+  "$defs": {
+    "dependency-entry": {
+      "type": "object",
+      "description": "A reference to an artifact this artifact depends on.",
+      "required": ["artifact"],
+      "additionalProperties": false,
+      "properties": {
+        "artifact": {
+          "type": "string",
+          "description": "Artifact type name or specific artifact filename.",
+          "pattern": "^[a-z][a-z0-9]*([-.][a-z0-9]+)*$"
+        }
+      }
+    }
+  }
+}
