@@ -64,13 +64,16 @@ This reads the curated manifest, fetches skills from their upstream sources via 
 
 Prerequisites: Node.js (for `sk`). Optional: `gh-issue-sync` (auto-installed if `curl` or `go` is available).
 
-### Other commands
+### Commands
 
-```bash
-groundwork update    # Re-sync to latest manifest
-groundwork list      # Show installed skills and versions
-groundwork doctor    # Check prerequisites and configuration
-```
+| Command | What it does | Flag |
+|---------|-------------|------|
+| `groundwork init` | Reads the curated manifest, populates `agents.toml`, fetches skills via `sk sync`, bootstraps `gh-issue-sync` if available | `--dry-run` |
+| `groundwork update` | Re-syncs to the latest manifest — upserts new or changed skills, prunes removed ones | `--dry-run` |
+| `groundwork list` | Shows installed skills, their sources, and pinned refs from the lock file | |
+| `groundwork doctor` | Checks prerequisites (`sk`, `gh`, `gh-issue-sync`, `agents.toml`, manifest) and reports status | |
+
+Both `init` and `update` are idempotent. They reconcile the manifest against `agents.toml`, writing only what changed. State is tracked in `.groundwork/installed.lock.toml`.
 
 ## Project Layout
 

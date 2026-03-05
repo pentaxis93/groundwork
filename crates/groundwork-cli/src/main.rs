@@ -12,13 +12,14 @@ const AGENTS_TOML: &str = "agents.toml";
 const LOCK_PATH: &str = ".groundwork/installed.lock.toml";
 const ORIGINALS_REPO: &str = "pentaxis93/groundwork";
 const CURATION_MANIFEST_TOML: &str = include_str!("../../../manifests/curation.v1.toml");
-const ORIGINAL_SKILLS: [(&str, &str); 8] = [
+const ORIGINAL_SKILLS: [(&str, &str); 9] = [
     ("ground", "skills/foundation/ground"),
     ("research", "skills/foundation/research"),
     ("bdd", "skills/specification/bdd"),
     ("next-issue", "skills/decomposition/next-issue"),
     ("plan", "skills/decomposition/plan"),
     ("issue-craft", "skills/decomposition/issue-craft"),
+    ("documentation", "skills/verification/documentation"),
     ("land", "skills/completion/land"),
     ("using-groundwork", "skills/using-groundwork"),
 ];
