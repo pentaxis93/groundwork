@@ -1,7 +1,7 @@
 [agents]
 amp = false
 claude-code = true
-codex = false
+codex = true
 factory = false
 opencode = false
 
