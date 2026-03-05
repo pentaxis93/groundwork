@@ -6,12 +6,6 @@ factory = false
 opencode = false
 
 [dependencies]
-foundation = { path = "./skills/foundation" }
-specification = { path = "./skills/specification" }
-decomposition = { path = "./skills/decomposition" }
-completion = { path = "./skills/completion" }
-verification = { path = "./skills/verification" }
-using-groundwork = { path = "./skills/using-groundwork" }
 ground = { gh = "pentaxis93/groundwork", path = "skills/foundation/ground" }
 research = { gh = "pentaxis93/groundwork", path = "skills/foundation/research" }
 bdd = { gh = "pentaxis93/groundwork", path = "skills/specification/bdd" }

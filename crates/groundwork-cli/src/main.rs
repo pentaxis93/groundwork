@@ -4,13 +4,15 @@ use clap::{Args, Parser, Subcommand};
 use serde::{Deserialize, Serialize};
 use std::collections::HashSet;
 use std::fs;
-use std::path::Path;
+use std::path::{Path, PathBuf};
 use std::process::{Command, Stdio};
 use toml_edit::{value, DocumentMut, InlineTable, Item, Table, Value};
 
 const AGENTS_TOML: &str = "agents.toml";
 const LOCK_PATH: &str = ".groundwork/installed.lock.toml";
 const ORIGINALS_REPO: &str = "pentaxis93/groundwork";
+const SKILLS_SUPPLY_FORK_URL: &str = "https://github.com/pentaxis93/skills-supply";
+const SKILLS_SUPPLY_FORK_REF: &str = "groundwork-v1";
 const CURATION_MANIFEST_TOML: &str = include_str!("../../../manifests/curation.v1.toml");
 const ORIGINAL_SKILLS: [(&str, &str); 9] = [
     ("ground", "skills/foundation/ground"),
@@ -147,6 +149,7 @@ struct LockEntry {
 #[serde(rename_all = "kebab-case")]
 enum SkMode {
     Binary,
+    /// Retained for lock file backward compatibility; no longer used at runtime.
     Npx,
 }
 
@@ -196,6 +199,7 @@ impl IssueSyncMode {
 #[derive(Debug)]
 struct SkRunner {
     mode: SkMode,
+    binary_path: Option<PathBuf>,
 }
 
 fn main() -> Result<()> {
@@ -355,15 +359,23 @@ fn run_doctor() -> Result<()> {
     if command_exists("sk") {
         let ver = first_line_version(run_command_capture(&["sk", "--version"]));
         println!("ok: sk available ({})", ver);
+        let help_output = run_command_capture_ignore_status(&["sk", "sync", "--help"]);
+        if !supports_skill_target_option(&help_output)
+        {
+            println!(
+                "error: sk is missing required `--skill-target` sync option; install forked sk from {}",
+                SKILLS_SUPPLY_FORK_URL
+            );
+        }
     } else {
         let node = command_exists("node");
         let npm = command_exists("npm");
-        let npx = command_exists("npx");
+        let git = command_exists("git");
         println!("warn: sk not found");
-        println!("info: node={} npm={} npx={}", node, npm, npx);
-        if !node || (!npm && !npx) {
+        println!("info: node={} npm={} git={}", node, npm, git);
+        if !node || !npm || !git {
             bail!(
-                "sk bootstrap unavailable: install Node.js (with npm/npx) or install sk manually"
+                "sk bootstrap unavailable: install Node.js, npm, and git (or install sk manually)"
             );
         }
         println!("ok: bootstrap prerequisites satisfied");
@@ -659,58 +671,218 @@ fn managed_alias(skill_name: &str) -> String {
 
 fn ensure_sk_available() -> Result<SkRunner> {
     if command_exists("sk") {
-        return Ok(SkRunner {
+        let mut runner = SkRunner {
             mode: SkMode::Binary,
-        });
+            binary_path: None,
+        };
+
+        if !runner.supports_skill_target_option() {
+            println!(
+                "warn: existing sk lacks --skill-target support; installing forked sk from {}",
+                SKILLS_SUPPLY_FORK_URL
+            );
+            let installed_binary = install_sk_from_fork()?;
+            runner = SkRunner {
+                mode: SkMode::Binary,
+                binary_path: Some(installed_binary),
+            };
+            if !runner.supports_skill_target_option() {
+                bail!(
+                    "installed sk is missing required `--skill-target` sync option; install forked sk from {} and rerun",
+                    SKILLS_SUPPLY_FORK_URL
+                );
+            }
+        }
+        return Ok(runner);
     }
 
     if !command_exists("node") {
         bail!("sk not found and Node.js is unavailable; install Node.js or install sk manually");
     }
 
-    if command_exists("npm") {
-        let npm_install = Command::new("npm")
-            .args(["install", "-g", "@skills-supply/sk"])
-            .stdout(Stdio::inherit())
-            .stderr(Stdio::inherit())
-            .status();
-
-        if let Ok(status) = npm_install {
-            if status.success() && command_exists("sk") {
-                return Ok(SkRunner {
-                    mode: SkMode::Binary,
-                });
-            }
-        }
+    if !command_exists("npm") {
+        bail!("sk not found and npm is unavailable; install npm or install sk manually");
     }
 
-    if command_exists("npx") {
-        let probe = Command::new("npx")
-            .args(["-y", "@skills-supply/sk", "--version"])
-            .stdout(Stdio::null())
-            .stderr(Stdio::null())
-            .status()
-            .context("failed to execute npx for sk bootstrap")?;
-
-        if probe.success() {
-            return Ok(SkRunner { mode: SkMode::Npx });
-        }
+    if !command_exists("git") {
+        bail!("sk not found and git is unavailable; install git or install sk manually");
     }
 
-    bail!(
-        "failed to bootstrap sk automatically; install with `npm install -g @skills-supply/sk` and rerun"
-    );
+    let installed_binary = install_sk_from_fork()?;
+    let runner = SkRunner {
+        mode: SkMode::Binary,
+        binary_path: Some(installed_binary),
+    };
+    if !runner.supports_skill_target_option() {
+        bail!(
+            "installed sk is missing required `--skill-target` sync option; install forked sk from {} and rerun",
+            SKILLS_SUPPLY_FORK_URL
+        );
+    }
+    Ok(runner)
+}
+
+fn install_sk_from_fork() -> Result<PathBuf> {
+    let temp_dir = std::env::temp_dir().join(format!(
+        "groundwork-sk-bootstrap-{}-{}",
+        std::process::id(),
+        Utc::now().timestamp_nanos_opt().unwrap_or_default()
+    ));
+
+    let clone = Command::new("git")
+        .args(["clone", "--depth", "1", "--branch", SKILLS_SUPPLY_FORK_REF, SKILLS_SUPPLY_FORK_URL])
+        .arg(&temp_dir)
+        .stdout(Stdio::inherit())
+        .stderr(Stdio::inherit())
+        .status()
+        .context("failed to clone sk fork repository")?;
+
+    if !clone.success() {
+        let _ = fs::remove_dir_all(&temp_dir);
+        bail!("failed to clone sk fork from {}", SKILLS_SUPPLY_FORK_URL);
+    }
+
+    let deps = Command::new("npm")
+        .args(["install", "--workspace", "packages/core", "--workspace", "packages/sk"])
+        .current_dir(&temp_dir)
+        .stdout(Stdio::inherit())
+        .stderr(Stdio::inherit())
+        .status()
+        .context("failed to install workspace dependencies for sk fork build")?;
+    if !deps.success() {
+        let _ = fs::remove_dir_all(&temp_dir);
+        bail!(
+            "failed to install dependencies while bootstrapping sk from {}",
+            SKILLS_SUPPLY_FORK_URL
+        );
+    }
+
+    let build_core = Command::new("npm")
+        .args(["--workspace", "packages/core", "run", "build"])
+        .current_dir(&temp_dir)
+        .stdout(Stdio::inherit())
+        .stderr(Stdio::inherit())
+        .status()
+        .context("failed to build @skills-supply/core while bootstrapping sk")?;
+    if !build_core.success() {
+        let _ = fs::remove_dir_all(&temp_dir);
+        bail!(
+            "failed to build @skills-supply/core while bootstrapping sk from {}",
+            SKILLS_SUPPLY_FORK_URL
+        );
+    }
+
+    let build_sk = Command::new("npm")
+        .args(["--workspace", "packages/sk", "run", "build:node"])
+        .current_dir(&temp_dir)
+        .stdout(Stdio::inherit())
+        .stderr(Stdio::inherit())
+        .status()
+        .context("failed to build sk CLI while bootstrapping")?;
+    if !build_sk.success() {
+        let _ = fs::remove_dir_all(&temp_dir);
+        bail!(
+            "failed to build sk CLI while bootstrapping from {}",
+            SKILLS_SUPPLY_FORK_URL
+        );
+    }
+
+    let core_package_path = temp_dir.join("packages/core");
+    let core_pack = Command::new("npm")
+        .arg("pack")
+        .current_dir(&core_package_path)
+        .output()
+        .context("failed to pack core npm tarball")?;
+    if !core_pack.status.success() {
+        let _ = fs::remove_dir_all(&temp_dir);
+        bail!(
+            "failed to package core tarball while bootstrapping from {}: {}",
+            SKILLS_SUPPLY_FORK_URL,
+            String::from_utf8_lossy(&core_pack.stderr)
+        );
+    }
+    let core_packed = String::from_utf8_lossy(&core_pack.stdout);
+    let core_tar_name = core_packed
+        .lines()
+        .rev()
+        .map(str::trim)
+        .find(|line| !line.is_empty())
+        .ok_or_else(|| anyhow!("npm pack returned no core tarball filename"))?;
+    let core_tarball_path = core_package_path.join(core_tar_name);
+
+    let sk_package_path = temp_dir.join("packages/sk");
+    let sk_pack = Command::new("npm")
+        .arg("pack")
+        .current_dir(&sk_package_path)
+        .output()
+        .context("failed to pack sk npm tarball")?;
+    if !sk_pack.status.success() {
+        let _ = fs::remove_dir_all(&temp_dir);
+        bail!(
+            "failed to package sk tarball while bootstrapping from {}: {}",
+            SKILLS_SUPPLY_FORK_URL,
+            String::from_utf8_lossy(&sk_pack.stderr)
+        );
+    }
+    let sk_packed = String::from_utf8_lossy(&sk_pack.stdout);
+    let sk_tar_name = sk_packed
+        .lines()
+        .rev()
+        .map(str::trim)
+        .find(|line| !line.is_empty())
+        .ok_or_else(|| anyhow!("npm pack returned no sk tarball filename"))?;
+    let sk_tarball_path = sk_package_path.join(sk_tar_name);
+
+    let install = Command::new("npm")
+        .args(["install", "-g"])
+        .arg(&core_tarball_path)
+        .arg(&sk_tarball_path)
+        .stdout(Stdio::inherit())
+        .stderr(Stdio::inherit())
+        .status()
+        .with_context(|| {
+            format!(
+                "failed to install sk/core from tarballs {} and {}",
+                core_tarball_path.display(),
+                sk_tarball_path.display()
+            )
+        })?;
+
+    let _ = fs::remove_dir_all(&temp_dir);
+    if !install.success() {
+        bail!("failed to install sk from {}", SKILLS_SUPPLY_FORK_URL);
+    }
+
+    let npm_prefix =
+        run_command_capture(&["npm", "prefix", "-g"]).context("failed to resolve npm global prefix")?;
+    let installed_sk = PathBuf::from(npm_prefix).join("bin").join("sk");
+    if !installed_sk.exists() {
+        bail!(
+            "sk installed from fork but binary not found at {}",
+            installed_sk.display()
+        );
+    }
+
+    Ok(installed_sk)
 }
 
 impl SkRunner {
-    fn sync(&self) -> Result<()> {
-        let status = match self.mode {
-            SkMode::Binary => Command::new("sk").arg("sync").status(),
-            SkMode::Npx => Command::new("npx")
-                .args(["-y", "@skills-supply/sk", "sync"])
-                .status(),
+    fn sk_bin(&self) -> Result<String> {
+        match self.mode {
+            SkMode::Binary => {
+                let bin = self.binary_path.as_deref().unwrap_or_else(|| Path::new("sk"));
+                Ok(bin.to_string_lossy().to_string())
+            }
+            SkMode::Npx => bail!("npx mode is no longer supported; install sk binary from {}", SKILLS_SUPPLY_FORK_URL),
         }
-        .context("failed to run sk sync")?;
+    }
+
+    fn sync(&self) -> Result<()> {
+        let sk = self.sk_bin()?;
+        let status = Command::new(&sk)
+            .args(["sync", "--skill-target", "name"])
+            .status()
+            .context("failed to run sk sync")?;
 
         if !status.success() {
             bail!("sk sync failed with status {}", status);
@@ -720,12 +892,8 @@ impl SkRunner {
     }
 
     fn version(&self) -> Result<String> {
-        let cmd = match self.mode {
-            SkMode::Binary => vec!["sk", "--version"],
-            SkMode::Npx => vec!["npx", "-y", "@skills-supply/sk", "--version"],
-        };
-
-        run_command_capture(&cmd)
+        let sk = self.sk_bin()?;
+        run_command_capture(&[sk.as_str(), "--version"])
     }
 
     fn mode_name(&self) -> &'static str {
@@ -734,6 +902,20 @@ impl SkRunner {
             SkMode::Npx => "npx @skills-supply/sk",
         }
     }
+
+    fn supports_skill_target_option(&self) -> bool {
+        let sk = match self.sk_bin() {
+            Ok(s) => s,
+            Err(_) => return false,
+        };
+        let help = run_command_capture_ignore_status(&[sk.as_str(), "sync", "--help"]);
+        supports_skill_target_option(&help)
+    }
+}
+
+fn supports_skill_target_option(help: &str) -> bool {
+    help.lines()
+        .any(|line| line.trim_start().starts_with("--skill-target"))
 }
 
 fn issue_sync_install_methods_available() -> (bool, bool) {
@@ -848,6 +1030,19 @@ fn run_command_capture(args: &[&str]) -> Result<String> {
     }
 
     Ok(String::from_utf8_lossy(&output.stdout).trim().to_string())
+}
+
+/// Capture stdout regardless of exit code (useful for `--help` which may return non-zero).
+fn run_command_capture_ignore_status(args: &[&str]) -> String {
+    let (program, rest) = match args.split_first() {
+        Some(pair) => pair,
+        None => return String::new(),
+    };
+    Command::new(program)
+        .args(rest)
+        .output()
+        .map(|o| String::from_utf8_lossy(&o.stdout).trim().to_string())
+        .unwrap_or_default()
 }
 
 fn first_line_version(result: Result<String>) -> String {
@@ -1191,5 +1386,30 @@ skill = "ground"
         assert!(parsed.issue_sync.is_none());
         assert_eq!(parsed.sk.mode, SkMode::Binary);
         assert_eq!(parsed.entries.len(), 1);
+    }
+
+    #[test]
+    fn skill_target_option_detected_when_present() {
+        let help = r#"
+Usage: sk sync [options]
+
+Options:
+  --dry-run          Plan changes without modifying files
+  --skill-target     Choose skill target naming
+  --non-interactive  Run without prompts
+"#;
+        assert!(supports_skill_target_option(help));
+    }
+
+    #[test]
+    fn skill_target_option_not_detected_when_absent() {
+        let help = r#"
+Usage: sk sync [options]
+
+Options:
+  --dry-run          Plan changes without modifying files
+  --non-interactive  Run without prompts
+"#;
+        assert!(!supports_skill_target_option(help));
     }
 }
