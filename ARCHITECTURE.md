@@ -42,7 +42,7 @@ The curated manifest (`manifests/curation.v1.toml`) pins upstream skill sources 
 
 Groundwork has two kinds of skills, distinguished by where they are maintained:
 
-**Core skills** (8) are maintained in this repository. They define the pipeline's structure — what stages exist, what handoff contracts connect them, and what cognitive discipline the pipeline enforces.
+**Core skills** (9) are maintained in this repository. They define the pipeline's structure — what stages exist, what handoff contracts connect them, and what cognitive discipline the pipeline enforces: `ground`, `research`, `bdd`, `issue-craft`, `next-issue`, `plan`, `documentation`, `land`, and the `using-groundwork` meta-skill.
 
 **Curated skills** (9, from [obra/superpowers](https://github.com/obra/superpowers)) are referenced by the manifest and fetched at install time. They fill the execution phase — TDD, debugging, subagent orchestration, code review, verification — where high-quality implementations already exist.
 

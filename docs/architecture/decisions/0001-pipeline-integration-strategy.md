@@ -5,7 +5,7 @@
 
 ## Context
 
-Groundwork integrates skills from multiple sources into one pipeline. Currently: 8 core skills maintained in this repository and 9 curated skills fetched from [obra/superpowers](https://github.com/obra/superpowers) at install time.
+Groundwork integrates skills from multiple sources into one pipeline. Currently: 9 core skills maintained in this repository and 9 curated skills fetched from [obra/superpowers](https://github.com/obra/superpowers) at install time.
 
 The pipeline enforces handoff contracts between stages — each skill produces artifacts that the next skill consumes. These contracts are documented in `WORKFLOW.md` and formalized in `docs/architecture/pipeline-contract.md`.
 
