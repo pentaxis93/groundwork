@@ -1,0 +1,11 @@
+name: ground
+description: >-
+  First-principles cognitive discipline for all generative work.
+  Establishes what the work must enable before decomposing to
+  verified constraints, then builds from what is actually true.
+groundwork:
+  stage: specification
+  requires: []
+  produces:
+    - artifact: verified-constraints
+      schema: schemas/verified-constraints.schema.json
