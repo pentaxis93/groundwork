@@ -36,6 +36,10 @@ The `stage` field accepts exactly five values: `specification`, `decomposition`,
 
 **Rationale:** Stages define pipeline topology: which skills can run when, and what handoffs are legal between them. Adding a stage changes the pipeline's structure, not just its metadata. This should be a deliberate, versioned change to the schema — not something that happens implicitly when a skill declares a novel stage name.
 
+### 4. String-level type constraints
+
+Artifact names are constrained to kebab-case (`^[a-z][a-z0-9]*(-[a-z0-9]+)*$`) and schema paths must begin with a lowercase alphanumeric character (`^[a-z0-9]`, `minLength: 1`). These patterns enforce what the prose in decisions 2 and 3 already states: artifact names are stable identifiers (not free text) and schema paths are relative to `.groundwork/` (not absolute or traversal paths).
+
 ## Consequences
 
 ### Good

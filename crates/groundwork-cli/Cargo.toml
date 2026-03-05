@@ -18,4 +18,7 @@ toml_edit = "0.22"
 chrono = { version = "0.4", default-features = false, features = ["clock", "std"] }
 
 [dev-dependencies]
+jsonschema = "0.44"
+serde_json = "1"
+serde_yml = "0.0.12"
 tempfile = "3"

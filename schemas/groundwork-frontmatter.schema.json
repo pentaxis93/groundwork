@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://groundwork.dev/schemas/groundwork-frontmatter.schema.json",
+  "$id": "https://raw.githubusercontent.com/pentaxis93/groundwork/main/schemas/groundwork-frontmatter.schema.json",
   "title": "Groundwork Frontmatter",
   "description": "Validates the groundwork: block in skill frontmatter. Defines pipeline participation: stage, required artifacts, and produced artifacts.",
   "type": "object",
@@ -49,11 +49,14 @@
       "properties": {
         "artifact": {
           "type": "string",
-          "description": "The artifact type name (a stable identifier, not a file path)."
+          "description": "The artifact type name (a stable identifier, not a file path).",
+          "pattern": "^[a-z][a-z0-9]*(-[a-z0-9]+)*$"
         },
         "schema": {
           "type": "string",
-          "description": "Path to the artifact's schema, relative to .groundwork/."
+          "description": "Path to the artifact's schema, relative to .groundwork/.",
+          "pattern": "^[a-z0-9]",
+          "minLength": 1
         }
       }
     }
