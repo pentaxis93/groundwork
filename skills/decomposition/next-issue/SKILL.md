@@ -87,7 +87,7 @@ already known.
 Decision stack (≤3 minutes):
 1. Force filter: operator request or deadline cliff wins immediately.
 2. Shortlist 3-5 unblocked issues from the lowest available execution layer.
-3. Score: `(Value + TimeCriticality + UnblockLeverage) / Effort`.
+3. Score (WSJF-lite): `(Value + TimeCriticality + UnblockLeverage) / Effort`.
 4. Prefer the highest score that can be completed this session.
 5. If tie: choose the option that unblocks the most downstream work.
 
@@ -96,6 +96,7 @@ Decision stack (≤3 minutes):
 Set up the workspace for the selected work. This phase runs for all
 invocation modes.
 
+0. Sync local issues if not already synced: `gh-issue-sync pull`.
 1. Create a feature branch from `main`:
    - Single issue: `issue-<number>/<slug>` (e.g., `issue-27/next-issue-initiation`)
    - Multi-issue batch: `issues-<numbers>/<slug>` (e.g., `issues-5-8/attribution-cleanup`)
@@ -121,10 +122,11 @@ where honest state matters most.
 ### session-close
 
 1. Reach stable checkpoint (done increment or explicit WIP note).
-2. Update issue state and leave a concise progress comment.
-3. Record decisions, blockers, and the exact next step.
-4. Ensure any follow-up work is represented as issue(s).
-5. Sync all changes to remote: `gh-issue-sync push`.
+2. Push commits to the feature branch.
+3. Update issue state and leave a concise progress comment.
+4. Record decisions, blockers, and the exact next step.
+5. Ensure any follow-up work is represented as issue(s).
+6. Sync all changes to remote: `gh-issue-sync push`.
 
 The closing handoff is the load-bearing artifact:
 - Where you actually ended up (not what you predicted).
@@ -138,7 +140,11 @@ Batching 2-3 cohesive issues into a single PR is a legitimate pattern when:
 - Implementing them separately would create throwaway intermediate states.
 - They are all session-sized *in aggregate*.
 
-The draft PR references all issues. `land` closes all referenced issues.
+The draft PR references all issues. At session close, `land` closes all
+referenced issues. Note: `land` currently handles single-issue closing;
+for multi-issue batches, close additional issues manually until `land`
+gains multi-issue support.
+
 Do not batch unrelated work — that is scope creep, not batching.
 
 ## Corruption Modes
@@ -151,6 +157,8 @@ Do not batch unrelated work — that is scope creep, not batching.
 - `undefined-state`: using terms like "unblocked" or "session-sized" without
   operational definitions — see WORKFLOW.md § Issue-Based Development.
 - `skipped-preparation`: starting implementation without a branch and draft PR.
+- `directionless-start`: beginning implementation without noting a starting
+  direction or scope gate — the session-open phase was skipped entirely.
 - `premature-precision`: treating the starting direction as a rigid contract
   instead of a compass heading that sharpens with learning.
 - `forced-selection`: running full selection when the operator already
