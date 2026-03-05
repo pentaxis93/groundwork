@@ -182,6 +182,6 @@ implementation mistakes.
   must implement.
 - `writing-plans`: step-by-step execution breakdown — takes a
   decision-complete design and produces ordered implementation steps.
-- `next-issue`: work selection — identifies which issue to plan for.
+- `next-issue`: work initiation — selects work and prepares workspace before planning begins.
 - `issue-craft`: issue quality — ensures the issue is agent-executable
   before planning begins.

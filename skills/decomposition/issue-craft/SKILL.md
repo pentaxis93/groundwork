@@ -144,6 +144,6 @@ Prefer strict mode when type is known:
 - `right-sized`: optimize for single focused execution session.
 
 ## Cross-References
-- `next-issue`: session-level prioritization and execution discipline.
+- `next-issue`: work initiation — selects work, prepares workspace (branch + draft PR), opens session.
 - `bdd`: behavior framing and test naming discipline.
 - `dev-workflow`: issue-to-commit linkage and completion hygiene.

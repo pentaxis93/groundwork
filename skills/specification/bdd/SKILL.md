@@ -101,7 +101,7 @@ When a test fails after change, classify failure as one of:
 - `single-pipeline`: BDD and TDD are complementary stages in one flow, not alternatives.
 
 ## Cross-References
-- `next-issue`: session-level prioritization and execution sequencing.
+- `next-issue`: work initiation — selects work, prepares workspace, opens session.
 - `issue-craft`: acceptance-criteria rigor and issue decomposition.
 - `superpowers/writing-plans`: decomposes implementation while preserving behavior traceability.
 - `superpowers/test-driven-development`: executes RED-GREEN-REFACTOR for BDD-defined behaviors.

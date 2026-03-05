@@ -150,5 +150,6 @@ Success conditions:
 
 ## Related Skills
 
+- `next-issue`: the opening bookend — `next-issue` initiates work (select, branch, draft PR), `land` closes it.
 - `forgejo-api` for API endpoint details
 - `credentials` for token-safe command patterns

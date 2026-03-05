@@ -22,7 +22,7 @@ Invoke `bdd` to define the behavior contract in Given/When/Then scenarios. Each 
 
 Use `issue-craft` to create, decompose, refine, and close issues. It produces agent-executable issues with binary acceptance criteria, explicit dependencies, and bounded scope. For epics with 4+ tasks, it builds dependency graphs with execution layers.
 
-Use `next-issue` to select session-sized work from the issue graph. It reads unblocked issues, ranks by value and unblock leverage, and declares a session goal with a binary done condition and explicit scope gate.
+Use `next-issue` to initiate a work session. It selects session-sized work from the issue graph (or accepts issue numbers directly), creates a feature branch and draft PR, and starts with a clear direction and explicit scope gate. It is the opening bookend to `land` — `next-issue` initiates work, `land` closes it. Multi-issue batching into a single PR is supported when issues form a cohesive change.
 
 Use `brainstorming` before designing a solution or making a significant architectural choice. It explores 2-3 approaches with trade-offs and produces an approved design document.
 
@@ -152,7 +152,7 @@ Issues are mirrored locally via `gh-issue-sync`. The `.issues/` directory is git
 | `research` | when reliable external evidence is needed for decisions |
 | `bdd` | when defining or refining behavior expectations |
 | `issue-craft` | creating/refining task/epic/bug/spike issues |
-| `next-issue` | selecting session-sized work from issue graph, or when a task feels too big to hold in one session |
+| `next-issue` | initiating a work session — selecting work, creating branch and draft PR, or when given specific issue number(s) to work on |
 | `brainstorming` | before designing a solution or making a significant architectural choice |
 | `plan` | implementation needs design convergence — multiple approaches, unclear scope, or cross-cutting changes |
 | `writing-plans` | when you have a decision-complete design and need a structured implementation plan before touching code |

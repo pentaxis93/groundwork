@@ -7,7 +7,7 @@ This file defines the canonical integration contract for Groundwork's methodolog
 Groundwork has one coherent path:
 1. `ground` frames constraints.
 2. `bdd` defines and maintains behavior contract.
-3. `next-issue` + `issue-craft` decompose executable work; `plan` converges the implementation design.
+3. `issue-craft` decomposes executable work; `next-issue` initiates a work session (select, branch, draft PR); `plan` converges the implementation design.
 4. Curated middle skills implement and verify the same behavior contract.
 5. `land` closes work with behavior coverage visibility.
 
@@ -65,6 +65,20 @@ Requirement:
 
 Fail condition:
 - user-visible change landed without CHANGELOG entry or documentation coverage statement.
+
+## `next-issue -> execution`
+Requirement:
+- workspace is prepared (feature branch and draft PR exist) before implementation begins.
+
+Fail condition:
+- implementation starts on main or without a draft PR referencing the issue(s).
+
+## `next-issue <-> land`
+Requirement:
+- `next-issue` and `land` are symmetric bookends. `next-issue` opens work (branch, draft PR, direction). `land` closes it (merge, cleanup, close issue).
+
+Fail condition:
+- work initiated without preparation (no branch/PR) or closed without full delivery (merge without issue close).
 
 ## Anti-Divergence Rules
 
