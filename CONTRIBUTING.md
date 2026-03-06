@@ -46,6 +46,13 @@ To curate an upstream skill:
 1. Add the source and skill entries to `manifests/curation.v1.toml` with a pinned `rev`
 2. Run `groundwork update` to sync
 
+## Agent Workspace Policy
+
+- `.codex/` is agent-local runtime/workspace state and is intentionally gitignored.
+- Do not add or edit canonical project content under `.codex/`.
+- Canonical skill content belongs in tracked project paths (`skills/`) or upstream curated sources (`manifests/curation.v1.toml`).
+- When a `.codex/**` path is accidentally tracked, remove it from git index (`git rm --cached <path>`) and move/preserve canonical content in tracked locations.
+
 ## PR Process
 
 - Branch from `main`
