@@ -223,3 +223,27 @@ fn valid_without_evidence_artifact() {
         "gap entry without evidence-artifact should be accepted"
     );
 }
+
+#[test]
+fn rejects_pass_without_evidence_artifact() {
+    let validator = common::load_schema(SCHEMA_PATH);
+    let instance = common::yaml_to_json(
+        "behavior-coverage:\n  - behavior: tested scenario\n    status: pass\nreview-artifact: review-record\ndocumentation-artifact: doc-review\n",
+    );
+    assert!(
+        !validator.is_valid(&instance),
+        "pass entry without evidence-artifact should be rejected"
+    );
+}
+
+#[test]
+fn rejects_fail_without_evidence_artifact() {
+    let validator = common::load_schema(SCHEMA_PATH);
+    let instance = common::yaml_to_json(
+        "behavior-coverage:\n  - behavior: tested failing scenario\n    status: fail\nreview-artifact: review-record\ndocumentation-artifact: doc-review\n",
+    );
+    assert!(
+        !validator.is_valid(&instance),
+        "fail entry without evidence-artifact should be rejected"
+    );
+}

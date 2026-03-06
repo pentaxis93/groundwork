@@ -32,6 +32,20 @@
       "description": "Coverage status for a single behavior.",
       "required": ["behavior", "status"],
       "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "enum": ["pass", "fail"]
+              }
+            }
+          },
+          "then": {
+            "required": ["evidence-artifact"]
+          }
+        }
+      ],
       "properties": {
         "behavior": {
           "type": "string",
