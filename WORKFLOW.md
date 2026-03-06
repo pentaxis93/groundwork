@@ -172,7 +172,6 @@ If `gh-issue-sync pull` fails with missing project scope (`read:project`) or `gr
 | `receiving-code-review` | when receiving review feedback, before implementing suggestions |
 | `documentation` | after code changes that may cause drift, at project initialization, when architectural decisions are made, or when docs fail the audience test |
 | `verification-before-completion` | before claiming work is complete, fixed, or passing — evidence first |
-| `writing-skills` | when creating or revising a SKILL.md — TDD-for-documentation with pressure-scenario validation |
 | `land` | merge-and-close completion events: `land`, `merge and close`, `ship it` |
 
 ## Install

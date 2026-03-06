@@ -66,6 +66,9 @@ through every stage:
 - `same-pr`: documentation updates ship in the same PR as the code change that
   caused them. If the update requires deeper work, create a tracking issue —
   never leave drift untracked.
+- `source-of-truth-over-counts`: avoid hardcoded aggregate counts for dynamic
+  sets (skills, endpoints, flags, supported providers). Prefer referencing the
+  authoritative object (manifest/config/schema) or generating the value.
 
 ## Requirements
 
@@ -82,6 +85,8 @@ through every stage:
   not obvious.
 - `docs-in-acceptance-criteria`: user-facing changes include documentation
   updates as explicit acceptance criteria in the issue.
+- `numeric-claims-traceable`: if a dynamic numeric claim is kept, it must cite
+  its source object and update path (generated, or verified in review).
 
 ## Procedures
 
@@ -124,9 +129,11 @@ Fires after code changes, before `verification-before-completion`.
    - `obsolete` — references removed functionality (rewrite or delete)
 4. **Update or track.** Update drifted/missing docs in the same PR. If deeper
    work is needed, create a tracking issue with `issue-craft`.
-5. **Apply audience test.** For each updated/created doc: "Would the intended
+5. **Audit numeric claims.** Replace brittle counts with source-of-truth
+   references, or explicitly verify and trace any remaining dynamic numbers.
+6. **Apply audience test.** For each updated/created doc: "Would the intended
    reader know what to do after reading this?"
-6. **Record coverage.** In the PR or commit, state: which docs were updated,
+7. **Record coverage.** In the PR or commit, state: which docs were updated,
    which were verified accurate, which were flagged with tracking issues.
 
 **CI integration pattern (lightweight):** A pre-commit check that diffs changed
@@ -191,6 +198,9 @@ When encountering existing documentation (e.g., onboarding to a project):
   listed before creation, verification before the thing it verifies. When
   documenting a sequence of workflows, the presentation order must respect
   the dependency graph — outputs of one step are inputs to the next.
+- `count-fragility`: docs encode "X items" for a set that changes over time.
+  This drifts silently and misleads readers. Replace with source-of-truth
+  references, generated values, or remove the aggregate.
 
 ## Principles
 
