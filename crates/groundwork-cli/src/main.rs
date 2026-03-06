@@ -155,6 +155,7 @@ struct SchemaDoctorReport {
     schema_dir_is_directory: bool,
     missing_files: Vec<&'static str>,
     mismatched_files: Vec<&'static str>,
+    unreadable_files: Vec<&'static str>,
     extra_files: Vec<String>,
 }
 
@@ -547,9 +548,8 @@ fn plan_schema_sync(base_path: &Path) -> Result<SchemaSyncPlan> {
         let action = if !target.exists() {
             SchemaFileAction::Create
         } else {
-            let existing = fs::read_to_string(&target)
-                .with_context(|| format!("failed to read {}", target.display()))?;
-            if existing == schema.content {
+            let existing = fs::read(&target).with_context(|| format!("failed to read {}", target.display()))?;
+            if existing == schema.content.as_bytes() {
                 SchemaFileAction::Unchanged
             } else {
                 SchemaFileAction::Update
@@ -609,6 +609,7 @@ fn inspect_schema_directory(base_path: &Path) -> Result<SchemaDoctorReport> {
             schema_dir_is_directory: false,
             missing_files: EMBEDDED_SCHEMAS.iter().map(|s| s.filename).collect(),
             mismatched_files: vec![],
+            unreadable_files: vec![],
             extra_files: vec![],
         });
     }
@@ -618,6 +619,7 @@ fn inspect_schema_directory(base_path: &Path) -> Result<SchemaDoctorReport> {
             schema_dir_is_directory: false,
             missing_files: EMBEDDED_SCHEMAS.iter().map(|s| s.filename).collect(),
             mismatched_files: vec![],
+            unreadable_files: vec![],
             extra_files: vec![],
         });
     }
@@ -636,6 +638,7 @@ fn inspect_schema_directory(base_path: &Path) -> Result<SchemaDoctorReport> {
     let expected: BTreeSet<&'static str> = EMBEDDED_SCHEMAS.iter().map(|s| s.filename).collect();
     let mut missing_files = Vec::new();
     let mut mismatched_files = Vec::new();
+    let mut unreadable_files = Vec::new();
 
     for schema in EMBEDDED_SCHEMAS {
         let target = schema_dir.join(schema.filename);
@@ -643,10 +646,15 @@ fn inspect_schema_directory(base_path: &Path) -> Result<SchemaDoctorReport> {
             missing_files.push(schema.filename);
             continue;
         }
-        let installed_text = fs::read_to_string(&target)
-            .with_context(|| format!("failed to read {}", target.display()))?;
-        if installed_text != schema.content {
-            mismatched_files.push(schema.filename);
+        match fs::read(&target) {
+            Ok(installed_bytes) => {
+                if std::str::from_utf8(&installed_bytes).is_err() {
+                    unreadable_files.push(schema.filename);
+                } else if installed_bytes != schema.content.as_bytes() {
+                    mismatched_files.push(schema.filename);
+                }
+            }
+            Err(_) => unreadable_files.push(schema.filename),
         }
     }
 
@@ -660,6 +668,7 @@ fn inspect_schema_directory(base_path: &Path) -> Result<SchemaDoctorReport> {
         schema_dir_is_directory: true,
         missing_files,
         mismatched_files,
+        unreadable_files,
         extra_files,
     })
 }
@@ -697,7 +706,10 @@ fn print_schema_doctor_report(base_path: &Path, report: SchemaDoctorReport) {
     }
 
     println!("ok: {} exists", schema_dir.display());
-    if report.missing_files.is_empty() && report.mismatched_files.is_empty() {
+    if report.missing_files.is_empty()
+        && report.mismatched_files.is_empty()
+        && report.unreadable_files.is_empty()
+    {
         println!(
             "ok: managed schemas present and up to date ({})",
             EMBEDDED_SCHEMAS.len()
@@ -715,6 +727,13 @@ fn print_schema_doctor_report(base_path: &Path, report: SchemaDoctorReport) {
                 "warn: .groundwork/schemas/ {} files differ from embedded versions: {}",
                 report.mismatched_files.len(),
                 report.mismatched_files.join(", ")
+            );
+        }
+        if !report.unreadable_files.is_empty() {
+            println!(
+                "warn: .groundwork/schemas/ {} files are unreadable (schema drifted): {}",
+                report.unreadable_files.len(),
+                report.unreadable_files.join(", ")
             );
         }
     }
@@ -1675,6 +1694,7 @@ claude-code = true
                 .extra_files
                 .contains(&"custom-extra.schema.json".to_string())
         );
+        assert!(report.unreadable_files.is_empty());
     }
 
     #[test]
@@ -1706,6 +1726,46 @@ claude-code = true
             err.to_string(),
             "error: .groundwork/artifacts exists but is not a directory"
         );
+    }
+
+    #[test]
+    fn schema_sync_treats_non_utf8_content_as_drift_and_overwrites() {
+        let temp = TempDir::new().expect("tempdir");
+        let base = temp.path();
+        let schema_dir = base.join(SCHEMA_DIR);
+        let artifacts_dir = base.join(ARTIFACTS_DIR);
+        fs::create_dir_all(&schema_dir).expect("create schema dir");
+        fs::create_dir_all(&artifacts_dir).expect("create artifacts dir");
+
+        let schema = EMBEDDED_SCHEMAS[0];
+        fs::write(schema_dir.join(schema.filename), [0xff, 0xfe, 0xfd]).expect("write non-utf8");
+
+        let plan = plan_schema_sync(base).expect("schema sync plan");
+        let action = plan
+            .files
+            .iter()
+            .find(|f| f.filename == schema.filename)
+            .expect("schema plan entry exists")
+            .action;
+        assert_eq!(action, SchemaFileAction::Update);
+
+        apply_schema_sync(base, &plan).expect("schema sync apply");
+        let written = fs::read(schema_dir.join(schema.filename)).expect("read healed schema");
+        assert_eq!(written, schema.content.as_bytes());
+    }
+
+    #[test]
+    fn schema_directory_inspection_marks_non_utf8_schema_unreadable() {
+        let temp = TempDir::new().expect("tempdir");
+        let base = temp.path();
+        let schema_dir = base.join(SCHEMA_DIR);
+        fs::create_dir_all(&schema_dir).expect("create schema dir");
+
+        let unreadable = EMBEDDED_SCHEMAS[0];
+        fs::write(schema_dir.join(unreadable.filename), [0xff, 0xfe]).expect("write non-utf8");
+
+        let report = inspect_schema_directory(base).expect("schema doctor report");
+        assert!(report.unreadable_files.contains(&unreadable.filename));
     }
 
     #[test]
