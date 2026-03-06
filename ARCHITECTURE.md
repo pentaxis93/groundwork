@@ -71,6 +71,7 @@ Formal handoff contracts and anti-divergence rules are defined in `docs/architec
 | File | Purpose |
 |------|---------|
 | `WORKFLOW.md` | Integration manual — the authoritative reference for operating the pipeline |
+| `docs/architecture/pipeline-design.md` | Canonical pipeline design: as-built baseline + clearly marked target-state design |
 | `docs/architecture/pipeline-contract.md` | Formal handoff contracts and anti-divergence rules |
 | `manifests/curation.v1.toml` | Curated upstream skills with pinned commits |
 | `agents.toml` | Skill system configuration (sk-compatible) |
