@@ -24,7 +24,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - Rewrote README from first principles around the pipeline concept
 - Renamed `planning` skill to `next-issue`; added separate `plan` skill for design convergence
 - Reframed sovereignty as a fractal principle (applies at every interface, not just human-agent)
-- Removed the prescriptive step-script decomposition skill from the curated set and live pipeline docs; rationale recorded in [`docs/research/epic-7-methodology-research.md`](docs/research/epic-7-methodology-research.md)
+- Removed the prescriptive step-script decomposition skill from the curated set and live pipeline docs; rationale recorded in [`docs/research/epic-7-methodology-research.md`](docs/research/epic-7-methodology-research.md). Groundwork intentionally overrides `brainstorming`'s upstream `writing-plans` handoff through `WORKFLOW.md` and `using-groundwork`.
 
 ### Fixed
 
