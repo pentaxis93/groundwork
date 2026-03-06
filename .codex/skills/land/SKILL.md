@@ -46,18 +46,19 @@ if [ "$FEATURE_BRANCH" = "main" ]; then
   echo "ERROR: land must run from a feature branch"; exit 1
 fi
 
-git diff --quiet && git diff --cached --quiet || {
-  echo "ERROR: working tree not clean"; exit 1;
-}
+if [ -n "$(git status --porcelain)" ]; then
+  echo "ERROR: working tree not clean (includes untracked files)"; exit 1
+fi
 
 ORIGIN_URL="$(git remote get-url origin)"
 REPO_PATH="$(echo "$ORIGIN_URL" | sed -E 's#(https?://[^/]+/|git@[^:]+:)##; s#\\.git$##')"
 OWNER="${REPO_PATH%%/*}"
 REPO="${REPO_PATH##*/}"
 
-ISSUE_NUMBER="$(echo "$FEATURE_BRANCH" | sed -nE 's#.*issue-([0-9]+).*#\\1#p')"
+# If the user already provided an issue number, keep it.
+ISSUE_NUMBER="${ISSUE_NUMBER:-$(echo "$FEATURE_BRANCH" | sed -nE 's#.*issue-([0-9]+).*#\\1#p')}"
 if [ -z "$ISSUE_NUMBER" ]; then
-  echo "ERROR: cannot infer issue number from branch name; require explicit issue"; exit 1
+  echo "ERROR: cannot infer issue number from branch name; provide explicit ISSUE_NUMBER"; exit 1
 fi
 ```
 
