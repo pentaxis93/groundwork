@@ -103,6 +103,6 @@ When a test fails after change, classify failure as one of:
 ## Cross-References
 - `next-issue`: session-level prioritization and execution sequencing.
 - `issue-craft`: acceptance-criteria rigor and issue decomposition.
-- `superpowers/writing-plans`: decomposes implementation while preserving behavior traceability.
+- `issue-craft`: decomposes work into executable issues while preserving behavior traceability.
 - `superpowers/test-driven-development`: executes RED-GREEN-REFACTOR for BDD-defined behaviors.
 - `superpowers/verification-before-completion`: requires fresh evidence for behavior-level completion claims.

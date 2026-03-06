@@ -26,8 +26,8 @@ strategy is resolved.
 
 For first-principles constraint framing, use `ground`.
 For behavior contracts, use `bdd`.
-For step-by-step execution breakdown after design convergence, use
-`writing-plans`.
+For executable work-unit decomposition after design convergence, use
+`issue-craft`.
 
 ## Goal
 
@@ -180,8 +180,7 @@ implementation mistakes.
   the problem space itself is unclear.
 - `bdd`: behavior contract — provides the behavior statements the plan
   must implement.
-- `writing-plans`: step-by-step execution breakdown — takes a
-  decision-complete design and produces ordered implementation steps.
 - `next-issue`: work selection — identifies which issue to plan for.
-- `issue-craft`: issue quality — ensures the issue is agent-executable
-  before planning begins.
+- `issue-craft`: executable work-unit decomposition and issue quality —
+  turns a decision-complete design into agent-executable issues with
+  binary acceptance criteria.

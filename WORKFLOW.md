@@ -28,7 +28,7 @@ Use `brainstorming` before designing a solution or making a significant architec
 
 Use `plan` to converge from exploration to a decision-complete implementation design before modifying code. It explores the codebase, resolves intent, and produces a plan where every design choice is explicit — the implementer does not need to make any decisions. Based on Codex CLI plan mode (MIT), adapted for autonomous execution.
 
-Use `writing-plans` when you have a decision-complete design and need a structured implementation plan before touching code. It translates the design into bite-sized implementation steps — each step names exact files, code, commands, and expected output. Every plan item maps to one or more behavior statements from the `bdd` contract.
+After a design is approved, use `issue-craft` to express the implementation as agent-executable work units with binary acceptance criteria. In Groundwork's live pipeline, approved designs flow into `plan` for convergence and into `issue-craft` for decomposition.
 
 ### 4. Execute and verify
 
@@ -60,10 +60,11 @@ BDD is a cross-cutting integration mechanism, not a pipeline phase. It runs thro
 
 ### Handoff Rules
 
-1. `bdd -> writing-plans`: every plan item maps to one or more behavior statements.
-2. `bdd -> test-driven-development`: each RED test corresponds to a named behavior scenario.
-3. `bdd -> verification-before-completion`: completion claims require behavior-level evidence.
-4. `bdd -> land`: closure records behavior coverage status and remaining gaps, if any.
+1. `bdd -> plan`: design decisions preserve explicit behavior traceability.
+2. `bdd -> issue-craft`: acceptance criteria and work units map back to behavior statements.
+3. `bdd -> test-driven-development`: each RED test corresponds to a named behavior scenario.
+4. `bdd -> verification-before-completion`: completion claims require behavior-level evidence.
+5. `bdd -> land`: closure records behavior coverage status and remaining gaps, if any.
 
 For fail conditions and anti-divergence rules, see [docs/architecture/pipeline-contract.md](docs/architecture/pipeline-contract.md).
 
@@ -155,7 +156,6 @@ Issues are mirrored locally via `gh-issue-sync`. The `.issues/` directory is git
 | `next-issue` | selecting session-sized work from issue graph, or when a task feels too big to hold in one session |
 | `brainstorming` | before designing a solution or making a significant architectural choice |
 | `plan` | implementation needs design convergence — multiple approaches, unclear scope, or cross-cutting changes |
-| `writing-plans` | when you have a decision-complete design and need a structured implementation plan before touching code |
 | `test-driven-development` | when implementing any feature or bugfix — RED → GREEN → REFACTOR |
 | `subagent-driven-development` | when executing a plan whose tasks are independent and can run in parallel |
 | `systematic-debugging` | when a test fails or behavior is unexpected, before proposing any fix |

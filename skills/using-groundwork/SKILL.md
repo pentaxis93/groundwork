@@ -17,7 +17,7 @@ Groundwork is one connected methodology, not a skill collection. Every skill clo
 
 ## The Flow
 
-`ground` fires first — establishing what the work must enable. Local issues (`.issues/`) mirror the forge — `gh-issue-sync pull` before reading, `push` after writing. From grounded constraints, `bdd` defines the behavior contract — executable expectations threading through every step. `issue-craft` decomposes that contracted behavior into agent-executable issues. `next-issue` selects session-sized work from the issue graph. `plan` converges from exploration to a decision-complete implementation design — every approach, interface, and edge case resolved before code changes. `writing-plans` translates the design into implementation steps. `test-driven-development` implements them through RED-GREEN-REFACTOR — each RED test maps to a named behavior scenario. `subagent-driven-development` parallelizes independent tasks when the plan supports it. `verification-before-completion` demands behavior-level evidence before any completion claim. `land` closes the loop: merge, cleanup, and behavior coverage record.
+`ground` fires first — establishing what the work must enable. Local issues (`.issues/`) mirror the forge — `gh-issue-sync pull` before reading, `push` after writing. From grounded constraints, `bdd` defines the behavior contract — executable expectations threading through every step. `plan` converges from exploration to a decision-complete implementation design — every approach, interface, and edge case resolved before code changes. `issue-craft` decomposes that behavior and design into agent-executable issues. `next-issue` selects session-sized work from the issue graph. `test-driven-development` implements them through RED-GREEN-REFACTOR — each RED test maps to a named behavior scenario. `subagent-driven-development` parallelizes independent tasks when the plan supports it. `verification-before-completion` demands behavior-level evidence before any completion claim. `land` closes the loop: merge, cleanup, and behavior coverage record.
 
 ## Why Issues Are Central
 
@@ -33,7 +33,8 @@ reliable. See WORKFLOW.md § Issue-Based Development for operational definitions
 **Ground re-fires.** `ground` is not step-one-once. New generative work mid-session requires re-grounding. The trigger is creation, not sequence position.
 
 **BDD threads the full pipeline:**
-- `bdd` → `writing-plans`: every plan item maps to named behavior
+- `bdd` → `plan`: design decisions keep behavior coverage explicit
+- `bdd` → `issue-craft`: work units map to named behavior
 - `bdd` → `test-driven-development`: each RED test implements a behavior scenario
 - `bdd` → `verification-before-completion`: evidence must be behavior-level, not just green tests
 - `bdd` → `land`: closure records what behavior coverage shipped and what remains
@@ -46,7 +47,7 @@ reliable. See WORKFLOW.md § Issue-Based Development for operational definitions
 - Creating, decomposing, or refining issues? → `issue-craft`
 - Selecting next work from the issue graph? → `next-issue`
 - Multiple approaches or unclear scope? → `plan`
-- Ready to translate design into steps? → `writing-plans`
+- Ready to turn a converged design into executable work? → `issue-craft`
 - Implementing behavior? → `test-driven-development`
 - Multiple independent tasks to parallelize? → `subagent-driven-development`
 - Preparing or responding to review? → `requesting-code-review`, `receiving-code-review`
@@ -69,4 +70,3 @@ This skill teaches the map; agent judgment navigates it. The behavior contract m
 - Working from memory or context instead of reading the issue graph
 - Treating issues as documentation artifacts rather than the project's working memory
 - Starting work without checking issue state and dependencies
-

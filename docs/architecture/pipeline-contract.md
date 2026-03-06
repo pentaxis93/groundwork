@@ -17,12 +17,19 @@ Groundwork has one coherent path:
 
 ## Handoff Contracts
 
-## `bdd -> writing-plans`
+## `bdd -> plan`
 Requirement:
-- every implementation task maps to one or more behavior statements.
+- design decisions preserve explicit links to the behavior statements they implement.
 
 Fail condition:
-- plan tasks exist but no behavior mapping is stated.
+- an implementation design exists but its behavior coverage is implicit.
+
+## `bdd -> issue-craft`
+Requirement:
+- every executable work unit maps to one or more behavior statements.
+
+Fail condition:
+- issue acceptance criteria exist but no behavior mapping is stated.
 
 ## `bdd -> test-driven-development`
 Requirement:
@@ -79,7 +86,7 @@ Fail condition:
 ## Quick Compliance Checklist
 
 - [ ] Behavior statements are explicitly defined.
-- [ ] Plan steps reference behavior statements.
+- [ ] Design and issue decomposition reference behavior statements.
 - [ ] Execution tests map to behavior statements.
 - [ ] Verification cites behavior-level evidence.
 - [ ] Completion records behavior coverage/gaps.
