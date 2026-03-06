@@ -20,6 +20,7 @@ Use this skill when the user wants full delivery closure in one command.
 6. Verify final state
 
 Do not stop after merge.
+Do not ask for an additional confirmation before landing; invoking `land` is the user's approval to execute this workflow.
 
 ---
 
