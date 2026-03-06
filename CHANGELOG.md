@@ -13,6 +13,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - Nine curated skills from [obra/superpowers](https://github.com/obra/superpowers): `brainstorming`, `writing-skills`, `writing-plans`, `subagent-driven-development`, `test-driven-development`, `systematic-debugging`, `verification-before-completion`, `requesting-code-review`, `receiving-code-review`
 - Rust CLI (`groundwork init`, `update`, `list`, `doctor`) with curated manifest and `sk` integration
 - Automatic `gh-issue-sync` installation during `groundwork init`
+- Schema distribution in CLI: `init/update` now provision `.groundwork/schemas/`, create `.groundwork/artifacts/`, and `doctor` reports schema completeness/drift
 - Pipeline contract with formal handoff rules and anti-divergence checks (`docs/architecture/pipeline-contract.md`)
 - Integration manual (`WORKFLOW.md`) covering pipeline stages, BDD thread, documentation thread, issue-based development, and skill routing
 - Local issue mirroring via `gh-issue-sync`
