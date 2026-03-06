@@ -495,16 +495,19 @@ fn run_doctor() -> Result<()> {
         println!("ok: bootstrap prerequisites satisfied");
     }
 
-    if command_exists("gh") {
+    let gh_available = if command_exists("gh") {
         let ver = first_line_version(run_command_capture(&["gh", "--version"]));
         println!("ok: gh CLI available ({})", ver);
+        true
     } else {
         println!("warn: gh CLI not found (prerequisite for gh-issue-sync)");
-    }
+        false
+    };
 
-    if command_exists("gh-issue-sync") {
+    let issue_sync_available = if command_exists("gh-issue-sync") {
         let ver = first_line_version(run_command_capture(&["gh-issue-sync", "--version"]));
         println!("ok: gh-issue-sync available ({})", ver);
+        true
     } else {
         let (has_curl, has_go) = issue_sync_install_methods_available();
         println!("warn: gh-issue-sync not found");
@@ -516,6 +519,11 @@ fn run_doctor() -> Result<()> {
         } else {
             println!("info: will auto-install on next init/update");
         }
+        false
+    };
+
+    if gh_available && issue_sync_available {
+        print_issue_sync_doctor_status(&cwd);
     }
 
     println!(
@@ -1314,6 +1322,7 @@ fn bootstrap_issue_sync(base_path: &Path) -> Option<(IssueSyncMode, String)> {
     let version = first_line_version(run_command_capture(&["gh-issue-sync", "--version"]));
 
     let issues_dir = base_path.join(".issues");
+    let mut should_pull = false;
     if !issues_dir.exists() {
         let init_status = Command::new("gh-issue-sync")
             .arg("init")
@@ -1326,7 +1335,16 @@ fn bootstrap_issue_sync(base_path: &Path) -> Option<(IssueSyncMode, String)> {
             println!("warn: gh-issue-sync init failed");
             return Some((mode, version));
         }
+        should_pull = true;
+    }
 
+    if !should_pull && issue_sync_status_is_never_pulled(
+        &run_command_capture_ignore_status_in_dir(&["gh-issue-sync", "status"], base_path),
+    ) {
+        should_pull = true;
+    }
+
+    if should_pull {
         let pull_output = Command::new("gh-issue-sync")
             .arg("pull")
             .current_dir(base_path)
@@ -1334,19 +1352,116 @@ fn bootstrap_issue_sync(base_path: &Path) -> Option<(IssueSyncMode, String)> {
 
         match pull_output {
             Ok(output) if output.status.success() => {
-                let count = issues_dir
-                    .read_dir()
-                    .map(|entries| entries.filter_map(|e| e.ok()).count())
-                    .unwrap_or(0);
+                let count = count_issue_markdown_files(&issues_dir);
                 println!("ok: synced {} issues to .issues/", count);
             }
-            _ => {
+            Ok(output) => {
                 println!("warn: gh-issue-sync pull failed");
+                let stderr = String::from_utf8_lossy(&output.stderr).trim().to_string();
+                if !stderr.is_empty() {
+                    println!("info: {}", first_line(&stderr));
+                }
+                if let Some(hint) = issue_sync_pull_remediation_hint(&stderr) {
+                    println!("info: {}", hint);
+                }
+                println!("info: run `gh-issue-sync status` to verify mirror state");
+            }
+            Err(err) => {
+                println!("warn: gh-issue-sync pull failed");
+                println!("info: {}", err);
+                println!("info: run `gh-issue-sync status` to verify mirror state");
             }
         }
     }
 
     Some((mode, version))
+}
+
+fn print_issue_sync_doctor_status(base_path: &Path) {
+    let output = Command::new("gh-issue-sync")
+        .arg("status")
+        .current_dir(base_path)
+        .output();
+
+    match output {
+        Ok(out) if out.status.success() => {
+            let stdout = String::from_utf8_lossy(&out.stdout);
+            if issue_sync_status_is_never_pulled(&stdout) {
+                println!("warn: local issue mirror has never completed a full pull");
+                println!("info: run `gh auth refresh -h github.com -s project`");
+                println!("info: then run `gh-issue-sync pull` and `gh-issue-sync status`");
+            }
+        }
+        Ok(out) => {
+            let stderr = String::from_utf8_lossy(&out.stderr);
+            println!("warn: unable to read issue mirror status");
+            if !stderr.trim().is_empty() {
+                println!("info: {}", first_line(stderr.trim()));
+            }
+            println!("info: run `gh-issue-sync status` manually for details");
+        }
+        Err(err) => {
+            println!("warn: unable to run `gh-issue-sync status`: {}", err);
+        }
+    }
+}
+
+fn run_command_capture_ignore_status_in_dir(args: &[&str], cwd: &Path) -> String {
+    let (program, rest) = match args.split_first() {
+        Some(pair) => pair,
+        None => return String::new(),
+    };
+    Command::new(program)
+        .args(rest)
+        .current_dir(cwd)
+        .output()
+        .map(|o| String::from_utf8_lossy(&o.stdout).trim().to_string())
+        .unwrap_or_default()
+}
+
+fn issue_sync_status_is_never_pulled(status: &str) -> bool {
+    status.lines().any(|line| {
+        let trimmed = line.trim();
+        if let Some(rest) = trimmed.strip_prefix("Last full pull:") {
+            return rest.trim().eq_ignore_ascii_case("never");
+        }
+        false
+    })
+}
+
+fn issue_sync_pull_remediation_hint(stderr: &str) -> Option<&'static str> {
+    let lower = stderr.to_ascii_lowercase();
+    if lower.contains("required scopes")
+        && (lower.contains("read:project") || lower.contains("project"))
+    {
+        return Some("refresh GH auth scopes: `gh auth refresh -h github.com -s project`");
+    }
+    if lower.contains("token") && lower.contains("invalid") {
+        return Some("re-authenticate GH CLI: `gh auth login -h github.com`");
+    }
+    if lower.contains("error connecting") || lower.contains("api.github.com") {
+        return Some("check connectivity and GitHub status, then retry `gh-issue-sync pull`");
+    }
+    None
+}
+
+fn count_issue_markdown_files(issues_dir: &Path) -> usize {
+    ["open", "closed"]
+        .iter()
+        .filter_map(|dir| issues_dir.join(dir).read_dir().ok())
+        .flat_map(|entries| entries.filter_map(|e| e.ok()))
+        .filter(|entry| {
+            entry
+                .path()
+                .extension()
+                .map(|ext| ext == "md")
+                .unwrap_or(false)
+        })
+        .count()
+}
+
+fn first_line(s: &str) -> &str {
+    s.lines().next().unwrap_or(s)
 }
 
 fn run_command_capture(args: &[&str]) -> Result<String> {
@@ -1911,5 +2026,47 @@ Options:
   --non-interactive  Run without prompts
 "#;
         assert!(!supports_skill_target_option(help));
+    }
+
+    #[test]
+    fn issue_sync_status_reports_never_when_line_says_never() {
+        let status = r#"
+Repository: pentaxis93/groundwork
+Last full pull: never
+
+No local changes
+"#;
+        assert!(issue_sync_status_is_never_pulled(status));
+    }
+
+    #[test]
+    fn issue_sync_status_not_never_when_timestamp_present() {
+        let status = r#"
+Repository: pentaxis93/groundwork
+Last full pull: 2026-03-06T12:34:56Z
+
+No local changes
+"#;
+        assert!(!issue_sync_status_is_never_pulled(status));
+    }
+
+    #[test]
+    fn pull_error_hint_detects_missing_project_scope() {
+        let stderr = "gh: Your token has not been granted the required scopes to execute this query. The 'title' field requires one of the following scopes: ['read:project'].";
+        let hint = issue_sync_pull_remediation_hint(stderr).expect("scope hint");
+        assert!(hint.contains("gh auth refresh -h github.com -s project"));
+    }
+
+    #[test]
+    fn pull_error_hint_detects_invalid_token() {
+        let stderr = "The token in /home/user/.config/gh/hosts.yml is invalid.";
+        let hint = issue_sync_pull_remediation_hint(stderr).expect("auth hint");
+        assert!(hint.contains("gh auth login -h github.com"));
+    }
+
+    #[test]
+    fn pull_error_hint_none_for_unclassified_error() {
+        let stderr = "some unexpected output";
+        assert!(issue_sync_pull_remediation_hint(stderr).is_none());
     }
 }

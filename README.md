@@ -63,6 +63,8 @@ This reads the curated manifest, fetches skills from their upstream sources via 
 It also provisions `.groundwork/schemas/` with embedded artifact schemas and creates `.groundwork/artifacts/` for project artifacts.
 
 Prerequisites: Node.js (for `sk`). Optional: `gh-issue-sync` (auto-installed if `curl` or `go` is available).
+If issue sync touches GitHub Projects metadata, refresh GH scopes before first pull:
+`gh auth refresh -h github.com -s project`.
 
 ### Commands
 
@@ -74,6 +76,12 @@ Prerequisites: Node.js (for `sk`). Optional: `gh-issue-sync` (auto-installed if 
 | `groundwork doctor` | Checks prerequisites (`sk`, `gh`, `gh-issue-sync`, `agents.toml`, manifest), plus `.groundwork/schemas/` completeness and drift, and reports status | |
 
 Both `init` and `update` are idempotent. They reconcile the manifest against `agents.toml` and embedded schemas, writing only what changed. State is tracked in `.groundwork/installed.lock.toml`.
+
+Issue sync troubleshooting:
+- If `groundwork doctor` reports "local issue mirror has never completed a full pull", run:
+  `gh auth refresh -h github.com -s project`
+  `gh-issue-sync pull`
+  `gh-issue-sync status`
 
 ## Project Layout
 
