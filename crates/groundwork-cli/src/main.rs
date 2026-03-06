@@ -2,18 +2,54 @@ use anyhow::{anyhow, bail, Context, Result};
 use chrono::Utc;
 use clap::{Args, Parser, Subcommand};
 use serde::{Deserialize, Serialize};
-use std::collections::HashSet;
+use std::collections::{BTreeSet, HashSet};
 use std::fs;
 use std::path::{Path, PathBuf};
 use std::process::{Command, Stdio};
 use toml_edit::{value, DocumentMut, InlineTable, Item, Table, Value};
 
 const AGENTS_TOML: &str = "agents.toml";
+const SCHEMA_DIR: &str = ".groundwork/schemas";
+const ARTIFACTS_DIR: &str = ".groundwork/artifacts";
 const LOCK_PATH: &str = ".groundwork/installed.lock.toml";
 const ORIGINALS_REPO: &str = "pentaxis93/groundwork";
 const SKILLS_SUPPLY_FORK_URL: &str = "https://github.com/pentaxis93/skills-supply";
 const SKILLS_SUPPLY_FORK_REF: &str = "groundwork-v1";
 const CURATION_MANIFEST_TOML: &str = include_str!("../../../manifests/curation.v1.toml");
+const EMBEDDED_SCHEMAS: [EmbeddedSchema; 8] = [
+    EmbeddedSchema {
+        filename: "artifact-frontmatter.schema.json",
+        content: include_str!("../../../schemas/artifact-frontmatter.schema.json"),
+    },
+    EmbeddedSchema {
+        filename: "behavior-contract.schema.json",
+        content: include_str!("../../../schemas/behavior-contract.schema.json"),
+    },
+    EmbeddedSchema {
+        filename: "completion-evidence.schema.json",
+        content: include_str!("../../../schemas/completion-evidence.schema.json"),
+    },
+    EmbeddedSchema {
+        filename: "completion-record.schema.json",
+        content: include_str!("../../../schemas/completion-record.schema.json"),
+    },
+    EmbeddedSchema {
+        filename: "groundwork-frontmatter.schema.json",
+        content: include_str!("../../../schemas/groundwork-frontmatter.schema.json"),
+    },
+    EmbeddedSchema {
+        filename: "implementation-plan.schema.json",
+        content: include_str!("../../../schemas/implementation-plan.schema.json"),
+    },
+    EmbeddedSchema {
+        filename: "research-record.schema.json",
+        content: include_str!("../../../schemas/research-record.schema.json"),
+    },
+    EmbeddedSchema {
+        filename: "test-evidence.schema.json",
+        content: include_str!("../../../schemas/test-evidence.schema.json"),
+    },
+];
 const ORIGINAL_SKILLS: [(&str, &str); 9] = [
     ("ground", "skills/foundation/ground"),
     ("research", "skills/foundation/research"),
@@ -57,6 +93,9 @@ struct InstallResult {
     upserted: usize,
     pruned: usize,
     total_managed: usize,
+    schema_created: usize,
+    schema_updated: usize,
+    schema_unchanged: usize,
 }
 
 #[derive(Debug)]
@@ -82,6 +121,64 @@ struct ManagedDependencySpec {
 struct PinRef {
     key: String,
     value: String,
+}
+
+#[derive(Debug, Clone, Copy)]
+struct EmbeddedSchema {
+    filename: &'static str,
+    content: &'static str,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+enum SchemaFileAction {
+    Create,
+    Update,
+    Unchanged,
+}
+
+#[derive(Debug, Clone, Copy)]
+struct SchemaFilePlan {
+    filename: &'static str,
+    action: SchemaFileAction,
+}
+
+#[derive(Debug, Clone, Default)]
+struct SchemaSyncPlan {
+    create_schema_dir: bool,
+    create_artifacts_dir: bool,
+    files: Vec<SchemaFilePlan>,
+}
+
+#[derive(Debug, Clone, Default)]
+struct SchemaDoctorReport {
+    schema_dir_exists: bool,
+    schema_dir_is_directory: bool,
+    missing_files: Vec<&'static str>,
+    mismatched_files: Vec<&'static str>,
+    extra_files: Vec<String>,
+}
+
+impl SchemaSyncPlan {
+    fn created_count(&self) -> usize {
+        self.files
+            .iter()
+            .filter(|f| f.action == SchemaFileAction::Create)
+            .count()
+    }
+
+    fn updated_count(&self) -> usize {
+        self.files
+            .iter()
+            .filter(|f| f.action == SchemaFileAction::Update)
+            .count()
+    }
+
+    fn unchanged_count(&self) -> usize {
+        self.files
+            .iter()
+            .filter(|f| f.action == SchemaFileAction::Unchanged)
+            .count()
+    }
 }
 
 #[derive(Debug, Deserialize)]
@@ -243,11 +340,15 @@ fn run_install_in_directory(
 
     let previously_managed = read_previous_managed_aliases(base_path);
     let reconcile = reconcile_manifest_to_doc(&mut doc, &managed_specs, &previously_managed)?;
+    let schema_plan = plan_schema_sync(base_path)?;
 
     let result = InstallResult {
         upserted: reconcile.upserted,
         pruned: reconcile.pruned,
         total_managed: reconcile.total_managed,
+        schema_created: schema_plan.created_count(),
+        schema_updated: schema_plan.updated_count(),
+        schema_unchanged: schema_plan.unchanged_count(),
     };
 
     if options.dry_run {
@@ -258,6 +359,11 @@ fn run_install_in_directory(
             result.pruned,
             result.total_managed
         );
+        println!(
+            "dry-run: planned schema sync creates={}, updates={}, unchanged={}",
+            result.schema_created, result.schema_updated, result.schema_unchanged
+        );
+        print_schema_sync_plan_summary(&schema_plan, true);
         print_manifest_summary(&manifest);
         return Ok(result);
     }
@@ -269,6 +375,8 @@ fn run_install_in_directory(
     sk_runner.sync()?;
 
     let issue_sync_info = bootstrap_issue_sync(base_path);
+
+    apply_schema_sync(base_path, &schema_plan)?;
 
     let sk_version = first_line_version(sk_runner.version());
     write_lock(
@@ -288,6 +396,11 @@ fn run_install_in_directory(
         result.pruned,
         result.total_managed
     );
+    println!(
+        "schema sync complete. creates={}, updates={}, unchanged={}",
+        result.schema_created, result.schema_updated, result.schema_unchanged
+    );
+    print_schema_sync_plan_summary(&schema_plan, false);
     println!("Installed with {} ({})", sk_runner.mode_name(), sk_version);
     if let Some((mode, ref ver)) = issue_sync_info {
         println!("Installed gh-issue-sync via {} ({})", mode.mode_name(), ver);
@@ -409,8 +522,204 @@ fn run_doctor() -> Result<()> {
         manifest.version,
         manifest.curated_sources.len()
     );
+    print_schema_doctor_report(&cwd, inspect_schema_directory(&cwd)?);
 
     Ok(())
+}
+
+fn plan_schema_sync(base_path: &Path) -> Result<SchemaSyncPlan> {
+    let schema_dir = base_path.join(SCHEMA_DIR);
+    let artifacts_dir = base_path.join(ARTIFACTS_DIR);
+    let create_schema_dir = !schema_dir.exists();
+    let create_artifacts_dir = !artifacts_dir.exists();
+    let mut files = Vec::with_capacity(EMBEDDED_SCHEMAS.len());
+
+    for schema in EMBEDDED_SCHEMAS {
+        let target = schema_dir.join(schema.filename);
+        let action = if !target.exists() {
+            SchemaFileAction::Create
+        } else {
+            let existing = fs::read_to_string(&target)
+                .with_context(|| format!("failed to read {}", target.display()))?;
+            if existing == schema.content {
+                SchemaFileAction::Unchanged
+            } else {
+                SchemaFileAction::Update
+            }
+        };
+        files.push(SchemaFilePlan {
+            filename: schema.filename,
+            action,
+        });
+    }
+
+    Ok(SchemaSyncPlan {
+        create_schema_dir,
+        create_artifacts_dir,
+        files,
+    })
+}
+
+fn apply_schema_sync(base_path: &Path, plan: &SchemaSyncPlan) -> Result<()> {
+    let schema_dir = base_path.join(SCHEMA_DIR);
+    let artifacts_dir = base_path.join(ARTIFACTS_DIR);
+
+    if plan.create_schema_dir {
+        fs::create_dir_all(&schema_dir)
+            .with_context(|| format!("failed to create {}", schema_dir.display()))?;
+    }
+    if plan.create_artifacts_dir {
+        fs::create_dir_all(&artifacts_dir)
+            .with_context(|| format!("failed to create {}", artifacts_dir.display()))?;
+    }
+
+    for file in &plan.files {
+        match file.action {
+            SchemaFileAction::Create | SchemaFileAction::Update => {
+                let schema = embedded_schema(file.filename)
+                    .ok_or_else(|| anyhow!("embedded schema `{}` not found", file.filename))?;
+                let target = schema_dir.join(file.filename);
+                fs::write(&target, schema.content)
+                    .with_context(|| format!("failed to write {}", target.display()))?;
+            }
+            SchemaFileAction::Unchanged => {}
+        }
+    }
+
+    Ok(())
+}
+
+fn embedded_schema(filename: &str) -> Option<&'static EmbeddedSchema> {
+    EMBEDDED_SCHEMAS.iter().find(|s| s.filename == filename)
+}
+
+fn inspect_schema_directory(base_path: &Path) -> Result<SchemaDoctorReport> {
+    let schema_dir = base_path.join(SCHEMA_DIR);
+    if !schema_dir.exists() {
+        return Ok(SchemaDoctorReport {
+            schema_dir_exists: false,
+            schema_dir_is_directory: false,
+            missing_files: EMBEDDED_SCHEMAS.iter().map(|s| s.filename).collect(),
+            mismatched_files: vec![],
+            extra_files: vec![],
+        });
+    }
+    if !schema_dir.is_dir() {
+        return Ok(SchemaDoctorReport {
+            schema_dir_exists: true,
+            schema_dir_is_directory: false,
+            missing_files: EMBEDDED_SCHEMAS.iter().map(|s| s.filename).collect(),
+            mismatched_files: vec![],
+            extra_files: vec![],
+        });
+    }
+
+    let mut installed = BTreeSet::new();
+    for entry in fs::read_dir(&schema_dir)
+        .with_context(|| format!("failed to read {}", schema_dir.display()))?
+    {
+        let entry = entry.with_context(|| format!("failed to read {}", schema_dir.display()))?;
+        let path = entry.path();
+        if path.is_file() {
+            installed.insert(entry.file_name().to_string_lossy().to_string());
+        }
+    }
+
+    let expected: BTreeSet<&'static str> = EMBEDDED_SCHEMAS.iter().map(|s| s.filename).collect();
+    let mut missing_files = Vec::new();
+    let mut mismatched_files = Vec::new();
+
+    for schema in EMBEDDED_SCHEMAS {
+        let target = schema_dir.join(schema.filename);
+        if !target.exists() {
+            missing_files.push(schema.filename);
+            continue;
+        }
+        let installed_text = fs::read_to_string(&target)
+            .with_context(|| format!("failed to read {}", target.display()))?;
+        if installed_text != schema.content {
+            mismatched_files.push(schema.filename);
+        }
+    }
+
+    let extra_files = installed
+        .into_iter()
+        .filter(|name| !expected.contains(name.as_str()))
+        .collect();
+
+    Ok(SchemaDoctorReport {
+        schema_dir_exists: true,
+        schema_dir_is_directory: true,
+        missing_files,
+        mismatched_files,
+        extra_files,
+    })
+}
+
+fn print_schema_sync_plan_summary(plan: &SchemaSyncPlan, dry_run: bool) {
+    if dry_run {
+        if plan.create_schema_dir {
+            println!("dry-run: would create {SCHEMA_DIR}");
+        }
+        if plan.create_artifacts_dir {
+            println!("dry-run: would create {ARTIFACTS_DIR}");
+        }
+    } else {
+        if plan.create_schema_dir {
+            println!("created {SCHEMA_DIR}");
+        }
+        if plan.create_artifacts_dir {
+            println!("created {ARTIFACTS_DIR}");
+        }
+    }
+}
+
+fn print_schema_doctor_report(base_path: &Path, report: SchemaDoctorReport) {
+    let schema_dir = base_path.join(SCHEMA_DIR);
+    if !report.schema_dir_exists {
+        println!(
+            "warn: {} not found (will be created by init)",
+            schema_dir.display()
+        );
+        return;
+    }
+    if !report.schema_dir_is_directory {
+        println!("warn: {} exists but is not a directory", schema_dir.display());
+        return;
+    }
+
+    println!("ok: {} exists", schema_dir.display());
+    if report.missing_files.is_empty() && report.mismatched_files.is_empty() {
+        println!(
+            "ok: managed schemas present and up to date ({})",
+            EMBEDDED_SCHEMAS.len()
+        );
+    } else {
+        if !report.missing_files.is_empty() {
+            println!(
+                "warn: .groundwork/schemas/ missing {} files: {}",
+                report.missing_files.len(),
+                report.missing_files.join(", ")
+            );
+        }
+        if !report.mismatched_files.is_empty() {
+            println!(
+                "warn: .groundwork/schemas/ {} files differ from embedded versions: {}",
+                report.mismatched_files.len(),
+                report.mismatched_files.join(", ")
+            );
+        }
+    }
+
+    if report.extra_files.is_empty() {
+        println!("ok: no extra schema files detected");
+    } else {
+        println!(
+            "info: .groundwork/schemas/ has {} extra files (left unchanged): {}",
+            report.extra_files.len(),
+            report.extra_files.join(", ")
+        );
+    }
 }
 
 fn read_manifest() -> Result<CurationManifest> {
@@ -1265,7 +1574,99 @@ claude-code = true
         let after = fs::read_to_string(&agents_path).expect("read after");
         assert_eq!(before, after);
         assert!(result.upserted > 0);
+        assert_eq!(result.schema_created, EMBEDDED_SCHEMAS.len());
+        assert_eq!(result.schema_updated, 0);
+        assert_eq!(result.schema_unchanged, 0);
         assert!(!base.join(LOCK_PATH).exists());
+        assert!(!base.join(".groundwork").exists());
+    }
+
+    #[test]
+    fn schema_sync_creates_expected_layout_and_schema_files() {
+        let temp = TempDir::new().expect("tempdir");
+        let base = temp.path();
+
+        let plan = plan_schema_sync(base).expect("schema sync plan");
+        assert!(plan.create_schema_dir);
+        assert!(plan.create_artifacts_dir);
+        assert_eq!(plan.created_count(), EMBEDDED_SCHEMAS.len());
+        assert_eq!(plan.updated_count(), 0);
+        assert_eq!(plan.unchanged_count(), 0);
+
+        apply_schema_sync(base, &plan).expect("schema sync apply");
+
+        assert!(base.join(SCHEMA_DIR).is_dir());
+        assert!(base.join(ARTIFACTS_DIR).is_dir());
+        for schema in EMBEDDED_SCHEMAS {
+            let written = fs::read_to_string(base.join(SCHEMA_DIR).join(schema.filename))
+                .expect("read written schema");
+            assert_eq!(written, schema.content);
+        }
+    }
+
+    #[test]
+    fn schema_sync_preserves_artifacts_and_extra_schema_files() {
+        let temp = TempDir::new().expect("tempdir");
+        let base = temp.path();
+        let schema_dir = base.join(SCHEMA_DIR);
+        let artifacts_dir = base.join(ARTIFACTS_DIR);
+        fs::create_dir_all(&schema_dir).expect("create schema dir");
+        fs::create_dir_all(&artifacts_dir).expect("create artifacts dir");
+
+        let artifact_file = artifacts_dir.join("custom-note.md");
+        fs::write(&artifact_file, "keep me").expect("write artifact");
+
+        let first = EMBEDDED_SCHEMAS[0];
+        let second = EMBEDDED_SCHEMAS[1];
+        fs::write(schema_dir.join(first.filename), first.content).expect("write matching schema");
+        fs::write(schema_dir.join(second.filename), "{}\n").expect("write stale schema");
+        let extra_schema = schema_dir.join("custom.schema.json");
+        fs::write(&extra_schema, "{\"type\":\"object\"}\n").expect("write extra schema");
+
+        let plan = plan_schema_sync(base).expect("schema sync plan");
+        assert!(!plan.create_schema_dir);
+        assert!(!plan.create_artifacts_dir);
+        assert!(plan.updated_count() >= 1);
+        assert!(plan.unchanged_count() >= 1);
+
+        apply_schema_sync(base, &plan).expect("schema sync apply");
+        assert_eq!(fs::read_to_string(&artifact_file).expect("artifact still readable"), "keep me");
+        assert!(extra_schema.exists());
+
+        let refreshed =
+            fs::read_to_string(schema_dir.join(second.filename)).expect("refreshed schema readable");
+        assert_eq!(refreshed, second.content);
+    }
+
+    #[test]
+    fn schema_directory_inspection_reports_missing_mismatched_and_extra_files() {
+        let temp = TempDir::new().expect("tempdir");
+        let base = temp.path();
+        let schema_dir = base.join(SCHEMA_DIR);
+        fs::create_dir_all(&schema_dir).expect("create schema dir");
+
+        let matching = EMBEDDED_SCHEMAS[0];
+        let mismatched = EMBEDDED_SCHEMAS[1];
+        fs::write(schema_dir.join(matching.filename), matching.content).expect("write matching");
+        fs::write(schema_dir.join(mismatched.filename), "{\"broken\":true}\n")
+            .expect("write mismatched");
+        fs::write(schema_dir.join("custom-extra.schema.json"), "{}\n").expect("write extra");
+
+        let report = inspect_schema_directory(base).expect("schema doctor report");
+        assert!(report.schema_dir_exists);
+        assert!(report.schema_dir_is_directory);
+        assert!(
+            report
+                .missing_files
+                .contains(&EMBEDDED_SCHEMAS[2].filename),
+            "expected at least one managed schema to be reported missing"
+        );
+        assert!(report.mismatched_files.contains(&mismatched.filename));
+        assert!(
+            report
+                .extra_files
+                .contains(&"custom-extra.schema.json".to_string())
+        );
     }
 
     #[test]

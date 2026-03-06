@@ -61,6 +61,7 @@ groundwork init
 ```
 
 This reads the curated manifest, fetches skills from their upstream sources via [`sk`](https://github.com/nickarora/sk), populates `agents.toml`, and syncs skills into your agent's skill directory.
+It also provisions `.groundwork/schemas/` with embedded artifact schemas and creates `.groundwork/artifacts/` for project artifacts.
 
 Prerequisites: Node.js (for `sk`). Optional: `gh-issue-sync` (auto-installed if `curl` or `go` is available).
 
@@ -68,12 +69,12 @@ Prerequisites: Node.js (for `sk`). Optional: `gh-issue-sync` (auto-installed if 
 
 | Command | What it does | Flag |
 |---------|-------------|------|
-| `groundwork init` | Reads the curated manifest, populates `agents.toml`, fetches skills via `sk sync`, bootstraps `gh-issue-sync` if available | `--dry-run` |
-| `groundwork update` | Re-syncs to the latest manifest — upserts new or changed skills, prunes removed ones | `--dry-run` |
+| `groundwork init` | Reads the curated manifest, populates `agents.toml`, fetches skills via `sk sync`, bootstraps `gh-issue-sync` if available, and writes embedded schemas to `.groundwork/schemas/` | `--dry-run` |
+| `groundwork update` | Re-syncs to the latest manifest — upserts new or changed skills, prunes removed ones, and reconciles embedded schemas (create/update only; extras preserved) | `--dry-run` |
 | `groundwork list` | Shows installed skills, their sources, and pinned refs from the lock file | |
-| `groundwork doctor` | Checks prerequisites (`sk`, `gh`, `gh-issue-sync`, `agents.toml`, manifest) and reports status | |
+| `groundwork doctor` | Checks prerequisites (`sk`, `gh`, `gh-issue-sync`, `agents.toml`, manifest), plus `.groundwork/schemas/` completeness and drift, and reports status | |
 
-Both `init` and `update` are idempotent. They reconcile the manifest against `agents.toml`, writing only what changed. State is tracked in `.groundwork/installed.lock.toml`.
+Both `init` and `update` are idempotent. They reconcile the manifest against `agents.toml` and embedded schemas, writing only what changed. State is tracked in `.groundwork/installed.lock.toml`.
 
 ## Project Layout
 
