@@ -26,6 +26,8 @@ Do not ask for an additional confirmation before landing; invoking `land` is the
 
 ## Preconditions
 
+- Working tree must be clean before starting.
+- Current branch must not be `main`.
 - Issue number must be known:
   - Prefer explicit user-provided issue number.
   - Else infer from branch name pattern `issue-<number>`.
@@ -40,30 +42,22 @@ Do not ask for an additional confirmation before landing; invoking `land` is the
 
 ```bash
 FEATURE_BRANCH="$(git branch --show-current)"
+if [ "$FEATURE_BRANCH" = "main" ]; then
+  echo "ERROR: land must run from a feature branch"; exit 1
+fi
+
+git diff --quiet && git diff --cached --quiet || {
+  echo "ERROR: working tree not clean"; exit 1;
+}
 
 ORIGIN_URL="$(git remote get-url origin)"
 REPO_PATH="$(echo "$ORIGIN_URL" | sed -E 's#(https?://[^/]+/|git@[^:]+:)##; s#\\.git$##')"
 OWNER="${REPO_PATH%%/*}"
 REPO="${REPO_PATH##*/}"
 
-ISSUE_NUMBER="${ISSUE_NUMBER:-}"
-if [ -z "$ISSUE_NUMBER" ]; then
-  ISSUE_NUMBER="$(echo "$FEATURE_BRANCH" | sed -nE 's#.*issue-([0-9]+).*#\\1#p')"
-fi
+ISSUE_NUMBER="$(echo "$FEATURE_BRANCH" | sed -nE 's#.*issue-([0-9]+).*#\\1#p')"
 if [ -z "$ISSUE_NUMBER" ]; then
   echo "ERROR: cannot infer issue number from branch name; require explicit issue"; exit 1
-fi
-
-AUTO_BRANCH_CREATED=0
-if [ "$FEATURE_BRANCH" = "main" ]; then
-  FEATURE_BRANCH="issue-${ISSUE_NUMBER}-land-$(date +%Y%m%d-%H%M%S)"
-  git checkout -b "$FEATURE_BRANCH"
-  AUTO_BRANCH_CREATED=1
-fi
-
-if ! git diff --quiet || ! git diff --cached --quiet || [ -n "$(git ls-files --others --exclude-standard)" ]; then
-  git add -A
-  git commit -m "chore: finalize issue #${ISSUE_NUMBER} before land"
 fi
 ```
 
@@ -150,7 +144,7 @@ Success conditions:
 ## Failure Policy
 
 - If merge/push fails: stop immediately, do not close issue.
-- If branch deletion fails after successful merge: report partial completion; issue may still be closed.
+- If branch deletion fails after successful merge: report partial completion and keep issue open.
 - If issue comment/close API fails: report partial completion and include exact failing step.
 
 ---
