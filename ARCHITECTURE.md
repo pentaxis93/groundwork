@@ -44,7 +44,7 @@ Groundwork has two kinds of skills, distinguished by where they are maintained:
 
 **Core skills** (9) are maintained in this repository. They define the pipeline's structure — what stages exist, what handoff contracts connect them, and what cognitive discipline the pipeline enforces: `ground`, `research`, `bdd`, `issue-craft`, `next-issue`, `plan`, `documentation`, `land`, and the `using-groundwork` meta-skill.
 
-**Curated skills** (9, from [obra/superpowers](https://github.com/obra/superpowers)) are referenced by the manifest and fetched at install time. They fill the execution phase — TDD, debugging, subagent orchestration, code review, verification — where high-quality implementations already exist.
+**Curated skills** (8, from [obra/superpowers](https://github.com/obra/superpowers)) are referenced by the manifest and fetched at install time. They fill the execution phase — TDD, debugging, subagent orchestration, code review, verification — where high-quality implementations already exist.
 
 Curated skills are pinned to a specific commit. They are not forked, vendored, or modified. Integration happens through documentation: WORKFLOW.md defines handoff rules that connect curated skills to the pipeline's input/output contracts.
 
@@ -56,7 +56,7 @@ The five stages are not a taxonomy — they are an integration architecture. Eac
 
 1. **Frame constraints** (`ground`, `research`) produces verified constraints and substantiated evidence
 2. **Define behavior** (`bdd`) produces Given/When/Then behavior contracts
-3. **Decompose** (`issue-craft`, `next-issue`, `plan`) produces executable issues and implementation designs
+3. **Decompose** (`issue-craft`, `next-issue`, `plan`, plus design exploration in `brainstorming`) produces executable issues and implementation designs
 4. **Execute and verify** (curated skills) produces tested implementations and review evidence
 5. **Land** (`land`) produces closed issues, merged code, and behavior coverage records
 

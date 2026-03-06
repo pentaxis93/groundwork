@@ -23,7 +23,7 @@ There is one path, not a menu. Every piece of work flows through five stages:
 
 **2. Define behavior** — `bdd` defines the behavior contract in Given/When/Then scenarios. This contract threads through every subsequent stage — it is the integration mechanism, not a planning artifact.
 
-**3. Decompose** — `issue-craft` produces agent-executable issues with binary acceptance criteria from the behavior contract. `next-issue` selects session-sized work from the issue graph. `brainstorming` explores design approaches. `plan` converges to a decision-complete implementation design. `writing-plans` translates it into concrete steps. The issue graph is the project's working memory across sessions.
+**3. Decompose** — `issue-craft` produces agent-executable issues with binary acceptance criteria from the behavior contract. `next-issue` selects session-sized work from the issue graph. `brainstorming` explores design approaches. `plan` converges to a decision-complete implementation design. Approved designs become executable work through `issue-craft`. The issue graph is the project's working memory across sessions.
 
 **4. Execute and verify** — `test-driven-development` implements behavior through RED-GREEN-REFACTOR — each RED test maps to a named scenario from stage 2. `systematic-debugging` finds root cause before proposing fixes. Code review and `verification-before-completion` gate completion with behavior-level evidence.
 
@@ -42,7 +42,6 @@ For the full integration manual, see [WORKFLOW.md](WORKFLOW.md). For formal hand
 | `next-issue` | Decomposition | Recency drift, scope creep, blocker bypass |
 | `brainstorming` | Decomposition | Coding before design is approved |
 | `plan` | Decomposition | Unclear scope, design choices left to implementer |
-| `writing-plans` | Decomposition | Vague execution plans without file-level specificity |
 | `test-driven-development` | Execution | Implementation-first regressions |
 | `subagent-driven-development` | Execution | Context drift in parallel work |
 | `systematic-debugging` | Execution | Thrashing and symptom-fixing |

@@ -20,11 +20,6 @@ path = "skills/writing-skills"
 reason = "Prevents deploying untested skills by enforcing TDD-for-documentation with pressure-scenario validation."
 
 [[curated_sources.skills]]
-name = "writing-plans"
-path = "skills/writing-plans"
-reason = "Prevents vague execution by producing concrete, executable tasks."
-
-[[curated_sources.skills]]
 name = "subagent-driven-development"
 path = "skills/subagent-driven-development"
 reason = "Prevents context drift by using fresh subagents and staged review loops."
