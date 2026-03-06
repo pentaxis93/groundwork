@@ -50,7 +50,6 @@ For the full integration manual, see [WORKFLOW.md](WORKFLOW.md). For formal hand
 | `verification-before-completion` | Verification | False completion claims without evidence |
 | `documentation` | Verification | Drifted docs, missing artifact updates |
 | `land` | Completion | Branch rot, unclosed issues, incomplete delivery |
-| `writing-skills` | Meta | Deploying untested process documentation |
 | `using-groundwork` | Meta | Using skills in isolation instead of as a connected pipeline |
 
 ## Install

@@ -10,7 +10,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 - Five-stage methodology pipeline: frame constraints, define behavior, decompose, execute and verify, land
 - Nine core skills: `ground`, `research`, `bdd`, `issue-craft`, `next-issue`, `plan`, `documentation`, `land`, and `using-groundwork` (methodology orientation)
-- Eight curated skills from [obra/superpowers](https://github.com/obra/superpowers): `brainstorming`, `writing-skills`, `subagent-driven-development`, `test-driven-development`, `systematic-debugging`, `verification-before-completion`, `requesting-code-review`, `receiving-code-review`
+- Seven curated skills from [obra/superpowers](https://github.com/obra/superpowers): `brainstorming`, `subagent-driven-development`, `test-driven-development`, `systematic-debugging`, `verification-before-completion`, `requesting-code-review`, `receiving-code-review`
 - Rust CLI (`groundwork init`, `update`, `list`, `doctor`) with curated manifest and `sk` integration
 - Automatic `gh-issue-sync` installation during `groundwork init`
 - Schema distribution in CLI: `init/update` now provision `.groundwork/schemas/`, create `.groundwork/artifacts/`, and `doctor` reports schema completeness/drift
@@ -25,6 +25,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - Renamed `planning` skill to `next-issue`; added separate `plan` skill for design convergence
 - Reframed sovereignty as a fractal principle (applies at every interface, not just human-agent)
 - Removed the prescriptive step-script decomposition skill from the curated set and live pipeline docs; rationale recorded in [`docs/research/epic-7-methodology-research.md`](docs/research/epic-7-methodology-research.md). Groundwork intentionally overrides `brainstorming`'s upstream `writing-plans` handoff through `WORKFLOW.md` and `using-groundwork`.
+- Removed the curated skill-authoring meta-skill from runtime docs/config so first-session agents only load pipeline-relevant skills.
 
 ### Fixed
 
