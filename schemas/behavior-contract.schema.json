@@ -1,0 +1,72 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/pentaxis93/groundwork/main/schemas/behavior-contract.schema.json",
+  "title": "Behavior Contract",
+  "description": "Validates the content of a behavior-contract artifact. Defines expected system behavior as Given/When/Then scenarios.",
+  "type": "object",
+  "required": ["title", "scenarios", "metadata"],
+  "additionalProperties": false,
+  "properties": {
+    "title": {
+      "type": "string",
+      "description": "Human-readable title for the behavior contract.",
+      "minLength": 1
+    },
+    "scenarios": {
+      "type": "array",
+      "description": "Behavioral scenarios in Given/When/Then form.",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/scenario"
+      }
+    },
+    "metadata": {
+      "type": "object",
+      "description": "Production metadata for the behavior contract.",
+      "required": ["produced_by", "date"],
+      "additionalProperties": false,
+      "properties": {
+        "produced_by": {
+          "type": "string",
+          "description": "Skill name that produced this artifact.",
+          "pattern": "^[a-z][a-z0-9]*(-[a-z0-9]+)*$"
+        },
+        "date": {
+          "type": "string",
+          "description": "Date of production in YYYY-MM-DD format.",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+        }
+      }
+    }
+  },
+  "$defs": {
+    "scenario": {
+      "type": "object",
+      "description": "A single behavioral scenario.",
+      "required": ["name", "given", "when", "then"],
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Human-readable scenario name.",
+          "minLength": 1
+        },
+        "given": {
+          "type": "string",
+          "description": "The initial context or state.",
+          "minLength": 1
+        },
+        "when": {
+          "type": "string",
+          "description": "The action or event.",
+          "minLength": 1
+        },
+        "then": {
+          "type": "string",
+          "description": "The expected outcome.",
+          "minLength": 1
+        }
+      }
+    }
+  }
+}

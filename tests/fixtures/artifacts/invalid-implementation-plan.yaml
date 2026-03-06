@@ -1,0 +1,6 @@
+title: Add user authentication endpoint
+summary: Implement a POST /auth/login endpoint that validates credentials and returns JWT tokens.
+key-changes:
+  - Add login route handler in src/routes/auth.rs
+  - Create JWT token generation utility
+test-strategy: Unit tests for token generation and password validation.

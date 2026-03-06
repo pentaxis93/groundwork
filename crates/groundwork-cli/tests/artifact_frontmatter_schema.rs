@@ -1,5 +1,4 @@
-use jsonschema::Validator;
-use serde_json::Value;
+mod common;
 
 const SCHEMA_PATH: &str =
     concat!(env!("CARGO_MANIFEST_DIR"), "/../../schemas/artifact-frontmatter.schema.json");
@@ -10,31 +9,21 @@ const VERIFICATION_FIXTURE: &str = concat!(
     "/../../tests/fixtures/verification-artifact-frontmatter.yaml"
 );
 
-fn load_schema() -> Validator {
-    let text = std::fs::read_to_string(SCHEMA_PATH).expect("read schema");
-    let value: Value = serde_json::from_str(&text).expect("parse schema JSON");
-    Validator::new(&value).expect("compile schema")
-}
-
-fn yaml_to_json(yaml: &str) -> Value {
-    serde_yml::from_str(yaml).expect("parse YAML")
-}
-
 // ── Valid fixtures ──────────────────────────────────────────────
 
 #[test]
 fn valid_spec_artifact_frontmatter() {
-    let validator = load_schema();
+    let validator = common::load_schema(SCHEMA_PATH);
     let text = std::fs::read_to_string(SPEC_FIXTURE).expect("read fixture");
-    let instance = yaml_to_json(&text);
+    let instance = common::yaml_to_json(&text);
     assert!(validator.is_valid(&instance), "spec fixture should be valid");
 }
 
 #[test]
 fn valid_verification_artifact_frontmatter() {
-    let validator = load_schema();
+    let validator = common::load_schema(SCHEMA_PATH);
     let text = std::fs::read_to_string(VERIFICATION_FIXTURE).expect("read fixture");
-    let instance = yaml_to_json(&text);
+    let instance = common::yaml_to_json(&text);
     assert!(
         validator.is_valid(&instance),
         "verification fixture should be valid"
@@ -45,8 +34,8 @@ fn valid_verification_artifact_frontmatter() {
 
 #[test]
 fn rejects_missing_schema() {
-    let validator = load_schema();
-    let instance = yaml_to_json(
+    let validator = common::load_schema(SCHEMA_PATH);
+    let instance = common::yaml_to_json(
         "freshness: fresh\nproduced_by: ground\nproduced_at: \"2026-03-05T14:30:00Z\"\n",
     );
     assert!(!validator.is_valid(&instance), "missing schema should be rejected");
@@ -54,8 +43,8 @@ fn rejects_missing_schema() {
 
 #[test]
 fn rejects_missing_freshness() {
-    let validator = load_schema();
-    let instance = yaml_to_json(
+    let validator = common::load_schema(SCHEMA_PATH);
+    let instance = common::yaml_to_json(
         "schema: schemas/x.schema.json\nproduced_by: ground\nproduced_at: \"2026-03-05T14:30:00Z\"\n",
     );
     assert!(
@@ -66,8 +55,8 @@ fn rejects_missing_freshness() {
 
 #[test]
 fn rejects_missing_produced_by() {
-    let validator = load_schema();
-    let instance = yaml_to_json(
+    let validator = common::load_schema(SCHEMA_PATH);
+    let instance = common::yaml_to_json(
         "schema: schemas/x.schema.json\nfreshness: fresh\nproduced_at: \"2026-03-05T14:30:00Z\"\n",
     );
     assert!(
@@ -78,8 +67,8 @@ fn rejects_missing_produced_by() {
 
 #[test]
 fn rejects_missing_produced_at() {
-    let validator = load_schema();
-    let instance = yaml_to_json(
+    let validator = common::load_schema(SCHEMA_PATH);
+    let instance = common::yaml_to_json(
         "schema: schemas/x.schema.json\nfreshness: fresh\nproduced_by: ground\n",
     );
     assert!(
@@ -92,8 +81,8 @@ fn rejects_missing_produced_at() {
 
 #[test]
 fn rejects_unknown_freshness() {
-    let validator = load_schema();
-    let instance = yaml_to_json(
+    let validator = common::load_schema(SCHEMA_PATH);
+    let instance = common::yaml_to_json(
         "schema: schemas/x.schema.json\nfreshness: expired\nproduced_by: ground\nproduced_at: \"2026-03-05T14:30:00Z\"\n",
     );
     assert!(
@@ -104,8 +93,8 @@ fn rejects_unknown_freshness() {
 
 #[test]
 fn rejects_unknown_approval() {
-    let validator = load_schema();
-    let instance = yaml_to_json(
+    let validator = common::load_schema(SCHEMA_PATH);
+    let instance = common::yaml_to_json(
         "schema: schemas/x.schema.json\nfreshness: fresh\nproduced_by: ground\nproduced_at: \"2026-03-05T14:30:00Z\"\napproval: maybe\n",
     );
     assert!(
@@ -118,8 +107,8 @@ fn rejects_unknown_approval() {
 
 #[test]
 fn rejects_extra_field_at_top_level() {
-    let validator = load_schema();
-    let instance = yaml_to_json(
+    let validator = common::load_schema(SCHEMA_PATH);
+    let instance = common::yaml_to_json(
         "schema: schemas/x.schema.json\nfreshness: fresh\nproduced_by: ground\nproduced_at: \"2026-03-05T14:30:00Z\"\nversion: \"1.0\"\n",
     );
     assert!(
@@ -130,8 +119,8 @@ fn rejects_extra_field_at_top_level() {
 
 #[test]
 fn rejects_extra_field_in_dependency_entry() {
-    let validator = load_schema();
-    let instance = yaml_to_json(
+    let validator = common::load_schema(SCHEMA_PATH);
+    let instance = common::yaml_to_json(
         "schema: schemas/x.schema.json\nfreshness: fresh\nproduced_by: ground\nproduced_at: \"2026-03-05T14:30:00Z\"\ndepends_on:\n  - artifact: behavior-contract\n    optional: true\n",
     );
     assert!(
@@ -144,13 +133,13 @@ fn rejects_extra_field_in_dependency_entry() {
 
 #[test]
 fn rejects_invalid_produced_by() {
-    let validator = load_schema();
+    let validator = common::load_schema(SCHEMA_PATH);
 
     for bad in ["", "Has Spaces", "../traversal", "UPPER", "123-start"] {
         let yaml = format!(
             "schema: schemas/x.schema.json\nfreshness: fresh\nproduced_by: \"{bad}\"\nproduced_at: \"2026-03-05T14:30:00Z\"\n"
         );
-        let instance = yaml_to_json(&yaml);
+        let instance = common::yaml_to_json(&yaml);
         assert!(
             !validator.is_valid(&instance),
             "produced_by {:?} should be rejected",
@@ -161,8 +150,8 @@ fn rejects_invalid_produced_by() {
 
 #[test]
 fn rejects_absolute_schema_path() {
-    let validator = load_schema();
-    let instance = yaml_to_json(
+    let validator = common::load_schema(SCHEMA_PATH);
+    let instance = common::yaml_to_json(
         "schema: /etc/shadow\nfreshness: fresh\nproduced_by: ground\nproduced_at: \"2026-03-05T14:30:00Z\"\n",
     );
     assert!(
@@ -173,8 +162,8 @@ fn rejects_absolute_schema_path() {
 
 #[test]
 fn rejects_traversal_schema_path() {
-    let validator = load_schema();
-    let instance = yaml_to_json(
+    let validator = common::load_schema(SCHEMA_PATH);
+    let instance = common::yaml_to_json(
         "schema: ../../../etc/passwd\nfreshness: fresh\nproduced_by: ground\nproduced_at: \"2026-03-05T14:30:00Z\"\n",
     );
     assert!(
@@ -185,7 +174,7 @@ fn rejects_traversal_schema_path() {
 
 #[test]
 fn rejects_invalid_produced_at() {
-    let validator = load_schema();
+    let validator = common::load_schema(SCHEMA_PATH);
 
     for bad in [
         "2026-03-05",                     // date only, no time
@@ -196,7 +185,7 @@ fn rejects_invalid_produced_at() {
         let yaml = format!(
             "schema: schemas/x.schema.json\nfreshness: fresh\nproduced_by: ground\nproduced_at: \"{bad}\"\n"
         );
-        let instance = yaml_to_json(&yaml);
+        let instance = common::yaml_to_json(&yaml);
         assert!(
             !validator.is_valid(&instance),
             "produced_at {:?} should be rejected",
@@ -209,8 +198,8 @@ fn rejects_invalid_produced_at() {
 
 #[test]
 fn valid_without_depends_on() {
-    let validator = load_schema();
-    let instance = yaml_to_json(
+    let validator = common::load_schema(SCHEMA_PATH);
+    let instance = common::yaml_to_json(
         "schema: schemas/x.schema.json\nfreshness: fresh\nproduced_by: ground\nproduced_at: \"2026-03-05T14:30:00Z\"\n",
     );
     assert!(
@@ -221,8 +210,8 @@ fn valid_without_depends_on() {
 
 #[test]
 fn valid_with_empty_depends_on() {
-    let validator = load_schema();
-    let instance = yaml_to_json(
+    let validator = common::load_schema(SCHEMA_PATH);
+    let instance = common::yaml_to_json(
         "schema: schemas/x.schema.json\nfreshness: fresh\nproduced_by: ground\nproduced_at: \"2026-03-05T14:30:00Z\"\ndepends_on: []\n",
     );
     assert!(
@@ -233,8 +222,8 @@ fn valid_with_empty_depends_on() {
 
 #[test]
 fn valid_without_approval() {
-    let validator = load_schema();
-    let instance = yaml_to_json(
+    let validator = common::load_schema(SCHEMA_PATH);
+    let instance = common::yaml_to_json(
         "schema: schemas/x.schema.json\nfreshness: fresh\nproduced_by: ground\nproduced_at: \"2026-03-05T14:30:00Z\"\ndepends_on:\n  - artifact: behavior-contract\n",
     );
     assert!(
@@ -247,13 +236,13 @@ fn valid_without_approval() {
 
 #[test]
 fn rejects_invalid_dependency_artifact_name() {
-    let validator = load_schema();
+    let validator = common::load_schema(SCHEMA_PATH);
 
     for bad in ["", "Has Spaces", "../traversal", "UPPER", "123-start"] {
         let yaml = format!(
             "schema: schemas/x.schema.json\nfreshness: fresh\nproduced_by: ground\nproduced_at: \"2026-03-05T14:30:00Z\"\ndepends_on:\n  - artifact: \"{bad}\"\n"
         );
-        let instance = yaml_to_json(&yaml);
+        let instance = common::yaml_to_json(&yaml);
         assert!(
             !validator.is_valid(&instance),
             "dependency artifact name {:?} should be rejected",
