@@ -146,6 +146,11 @@ Epics with 4+ tasks include a dependency graph in two representations:
 
 Issues are mirrored locally via `gh-issue-sync`. The `.issues/` directory is gitignored — it is a working surface, not a second source of truth. Sync at natural boundaries: pull before reading, push after writing.
 
+If `gh-issue-sync pull` fails with missing project scope (`read:project`) or `groundwork doctor` reports that the mirror has never completed a full pull, recover with:
+- `gh auth refresh -h github.com -s project`
+- `gh-issue-sync pull`
+- `gh-issue-sync status`
+
 ## Skill Routing Table
 
 | Skill | Trigger |
