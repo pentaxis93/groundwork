@@ -2,46 +2,49 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://raw.githubusercontent.com/pentaxis93/groundwork/main/schemas/completion-evidence.schema.json",
   "title": "Completion Evidence",
-  "description": "Validates the content of a completion-evidence artifact. Cross-references other artifacts to demonstrate that completion criteria are met.",
+  "description": "Validates the content of a completion-evidence artifact. Aggregates per-behavior coverage status and references review and documentation artifacts.",
   "type": "object",
-  "required": ["behavior-coverage", "review-status", "documentation-status"],
+  "required": ["behavior-coverage", "review-artifact", "documentation-artifact"],
   "additionalProperties": false,
   "properties": {
     "behavior-coverage": {
-      "type": "object",
-      "description": "References the test-evidence artifact that covers behavior scenarios.",
-      "required": ["test-evidence"],
-      "additionalProperties": false,
-      "properties": {
-        "test-evidence": {
-          "type": "string",
-          "description": "Artifact name referencing test evidence.",
-          "pattern": "^[a-z][a-z0-9]*([-.][a-z0-9]+)*$"
-        }
+      "type": "array",
+      "description": "Per-behavior coverage status entries.",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/behavior-entry"
       }
     },
-    "review-status": {
-      "type": "object",
-      "description": "References the review-record artifact.",
-      "required": ["review-record"],
-      "additionalProperties": false,
-      "properties": {
-        "review-record": {
-          "type": "string",
-          "description": "Artifact name referencing the review record.",
-          "pattern": "^[a-z][a-z0-9]*([-.][a-z0-9]+)*$"
-        }
-      }
+    "review-artifact": {
+      "type": "string",
+      "description": "Artifact name referencing the review record.",
+      "pattern": "^[a-z][a-z0-9]*([-.][a-z0-9]+)*$"
     },
-    "documentation-status": {
+    "documentation-artifact": {
+      "type": "string",
+      "description": "Artifact name referencing the documentation review record.",
+      "pattern": "^[a-z][a-z0-9]*([-.][a-z0-9]+)*$"
+    }
+  },
+  "$defs": {
+    "behavior-entry": {
       "type": "object",
-      "description": "References the documentation-review-record artifact.",
-      "required": ["documentation-review-record"],
+      "description": "Coverage status for a single behavior.",
+      "required": ["behavior", "status"],
       "additionalProperties": false,
       "properties": {
-        "documentation-review-record": {
+        "behavior": {
           "type": "string",
-          "description": "Artifact name referencing the documentation review record.",
+          "description": "Description of the behavior being tracked."
+        },
+        "status": {
+          "type": "string",
+          "description": "Coverage status: pass (tested), fail (tested, failing), or gap (not tested).",
+          "enum": ["pass", "fail", "gap"]
+        },
+        "evidence-artifact": {
+          "type": "string",
+          "description": "Artifact name referencing test evidence. Optional because gaps have no evidence.",
           "pattern": "^[a-z][a-z0-9]*([-.][a-z0-9]+)*$"
         }
       }

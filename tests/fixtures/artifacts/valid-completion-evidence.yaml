@@ -1,6 +1,8 @@
 behavior-coverage:
-  test-evidence: test-evidence.yaml
-review-status:
-  review-record: review-record.yaml
-documentation-status:
-  documentation-review-record: documentation-review-record.yaml
+  - behavior: "user can authenticate with valid credentials"
+    status: pass
+    evidence-artifact: test-evidence
+  - behavior: "expired token returns 401"
+    status: gap
+review-artifact: review-record
+documentation-artifact: documentation-review-record

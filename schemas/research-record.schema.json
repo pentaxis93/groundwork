@@ -23,6 +23,7 @@
     "sources": {
       "type": "array",
       "description": "Sources consulted during research.",
+      "minItems": 1,
       "items": {
         "$ref": "#/$defs/source"
       }
@@ -43,6 +44,7 @@
         "url": {
           "type": "string",
           "description": "URL of the source.",
+          "format": "uri",
           "minLength": 1
         },
         "title": {

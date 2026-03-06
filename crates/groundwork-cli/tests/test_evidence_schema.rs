@@ -1,5 +1,4 @@
-use jsonschema::Validator;
-use serde_json::Value;
+mod common;
 
 const SCHEMA_PATH: &str =
     concat!(env!("CARGO_MANIFEST_DIR"), "/../../schemas/test-evidence.schema.json");
@@ -12,23 +11,14 @@ const INVALID_FIXTURE: &str = concat!(
     "/../../tests/fixtures/artifacts/invalid-test-evidence.yaml"
 );
 
-fn load_schema() -> Validator {
-    let text = std::fs::read_to_string(SCHEMA_PATH).expect("read schema");
-    let value: Value = serde_json::from_str(&text).expect("parse schema JSON");
-    Validator::new(&value).expect("compile schema")
-}
-
-fn yaml_to_json(yaml: &str) -> Value {
-    serde_yml::from_str(yaml).expect("parse YAML")
-}
 
 // ── Valid fixtures ──────────────────────────────────────────────
 
 #[test]
 fn valid_test_evidence() {
-    let validator = load_schema();
+    let validator = common::load_schema(SCHEMA_PATH);
     let text = std::fs::read_to_string(VALID_FIXTURE).expect("read fixture");
-    let instance = yaml_to_json(&text);
+    let instance = common::yaml_to_json(&text);
     assert!(validator.is_valid(&instance), "valid fixture should be accepted");
 }
 
@@ -36,9 +26,9 @@ fn valid_test_evidence() {
 
 #[test]
 fn invalid_test_evidence_bad_result_value() {
-    let validator = load_schema();
+    let validator = common::load_schema(SCHEMA_PATH);
     let text = std::fs::read_to_string(INVALID_FIXTURE).expect("read fixture");
-    let instance = yaml_to_json(&text);
+    let instance = common::yaml_to_json(&text);
     assert!(
         !validator.is_valid(&instance),
         "invalid result value 'success' should be rejected"
@@ -49,15 +39,15 @@ fn invalid_test_evidence_bad_result_value() {
 
 #[test]
 fn rejects_missing_evidence() {
-    let validator = load_schema();
-    let instance = yaml_to_json("{}");
+    let validator = common::load_schema(SCHEMA_PATH);
+    let instance = common::yaml_to_json("{}");
     assert!(!validator.is_valid(&instance), "missing evidence should be rejected");
 }
 
 #[test]
 fn rejects_evidence_entry_missing_scenario() {
-    let validator = load_schema();
-    let instance = yaml_to_json(
+    let validator = common::load_schema(SCHEMA_PATH);
+    let instance = common::yaml_to_json(
         "evidence:\n  - result: pass\n    command: cargo test\n    output-summary: passed\n",
     );
     assert!(
@@ -68,8 +58,8 @@ fn rejects_evidence_entry_missing_scenario() {
 
 #[test]
 fn rejects_evidence_entry_missing_result() {
-    let validator = load_schema();
-    let instance = yaml_to_json(
+    let validator = common::load_schema(SCHEMA_PATH);
+    let instance = common::yaml_to_json(
         "evidence:\n  - scenario: test scenario\n    command: cargo test\n    output-summary: passed\n",
     );
     assert!(
@@ -80,8 +70,8 @@ fn rejects_evidence_entry_missing_result() {
 
 #[test]
 fn rejects_evidence_entry_missing_command() {
-    let validator = load_schema();
-    let instance = yaml_to_json(
+    let validator = common::load_schema(SCHEMA_PATH);
+    let instance = common::yaml_to_json(
         "evidence:\n  - scenario: test scenario\n    result: pass\n    output-summary: passed\n",
     );
     assert!(
@@ -92,8 +82,8 @@ fn rejects_evidence_entry_missing_command() {
 
 #[test]
 fn rejects_evidence_entry_missing_output_summary() {
-    let validator = load_schema();
-    let instance = yaml_to_json(
+    let validator = common::load_schema(SCHEMA_PATH);
+    let instance = common::yaml_to_json(
         "evidence:\n  - scenario: test scenario\n    result: pass\n    command: cargo test\n",
     );
     assert!(
@@ -106,13 +96,13 @@ fn rejects_evidence_entry_missing_output_summary() {
 
 #[test]
 fn rejects_invalid_result_values() {
-    let validator = load_schema();
+    let validator = common::load_schema(SCHEMA_PATH);
 
     for bad in ["success", "failure", "error", "skip", "PASS"] {
         let yaml = format!(
             "evidence:\n  - scenario: test scenario\n    result: {bad}\n    command: cargo test\n    output-summary: output\n"
         );
-        let instance = yaml_to_json(&yaml);
+        let instance = common::yaml_to_json(&yaml);
         assert!(
             !validator.is_valid(&instance),
             "result {:?} should be rejected",
@@ -125,8 +115,8 @@ fn rejects_invalid_result_values() {
 
 #[test]
 fn rejects_extra_field_at_top_level() {
-    let validator = load_schema();
-    let instance = yaml_to_json(
+    let validator = common::load_schema(SCHEMA_PATH);
+    let instance = common::yaml_to_json(
         "evidence:\n  - scenario: test scenario\n    result: pass\n    command: cargo test\n    output-summary: passed\nversion: \"1.0\"\n",
     );
     assert!(
@@ -137,8 +127,8 @@ fn rejects_extra_field_at_top_level() {
 
 #[test]
 fn rejects_extra_field_in_evidence_entry() {
-    let validator = load_schema();
-    let instance = yaml_to_json(
+    let validator = common::load_schema(SCHEMA_PATH);
+    let instance = common::yaml_to_json(
         "evidence:\n  - scenario: test scenario\n    result: pass\n    command: cargo test\n    output-summary: passed\n    duration: 1.5s\n",
     );
     assert!(

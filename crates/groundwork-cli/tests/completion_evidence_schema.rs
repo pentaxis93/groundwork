@@ -1,5 +1,4 @@
-use jsonschema::Validator;
-use serde_json::Value;
+mod common;
 
 const SCHEMA_PATH: &str =
     concat!(env!("CARGO_MANIFEST_DIR"), "/../../schemas/completion-evidence.schema.json");
@@ -12,36 +11,26 @@ const INVALID_FIXTURE: &str = concat!(
     "/../../tests/fixtures/artifacts/invalid-completion-evidence.yaml"
 );
 
-fn load_schema() -> Validator {
-    let text = std::fs::read_to_string(SCHEMA_PATH).expect("read schema");
-    let value: Value = serde_json::from_str(&text).expect("parse schema JSON");
-    Validator::new(&value).expect("compile schema")
-}
-
-fn yaml_to_json(yaml: &str) -> Value {
-    serde_yml::from_str(yaml).expect("parse YAML")
-}
-
 // ── Valid fixtures ──────────────────────────────────────────────
 
 #[test]
 fn valid_completion_evidence() {
-    let validator = load_schema();
+    let validator = common::load_schema(SCHEMA_PATH);
     let text = std::fs::read_to_string(VALID_FIXTURE).expect("read fixture");
-    let instance = yaml_to_json(&text);
+    let instance = common::yaml_to_json(&text);
     assert!(validator.is_valid(&instance), "valid fixture should be accepted");
 }
 
 // ── Invalid fixture ─────────────────────────────────────────────
 
 #[test]
-fn invalid_completion_evidence_uppercase_artifact_name() {
-    let validator = load_schema();
+fn invalid_completion_evidence_bad_status_enum() {
+    let validator = common::load_schema(SCHEMA_PATH);
     let text = std::fs::read_to_string(INVALID_FIXTURE).expect("read fixture");
-    let instance = yaml_to_json(&text);
+    let instance = common::yaml_to_json(&text);
     assert!(
         !validator.is_valid(&instance),
-        "uppercase artifact name should be rejected"
+        "status 'passed' should be rejected (not in enum)"
     );
 }
 
@@ -49,9 +38,9 @@ fn invalid_completion_evidence_uppercase_artifact_name() {
 
 #[test]
 fn rejects_missing_behavior_coverage() {
-    let validator = load_schema();
-    let instance = yaml_to_json(
-        "review-status:\n  review-record: review-record.yaml\ndocumentation-status:\n  documentation-review-record: doc-review.yaml\n",
+    let validator = common::load_schema(SCHEMA_PATH);
+    let instance = common::yaml_to_json(
+        "review-artifact: review-record\ndocumentation-artifact: doc-review\n",
     );
     assert!(
         !validator.is_valid(&instance),
@@ -60,77 +49,136 @@ fn rejects_missing_behavior_coverage() {
 }
 
 #[test]
-fn rejects_missing_review_status() {
-    let validator = load_schema();
-    let instance = yaml_to_json(
-        "behavior-coverage:\n  test-evidence: test-evidence.yaml\ndocumentation-status:\n  documentation-review-record: doc-review.yaml\n",
+fn rejects_missing_review_artifact() {
+    let validator = common::load_schema(SCHEMA_PATH);
+    let instance = common::yaml_to_json(
+        "behavior-coverage:\n  - behavior: test\n    status: pass\ndocumentation-artifact: doc-review\n",
     );
     assert!(
         !validator.is_valid(&instance),
-        "missing review-status should be rejected"
+        "missing review-artifact should be rejected"
     );
 }
 
 #[test]
-fn rejects_missing_documentation_status() {
-    let validator = load_schema();
-    let instance = yaml_to_json(
-        "behavior-coverage:\n  test-evidence: test-evidence.yaml\nreview-status:\n  review-record: review-record.yaml\n",
+fn rejects_missing_documentation_artifact() {
+    let validator = common::load_schema(SCHEMA_PATH);
+    let instance = common::yaml_to_json(
+        "behavior-coverage:\n  - behavior: test\n    status: pass\nreview-artifact: review-record\n",
     );
     assert!(
         !validator.is_valid(&instance),
-        "missing documentation-status should be rejected"
+        "missing documentation-artifact should be rejected"
     );
+}
+
+// ── Array constraint rejections ─────────────────────────────────
+
+#[test]
+fn rejects_empty_behavior_coverage_array() {
+    let validator = common::load_schema(SCHEMA_PATH);
+    let instance = common::yaml_to_json(
+        "behavior-coverage: []\nreview-artifact: review-record\ndocumentation-artifact: doc-review\n",
+    );
+    assert!(
+        !validator.is_valid(&instance),
+        "empty behavior-coverage array should be rejected"
+    );
+}
+
+// ── Behavior entry required field rejections ────────────────────
+
+#[test]
+fn rejects_behavior_entry_missing_behavior() {
+    let validator = common::load_schema(SCHEMA_PATH);
+    let instance = common::yaml_to_json(
+        "behavior-coverage:\n  - status: pass\nreview-artifact: review-record\ndocumentation-artifact: doc-review\n",
+    );
+    assert!(
+        !validator.is_valid(&instance),
+        "behavior entry missing behavior field should be rejected"
+    );
+}
+
+#[test]
+fn rejects_behavior_entry_missing_status() {
+    let validator = common::load_schema(SCHEMA_PATH);
+    let instance = common::yaml_to_json(
+        "behavior-coverage:\n  - behavior: test scenario\nreview-artifact: review-record\ndocumentation-artifact: doc-review\n",
+    );
+    assert!(
+        !validator.is_valid(&instance),
+        "behavior entry missing status field should be rejected"
+    );
+}
+
+// ── Enum rejections ─────────────────────────────────────────────
+
+#[test]
+fn rejects_invalid_status_values() {
+    let validator = common::load_schema(SCHEMA_PATH);
+
+    for bad in ["passed", "failed", "missing", "PASS", "success"] {
+        let yaml = format!(
+            "behavior-coverage:\n  - behavior: test\n    status: {bad}\nreview-artifact: review-record\ndocumentation-artifact: doc-review\n"
+        );
+        let instance = common::yaml_to_json(&yaml);
+        assert!(
+            !validator.is_valid(&instance),
+            "status {:?} should be rejected",
+            bad
+        );
+    }
 }
 
 // ── Pattern rejections ──────────────────────────────────────────
 
 #[test]
-fn rejects_invalid_test_evidence_artifact_name() {
-    let validator = load_schema();
+fn rejects_invalid_review_artifact_pattern() {
+    let validator = common::load_schema(SCHEMA_PATH);
 
     for bad in ["", "Has Spaces", "UPPER", "123-start"] {
         let yaml = format!(
-            "behavior-coverage:\n  test-evidence: \"{bad}\"\nreview-status:\n  review-record: review-record.yaml\ndocumentation-status:\n  documentation-review-record: doc-review.yaml\n"
+            "behavior-coverage:\n  - behavior: test\n    status: pass\nreview-artifact: \"{bad}\"\ndocumentation-artifact: doc-review\n"
         );
-        let instance = yaml_to_json(&yaml);
+        let instance = common::yaml_to_json(&yaml);
         assert!(
             !validator.is_valid(&instance),
-            "test-evidence artifact name {:?} should be rejected",
+            "review-artifact {:?} should be rejected",
             bad
         );
     }
 }
 
 #[test]
-fn rejects_invalid_review_record_artifact_name() {
-    let validator = load_schema();
+fn rejects_invalid_documentation_artifact_pattern() {
+    let validator = common::load_schema(SCHEMA_PATH);
 
     for bad in ["", "Has Spaces", "UPPER", "123-start"] {
         let yaml = format!(
-            "behavior-coverage:\n  test-evidence: test-evidence.yaml\nreview-status:\n  review-record: \"{bad}\"\ndocumentation-status:\n  documentation-review-record: doc-review.yaml\n"
+            "behavior-coverage:\n  - behavior: test\n    status: pass\nreview-artifact: review-record\ndocumentation-artifact: \"{bad}\"\n"
         );
-        let instance = yaml_to_json(&yaml);
+        let instance = common::yaml_to_json(&yaml);
         assert!(
             !validator.is_valid(&instance),
-            "review-record artifact name {:?} should be rejected",
+            "documentation-artifact {:?} should be rejected",
             bad
         );
     }
 }
 
 #[test]
-fn rejects_invalid_documentation_review_record_artifact_name() {
-    let validator = load_schema();
+fn rejects_invalid_evidence_artifact_pattern() {
+    let validator = common::load_schema(SCHEMA_PATH);
 
     for bad in ["", "Has Spaces", "UPPER", "123-start"] {
         let yaml = format!(
-            "behavior-coverage:\n  test-evidence: test-evidence.yaml\nreview-status:\n  review-record: review-record.yaml\ndocumentation-status:\n  documentation-review-record: \"{bad}\"\n"
+            "behavior-coverage:\n  - behavior: test\n    status: pass\n    evidence-artifact: \"{bad}\"\nreview-artifact: review-record\ndocumentation-artifact: doc-review\n"
         );
-        let instance = yaml_to_json(&yaml);
+        let instance = common::yaml_to_json(&yaml);
         assert!(
             !validator.is_valid(&instance),
-            "documentation-review-record artifact name {:?} should be rejected",
+            "evidence-artifact {:?} should be rejected",
             bad
         );
     }
@@ -140,9 +188,9 @@ fn rejects_invalid_documentation_review_record_artifact_name() {
 
 #[test]
 fn rejects_extra_field_at_top_level() {
-    let validator = load_schema();
-    let instance = yaml_to_json(
-        "behavior-coverage:\n  test-evidence: test-evidence.yaml\nreview-status:\n  review-record: review-record.yaml\ndocumentation-status:\n  documentation-review-record: doc-review.yaml\nversion: \"1.0\"\n",
+    let validator = common::load_schema(SCHEMA_PATH);
+    let instance = common::yaml_to_json(
+        "behavior-coverage:\n  - behavior: test\n    status: pass\nreview-artifact: review-record\ndocumentation-artifact: doc-review\nversion: \"1.0\"\n",
     );
     assert!(
         !validator.is_valid(&instance),
@@ -151,13 +199,27 @@ fn rejects_extra_field_at_top_level() {
 }
 
 #[test]
-fn rejects_extra_field_in_behavior_coverage() {
-    let validator = load_schema();
-    let instance = yaml_to_json(
-        "behavior-coverage:\n  test-evidence: test-evidence.yaml\n  extra: data\nreview-status:\n  review-record: review-record.yaml\ndocumentation-status:\n  documentation-review-record: doc-review.yaml\n",
+fn rejects_extra_field_in_behavior_entry() {
+    let validator = common::load_schema(SCHEMA_PATH);
+    let instance = common::yaml_to_json(
+        "behavior-coverage:\n  - behavior: test\n    status: pass\n    priority: high\nreview-artifact: review-record\ndocumentation-artifact: doc-review\n",
     );
     assert!(
         !validator.is_valid(&instance),
-        "extra field in behavior-coverage should be rejected"
+        "extra field in behavior entry should be rejected"
+    );
+}
+
+// ── Optional field acceptance ───────────────────────────────────
+
+#[test]
+fn valid_without_evidence_artifact() {
+    let validator = common::load_schema(SCHEMA_PATH);
+    let instance = common::yaml_to_json(
+        "behavior-coverage:\n  - behavior: untested scenario\n    status: gap\nreview-artifact: review-record\ndocumentation-artifact: doc-review\n",
+    );
+    assert!(
+        validator.is_valid(&instance),
+        "gap entry without evidence-artifact should be accepted"
     );
 }
