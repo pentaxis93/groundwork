@@ -530,6 +530,14 @@ fn run_doctor() -> Result<()> {
 fn plan_schema_sync(base_path: &Path) -> Result<SchemaSyncPlan> {
     let schema_dir = base_path.join(SCHEMA_DIR);
     let artifacts_dir = base_path.join(ARTIFACTS_DIR);
+
+    if schema_dir.exists() && !schema_dir.is_dir() {
+        bail!("error: .groundwork/schemas exists but is not a directory");
+    }
+    if artifacts_dir.exists() && !artifacts_dir.is_dir() {
+        bail!("error: .groundwork/artifacts exists but is not a directory");
+    }
+
     let create_schema_dir = !schema_dir.exists();
     let create_artifacts_dir = !artifacts_dir.exists();
     let mut files = Vec::with_capacity(EMBEDDED_SCHEMAS.len());
@@ -1666,6 +1674,37 @@ claude-code = true
             report
                 .extra_files
                 .contains(&"custom-extra.schema.json".to_string())
+        );
+    }
+
+    #[test]
+    fn schema_sync_plan_fails_when_schema_path_is_not_directory() {
+        let temp = TempDir::new().expect("tempdir");
+        let base = temp.path();
+        let groundwork_dir = base.join(".groundwork");
+        fs::create_dir_all(&groundwork_dir).expect("create groundwork dir");
+        fs::write(groundwork_dir.join("schemas"), "not-a-dir").expect("write schemas file");
+
+        let err = plan_schema_sync(base).expect_err("expected error");
+        assert_eq!(
+            err.to_string(),
+            "error: .groundwork/schemas exists but is not a directory"
+        );
+    }
+
+    #[test]
+    fn schema_sync_plan_fails_when_artifacts_path_is_not_directory() {
+        let temp = TempDir::new().expect("tempdir");
+        let base = temp.path();
+        let groundwork_dir = base.join(".groundwork");
+        fs::create_dir_all(&groundwork_dir).expect("create groundwork dir");
+        fs::create_dir_all(groundwork_dir.join("schemas")).expect("create schemas dir");
+        fs::write(groundwork_dir.join("artifacts"), "not-a-dir").expect("write artifacts file");
+
+        let err = plan_schema_sync(base).expect_err("expected error");
+        assert_eq!(
+            err.to_string(),
+            "error: .groundwork/artifacts exists but is not a directory"
         );
     }
 
