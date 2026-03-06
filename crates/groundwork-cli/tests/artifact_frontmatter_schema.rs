@@ -9,7 +9,6 @@ const VERIFICATION_FIXTURE: &str = concat!(
     "/../../tests/fixtures/verification-artifact-frontmatter.yaml"
 );
 
-
 // ── Valid fixtures ──────────────────────────────────────────────
 
 #[test]

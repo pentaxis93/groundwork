@@ -11,7 +11,6 @@ const INVALID_FIXTURE: &str = concat!(
     "/../../tests/fixtures/artifacts/invalid-completion-record.yaml"
 );
 
-
 // ── Valid fixtures ──────────────────────────────────────────────
 
 #[test]

@@ -19,6 +19,7 @@
     "key-changes": {
       "type": "array",
       "description": "List of key changes the plan introduces.",
+      "minItems": 1,
       "items": {
         "type": "string"
       }

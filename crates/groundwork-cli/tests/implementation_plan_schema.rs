@@ -11,7 +11,6 @@ const INVALID_FIXTURE: &str = concat!(
     "/../../tests/fixtures/artifacts/invalid-implementation-plan.yaml"
 );
 
-
 // ── Valid fixtures ──────────────────────────────────────────────
 
 #[test]
@@ -73,6 +72,20 @@ fn rejects_missing_test_strategy() {
     assert!(
         !validator.is_valid(&instance),
         "missing test-strategy should be rejected"
+    );
+}
+
+// ── Array constraint rejections ─────────────────────────────────
+
+#[test]
+fn rejects_empty_key_changes() {
+    let validator = common::load_schema(SCHEMA_PATH);
+    let instance = common::yaml_to_json(
+        "title: A plan\nsummary: A summary\nkey-changes: []\ntest-strategy: Run tests\nassumptions:\n  - assumption one\n",
+    );
+    assert!(
+        !validator.is_valid(&instance),
+        "empty key-changes should be rejected"
     );
 }
 

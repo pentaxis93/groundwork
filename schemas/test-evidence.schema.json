@@ -10,6 +10,7 @@
     "evidence": {
       "type": "array",
       "description": "Test result entries, each referencing a behavior-contract scenario.",
+      "minItems": 1,
       "items": {
         "$ref": "#/$defs/evidence-entry"
       }

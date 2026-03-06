@@ -11,7 +11,6 @@ const INVALID_FIXTURE: &str = concat!(
     "/../../tests/fixtures/artifacts/invalid-behavior-contract.yaml"
 );
 
-
 // ── Valid fixtures ──────────────────────────────────────────────
 
 #[test]

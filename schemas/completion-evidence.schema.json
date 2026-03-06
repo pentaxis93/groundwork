@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://raw.githubusercontent.com/pentaxis93/groundwork/main/schemas/completion-evidence.schema.json",
   "title": "Completion Evidence",
-  "description": "Validates the content of a completion-evidence artifact. Aggregates per-behavior coverage status and references review and documentation artifacts.",
+  "description": "Validates the content of a completion-evidence artifact. Aggregates per-behavior coverage status and references review and documentation artifacts. Note: field names 'review-artifact' and 'documentation-artifact' are intentional deviations from the original spec's 'review-status'/'documentation-status' — these fields are artifact references, not status values.",
   "type": "object",
   "required": ["behavior-coverage", "review-artifact", "documentation-artifact"],
   "additionalProperties": false,

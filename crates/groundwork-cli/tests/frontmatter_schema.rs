@@ -7,7 +7,6 @@ const CORE_FIXTURE: &str =
 const WRAPPER_FIXTURE: &str =
     concat!(env!("CARGO_MANIFEST_DIR"), "/../../tests/fixtures/wrapper-skill-frontmatter.yaml");
 
-
 // ── Valid fixtures ──────────────────────────────────────────────
 
 #[test]

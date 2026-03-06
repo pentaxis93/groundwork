@@ -11,7 +11,6 @@ const INVALID_FIXTURE: &str = concat!(
     "/../../tests/fixtures/artifacts/invalid-test-evidence.yaml"
 );
 
-
 // ── Valid fixtures ──────────────────────────────────────────────
 
 #[test]
@@ -90,6 +89,15 @@ fn rejects_evidence_entry_missing_output_summary() {
         !validator.is_valid(&instance),
         "evidence entry missing output-summary should be rejected"
     );
+}
+
+// ── Array constraint rejections ─────────────────────────────────
+
+#[test]
+fn rejects_empty_evidence() {
+    let validator = common::load_schema(SCHEMA_PATH);
+    let instance = common::yaml_to_json("evidence: []\n");
+    assert!(!validator.is_valid(&instance), "empty evidence should be rejected");
 }
 
 // ── Enum rejections ─────────────────────────────────────────────
