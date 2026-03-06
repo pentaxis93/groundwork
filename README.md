@@ -62,15 +62,17 @@ groundwork init
 This reads the curated manifest, fetches skills from their upstream sources via [`sk`](https://github.com/nickarora/sk), populates `agents.toml`, and syncs skills into your agent's skill directory.
 It also provisions `.groundwork/schemas/` with embedded artifact schemas and creates `.groundwork/artifacts/` for project artifacts.
 
-Prerequisites: Node.js (for `sk`). Optional: `gh-issue-sync` (auto-installed if `curl` or `go` is available).
+Prerequisites: Node.js (for `sk`).
+`groundwork init` requires operational issue sync and will fail unless `gh-issue-sync status` reports a non-`never` `Last full pull`.
+`gh-issue-sync` is auto-installed if `curl` or `go` is available.
 If issue sync touches GitHub Projects metadata, refresh GH scopes before first pull:
-`gh auth refresh -h github.com -s project`.
+`gh auth refresh -h github.com -s read:project`.
 
 ### Commands
 
 | Command | What it does | Flag |
 |---------|-------------|------|
-| `groundwork init` | Reads the curated manifest, populates `agents.toml`, fetches skills via `sk sync`, bootstraps `gh-issue-sync` if available, and writes embedded schemas to `.groundwork/schemas/` | `--dry-run` |
+| `groundwork init` | Reads the curated manifest, populates `agents.toml`, fetches skills via `sk sync`, bootstraps issue mirror tooling, and requires a successful `gh-issue-sync` full pull (`Last full pull` must be non-`never`) before succeeding | `--dry-run` |
 | `groundwork update` | Re-syncs to the latest manifest — upserts new or changed skills, prunes removed ones, and reconciles embedded schemas (create/update only; extras preserved) | `--dry-run` |
 | `groundwork list` | Shows installed skills, their sources, and pinned refs from the lock file | |
 | `groundwork doctor` | Checks prerequisites (`sk`, `gh`, `gh-issue-sync`, `agents.toml`, manifest), plus `.groundwork/schemas/` completeness and drift, and reports status | |
@@ -79,7 +81,7 @@ Both `init` and `update` are idempotent. They reconcile the manifest against `ag
 
 Issue sync troubleshooting:
 - If `groundwork doctor` reports "local issue mirror has never completed a full pull", run:
-  `gh auth refresh -h github.com -s project`
+  `gh auth refresh -h github.com -s read:project`
   `gh-issue-sync pull`
   `gh-issue-sync status`
 

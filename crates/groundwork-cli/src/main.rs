@@ -375,7 +375,7 @@ fn run_install_in_directory(
     let sk_runner = ensure_sk_available()?;
     sk_runner.sync()?;
 
-    let issue_sync_info = bootstrap_issue_sync(base_path);
+    let issue_sync_info = bootstrap_issue_sync(base_path, is_init)?;
 
     apply_schema_sync(base_path, &schema_plan)?;
 
@@ -1316,8 +1316,16 @@ fn ensure_issue_sync_available() -> Option<IssueSyncMode> {
     None
 }
 
-fn bootstrap_issue_sync(base_path: &Path) -> Option<(IssueSyncMode, String)> {
-    let mode = ensure_issue_sync_available()?;
+fn bootstrap_issue_sync(base_path: &Path, is_init: bool) -> Result<Option<(IssueSyncMode, String)>> {
+    let mode = match ensure_issue_sync_available() {
+        Some(mode) => mode,
+        None if is_init => {
+            bail!(
+                "gh-issue-sync is required for `groundwork init` to complete operational sync; install it and rerun init"
+            )
+        }
+        None => return Ok(None),
+    };
 
     let version = first_line_version(run_command_capture(&["gh-issue-sync", "--version"]));
 
@@ -1332,8 +1340,11 @@ fn bootstrap_issue_sync(base_path: &Path) -> Option<(IssueSyncMode, String)> {
             .status();
 
         if !init_status.map(|s| s.success()).unwrap_or(false) {
+            if is_init {
+                bail!("gh-issue-sync init failed during `groundwork init`");
+            }
             println!("warn: gh-issue-sync init failed");
-            return Some((mode, version));
+            return Ok(Some((mode, version)));
         }
         should_pull = true;
     }
@@ -1356,8 +1367,21 @@ fn bootstrap_issue_sync(base_path: &Path) -> Option<(IssueSyncMode, String)> {
                 println!("ok: synced {} issues to .issues/", count);
             }
             Ok(output) => {
-                println!("warn: gh-issue-sync pull failed");
                 let stderr = String::from_utf8_lossy(&output.stderr).trim().to_string();
+                if is_init {
+                    let mut detail = String::new();
+                    if !stderr.is_empty() {
+                        detail.push_str(first_line(&stderr));
+                    } else {
+                        detail.push_str("unknown error");
+                    }
+                    if let Some(hint) = issue_sync_pull_remediation_hint(&stderr) {
+                        detail.push_str(&format!("; {}", hint));
+                    }
+                    detail.push_str("; run `gh-issue-sync status` after remediation");
+                    bail!("gh-issue-sync pull failed during `groundwork init`: {}", detail);
+                }
+                println!("warn: gh-issue-sync pull failed");
                 if !stderr.is_empty() {
                     println!("info: {}", first_line(&stderr));
                 }
@@ -1367,6 +1391,12 @@ fn bootstrap_issue_sync(base_path: &Path) -> Option<(IssueSyncMode, String)> {
                 println!("info: run `gh-issue-sync status` to verify mirror state");
             }
             Err(err) => {
+                if is_init {
+                    bail!(
+                        "gh-issue-sync pull failed during `groundwork init`: {}; run `gh-issue-sync status` after remediation",
+                        err
+                    );
+                }
                 println!("warn: gh-issue-sync pull failed");
                 println!("info: {}", err);
                 println!("info: run `gh-issue-sync status` to verify mirror state");
@@ -1374,7 +1404,35 @@ fn bootstrap_issue_sync(base_path: &Path) -> Option<(IssueSyncMode, String)> {
         }
     }
 
-    Some((mode, version))
+    if is_init {
+        let output = Command::new("gh-issue-sync")
+            .arg("status")
+            .current_dir(base_path)
+            .output()
+            .context("failed to run `gh-issue-sync status` after pull")?;
+
+        if !output.status.success() {
+            let stderr = String::from_utf8_lossy(&output.stderr).trim().to_string();
+            let detail = if stderr.is_empty() {
+                "unknown error".to_string()
+            } else {
+                first_line(&stderr).to_string()
+            };
+            bail!(
+                "gh-issue-sync status failed during `groundwork init`: {}; run `gh auth refresh -h github.com -s read:project`, then `gh-issue-sync pull` and `gh-issue-sync status`",
+                detail
+            );
+        }
+
+        let status = String::from_utf8_lossy(&output.stdout);
+        if !issue_sync_status_has_completed_pull(&status) {
+            bail!(
+                "issue sync is not operational: `Last full pull` is missing or `never`; run `gh auth refresh -h github.com -s read:project`, then `gh-issue-sync pull` and `gh-issue-sync status`"
+            );
+        }
+    }
+
+    Ok(Some((mode, version)))
 }
 
 fn print_issue_sync_doctor_status(base_path: &Path) {
@@ -1388,7 +1446,7 @@ fn print_issue_sync_doctor_status(base_path: &Path) {
             let stdout = String::from_utf8_lossy(&out.stdout);
             if issue_sync_status_is_never_pulled(&stdout) {
                 println!("warn: local issue mirror has never completed a full pull");
-                println!("info: run `gh auth refresh -h github.com -s project`");
+                println!("info: run `gh auth refresh -h github.com -s read:project`");
                 println!("info: then run `gh-issue-sync pull` and `gh-issue-sync status`");
             }
         }
@@ -1429,12 +1487,23 @@ fn issue_sync_status_is_never_pulled(status: &str) -> bool {
     })
 }
 
+fn issue_sync_status_has_completed_pull(status: &str) -> bool {
+    status.lines().any(|line| {
+        let trimmed = line.trim();
+        if let Some(rest) = trimmed.strip_prefix("Last full pull:") {
+            let value = rest.trim();
+            return !value.is_empty() && !value.eq_ignore_ascii_case("never");
+        }
+        false
+    })
+}
+
 fn issue_sync_pull_remediation_hint(stderr: &str) -> Option<&'static str> {
     let lower = stderr.to_ascii_lowercase();
     if lower.contains("required scopes")
         && (lower.contains("read:project") || lower.contains("project"))
     {
-        return Some("refresh GH auth scopes: `gh auth refresh -h github.com -s project`");
+        return Some("refresh GH auth scopes: `gh auth refresh -h github.com -s read:project`");
     }
     if lower.contains("token") && lower.contains("invalid") {
         return Some("re-authenticate GH CLI: `gh auth login -h github.com`");
@@ -2051,10 +2120,41 @@ No local changes
     }
 
     #[test]
+    fn strict_init_issue_sync_status_complete_when_timestamp_present() {
+        let status = r#"
+Repository: pentaxis93/groundwork
+Last full pull: 2026-03-06T12:34:56Z
+
+No local changes
+"#;
+        assert!(issue_sync_status_has_completed_pull(status));
+    }
+
+    #[test]
+    fn strict_init_issue_sync_status_incomplete_when_never() {
+        let status = r#"
+Repository: pentaxis93/groundwork
+Last full pull: never
+
+No local changes
+"#;
+        assert!(!issue_sync_status_has_completed_pull(status));
+    }
+
+    #[test]
+    fn strict_init_issue_sync_status_incomplete_when_missing_line() {
+        let status = r#"
+Repository: pentaxis93/groundwork
+No local changes
+"#;
+        assert!(!issue_sync_status_has_completed_pull(status));
+    }
+
+    #[test]
     fn pull_error_hint_detects_missing_project_scope() {
         let stderr = "gh: Your token has not been granted the required scopes to execute this query. The 'title' field requires one of the following scopes: ['read:project'].";
         let hint = issue_sync_pull_remediation_hint(stderr).expect("scope hint");
-        assert!(hint.contains("gh auth refresh -h github.com -s project"));
+        assert!(hint.contains("gh auth refresh -h github.com -s read:project"));
     }
 
     #[test]
