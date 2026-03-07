@@ -95,7 +95,7 @@ git diff origin/main...HEAD --name-only
 
 Invoke the `documentation` skill's `documentation-review` mode against the changed files:
 
-1. Map code changes to documentation artifacts (README, WORKFLOW.md, architecture docs, CHANGELOG, inline comments, ADRs, CONTRIBUTING).
+1. Map code changes to documentation artifacts per the `documentation` skill's artifact table.
 2. Classify each mapped document as `accurate`, `drifted`, `missing`, or `obsolete`.
 3. Update or create drifted/missing docs on the feature branch. Commit fixes before proceeding.
 4. For deeper documentation work beyond the scope of this landing, file tracking issues using `issue-craft`.
