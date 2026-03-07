@@ -26,11 +26,9 @@ Use `next-issue` to select session-sized work from the issue graph. It reads unb
 
 Use `brainstorming` before designing a solution or making a significant architectural choice. It explores 2-3 approaches with trade-offs and produces an approved design document.
 
-Groundwork intentionally overrides `brainstorming`'s upstream terminal routing to `writing-plans`. In this pipeline, approved brainstorming output routes to `plan` for design convergence or directly to `issue-craft` for executable decomposition, as documented here and in `using-groundwork`.
-
 Use `plan` to converge from exploration to a decision-complete implementation design before modifying code. It explores the codebase, resolves intent, and produces a plan where every design choice is explicit — the implementer does not need to make any decisions. Based on Codex CLI plan mode (MIT), adapted for autonomous execution.
 
-After a design is approved, use `issue-craft` to express the implementation as agent-executable work units with binary acceptance criteria. In Groundwork's live pipeline, approved designs flow into `plan` for convergence and into `issue-craft` for decomposition.
+After a design is approved, use `issue-craft` to express the implementation as agent-executable work units with binary acceptance criteria. Approved designs flow into `plan` for convergence and into `issue-craft` for decomposition.
 
 ### 4. Execute and verify
 
