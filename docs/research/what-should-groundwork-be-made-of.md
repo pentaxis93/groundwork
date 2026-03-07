@@ -190,7 +190,7 @@ Recommendation: learn from, or adapt into a lightweight "change threat check" ga
 Solves: "skills that don't actually change behavior" by applying TDD-style RED/GREEN/REFACTOR to process docs.
 Quality: excellent and aligned with Groundwork's mission.
 Mission fit: high (Groundwork is a methodology library).
-Recommendation: adopt as Groundwork's own maintenance discipline.
+Recommendation: historical candidate only. Groundwork later adopted external `skill-creator` as the contributor-facing skill-authoring system instead of adding `writing-skills` to the runtime library.
 
 ---
 
@@ -301,4 +301,3 @@ Anthropic Skills: https://github.com/anthropics/skills
 Prompt injection (background):
 https://simonwillison.net/series/prompt-injection/
 ```
-
