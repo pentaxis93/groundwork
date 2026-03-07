@@ -110,12 +110,13 @@ Fetch each target issue and evaluate whether the branch changes satisfy its acce
 ```bash
 for ISSUE_NUMBER in "${ISSUE_NUMBERS[@]}"; do
   gh issue view "$ISSUE_NUMBER" --json title,body --jq '"\(.title)\n\n\(.body)"' || {
-    echo "WARNING: could not fetch issue #$ISSUE_NUMBER"; continue
+    echo "WARNING: could not fetch issue #$ISSUE_NUMBER — treating as partial"
+    PARTIAL+=("$ISSUE_NUMBER"); continue
   }
 done
 ```
 
-For each issue:
+For each successfully fetched issue:
 
 1. **Extract acceptance criteria** from the issue body — checklist items (`- [ ]`), an acceptance criteria section, or explicitly stated requirements.
 2. **Evaluate each criterion** against the branch diff (`git diff origin/main...HEAD`). A criterion is met when the changes demonstrably satisfy it.
@@ -123,7 +124,7 @@ For each issue:
    - **Satisfied** — all criteria met, or no acceptance criteria found in the issue body.
    - **Partial** — some criteria met, others remain. Record which criteria are satisfied and which remain.
 
-Record results as `SATISFIED` and `PARTIAL` issue lists for step 7.
+Record results as `SATISFIED` and `PARTIAL` issue lists for step 7. Every issue in `ISSUE_NUMBERS` must appear in exactly one list.
 
 ### 4. Merge and push
 
@@ -170,7 +171,18 @@ for ISSUE_NUMBER in "${SATISFIED[@]}"; do
 done
 
 for ISSUE_NUMBER in "${PARTIAL[@]}"; do
-  # Compose BODY from step 3a evaluation — see template below.
+  if [ -n "$PR_NUMBER" ]; then
+    REF="PR #${PR_NUMBER} (commit ${MERGE_SHA})"
+  else
+    REF="commit ${MERGE_SHA}"
+  fi
+  BODY="Progress from ${REF}:
+
+**Delivered:**
+$(for c in "${SATISFIED_CRITERIA[@]}"; do echo "- $c"; done)
+
+**Remaining:**
+$(for c in "${REMAINING_CRITERIA[@]}"; do echo "- $c"; done)"
   gh issue comment "$ISSUE_NUMBER" --body "$BODY" || FAILED_OPS+=("comment:#$ISSUE_NUMBER")
 done
 
@@ -179,7 +191,7 @@ if [ "${#FAILED_OPS[@]}" -gt 0 ]; then
 fi
 ```
 
-For each partial issue, compose `BODY` with the PR/commit reference, then bulleted lists of **Satisfied** and **Remaining** criteria from step 3a. If no PR was found, reference the commit only.
+`SATISFIED_CRITERIA` and `REMAINING_CRITERIA` are the per-issue criterion lists recorded in step 3a.
 
 ### 7a. Sync issue state to local mirror
 
