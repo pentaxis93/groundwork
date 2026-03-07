@@ -1,0 +1,120 @@
+version = "1"
+
+[[skills]]
+name = "using-groundwork"
+path = "skills/using-groundwork"
+provider = "gh"
+repo = "pentaxis93/groundwork"
+use_when = "Use at session start, task initiation, or when methodology orientation is needed."
+
+[[skills]]
+name = "ground"
+path = "skills/ground"
+provider = "gh"
+repo = "pentaxis93/groundwork"
+use_when = "Use before creating specs, architectures, process changes, or other generative design work."
+
+[[skills]]
+name = "research"
+path = "skills/research"
+provider = "gh"
+repo = "pentaxis93/groundwork"
+use_when = "Use when decisions require reliable external evidence."
+
+[[skills]]
+name = "bdd"
+path = "skills/bdd"
+provider = "gh"
+repo = "pentaxis93/groundwork"
+use_when = "Use when defining or refining behavior expectations."
+
+[[skills]]
+name = "brainstorming"
+path = "skills/brainstorming"
+provider = "gh"
+repo = "obra/superpowers"
+rev = "e4a2375cb705ca5800f0833528ce36a3faf9017a"
+use_when = "Use before designing a solution or making a significant architectural choice."
+
+[[skills]]
+name = "plan"
+path = "skills/plan"
+provider = "gh"
+repo = "pentaxis93/groundwork"
+use_when = "Use when implementation needs design convergence and the implementer should not make design decisions."
+
+[[skills]]
+name = "issue-craft"
+path = "skills/issue-craft"
+provider = "gh"
+repo = "pentaxis93/groundwork"
+use_when = "Use when creating, decomposing, refining, or closing issues."
+
+[[skills]]
+name = "next-issue"
+path = "skills/next-issue"
+provider = "gh"
+repo = "pentaxis93/groundwork"
+use_when = "Use when selecting the next session-sized piece of work from the issue graph."
+
+[[skills]]
+name = "test-driven-development"
+path = "skills/test-driven-development"
+provider = "gh"
+repo = "obra/superpowers"
+rev = "e4a2375cb705ca5800f0833528ce36a3faf9017a"
+use_when = "Use when implementing any feature or bugfix."
+
+[[skills]]
+name = "subagent-driven-development"
+path = "skills/subagent-driven-development"
+provider = "gh"
+repo = "obra/superpowers"
+rev = "e4a2375cb705ca5800f0833528ce36a3faf9017a"
+use_when = "Use when a verified plan contains independent tasks that can run in parallel."
+
+[[skills]]
+name = "systematic-debugging"
+path = "skills/systematic-debugging"
+provider = "gh"
+repo = "obra/superpowers"
+rev = "e4a2375cb705ca5800f0833528ce36a3faf9017a"
+use_when = "Use when tests fail or behavior is unexpected and root cause is not yet established."
+
+[[skills]]
+name = "requesting-code-review"
+path = "skills/requesting-code-review"
+provider = "gh"
+repo = "obra/superpowers"
+rev = "e4a2375cb705ca5800f0833528ce36a3faf9017a"
+use_when = "Use after implementation and before merging."
+
+[[skills]]
+name = "receiving-code-review"
+path = "skills/receiving-code-review"
+provider = "gh"
+repo = "obra/superpowers"
+rev = "e4a2375cb705ca5800f0833528ce36a3faf9017a"
+use_when = "Use when processing review feedback."
+
+[[skills]]
+name = "documentation"
+path = "skills/documentation"
+provider = "gh"
+repo = "pentaxis93/groundwork"
+use_when = "Use when documentation may drift or when a decision or behavior change needs documentation updates."
+
+[[skills]]
+name = "verification-before-completion"
+path = "skills/verification-before-completion"
+provider = "gh"
+repo = "obra/superpowers"
+rev = "e4a2375cb705ca5800f0833528ce36a3faf9017a"
+use_when = "Use before claiming work is complete, fixed, or passing."
+
+[[skills]]
+name = "land"
+path = "skills/land"
+provider = "gh"
+repo = "pentaxis93/groundwork"
+use_when = "Use to close the loop after verified work is ready to merge and close."

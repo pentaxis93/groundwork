@@ -2,6 +2,8 @@
 
 This is the integration manual for operating Groundwork's skills as one connected pipeline from problem framing to shipped change.
 
+For the shortest inventory-and-order reference, read `skills/skills.toml`. This document is the narrative explanation of how those skills interact.
+
 ## Pipeline
 
 There is one path, not a menu. Every piece of work flows through five stages: frame constraints, define behavior, decompose, execute and verify, land. Skills from different sources slot into this sequence. Each step produces an artifact or state change that the next step consumes.
@@ -26,11 +28,9 @@ Use `next-issue` to select session-sized work from the issue graph. It reads unb
 
 Use `brainstorming` before designing a solution or making a significant architectural choice. It explores 2-3 approaches with trade-offs and produces an approved design document.
 
-Groundwork intentionally overrides `brainstorming`'s upstream terminal routing to `writing-plans`. In this pipeline, approved brainstorming output routes to `plan` for design convergence or directly to `issue-craft` for executable decomposition, as documented here and in `using-groundwork`.
-
 Use `plan` to converge from exploration to a decision-complete implementation design before modifying code. It explores the codebase, resolves intent, and produces a plan where every design choice is explicit — the implementer does not need to make any decisions. Based on Codex CLI plan mode (MIT), adapted for autonomous execution.
 
-After a design is approved, use `issue-craft` to express the implementation as agent-executable work units with binary acceptance criteria. In Groundwork's live pipeline, approved designs flow into `plan` for convergence and into `issue-craft` for decomposition.
+After a design is approved, use `issue-craft` to express the implementation as agent-executable work units with binary acceptance criteria. Approved designs flow into `plan` for convergence and into `issue-craft` for decomposition.
 
 ### 4. Execute and verify
 

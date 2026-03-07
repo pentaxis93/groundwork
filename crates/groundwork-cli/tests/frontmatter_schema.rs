@@ -1,11 +1,17 @@
 mod common;
 
-const SCHEMA_PATH: &str =
-    concat!(env!("CARGO_MANIFEST_DIR"), "/../../schemas/groundwork-frontmatter.schema.json");
-const CORE_FIXTURE: &str =
-    concat!(env!("CARGO_MANIFEST_DIR"), "/../../tests/fixtures/core-skill-frontmatter.yaml");
-const WRAPPER_FIXTURE: &str =
-    concat!(env!("CARGO_MANIFEST_DIR"), "/../../tests/fixtures/wrapper-skill-frontmatter.yaml");
+const SCHEMA_PATH: &str = concat!(
+    env!("CARGO_MANIFEST_DIR"),
+    "/../../schemas/groundwork-frontmatter.schema.json"
+);
+const CORE_FIXTURE: &str = concat!(
+    env!("CARGO_MANIFEST_DIR"),
+    "/../../tests/fixtures/core-skill-frontmatter.yaml"
+);
+const WRAPPER_FIXTURE: &str = concat!(
+    env!("CARGO_MANIFEST_DIR"),
+    "/../../tests/fixtures/wrapper-skill-frontmatter.yaml"
+);
 
 // ── Valid fixtures ──────────────────────────────────────────────
 
@@ -14,7 +20,10 @@ fn valid_core_skill_frontmatter() {
     let validator = common::load_schema(SCHEMA_PATH);
     let text = std::fs::read_to_string(CORE_FIXTURE).expect("read fixture");
     let instance = common::yaml_to_json(&text);
-    assert!(validator.is_valid(&instance), "core fixture should be valid");
+    assert!(
+        validator.is_valid(&instance),
+        "core fixture should be valid"
+    );
 }
 
 #[test]
@@ -22,7 +31,10 @@ fn valid_wrapper_skill_frontmatter() {
     let validator = common::load_schema(SCHEMA_PATH);
     let text = std::fs::read_to_string(WRAPPER_FIXTURE).expect("read fixture");
     let instance = common::yaml_to_json(&text);
-    assert!(validator.is_valid(&instance), "wrapper fixture should be valid");
+    assert!(
+        validator.is_valid(&instance),
+        "wrapper fixture should be valid"
+    );
 }
 
 // ── Required field rejections ───────────────────────────────────
@@ -31,16 +43,21 @@ fn valid_wrapper_skill_frontmatter() {
 fn rejects_missing_stage() {
     let validator = common::load_schema(SCHEMA_PATH);
     let instance = common::yaml_to_json("groundwork:\n  requires: []\n  produces: []\n");
-    assert!(!validator.is_valid(&instance), "missing stage should be rejected");
+    assert!(
+        !validator.is_valid(&instance),
+        "missing stage should be rejected"
+    );
 }
 
 #[test]
 fn rejects_unknown_stage() {
     let validator = common::load_schema(SCHEMA_PATH);
-    let instance = common::yaml_to_json(
-        "groundwork:\n  stage: planning\n  requires: []\n  produces: []\n",
+    let instance =
+        common::yaml_to_json("groundwork:\n  stage: planning\n  requires: []\n  produces: []\n");
+    assert!(
+        !validator.is_valid(&instance),
+        "unknown stage should be rejected"
     );
-    assert!(!validator.is_valid(&instance), "unknown stage should be rejected");
 }
 
 // ── additionalProperties rejections ─────────────────────────────

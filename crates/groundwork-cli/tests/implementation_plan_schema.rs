@@ -1,7 +1,9 @@
 mod common;
 
-const SCHEMA_PATH: &str =
-    concat!(env!("CARGO_MANIFEST_DIR"), "/../../schemas/implementation-plan.schema.json");
+const SCHEMA_PATH: &str = concat!(
+    env!("CARGO_MANIFEST_DIR"),
+    "/../../schemas/implementation-plan.schema.json"
+);
 const VALID_FIXTURE: &str = concat!(
     env!("CARGO_MANIFEST_DIR"),
     "/../../tests/fixtures/artifacts/valid-implementation-plan.yaml"
@@ -18,7 +20,10 @@ fn valid_implementation_plan() {
     let validator = common::load_schema(SCHEMA_PATH);
     let text = std::fs::read_to_string(VALID_FIXTURE).expect("read fixture");
     let instance = common::yaml_to_json(&text);
-    assert!(validator.is_valid(&instance), "valid fixture should be accepted");
+    assert!(
+        validator.is_valid(&instance),
+        "valid fixture should be accepted"
+    );
 }
 
 // ── Invalid fixture ─────────────────────────────────────────────
@@ -42,7 +47,10 @@ fn rejects_missing_title() {
     let instance = common::yaml_to_json(
         "summary: A summary\nkey-changes:\n  - change one\ntest-strategy: Run tests\nassumptions:\n  - assumption one\n",
     );
-    assert!(!validator.is_valid(&instance), "missing title should be rejected");
+    assert!(
+        !validator.is_valid(&instance),
+        "missing title should be rejected"
+    );
 }
 
 #[test]
@@ -51,7 +59,10 @@ fn rejects_missing_summary() {
     let instance = common::yaml_to_json(
         "title: A plan\nkey-changes:\n  - change one\ntest-strategy: Run tests\nassumptions:\n  - assumption one\n",
     );
-    assert!(!validator.is_valid(&instance), "missing summary should be rejected");
+    assert!(
+        !validator.is_valid(&instance),
+        "missing summary should be rejected"
+    );
 }
 
 #[test]
@@ -60,7 +71,10 @@ fn rejects_missing_key_changes() {
     let instance = common::yaml_to_json(
         "title: A plan\nsummary: A summary\ntest-strategy: Run tests\nassumptions:\n  - assumption one\n",
     );
-    assert!(!validator.is_valid(&instance), "missing key-changes should be rejected");
+    assert!(
+        !validator.is_valid(&instance),
+        "missing key-changes should be rejected"
+    );
 }
 
 #[test]

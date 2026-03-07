@@ -19,7 +19,7 @@ The binary is `groundwork`. After building, it is available at `target/debug/gro
 
 ## Adding a Skill
 
-Core skills live in `skills/` organized by pipeline stage. Each skill is a single SKILL.md file with YAML frontmatter:
+Tracked skill files live in `skills/`. Each skill is a single `SKILL.md` file with YAML frontmatter:
 
 ```yaml
 ---
@@ -33,17 +33,17 @@ description: >-
 [skill content]
 ```
 
-To add a new core skill:
+To add a new shipped skill maintained in this repository:
 
-1. Create `skills/<stage>/<skill-name>/SKILL.md`
-2. Add the skill to `ORIGINAL_SKILLS` in `crates/groundwork-cli/src/main.rs` (rename to `CORE_SKILLS` pending #22)
+1. Create `skills/<skill-name>/SKILL.md`
+2. Add the skill to `skills/skills.toml` in the position that makes its invocation relationship clear
 3. Add a `gh` dependency entry in `agents.toml`
 4. Add the skill to the skills table in `README.md` and the routing table in `WORKFLOW.md`
 5. If the skill participates in handoff contracts, update `docs/architecture/pipeline-contract.md`
 
-To curate an upstream skill:
+To add a shipped skill maintained upstream:
 
-1. Add the source and skill entries to `manifests/curation.v1.toml` with a pinned `rev`
+1. Add the skill entry to `skills/skills.toml` with its pinned `rev`
 2. Run `groundwork update` to sync
 
 ## Skill Authoring Boundary
@@ -61,18 +61,18 @@ documentation:
 
 1. Do the authoring or regeneration work in `skill-creator`
 2. Bring the resulting `SKILL.md` content or curation change back into this repo
-3. Update `agents.toml`, `manifests/curation.v1.toml`, README/WORKFLOW entries,
+3. Update `skills/skills.toml`, `agents.toml`, README/WORKFLOW entries,
    ADRs, and CHANGELOG only if the shipped Groundwork inventory or methodology
    changes
 
-Do not add `skill-creator` to `agents.toml` or `manifests/curation.v1.toml`.
+Do not add `skill-creator` to `agents.toml` or `skills/skills.toml`.
 It is contributor tooling, not part of Groundwork's runtime skill inventory.
 
 ## Agent Workspace Policy
 
 - `.codex/` is agent-local runtime/workspace state and is intentionally gitignored.
 - Do not add or edit canonical project content under `.codex/`.
-- Canonical skill content belongs in tracked project paths (`skills/`) or upstream curated sources (`manifests/curation.v1.toml`).
+- Canonical skill content belongs in tracked project paths (`skills/`) and the shipped-skill manifest at `skills/skills.toml`.
 - When a `.codex/**` path is accidentally tracked, remove it from git index (`git rm --cached <path>`) and move/preserve canonical content in tracked locations.
 
 ## PR Process

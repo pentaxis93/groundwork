@@ -30,6 +30,7 @@ There is one path, not a menu. Every piece of work flows through five stages:
 **5. Land** — `land` closes the loop: merge, push, delete branch, comment on issue, close issue. Closure records behavior coverage and remaining gaps. Do not stop after merge.
 
 For the full integration manual, see [WORKFLOW.md](WORKFLOW.md). For formal handoff contracts and anti-divergence rules, see [docs/architecture/pipeline-contract.md](docs/architecture/pipeline-contract.md).
+For the concise inventory and shipped order reference, see [`skills/skills.toml`](skills/skills.toml).
 
 ## Skills
 
@@ -58,7 +59,7 @@ For the full integration manual, see [WORKFLOW.md](WORKFLOW.md). For formal hand
 groundwork init
 ```
 
-This reads the curated manifest, fetches skills from their upstream sources via [`sk`](https://github.com/nickarora/sk), populates `agents.toml`, and syncs skills into your agent's skill directory.
+This reads `skills/skills.toml`, fetches skills from their upstream sources via [`sk`](https://github.com/nickarora/sk), populates `agents.toml`, and syncs skills into your agent's skill directory.
 It also provisions `.groundwork/schemas/` with embedded artifact schemas and creates `.groundwork/artifacts/` for project artifacts.
 
 Prerequisites: Node.js (for `sk`).
@@ -71,10 +72,10 @@ If issue sync touches GitHub Projects metadata, refresh GH scopes before first p
 
 | Command | What it does | Flag |
 |---------|-------------|------|
-| `groundwork init` | Reads the curated manifest, populates `agents.toml`, fetches skills via `sk sync`, bootstraps issue mirror tooling, and requires a successful `gh-issue-sync` full pull (`Last full pull` must be non-`never`) before succeeding | `--dry-run` |
-| `groundwork update` | Re-syncs to the latest manifest — upserts new or changed skills, prunes removed ones, and reconciles embedded schemas (create/update only; extras preserved) | `--dry-run` |
-| `groundwork list` | Shows installed skills, their sources, and pinned refs from the lock file | |
-| `groundwork doctor` | Checks prerequisites (`sk`, `gh`, `gh-issue-sync`, `agents.toml`, manifest), plus `.groundwork/schemas/` completeness and drift, and reports status | |
+| `groundwork init` | Reads `skills/skills.toml`, populates `agents.toml`, fetches skills via `sk sync`, bootstraps issue mirror tooling, and requires a successful `gh-issue-sync` full pull (`Last full pull` must be non-`never`) before succeeding | `--dry-run` |
+| `groundwork update` | Re-syncs to the current shipped-skill manifest — upserts new or changed skills, prunes removed ones, and reconciles embedded schemas (create/update only; extras preserved) | `--dry-run` |
+| `groundwork list` | Shows installed skills in shipped-manifest order, along with source repos and pinned refs from the lock file | |
+| `groundwork doctor` | Checks prerequisites (`sk`, `gh`, `gh-issue-sync`, `agents.toml`, shipped-skill manifest), plus `.groundwork/schemas/` completeness and drift, and reports status | |
 
 Both `init` and `update` are idempotent. They reconcile the manifest against `agents.toml` and embedded schemas, writing only what changed. State is tracked in `.groundwork/installed.lock.toml`.
 
@@ -87,16 +88,17 @@ Issue sync troubleshooting:
 ## Project Layout
 
 ```
-skills/                     # Groundwork skills
-  foundation/               #   ground, research
-  specification/            #   bdd
-  decomposition/            #   issue-craft, next-issue, plan
-  completion/               #   land
-  verification/             #   documentation
+skills/                     # Groundwork's tracked skills and shipped inventory
+  skills.toml               #   authoritative shipped-skill manifest
   using-groundwork/         #   methodology orientation
-
-manifests/
-  curation.v1.toml          # Curated upstream skills with pinned refs
+  ground/                   #   first-principles grounding
+  research/                 #   external evidence gathering
+  bdd/                      #   behavior contract definition
+  plan/                     #   design convergence
+  issue-craft/              #   issue lifecycle
+  next-issue/               #   work selection
+  documentation/            #   documentation review/update
+  land/                     #   closeout workflow
 
 crates/
   groundwork-cli/           # Rust installer (groundwork init/update/list/doctor)

@@ -1,9 +1,13 @@
 mod common;
 
-const SCHEMA_PATH: &str =
-    concat!(env!("CARGO_MANIFEST_DIR"), "/../../schemas/artifact-frontmatter.schema.json");
-const SPEC_FIXTURE: &str =
-    concat!(env!("CARGO_MANIFEST_DIR"), "/../../tests/fixtures/spec-artifact-frontmatter.yaml");
+const SCHEMA_PATH: &str = concat!(
+    env!("CARGO_MANIFEST_DIR"),
+    "/../../schemas/artifact-frontmatter.schema.json"
+);
+const SPEC_FIXTURE: &str = concat!(
+    env!("CARGO_MANIFEST_DIR"),
+    "/../../tests/fixtures/spec-artifact-frontmatter.yaml"
+);
 const VERIFICATION_FIXTURE: &str = concat!(
     env!("CARGO_MANIFEST_DIR"),
     "/../../tests/fixtures/verification-artifact-frontmatter.yaml"
@@ -16,7 +20,10 @@ fn valid_spec_artifact_frontmatter() {
     let validator = common::load_schema(SCHEMA_PATH);
     let text = std::fs::read_to_string(SPEC_FIXTURE).expect("read fixture");
     let instance = common::yaml_to_json(&text);
-    assert!(validator.is_valid(&instance), "spec fixture should be valid");
+    assert!(
+        validator.is_valid(&instance),
+        "spec fixture should be valid"
+    );
 }
 
 #[test]
@@ -38,7 +45,10 @@ fn rejects_missing_schema() {
     let instance = common::yaml_to_json(
         "freshness: fresh\nproduced_by: ground\nproduced_at: \"2026-03-05T14:30:00Z\"\n",
     );
-    assert!(!validator.is_valid(&instance), "missing schema should be rejected");
+    assert!(
+        !validator.is_valid(&instance),
+        "missing schema should be rejected"
+    );
 }
 
 #[test]
@@ -177,10 +187,10 @@ fn rejects_invalid_produced_at() {
     let validator = common::load_schema(SCHEMA_PATH);
 
     for bad in [
-        "2026-03-05",                     // date only, no time
-        "2026-03-05T14:30:00",            // no timezone
-        "not-a-date",                     // garbage
-        "2026-03-05 14:30:00Z",           // space instead of T
+        "2026-03-05",           // date only, no time
+        "2026-03-05T14:30:00",  // no timezone
+        "not-a-date",           // garbage
+        "2026-03-05 14:30:00Z", // space instead of T
     ] {
         let yaml = format!(
             "schema: schemas/x.schema.json\nfreshness: fresh\nproduced_by: ground\nproduced_at: \"{bad}\"\n"

@@ -6,14 +6,14 @@ factory = false
 opencode = false
 
 [dependencies]
-ground = { gh = "pentaxis93/groundwork", path = "skills/foundation/ground" }
-research = { gh = "pentaxis93/groundwork", path = "skills/foundation/research" }
-bdd = { gh = "pentaxis93/groundwork", path = "skills/specification/bdd" }
-next_issue = { gh = "pentaxis93/groundwork", path = "skills/decomposition/next-issue" }
-plan = { gh = "pentaxis93/groundwork", path = "skills/decomposition/plan" }
-issue_craft = { gh = "pentaxis93/groundwork", path = "skills/decomposition/issue-craft" }
-land = { gh = "pentaxis93/groundwork", path = "skills/completion/land" }
-documentation = { gh = "pentaxis93/groundwork", path = "skills/verification/documentation" }
+ground = { gh = "pentaxis93/groundwork", path = "skills/ground" }
+research = { gh = "pentaxis93/groundwork", path = "skills/research" }
+bdd = { gh = "pentaxis93/groundwork", path = "skills/bdd" }
+next_issue = { gh = "pentaxis93/groundwork", path = "skills/next-issue" }
+plan = { gh = "pentaxis93/groundwork", path = "skills/plan" }
+issue_craft = { gh = "pentaxis93/groundwork", path = "skills/issue-craft" }
+land = { gh = "pentaxis93/groundwork", path = "skills/land" }
+documentation = { gh = "pentaxis93/groundwork", path = "skills/documentation" }
 using_groundwork = { gh = "pentaxis93/groundwork", path = "skills/using-groundwork" }
 brainstorming = { gh = "obra/superpowers", path = "skills/brainstorming", rev = "e4a2375cb705ca5800f0833528ce36a3faf9017a" }
 subagent_driven_development = { gh = "obra/superpowers", path = "skills/subagent-driven-development", rev = "e4a2375cb705ca5800f0833528ce36a3faf9017a" }

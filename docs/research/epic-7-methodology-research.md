@@ -361,7 +361,7 @@ It maps precisely to FDD's "Design by Feature" phase: the Chief Programmer produ
 
 **One change needed:** Update cross-references. The skill currently says "For step-by-step execution breakdown after design convergence, use `writing-plans`." This should change to reference `issue-craft` for decomposition into executable work units.
 
-**File:** `skills/decomposition/plan/SKILL.md` -- update cross-references section.
+**File:** `skills/plan/SKILL.md` -- update cross-references section.
 
 #### `writing-plans` -- Drop from default pipeline path
 
@@ -401,7 +401,7 @@ It maps precisely to FDD's "Design by Feature" phase: the Chief Programmer produ
 
 4. **Add "problem context" to the task template.** Distinct from "scope" and "acceptance criteria," problem context explains WHY the acceptance criteria matter, giving the implementing agent enough understanding to exercise judgment when the landscape differs from expectations.
 
-**File:** `skills/decomposition/issue-craft/SKILL.md` -- regeneration via Issue #9 using the adopted external `skill-creator` workflow.
+**File:** `skills/issue-craft/SKILL.md` -- regeneration via Issue #9 using the adopted external `skill-creator` workflow.
 
 #### No new decomposition skills needed
 
@@ -557,10 +557,10 @@ Ordered by dependency and leverage:
 
 ### Groundwork Internal Sources
 
-- `skills/decomposition/plan/SKILL.md` -- design convergence skill
-- `skills/decomposition/issue-craft/SKILL.md` -- issue lifecycle skill
-- `skills/specification/bdd/SKILL.md` -- behavior-driven development skill
-- `skills/completion/land/SKILL.md` -- closeout workflow
+- `skills/plan/SKILL.md` -- design convergence skill
+- `skills/issue-craft/SKILL.md` -- issue lifecycle skill
+- `skills/bdd/SKILL.md` -- behavior-driven development skill
+- `skills/land/SKILL.md` -- closeout workflow
 - `.claude/skills/writing-plans/SKILL.md` -- curated implementation planning skill
 - `docs/architecture/pipeline-contract.md` -- formal handoff contracts
 - `docs/architecture/decisions/0001-pipeline-integration-strategy.md` -- curate-vs-own ADR

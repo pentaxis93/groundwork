@@ -41,7 +41,7 @@ Concretely:
 - Keep authoring guidance in contributor-facing documentation, not in runtime
   pipeline docs
 - Do not add `skill-creator` to Groundwork's runtime inventory in
-  `agents.toml` or `manifests/curation.v1.toml`
+  `agents.toml` or `skills/skills.toml`
 - Treat `writing-skills` as historical research context only, not as an active
   Groundwork skill or default authoring reference
 

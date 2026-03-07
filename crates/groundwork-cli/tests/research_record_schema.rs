@@ -1,7 +1,9 @@
 mod common;
 
-const SCHEMA_PATH: &str =
-    concat!(env!("CARGO_MANIFEST_DIR"), "/../../schemas/research-record.schema.json");
+const SCHEMA_PATH: &str = concat!(
+    env!("CARGO_MANIFEST_DIR"),
+    "/../../schemas/research-record.schema.json"
+);
 const VALID_FIXTURE: &str = concat!(
     env!("CARGO_MANIFEST_DIR"),
     "/../../tests/fixtures/artifacts/valid-research-record.yaml"
@@ -18,7 +20,10 @@ fn valid_research_record() {
     let validator = common::load_schema(SCHEMA_PATH);
     let text = std::fs::read_to_string(VALID_FIXTURE).expect("read fixture");
     let instance = common::yaml_to_json(&text);
-    assert!(validator.is_valid(&instance), "valid fixture should be accepted");
+    assert!(
+        validator.is_valid(&instance),
+        "valid fixture should be accepted"
+    );
 }
 
 // ── Invalid fixture ─────────────────────────────────────────────
@@ -42,7 +47,10 @@ fn rejects_missing_topic() {
     let instance = common::yaml_to_json(
         "findings:\n  - finding one\nsources:\n  - url: https://example.com\ndate: \"2026-01-01\"\n",
     );
-    assert!(!validator.is_valid(&instance), "missing topic should be rejected");
+    assert!(
+        !validator.is_valid(&instance),
+        "missing topic should be rejected"
+    );
 }
 
 #[test]
@@ -51,7 +59,10 @@ fn rejects_missing_findings() {
     let instance = common::yaml_to_json(
         "topic: my-topic\nsources:\n  - url: https://example.com\ndate: \"2026-01-01\"\n",
     );
-    assert!(!validator.is_valid(&instance), "missing findings should be rejected");
+    assert!(
+        !validator.is_valid(&instance),
+        "missing findings should be rejected"
+    );
 }
 
 #[test]
@@ -60,16 +71,21 @@ fn rejects_empty_findings() {
     let instance = common::yaml_to_json(
         "topic: my-topic\nfindings: []\nsources:\n  - url: https://example.com\ndate: \"2026-01-01\"\n",
     );
-    assert!(!validator.is_valid(&instance), "empty findings should be rejected");
+    assert!(
+        !validator.is_valid(&instance),
+        "empty findings should be rejected"
+    );
 }
 
 #[test]
 fn rejects_missing_sources() {
     let validator = common::load_schema(SCHEMA_PATH);
-    let instance = common::yaml_to_json(
-        "topic: my-topic\nfindings:\n  - finding one\ndate: \"2026-01-01\"\n",
+    let instance =
+        common::yaml_to_json("topic: my-topic\nfindings:\n  - finding one\ndate: \"2026-01-01\"\n");
+    assert!(
+        !validator.is_valid(&instance),
+        "missing sources should be rejected"
     );
-    assert!(!validator.is_valid(&instance), "missing sources should be rejected");
 }
 
 #[test]
@@ -78,7 +94,10 @@ fn rejects_missing_date() {
     let instance = common::yaml_to_json(
         "topic: my-topic\nfindings:\n  - finding one\nsources:\n  - url: https://example.com\n",
     );
-    assert!(!validator.is_valid(&instance), "missing date should be rejected");
+    assert!(
+        !validator.is_valid(&instance),
+        "missing date should be rejected"
+    );
 }
 
 // ── Array constraint rejections ─────────────────────────────────
@@ -89,7 +108,10 @@ fn rejects_empty_sources() {
     let instance = common::yaml_to_json(
         "topic: my-topic\nfindings:\n  - finding one\nsources: []\ndate: \"2026-01-01\"\n",
     );
-    assert!(!validator.is_valid(&instance), "empty sources should be rejected");
+    assert!(
+        !validator.is_valid(&instance),
+        "empty sources should be rejected"
+    );
 }
 
 // ── Pattern rejections ──────────────────────────────────────────
