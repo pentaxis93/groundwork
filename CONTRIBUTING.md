@@ -6,7 +6,7 @@ Audience: new contributors and agents starting development work on Groundwork.
 
 - **Rust** (edition 2021) — for building and testing the CLI
 - **Node.js** — required by [`sk`](https://github.com/nickarora/sk) for skill syncing
-- **Optional:** `go` or `curl` — for `gh-issue-sync` auto-installation
+- **gh CLI** — required for verified `gh-issue-sync` release downloads during auto-install
 
 ## Build and Test
 

@@ -62,9 +62,9 @@ groundwork init
 This reads `skills/skills.toml`, fetches skills from their upstream sources via [`sk`](https://github.com/nickarora/sk), populates `agents.toml`, and syncs skills into your agent's skill directory.
 It also provisions `.groundwork/schemas/` with embedded artifact schemas and creates `.groundwork/artifacts/` for project artifacts.
 
-Prerequisites: Node.js (for `sk`).
+Prerequisites: Node.js (for `sk`), Git, npm, and `gh` CLI.
 `groundwork init` requires operational issue sync and will fail unless `gh-issue-sync status` reports a non-`never` `Last full pull`.
-`gh-issue-sync` is auto-installed if `curl` or `go` is available.
+`gh-issue-sync` is auto-installed from a pinned release asset with SHA-256 verification when a supported OS/arch asset is available.
 If issue sync touches GitHub Projects metadata, refresh GH scopes before first pull:
 `gh auth refresh -h github.com -s read:project`.
 
@@ -78,6 +78,7 @@ If issue sync touches GitHub Projects metadata, refresh GH scopes before first p
 | `groundwork doctor` | Checks prerequisites (`sk`, `gh`, `gh-issue-sync`, `agents.toml`, shipped-skill manifest), plus `.groundwork/schemas/` completeness and drift, and reports status | |
 
 Both `init` and `update` are idempotent. They reconcile the manifest against `agents.toml` and embedded schemas, writing only what changed. State is tracked in `.groundwork/installed.lock.toml`.
+If tool version capture fails, `init`/`update` abort instead of writing unsubstantiated lock provenance.
 
 Issue sync troubleshooting:
 - If `groundwork doctor` reports "local issue mirror has never completed a full pull", run:
