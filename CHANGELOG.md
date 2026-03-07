@@ -20,6 +20,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Changed
 
+- `ground` skill upgraded to v2.1.0: added Local Coherence as assumed-constraint pattern #9 — captures details that follow valid engineering patterns but contradict the purpose of the work they belong to. Renumbered Descriptive-Normative Confusion to #10.
 - `using-groundwork` skill upgraded to v2.0.0: restructured as five numbered pipeline stages, added sovereignty guardrail with anti-prescription principle (WHAT/HOW boundary), expanded cross-cutting disciplines (documentation threading, research at any stage), converted routing to table format, added corruption modes for prescription and documentation gaps. Major version bump reflects structural rewrite of the methodology orientation document.
 - `land` skill upgraded to v1.1: added CHANGELOG verification step before merge, updated overview to reflect 7-step procedure. Minor version bump: additive behavioral change (new precondition check).
 - `pipeline-contract.md` updated to v0.2: fixed heading levels (## → ###), updated step 3 to include brainstorming, clarified `documentation-review` reference to "`documentation` skill's review mode"
