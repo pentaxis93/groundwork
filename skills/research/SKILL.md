@@ -228,13 +228,13 @@ Official docs miss the "clever hacks" and "power user moves." Target them with q
 | Pattern | Query Template | Domain Filter |
 |---------|---------------|---------------|
 | GitHub issue archaeology | `[tech] workaround OR hack OR trick` | `github.com` |
-| Maintainer statements | `[tech] [problem] fix OR resolved` | `github.com` |
+| Maintainer statements | `[tech] [problem] fix OR resolved` | `github.com`, `search_depth: "advanced"` |
 | Stack Overflow deep cuts | `[tech] [problem] note that OR also need to` | `stackoverflow.com` |
 | Recent developments | `[tech] [feature] announcement OR release` | Use `time_range: "month"` |
 | Breaking changes | `[tech] breaking change OR migration guide` | Use `topic: "news"` |
 | Config wisdom | `[tool] dotfiles OR awesome-[tool] config` | `github.com` |
 
-**Emotional language signals:** Hard-won knowledge often comes with markers like "Finally!", "After hours of debugging...", "The trick is...", "What the docs don't tell you..." When you find such knowledge, preserve the source, version, solution, and caveats alongside it.
+**Emotional language signals:** Hard-won knowledge often comes with markers like "Finally!", "After hours of debugging...", "The trick is...", "What the docs don't tell you..." When you find such knowledge, capture it with context: `[Problem] / [Source + date] / [Version] / [Solution] / [Caveats]`.
 
 ---
 
