@@ -36,7 +36,7 @@ rotate. Issues are the persistence layer that survives those boundaries. The
 issue graph is the project's working memory: it holds what remains to be done,
 what blocks what, and what state each piece of work is in. Working from the
 issue graph instead of from memory is what makes multi-session progress
-reliable. See WORKFLOW.md § Issue-Based Development for operational definitions.
+reliable. See [`WORKFLOW.md` § Issue-Based Development](../../WORKFLOW.md#issue-based-development) for operational definitions.
 
 ## Cross-Cutting Disciplines
 
@@ -54,7 +54,7 @@ reliable. See WORKFLOW.md § Issue-Based Development for operational definitions
 - `documentation` → `verification-before-completion`: completion claims include documentation accuracy evidence
 - `documentation` → `land`: landing records documentation coverage status; user-visible changes require a CHANGELOG entry
 
-For the formal handoff contracts, fail conditions, and anti-divergence rules, see [docs/architecture/pipeline-contract.md](docs/architecture/pipeline-contract.md).
+For the formal handoff contracts, fail conditions, and anti-divergence rules, see `docs/architecture/pipeline-contract.md` (repo root).
 
 ## Sovereignty
 
@@ -73,8 +73,7 @@ This skill teaches the map; agent judgment navigates it. The behavior contract m
 | Need reliable external evidence | `research` |
 | Creating, decomposing, or refining issues | `issue-craft` |
 | Selecting next work from the issue graph | `next-issue` |
-| Creative exploration needed | `brainstorming` |
-| Multiple approaches or unclear scope | `plan` |
+| Multiple approaches or unclear scope | `brainstorming`, then `plan` |
 | Implementing behavior | `test-driven-development` |
 | Multiple independent tasks to parallelize | `subagent-driven-development` |
 | Bug or unexpected failure | `systematic-debugging` |
