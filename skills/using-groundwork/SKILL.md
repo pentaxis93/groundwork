@@ -19,9 +19,9 @@ Groundwork is one connected methodology, not a skill collection. Every skill clo
 
 There is one path, not a menu. Every piece of work flows through five stages:
 
-1. **Frame constraints.** `ground` establishes what the work must enable. Local issues (`.issues/`) mirror the forge — `gh-issue-sync pull` before reading, `push` after writing. `ground` is not step-one-once; new generative work mid-session requires re-grounding.
+1. **Frame constraints.** `ground` establishes what the work must enable. Local issues (`.issues/`) mirror the forge — `gh-issue-sync pull` before reading, `push` after writing.
 
-2. **Define behavior.** `bdd` defines the behavior contract in Given/When/Then scenarios. This contract threads through every subsequent step (see [Cross-Cutting Disciplines](#cross-cutting-disciplines)). `research` provides reliable external evidence when decisions depend on facts outside the codebase.
+2. **Define behavior.** `bdd` defines the behavior contract in Given/When/Then scenarios. This contract threads through every subsequent step (see [Cross-Cutting Disciplines](#cross-cutting-disciplines)).
 
 3. **Decompose.** `brainstorming` explores approaches before committing to a design. `plan` converges from exploration to a decision-complete implementation design. `issue-craft` decomposes that design into agent-executable issues with binary acceptance criteria. `next-issue` selects session-sized work from the issue graph.
 
@@ -42,6 +42,8 @@ reliable. See [`WORKFLOW.md` § Issue-Based Development](../../WORKFLOW.md#issue
 
 **Ground re-fires.** `ground` is not step-one-once. New generative work mid-session requires re-grounding. The trigger is creation, not sequence position.
 
+**Research fires at any stage.** `research` provides reliable external evidence when decisions depend on facts outside the codebase. It is not bound to a pipeline stage — framing, design, decomposition, and implementation can all require it.
+
 **BDD threads the full pipeline:**
 - `bdd` → `plan`: design decisions keep behavior coverage explicit
 - `bdd` → `issue-craft`: work units map to named behavior
@@ -54,7 +56,7 @@ reliable. See [`WORKFLOW.md` § Issue-Based Development](../../WORKFLOW.md#issue
 - `documentation` → `verification-before-completion`: completion claims include documentation accuracy evidence
 - `documentation` → `land`: landing records documentation coverage status; user-visible changes require a CHANGELOG entry
 
-For the formal handoff contracts, fail conditions, and anti-divergence rules, see `docs/architecture/pipeline-contract.md` (repo root).
+For the formal handoff contracts, fail conditions, and anti-divergence rules, see [`docs/architecture/pipeline-contract.md`](../../docs/architecture/pipeline-contract.md).
 
 ## Sovereignty
 
