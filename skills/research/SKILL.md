@@ -73,7 +73,7 @@ Consult sources in this priority order, adapting to the domain:
 | **Official Docs** | Authoritative, maintained | API signatures, core concepts | `include_domains` targeting official site |
 | **GitHub Issues/PRs** | Real problems, maintainer input | Edge cases, bugs, workarounds | `include_domains: ["github.com"]` |
 | **Stack Overflow** | Curated answers, voting signal | Common problems, quick fixes | `include_domains: ["stackoverflow.com"]` |
-| **Source Code** | Ground truth | When docs are unclear | Delegate to `explore` agent |
+| **Source Code** | Ground truth | When docs are unclear | Read source directly |
 | **Blog Posts** | Deep dives, tutorials | Learning workflows, context | General search, then `tavily-extract` |
 | **Discord/Forums** | Cutting-edge, insider knowledge | Latest changes, community consensus | `include_domains` targeting community sites |
 
@@ -160,7 +160,7 @@ Use `google_search` when:
 
 ---
 
-**Codebase grounding:** When the research topic intersects with the current codebase, delegate to the `explore` agent for context before or during source gathering.
+**Codebase grounding:** When the research topic intersects with the current codebase, read relevant source code for context before or during source gathering.
 
 ### Phase 4: Source Evaluation
 
@@ -196,7 +196,7 @@ When sources disagree:
 1. **Check versions**: Conflict often means different versions, not factual disagreement. Use `tavily-search` with `time_range` to find version-specific information
 2. **Find the maintainer**: Their comment trumps community answers. Search `include_domains: ["github.com"]` for maintainer statements in issues/PRs
 3. **Deep-read both sides**: Use `tavily-extract` on the conflicting URLs to get full context — snippets often make sources seem more contradictory than they are
-4. **Test empirically**: Delegate to `explore` for codebase evidence when in read-only context, or note the limitation
+4. **Test empirically**: Check codebase evidence when available, or note the limitation
 5. **Apply consensus weighting**: Run a broader search (`max_results: 20`) to gauge which position has more independent support
 6. **Note the disagreement**: If unresolved, report both positions with evidence in the Conflicts section of output
 
