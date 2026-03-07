@@ -8,7 +8,7 @@ description: >-
   enable before decomposing to verified constraints, then builds from what
   is actually true.
 metadata:
-  version: "2.1.0"
+  version: "2.2.0"
   updated: "2026-03-07"
   origin: >-
     Successor to clean-slate. The predecessor caught migration failures
@@ -26,7 +26,7 @@ metadata:
 
 ## The Move
 
-Four steps. Always the same.
+Six steps. Always the same.
 
 0. **Orient.** Before touching anything, establish the need. What must this enable? Who does it serve? What do they need to accomplish? These answers are the actual constraints. Everything else — existing code, existing patterns, existing implementations — is evidence about one attempt to meet those constraints, not the constraints themselves.
 
@@ -35,6 +35,10 @@ Four steps. Always the same.
 2. **Verify.** For each constraint: is this real (physics, contract, measured need) or inherited (convention, precedent, comfort)? If you cannot point to evidence, it is assumed.
 
 3. **Reconstruct.** Build from verified constraints only. What emerges may resemble existing solutions or may not. Both are fine. What matters is that every element earns its place.
+
+4. **Compare.** Does the grounded design match what exists? If yes, the existing approach is validated. If no, weigh real migration cost against carrying cost.
+
+5. **Default to the grounded design.** Inherited assumptions compound. When grounded and existing designs diverge, the grounded design wins unless migration cost is concrete and measured.
 
 80% of solving a problem is defining the problem. Orient exists because without it, decomposition has no anchor — you will decompose whatever is in front of you, which is usually the existing system. Orient points decomposition at the right target: the need, not the implementation.
 
@@ -57,96 +61,70 @@ Accepting the problem statement without questioning scope, framing, or premises.
 **Recognition:** You are optimizing within the frame you were handed. You have not asked whether the frame is correct.
 **Corrective:** "What problem are we actually solving? Is this the right question, or the question we were given?"
 
-### 2. Implementation as Requirement
+### 2. Description as Design
 
-Treating what the current system does as the definition of what it should do.
+Treating what the current system does as the definition of what it should do — documenting what is instead of designing what's needed.
 
-**Recognition:** Your "requirements" are descriptions of existing behavior. Your design reproduces what the code currently provides rather than what users actually need. You read the implementation and organized your findings instead of asking what the implementation must enable.
-**Corrective:** "If this implementation did not exist, what would the users/agents/system need?" Start from the need. Use the existing implementation for gap analysis only after the design exists.
+**Recognition:** Your "requirements" are descriptions of existing behavior. Every claim traces to existing code or configuration; none trace to user needs. You read the implementation and organized your findings instead of asking what it must enable.
+**Corrective:** "If this implementation did not exist, what would users need?" Start from the need. Use the existing implementation for gap analysis only after the design exists.
 
-### 3. Category Inheritance
+### 3. Borrowed Structure
 
-Using existing categories as the skeleton for a new design.
+Importing categories, patterns, or architecture from adjacent systems without verifying fit.
 
-**Recognition:** Your design's structure mirrors an adjacent system or the categories in the request. You did not derive them — you inherited them.
-**Corrective:** "What categories would emerge from the requirements alone?" Design the taxonomy fresh. Compare with inherited categories afterward.
+**Recognition:** Your design's structure mirrors an adjacent system, a familiar pattern, or the categories in the request. You did not derive them from requirements — you inherited them. The analogy feels natural, perhaps too natural.
+**Corrective:** "What structure would emerge from the requirements alone?" Design fresh. Compare with the inherited structure afterward. Identify where the analogy breaks.
 
-### 4. Pattern Matching
+### 4. Precedent as Constraint
 
-Copying a pattern from another context without verifying fit.
+Treating past decisions, existing implementations, or prior investment as requirements.
 
-**Recognition:** "This is like X, so we should do what X does." The analogy feels natural — perhaps too natural.
-**Corrective:** "Does this pattern fit because it is correct for these constraints, or because it is familiar?" Verify the mapping. Identify where the analogy breaks.
+**Recognition:** "We did it this way before," "the existing system does X," or "we already invested in Y" appears in your reasoning as constraint rather than data point. The existing solution is your design starting point rather than a comparison target.
+**Corrective:** Precedent is evidence, not constraint. Past investment is irrelevant to future value. "If this precedent did not exist, what would we build?"
 
-### 5. Precedent as Constraint
-
-Treating past decisions or existing implementations as requirements.
-
-**Recognition:** "We did it this way before" or "the existing system does X" appears in your reasoning as constraint rather than data point.
-**Corrective:** Precedent is evidence, not constraint. "If this precedent did not exist, what would we build?"
-
-### 6. Complexity Preservation
+### 5. Complexity Preservation
 
 Maintaining complexity because removing it seems risky.
 
 **Recognition:** You are preserving structure not because it serves current requirements, but because removing it might break something you do not understand.
 **Corrective:** "What is the simplest design that meets requirements?" If simpler than what exists, the complexity needs justification or removal.
 
-### 7. Audience Assumption
+### 6. Audience Assumption
 
 Designing for the requester, yourself, or an imagined user rather than verified actual users.
 
 **Recognition:** You have not identified who this serves. You are designing for the voice in the prompt.
 **Corrective:** "Who actually uses this? What do they actually need?" Ground the audience before grounding the design.
 
-### 8. Abstraction Gravity
+### 7. Abstraction Gravity
 
 Defaulting to the abstraction level of adjacent or existing systems.
 
 **Recognition:** Your design operates at the same abstraction level as the system it replaces or resembles, without questioning whether that level is correct.
 **Corrective:** "What abstraction level does this problem actually require?" The existing system's level is a data point, not a default.
 
-### 9. Local Coherence
+### 8. Local Coherence
 
 A detail follows a valid pattern and sounds right in isolation, but contradicts the purpose established in Orient.
 
 **Recognition:** Your output would be correct in a generic context — it follows established engineering conventions, uses appropriate technical language, and reads as a reasonable decision. But you have not checked it against the specific purpose of this work. The fluency of the output masks the contradiction. Common vectors: failure-mode defaults that negate the feature ("if the safety check fails, skip it"), error paths that undo the work, fallbacks to the behavior the feature exists to replace.
 **Corrective:** Restate the purpose from Orient. Re-evaluate the detail: "If this fires, does the feature still accomplish its goal?" If no, the detail defeats the feature.
 
-### 10. Descriptive-Normative Confusion
+### Preservation Variants
 
-Documenting what is instead of designing what's needed.
+These fire specifically when existing state creates gravitational pull — migration, upgrades, technology selection. Migration cost trends toward zero as tooling improves; carrying cost compounds. Evaluate both sides.
 
-**Recognition:** Your output reads as a description of the current system rather than a design derived from requirements. Every claim traces to existing code or configuration, none trace to user needs or capability requirements.
-**Corrective:** "Am I describing what exists or defining what's needed?" If every statement traces to implementation and none trace to need, you have written a description, not a design. Return to Orient.
+**Fabricated Costs** — Presenting migration costs that do not exist. Before claiming any cost, verify it. Run the command. Read the docs.
 
----
+**Compatibility Layering** — "Support both old and new." Two systems is almost always worse than one clean migration. Pick one. Migrate fully.
 
-## Backward-Compatibility Patterns
+**Risk Asymmetry** — Treating change as risky and stasis as safe. Stasis accumulates hidden debt. Evaluate both risks explicitly.
 
-These fire when existing state creates gravitational pull — migration decisions, upgrades, technology selection. They are assumed-constraint patterns specialized for the preservation instinct.
-
-**1. Fabricated Costs** — Presenting migration costs that do not exist. Before claiming any cost, verify it. Run the command. Read the docs.
-
-**2. Compatibility Layering** — "Support both old and new." Two systems is almost always worse than one clean migration. Pick one. Migrate fully.
-
-**3. Scope Anchoring** — Using the existing solution as design starting point. Start from requirements. Design fresh. Compare only after.
-
-**4. Risk Asymmetry** — Treating change as risky and stasis as safe. Stasis accumulates hidden debt. Evaluate both risks explicitly.
-
-**5. Sunk Cost Protection** — "We already invested in X." Past investment is irrelevant. Evaluate from current state and future value.
-
-**6. Premature Abstraction** — Building flexibility now for hypothetical future migration. Build for today's requirements.
-
-**7. "It Works" as Sufficient** — Working is the minimum bar. "It works and there is no materially better approach today" is the actual defense.
+**"It Works" as Sufficient** — Working is the minimum bar. "It works and there is no materially better approach today" is the actual defense.
 
 ---
 
 ## When to Ground
-
-**Always:** Before generating any design — specs, architectures, processes, methodologies, problem framings, solution proposals.
-
-**Specifically:** Technology selection, infrastructure decisions, dependency management, workflow design, API design, category creation, taxonomy design.
 
 **The trigger:** You are about to create something. Ask: "Have I established what this must enable, or am I starting from what already exists?"
 
@@ -155,17 +133,6 @@ These fire when existing state creates gravitational pull — migration decision
 - **Mid-execution.** Finish the current step, then reassess. Grounding fires at decision points.
 - **Verified external constraints.** Users at scale, contracts, and regulations are ground truth — they survive decomposition.
 - **Diminishing returns.** If grounding produces the same design as the inherited approach, the approach was correct. Grounding is verification, not contrarianism.
-
----
-
-## Decision Protocol
-
-0. **Orient.** What must this enable? Who does it serve? What do they need? Write this down before proceeding. If you cannot answer these questions, resolve them first — everything downstream depends on this.
-1. **Decompose.** What does this actually need to do? List requirements, not features. Derive from the need established in Orient, not from existing implementations.
-2. **Surface assumptions.** What are you treating as given? Which are verified? Distinguish descriptive truth (what exists) from normative truth (what's needed).
-3. **Design from constraints.** Build what requirements demand.
-4. **Compare.** Does this match existing approach? If yes, existing approach is validated. If no: real migration cost vs. carrying cost.
-5. **Default to the grounded design.** In early-stage systems, inherited assumptions compound faster than fresh starts.
 
 ---
 
@@ -180,12 +147,6 @@ These fire when existing state creates gravitational pull — migration decision
 **Infinite decomposition.** Using grounding to delay decisions. Decomposition serves reconstruction. If you are decomposing without rebuilding, you have stalled.
 
 **Rejection as reflex.** Dismissing all inherited structure because it is inherited. Some precedents are correct. Grounding is verification, not contrarianism.
-
----
-
-## The Exponential Context
-
-AI-accelerated tooling inverts the historical calculus. Migration cost approaches zero. Carrying cost compounds. Tools improve faster than abstractions age. Nimbleness compounds; rigidity compounds. Choose which curve you are on.
 
 ---
 
