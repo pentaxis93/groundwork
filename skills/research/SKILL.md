@@ -2,7 +2,6 @@
 name: research
 description: Systematic multi-source research with citations and synthesis using 6-phase workflow and Tavily
 license: MIT
-compatibility: opencode
 metadata:
   version: "1.2.0"
   source: internal (adapted for eterne)
@@ -12,7 +11,7 @@ metadata:
 
 # Research Skill
 
-This file is the **how** — the deep methodology. The researcher agent (`.opencode/agent/researcher.md`) is the **execution context** — it defines identity, model, constraints, tools, and output contract. Both are needed: the agent loads this skill at invocation.
+This file is the **how** — the deep methodology for structured, multi-source research. Any sk-compatible agent can load this skill to execute the workflow below.
 
 ## Core Principles
 
