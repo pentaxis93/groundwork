@@ -9,7 +9,7 @@ description: >-
 
 # Land — Merge, Sync, Cleanup, Close
 
-**Version 1.5**
+**Version 1.6**
 
 ## Overview
 
@@ -20,12 +20,11 @@ Use this skill when the user wants full delivery closure in one command.
 2. Scan for documentation drift; fix or flag
 3. Evaluate acceptance criteria against the branch diff
 4. Evaluate commit history; squash when iterative refinement adds noise
-5. Merge the active feature branch into `main`
-6. Push `main`
-7. Discover PR number (best effort)
-8. Remove the feature branch (remote + local)
-9. Close satisfied issue(s); comment progress on partial issue(s)
-10. Verify final state (including documentation coverage summary)
+5. Discover PR number
+6. Merge via PR API and sync local state
+7. Remove the feature branch (local; remote usually handled by merge)
+8. Close satisfied issue(s); comment progress on partial issue(s)
+9. Verify final state (including documentation coverage summary)
 
 Do not stop after merge — stopping leaves branches dangling and issues unclosed. The full sequence is atomic: merge through close.
 
@@ -103,22 +102,35 @@ Examine the branch's commit history to decide whether to squash on merge. Use `g
 
 Record the squash decision. If squashing, also record the drafted commit message.
 
-### 6. Merge and push
+### 6. Discover PR number
+
+Look up the open PR for the feature branch (`gh pr list --head <branch> --state open`). This must happen before merge because `gh pr merge` requires the PR number. If no PR is found, fall back to local merge (step 7a).
+
+### 7. Merge via PR API
+
+Merge through GitHub's PR API so the PR is recorded as "merged," not just "closed." This is the primary merge path.
+
+1. Run `gh pr merge <number>` with the appropriate strategy flag: `--squash` if squashing (with `--subject` and `--body` for the drafted commit message), `--merge` if preserving history.
+2. Include `--delete-branch` to let GitHub clean up the remote branch.
+3. After the API merge completes, sync local state: `git checkout main`, `git pull --ff-only origin main`.
+4. Record the merge commit SHA from the local main HEAD for use in issue comments.
+
+**Why not local merge:** A local `git merge` + `git push` lands the code on main but bypasses GitHub's PR merge tracking. GitHub sees the PR's commits already on main and auto-closes the PR as "closed" rather than "merged" when the branch is deleted. This loses PR merge metadata and breaks PR history.
+
+#### 7a. Fallback: local merge (no PR exists)
+
+If no PR was found in step 6, merge locally:
 
 1. Fetch and fast-forward `main` to match origin (`git fetch origin --prune`, `git checkout main`, `git pull --ff-only origin main`).
-2. Merge the feature branch. If squashing: `git merge --squash`, then `git commit` with the drafted message (squash stages but does not commit). If preserving: `git merge --no-ff`.
+2. Merge the feature branch. If squashing: `git merge --squash`, then `git commit` with the drafted message. If preserving: `git merge --no-ff`.
 3. Push `main` to origin.
-4. Record the merge commit SHA for use in issue comments.
-
-### 7. Discover PR number (best effort)
-
-Look up the PR associated with the feature branch (`gh pr list --head <branch> --state merged`). Run this before branch deletion so the branch reference is still live on the remote. If no PR is found, continue — issue comments will reference the merge commit only.
+4. Record the merge commit SHA.
 
 ### 8. Delete feature branch
 
-Delete the feature branch from both remote and local:
-- Remote: `git push origin --delete <branch>` (tolerate failure if already gone).
-- Local: `git branch -D <branch>`. The `-D` flag (force delete) is required because squash merges don't record merge parentage, so `-d` refuses even though the content is safely on `main`. This is safe because the push in step 6 verified the content landed.
+Delete any remaining branch references:
+- Remote: skip if `--delete-branch` was used in step 7. Otherwise, `git push origin --delete <branch>` (tolerate failure if already gone).
+- Local: `git branch -D <branch>`. The `-D` flag (force delete) is required because squash merges don't record merge parentage, so `-d` refuses even though the content is safely on `main`.
 - Prune stale remote-tracking references: `git fetch origin --prune`.
 
 ### 9. Comment and close issue(s)
@@ -156,6 +168,7 @@ Confirm success conditions:
 - Current branch is `main`
 - Working tree is clean
 - Feature branch absent on origin
+- PR state is `MERGED` (not just `CLOSED`)
 - Every satisfied issue state is `CLOSED`
 - Every partial issue has a progress comment listing remaining criteria
 - Documentation coverage summary reported
@@ -169,8 +182,9 @@ Report the final state including:
 
 ## Failure Policy
 
-- If merge/push fails: stop immediately, do not close issue.
-- If branch deletion fails after successful merge and push: warn about the deletion failure and continue to issue close/comment steps. The code is safely on `main`; branch cleanup is not a prerequisite for issue closure.
+- If `gh pr merge` fails: stop immediately, do not close issue. If the failure is transient (network), retry once. If structural (merge conflict, check failure), report and stop.
+- If PR API merge fails but local fallback succeeds: warn that the PR will show as "closed" rather than "merged" on GitHub.
+- If branch deletion fails after successful merge: warn about the deletion failure and continue to issue close/comment steps. The code is safely on `main`; branch cleanup is not a prerequisite for issue closure.
 - If issue comment/close API fails for one issue: continue processing remaining issues, then report failed issue number(s) explicitly.
 - If acceptance criteria evaluation fails (issue fetch error, criteria unparseable): treat the issue as partial, log a warning, and do not close it. The operator must resolve manually.
 - If documentation drift scan fails (skill unavailable, classification error): report the error in the coverage summary and proceed. Do not block the merge.
