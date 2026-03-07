@@ -8,10 +8,8 @@ The fork adds `--skill-target name` which installs skills with unprefixed direct
 
 ### Installing the fork
 
-Clone the fork and build:
-
 ```bash
-git clone <skills-supply-fork-url> && cd skills-supply
+gh repo clone pentaxis93/skills-supply && cd skills-supply
 npm run build --workspace=packages/sk
 cp packages/sk/bin/sk ~/.local/bin/sk
 ```

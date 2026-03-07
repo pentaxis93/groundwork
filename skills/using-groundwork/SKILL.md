@@ -90,7 +90,7 @@ This skill teaches the map; agent judgment navigates it. The behavior contract m
 | Documentation needs creation, review, or update | `documentation` |
 | Done | `verification-before-completion`, then `land` |
 
-**Curated skill override:** `brainstorming`'s upstream instruction to hand off to `writing-plans` is intentionally overridden in this pipeline. After brainstorming, continue to `plan` or `issue-craft` according to the decomposition need.
+**Curated skill override:** `brainstorming`'s upstream terminal handoff is overridden in this pipeline. After brainstorming, continue to `plan` (for design convergence) or `issue-craft` (for decomposition) according to need.
 
 ## Corruption Modes
 

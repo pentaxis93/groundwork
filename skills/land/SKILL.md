@@ -29,6 +29,7 @@ Do not ask for an additional confirmation before landing; invoking `land` is the
 - Working tree must be clean before starting.
 - Current branch must not be `main`.
 - Commands in this skill are Bash-specific and must be run under `bash`.
+- CHANGELOG must include entries for user-visible changes. Version bumps must state the rationale for the increment level.
 - Issue number(s) must be known:
   - Prefer explicit user-provided issue number(s).
   - Else infer from branch name using one of:
@@ -70,7 +71,19 @@ if [ "${#ISSUE_NUMBERS[@]}" -eq 0 ]; then
 fi
 ```
 
-### 2. Merge and push
+### 2. Verify CHANGELOG
+
+```bash
+if git diff origin/main...HEAD --name-only | grep -q CHANGELOG.md; then
+  echo "CHANGELOG entry present"
+else
+  echo "WARNING: no CHANGELOG entry — verify this branch has no user-visible changes"
+fi
+```
+
+If the warning fires, confirm with the user before proceeding.
+
+### 3. Merge and push
 
 ```bash
 git fetch origin --prune
@@ -81,7 +94,7 @@ git push origin main
 MERGE_SHA="$(git rev-parse --short HEAD)"
 ```
 
-### 3. Delete feature branch
+### 4. Delete feature branch
 
 ```bash
 git push origin --delete "$FEATURE_BRANCH" || true
@@ -89,7 +102,7 @@ git branch -d "$FEATURE_BRANCH"
 git fetch origin --prune
 ```
 
-### 4. Discover PR number (best effort)
+### 5. Discover PR number (best effort)
 
 ```bash
 PR_NUMBER="$(gh pr list --head "$FEATURE_BRANCH" --state merged --json number --jq '.[0].number')"
@@ -97,7 +110,7 @@ PR_NUMBER="$(gh pr list --head "$FEATURE_BRANCH" --state merged --json number --
 
 If PR is not found, continue with issue close using merge commit only.
 
-### 5. Comment and close issue(s)
+### 6. Comment and close issue(s)
 
 ```bash
 if [ -n "$PR_NUMBER" ]; then
@@ -118,13 +131,13 @@ if [ "${#FAILED_ISSUES[@]}" -gt 0 ]; then
 fi
 ```
 
-### 5a. Sync issue state to local mirror
+### 6a. Sync issue state to local mirror
 
 ```bash
 gh-issue-sync pull
 ```
 
-### 6. Verify and report
+### 7. Verify and report
 
 ```bash
 git status --short
