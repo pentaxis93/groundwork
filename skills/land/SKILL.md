@@ -5,7 +5,7 @@ description: "One-word closeout workflow: merge active branch to main, sync loca
 
 # Land — Merge, Sync, Cleanup, Close
 
-**Version 1.2**
+**Version 1.3**
 
 ## Overview
 
@@ -17,8 +17,8 @@ Use this skill when the user wants full delivery closure in one command.
 3. Merge the active feature branch into `main`
 4. Push `main`
 5. Remove the feature branch (remote + local)
-6. Post a completion comment on the issue(s)
-7. Close the issue(s)
+6. Verify acceptance criteria against merged changes
+7. Close satisfied issue(s); comment progress on partial issue(s)
 8. Verify final state (including documentation coverage summary)
 
 Do not stop after merge.
@@ -130,25 +130,33 @@ PR_NUMBER="$(gh pr list --head "$FEATURE_BRANCH" --state merged --json number --
 
 If PR is not found, continue with issue close using merge commit only.
 
-### 7. Comment and close issue(s)
+### 7. Verify acceptance criteria, comment, and close issue(s)
 
 ```bash
-if [ -n "$PR_NUMBER" ]; then
-  BODY="Implemented and merged in PR #${PR_NUMBER} (commit ${MERGE_SHA}). Closing as complete."
-else
-  BODY="Implemented and merged in commit ${MERGE_SHA}. Closing as complete."
-fi
+SATISFIED=()
+PARTIAL=()
 
-FAILED_ISSUES=()
 for ISSUE_NUMBER in "${ISSUE_NUMBERS[@]}"; do
-  gh issue comment "$ISSUE_NUMBER" --body "$BODY" || FAILED_ISSUES+=("$ISSUE_NUMBER")
-  gh issue close "$ISSUE_NUMBER" --reason completed || FAILED_ISSUES+=("$ISSUE_NUMBER")
-done
+  ISSUE_BODY="$(gh issue view "$ISSUE_NUMBER" --json body --jq '.body')"
 
-# Optional: de-duplicate failures before reporting.
-if [ "${#FAILED_ISSUES[@]}" -gt 0 ]; then
-  echo "WARNING: failed issue operations for: ${FAILED_ISSUES[*]}"
-fi
+  # Evaluate each acceptance criterion in ISSUE_BODY against the branch diff.
+  # Classify as satisfied (all criteria met) or partial (some remain).
+
+  if [ "$VERDICT" = "satisfied" ]; then
+    if [ -n "$PR_NUMBER" ]; then
+      BODY="Implemented and merged in PR #${PR_NUMBER} (commit ${MERGE_SHA}). Closing as complete."
+    else
+      BODY="Implemented and merged in commit ${MERGE_SHA}. Closing as complete."
+    fi
+    gh issue comment "$ISSUE_NUMBER" --body "$BODY"
+    gh issue close "$ISSUE_NUMBER" --reason completed
+    SATISFIED+=("$ISSUE_NUMBER")
+  else
+    # BODY should list which criteria were satisfied and which remain.
+    gh issue comment "$ISSUE_NUMBER" --body "$BODY"
+    PARTIAL+=("$ISSUE_NUMBER")
+  fi
+done
 ```
 
 ### 7a. Sync issue state to local mirror
@@ -165,17 +173,20 @@ git branch --show-current
 git rev-parse --short HEAD
 
 for ISSUE_NUMBER in "${ISSUE_NUMBERS[@]}"; do
-  gh issue view "$ISSUE_NUMBER" --json state --jq '.state'
+  gh issue view "$ISSUE_NUMBER" --json state,title --jq '"\(.state) \(.title)"'
 done
 ```
 
-Report `DOC_COVERAGE_SUMMARY` from step 3: which docs were updated, verified accurate, or flagged with tracking issues.
+Report:
+- Issue disposition: `SATISFIED` (closed) and `PARTIAL` (open with remaining criteria).
+- `DOC_COVERAGE_SUMMARY` from step 3: which docs were updated, verified accurate, or flagged with tracking issues.
 
 Success conditions:
 - current branch is `main`
 - working tree is clean
 - feature branch absent on origin
-- every target issue state is `CLOSED`
+- every satisfied issue state is `CLOSED`
+- every partial issue has a progress comment listing remaining criteria
 - documentation coverage summary reported
 
 ---
