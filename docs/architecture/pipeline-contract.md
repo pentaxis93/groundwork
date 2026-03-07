@@ -1,4 +1,4 @@
-# Groundwork Pipeline Contract (v0.1)
+# Groundwork Pipeline Contract (v0.2)
 
 This file defines the canonical integration contract for Groundwork's methodology pipeline.
 
@@ -7,7 +7,7 @@ This file defines the canonical integration contract for Groundwork's methodolog
 Groundwork has one coherent path:
 1. `ground` frames constraints.
 2. `bdd` defines and maintains behavior contract.
-3. `next-issue` + `issue-craft` decompose executable work; `plan` converges the implementation design.
+3. `brainstorming` explores approaches. `plan` converges from exploration to a decision-complete implementation design. `issue-craft` decomposes that design into agent-executable issues. `next-issue` selects session-sized work.
 4. Curated middle skills implement and verify the same behavior contract.
 5. `land` closes work with behavior coverage visibility.
 
@@ -17,56 +17,56 @@ Groundwork has one coherent path:
 
 ## Handoff Contracts
 
-## `bdd -> plan`
+### `bdd -> plan`
 Requirement:
 - design decisions preserve explicit links to the behavior statements they implement.
 
 Fail condition:
 - an implementation design exists but its behavior coverage is implicit.
 
-## `bdd -> issue-craft`
+### `bdd -> issue-craft`
 Requirement:
 - every executable work unit maps to one or more behavior statements.
 
 Fail condition:
 - issue acceptance criteria exist but no behavior mapping is stated.
 
-## `bdd -> test-driven-development`
+### `bdd -> test-driven-development`
 Requirement:
 - each RED test corresponds to a named behavior scenario.
 
 Fail condition:
 - tests are created from implementation convenience rather than behavior contract.
 
-## `bdd -> verification-before-completion`
+### `bdd -> verification-before-completion`
 Requirement:
 - completion claims include behavior-level evidence, not only command status.
 
 Fail condition:
 - "tests pass" without explicit behavior coverage statement.
 
-## `bdd -> land`
+### `bdd -> land`
 Requirement:
 - closure output identifies behavior coverage status and any deferred behavior gaps.
 
 Fail condition:
 - merged work with no behavior coverage summary.
 
-## `documentation -> issue-craft`
+### `documentation -> issue-craft`
 Requirement:
 - user-facing changes include documentation updates as explicit acceptance criteria.
 
 Fail condition:
 - issue for a user-facing change has no documentation criterion.
 
-## `documentation -> verification-before-completion`
+### `documentation -> verification-before-completion`
 Requirement:
-- completion claims include documentation accuracy evidence from `documentation-review`.
+- completion claims include documentation accuracy evidence from the `documentation` skill's review mode.
 
 Fail condition:
 - work claimed complete without documentation review; drifted docs remain untracked.
 
-## `documentation -> land`
+### `documentation -> land`
 Requirement:
 - landing records documentation coverage status: which docs were updated, which were verified accurate, which were flagged with tracking issues.
 
