@@ -21,7 +21,7 @@ Read the issue graph first. Whether starting a session, picking up work, or orie
 
 Why the issue graph matters: agent sessions are bounded — context windows end, sessions close, agents rotate. The issue graph is the persistence layer that survives those boundaries. It holds what remains to be done, what blocks what, and what state each piece of work is in. Working from the graph instead of from memory is what makes multi-session progress reliable.
 
-Local issues (`.issues/`) mirror the forge — `gh-issue-sync pull` before reading, `push` after writing. See [`WORKFLOW.md` § Issue-Based Development](https://github.com/pentaxis93/groundwork/blob/main/WORKFLOW.md#issue-based-development) for operational definitions.
+See [`WORKFLOW.md` § Issue-Based Development](https://github.com/pentaxis93/groundwork/blob/main/WORKFLOW.md#issue-based-development) for operational definitions and local issue mirroring.
 
 ## The Flow
 
@@ -45,9 +45,9 @@ See [`WORKFLOW.md`](https://github.com/pentaxis93/groundwork/blob/main/WORKFLOW.
 
 These thread across the pipeline. They aren't phases — they're disciplines that engage when relevant and stay active from that point forward.
 
-**Sovereignty.** Every handoff passes outcomes (WHAT must be true), never implementation steps (HOW to achieve it). Issues define acceptance criteria, not procedure. Plans define interfaces and decisions, not copy-paste instructions. When this boundary breaks, agents execute instructions instead of solving problems — and prescribed steps that encode wrong assumptions propagate unchallenged. Example: Issue #5 prescribed "Replace ATTRIBUTION.md with a standard NOTICE file." An implementing agent planned exactly that — but NOTICE is an Apache convention (wrong for MIT), and the file should have been deleted. This skill teaches the map; agent judgment navigates it.
+**Sovereignty.** Every handoff passes outcomes (WHAT must be true), never implementation steps (HOW to achieve it). Issues define acceptance criteria, not procedure. Plans define interfaces and decisions, not copy-paste instructions. Example: Issue #5 prescribed "Replace ATTRIBUTION.md with a standard NOTICE file." An implementing agent planned exactly that — but NOTICE is an Apache convention (wrong for MIT), and the file should have been deleted. This skill teaches the map; agent judgment navigates it.
 
-**Behavior traceability.** The behavior contract from stage 2 should be traceable at every subsequent stage. Plans link design decisions to behavior statements. Issues map acceptance criteria to behaviors. Tests correspond to named scenarios. Verification cites behavior-level evidence. Landing records what coverage shipped. If you're at any stage past Define and can't trace back to the behavior contract, traceability has broken.
+**Behavior traceability.** The behavior contract from stage 2 should be traceable at every subsequent stage. Plans link design decisions to behavior statements. Issues map acceptance criteria to behaviors. Tests correspond to named scenarios. Verification cites behavior-level evidence. Landing records what coverage shipped.
 
 **Documentation obligation.** User-facing changes carry documentation obligations: acceptance criteria include doc updates, completion claims include doc accuracy evidence, and landing records documentation coverage status. User-visible changes require a CHANGELOG entry.
 
@@ -59,12 +59,12 @@ For the formal handoff contracts, fail conditions, and anti-divergence rules, se
 
 ## Corruption Modes
 
-**Methodology as gates.** Recognition: you're checking off skills in order regardless of whether the work needs them, or refusing to use a later-stage skill because you haven't completed an earlier stage that doesn't apply. The flow is a connected path with entry points, not a checklist where every box must be ticked.
+**Methodology as gates.** Recognition: you're checking off skills in order regardless of whether the work needs them, refusing to use a later-stage skill because you haven't completed an earlier stage that doesn't apply, or invoking a skill because its name matches a keyword in the conversation rather than because the pipeline calls for it. The Flow is a connected path with entry points, not a checklist where every box must be ticked.
 
 **Behavior traceability loss.** Recognition: your tests pass but you can't name which behavior scenario each test verifies, or your completion claim says "all tests pass" without mapping results to named behaviors. Treating `bdd` as a one-time preface rather than a contract that threads through execution.
 
 **Issue discipline failure.** Recognition: you're deciding what to work on from the conversation or your own reasoning instead of reading the issue graph, or you've started implementation without checking whether the issue is blocked. The issue graph is the project's working memory — working from anything else means you're navigating from a snapshot that may already be stale.
 
-**Sovereignty violation.** Recognition: your issue's acceptance criteria describe steps to perform rather than outcomes to verify, or your plan reads like a script to follow rather than decisions that constrain a solution space. Prescribing HOW instead of passing WHAT.
+**Sovereignty violation.** Recognition: your issue's acceptance criteria describe steps to perform rather than outcomes to verify, or your plan reads like a script to follow rather than decisions that constrain a solution space. When this fires, agents execute instructions instead of solving problems — and prescribed steps that encode wrong assumptions propagate unchallenged.
 
 **Documentation drift.** Recognition: you're claiming completion but haven't checked whether the change affects any documentation, or you're aware of drifted docs but treating the update as separate future work. Drifted docs compound — each one trains readers to distrust all docs.
