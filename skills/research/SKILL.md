@@ -2,17 +2,16 @@
 name: research
 description: Systematic multi-source research with citations and synthesis using 6-phase workflow and Tavily
 license: MIT
-compatibility: opencode
 metadata:
   version: "1.2.0"
-  source: internal (adapted for eterne)
+  source: internal
   updated: "2026-01-31"
   workflow: 6-phase (Clarify → Decompose → Gather → Evaluate → Resolve → Synthesize)
 ---
 
 # Research Skill
 
-This file is the **how** — the deep methodology. The researcher agent (`.opencode/agent/researcher.md`) is the **execution context** — it defines identity, model, constraints, tools, and output contract. Both are needed: the agent loads this skill at invocation.
+This file is the **how** — the deep methodology for structured, multi-source research. Any sk-compatible agent can load this skill to execute the workflow below.
 
 ## Core Principles
 
@@ -29,7 +28,7 @@ Never trust a single source. Cross-reference with at least two independent sourc
 Most source conflicts dissolve when versions/dates are explicit. Always anchor findings to specific versions and timestamps.
 
 ### 5. Empirical Verification Over Authority
-When stakes are high, test claims directly rather than trusting even authoritative sources. Code behavior beats documentation. **Constraint-aware:** the researcher agent is read-only with no shell access. When empirical verification is needed, delegate to the `explore` agent for codebase evidence, or explicitly note the limitation in the Confidence section rather than skipping the step silently.
+When stakes are high, test claims directly rather than trusting even authoritative sources. Code behavior beats documentation.
 
 ---
 
@@ -74,7 +73,7 @@ Consult sources in this priority order, adapting to the domain:
 | **Official Docs** | Authoritative, maintained | API signatures, core concepts | `include_domains` targeting official site |
 | **GitHub Issues/PRs** | Real problems, maintainer input | Edge cases, bugs, workarounds | `include_domains: ["github.com"]` |
 | **Stack Overflow** | Curated answers, voting signal | Common problems, quick fixes | `include_domains: ["stackoverflow.com"]` |
-| **Source Code** | Ground truth | When docs are unclear | Delegate to `explore` agent |
+| **Source Code** | Ground truth | When docs are unclear | Read source directly |
 | **Blog Posts** | Deep dives, tutorials | Learning workflows, context | General search, then `tavily-extract` |
 | **Discord/Forums** | Cutting-edge, insider knowledge | Latest changes, community consensus | `include_domains` targeting community sites |
 
@@ -161,7 +160,7 @@ Use `google_search` when:
 
 ---
 
-**Codebase grounding:** When the research topic intersects with the current codebase, delegate to the `explore` agent for context before or during source gathering.
+**Codebase grounding:** When the research topic intersects with the current codebase, read relevant source code for context before or during source gathering.
 
 ### Phase 4: Source Evaluation
 
@@ -197,13 +196,13 @@ When sources disagree:
 1. **Check versions**: Conflict often means different versions, not factual disagreement. Use `tavily-search` with `time_range` to find version-specific information
 2. **Find the maintainer**: Their comment trumps community answers. Search `include_domains: ["github.com"]` for maintainer statements in issues/PRs
 3. **Deep-read both sides**: Use `tavily-extract` on the conflicting URLs to get full context — snippets often make sources seem more contradictory than they are
-4. **Test empirically**: Delegate to `explore` for codebase evidence when in read-only context, or note the limitation
+4. **Test empirically**: Check codebase evidence when available, or note the limitation
 5. **Apply consensus weighting**: Run a broader search (`max_results: 20`) to gauge which position has more independent support
 6. **Note the disagreement**: If unresolved, report both positions with evidence in the Conflicts section of output
 
 ### Phase 6: Synthesis
 
-Follow the output format defined in the researcher agent. Key quality standards:
+Key quality standards:
 
 - Every factual claim has a citation
 - Quantitative data preferred over qualitative assertions
@@ -308,7 +307,7 @@ Before concluding research, verify:
 - [ ] Conclusion is concrete, not hedged
 - [ ] Confidence level stated with reasoning
 - [ ] Limitations and caveats acknowledged
-- [ ] Output follows the format defined in researcher agent
+- [ ] Output is structured, cited, and directly answers the question
 
 ---
 
