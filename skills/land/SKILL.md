@@ -56,7 +56,7 @@ Extract issue numbers from the branch name:
 
 If neither the user nor the branch name provides issue numbers, stop and ask the user.
 
-### 2. Check CHANGELOG
+### 2. Check whether changes warrant a CHANGELOG entry
 
 Check whether `CHANGELOG.md` appears in the branch diff (`git diff origin/main...HEAD --name-only`).
 
@@ -66,7 +66,7 @@ The changelog is how users discover what changed between versions — without it
 
 Quick check for obvious documentation impacts — not a full review. Look at the changed files and check whether they affect areas with documentation artifacts (README, ARCHITECTURE, CONTRIBUTING, API docs). Fix simple drift directly and commit; file tracking issues for anything deeper.
 
-Record a brief coverage summary of what was checked and any actions taken.
+Record a coverage summary: each artifact checked, its status, and any action taken.
 
 This step is best-effort — if the scan encounters errors, note them in the summary and proceed to merge.
 
@@ -185,7 +185,7 @@ Report the final state including:
 - If branch deletion fails after successful merge: warn about the deletion failure and continue to issue close/comment steps. The code is safely on `main`; branch cleanup is not a prerequisite for issue closure.
 - If issue comment/close API fails for one issue: continue processing remaining issues, then report failed issue number(s) explicitly.
 - If acceptance criteria evaluation fails (issue fetch error, criteria unparseable): treat the issue as partial, log a warning, and do not close it. The operator must resolve manually.
-- If documentation drift scan fails (skill unavailable, classification error): report the error in the coverage summary and proceed. Do not block the merge.
+- If documentation drift scan encounters errors: report them in the coverage summary and proceed. Do not block the merge.
 - If commit history evaluation is uncertain: default to preserve (`--no-ff`). Squashing is an optimization; when in doubt, keep the original history.
 
 ---
