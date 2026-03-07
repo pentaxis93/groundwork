@@ -1,7 +1,9 @@
 mod common;
 
-const SCHEMA_PATH: &str =
-    concat!(env!("CARGO_MANIFEST_DIR"), "/../../schemas/test-evidence.schema.json");
+const SCHEMA_PATH: &str = concat!(
+    env!("CARGO_MANIFEST_DIR"),
+    "/../../schemas/test-evidence.schema.json"
+);
 const VALID_FIXTURE: &str = concat!(
     env!("CARGO_MANIFEST_DIR"),
     "/../../tests/fixtures/artifacts/valid-test-evidence.yaml"
@@ -18,7 +20,10 @@ fn valid_test_evidence() {
     let validator = common::load_schema(SCHEMA_PATH);
     let text = std::fs::read_to_string(VALID_FIXTURE).expect("read fixture");
     let instance = common::yaml_to_json(&text);
-    assert!(validator.is_valid(&instance), "valid fixture should be accepted");
+    assert!(
+        validator.is_valid(&instance),
+        "valid fixture should be accepted"
+    );
 }
 
 // ── Invalid fixture ─────────────────────────────────────────────
@@ -40,7 +45,10 @@ fn invalid_test_evidence_bad_result_value() {
 fn rejects_missing_evidence() {
     let validator = common::load_schema(SCHEMA_PATH);
     let instance = common::yaml_to_json("{}");
-    assert!(!validator.is_valid(&instance), "missing evidence should be rejected");
+    assert!(
+        !validator.is_valid(&instance),
+        "missing evidence should be rejected"
+    );
 }
 
 #[test]
@@ -97,7 +105,10 @@ fn rejects_evidence_entry_missing_output_summary() {
 fn rejects_empty_evidence() {
     let validator = common::load_schema(SCHEMA_PATH);
     let instance = common::yaml_to_json("evidence: []\n");
-    assert!(!validator.is_valid(&instance), "empty evidence should be rejected");
+    assert!(
+        !validator.is_valid(&instance),
+        "empty evidence should be rejected"
+    );
 }
 
 // ── Enum rejections ─────────────────────────────────────────────

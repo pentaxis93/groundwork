@@ -1,7 +1,9 @@
 mod common;
 
-const SCHEMA_PATH: &str =
-    concat!(env!("CARGO_MANIFEST_DIR"), "/../../schemas/behavior-contract.schema.json");
+const SCHEMA_PATH: &str = concat!(
+    env!("CARGO_MANIFEST_DIR"),
+    "/../../schemas/behavior-contract.schema.json"
+);
 const VALID_FIXTURE: &str = concat!(
     env!("CARGO_MANIFEST_DIR"),
     "/../../tests/fixtures/artifacts/valid-behavior-contract.yaml"
@@ -18,7 +20,10 @@ fn valid_behavior_contract() {
     let validator = common::load_schema(SCHEMA_PATH);
     let text = std::fs::read_to_string(VALID_FIXTURE).expect("read fixture");
     let instance = common::yaml_to_json(&text);
-    assert!(validator.is_valid(&instance), "valid fixture should be accepted");
+    assert!(
+        validator.is_valid(&instance),
+        "valid fixture should be accepted"
+    );
 }
 
 // ── Invalid fixture ─────────────────────────────────────────────
@@ -28,7 +33,10 @@ fn invalid_behavior_contract_missing_then() {
     let validator = common::load_schema(SCHEMA_PATH);
     let text = std::fs::read_to_string(INVALID_FIXTURE).expect("read fixture");
     let instance = common::yaml_to_json(&text);
-    assert!(!validator.is_valid(&instance), "scenario missing 'then' should be rejected");
+    assert!(
+        !validator.is_valid(&instance),
+        "scenario missing 'then' should be rejected"
+    );
 }
 
 // ── Required field rejections ───────────────────────────────────
@@ -39,7 +47,10 @@ fn rejects_missing_title() {
     let instance = common::yaml_to_json(
         "scenarios:\n  - name: s1\n    given: g\n    when: w\n    then: t\nmetadata:\n  produced_by: skill-a\n  date: \"2026-01-01\"\n",
     );
-    assert!(!validator.is_valid(&instance), "missing title should be rejected");
+    assert!(
+        !validator.is_valid(&instance),
+        "missing title should be rejected"
+    );
 }
 
 #[test]
@@ -48,7 +59,10 @@ fn rejects_missing_scenarios() {
     let instance = common::yaml_to_json(
         "title: A contract\nmetadata:\n  produced_by: skill-a\n  date: \"2026-01-01\"\n",
     );
-    assert!(!validator.is_valid(&instance), "missing scenarios should be rejected");
+    assert!(
+        !validator.is_valid(&instance),
+        "missing scenarios should be rejected"
+    );
 }
 
 #[test]
@@ -57,7 +71,10 @@ fn rejects_empty_scenarios() {
     let instance = common::yaml_to_json(
         "title: A contract\nscenarios: []\nmetadata:\n  produced_by: skill-a\n  date: \"2026-01-01\"\n",
     );
-    assert!(!validator.is_valid(&instance), "empty scenarios should be rejected");
+    assert!(
+        !validator.is_valid(&instance),
+        "empty scenarios should be rejected"
+    );
 }
 
 #[test]
@@ -66,7 +83,10 @@ fn rejects_missing_metadata() {
     let instance = common::yaml_to_json(
         "title: A contract\nscenarios:\n  - name: s1\n    given: g\n    when: w\n    then: t\n",
     );
-    assert!(!validator.is_valid(&instance), "missing metadata should be rejected");
+    assert!(
+        !validator.is_valid(&instance),
+        "missing metadata should be rejected"
+    );
 }
 
 // ── Scenario required field rejections ──────────────────────────
@@ -77,7 +97,10 @@ fn rejects_scenario_missing_name() {
     let instance = common::yaml_to_json(
         "title: A contract\nscenarios:\n  - given: g\n    when: w\n    then: t\nmetadata:\n  produced_by: skill-a\n  date: \"2026-01-01\"\n",
     );
-    assert!(!validator.is_valid(&instance), "scenario missing name should be rejected");
+    assert!(
+        !validator.is_valid(&instance),
+        "scenario missing name should be rejected"
+    );
 }
 
 #[test]
@@ -86,7 +109,10 @@ fn rejects_scenario_missing_given() {
     let instance = common::yaml_to_json(
         "title: A contract\nscenarios:\n  - name: s1\n    when: w\n    then: t\nmetadata:\n  produced_by: skill-a\n  date: \"2026-01-01\"\n",
     );
-    assert!(!validator.is_valid(&instance), "scenario missing given should be rejected");
+    assert!(
+        !validator.is_valid(&instance),
+        "scenario missing given should be rejected"
+    );
 }
 
 #[test]
@@ -95,7 +121,10 @@ fn rejects_scenario_missing_when() {
     let instance = common::yaml_to_json(
         "title: A contract\nscenarios:\n  - name: s1\n    given: g\n    then: t\nmetadata:\n  produced_by: skill-a\n  date: \"2026-01-01\"\n",
     );
-    assert!(!validator.is_valid(&instance), "scenario missing when should be rejected");
+    assert!(
+        !validator.is_valid(&instance),
+        "scenario missing when should be rejected"
+    );
 }
 
 // ── Metadata field rejections ───────────────────────────────────

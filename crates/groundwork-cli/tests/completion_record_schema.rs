@@ -1,7 +1,9 @@
 mod common;
 
-const SCHEMA_PATH: &str =
-    concat!(env!("CARGO_MANIFEST_DIR"), "/../../schemas/completion-record.schema.json");
+const SCHEMA_PATH: &str = concat!(
+    env!("CARGO_MANIFEST_DIR"),
+    "/../../schemas/completion-record.schema.json"
+);
 const VALID_FIXTURE: &str = concat!(
     env!("CARGO_MANIFEST_DIR"),
     "/../../tests/fixtures/artifacts/valid-completion-record.yaml"
@@ -18,7 +20,10 @@ fn valid_completion_record() {
     let validator = common::load_schema(SCHEMA_PATH);
     let text = std::fs::read_to_string(VALID_FIXTURE).expect("read fixture");
     let instance = common::yaml_to_json(&text);
-    assert!(validator.is_valid(&instance), "valid fixture should be accepted");
+    assert!(
+        validator.is_valid(&instance),
+        "valid fixture should be accepted"
+    );
 }
 
 // ── Invalid fixture ─────────────────────────────────────────────
@@ -39,9 +44,8 @@ fn invalid_completion_record_missing_gaps() {
 #[test]
 fn rejects_missing_behavior_coverage_summary() {
     let validator = common::load_schema(SCHEMA_PATH);
-    let instance = common::yaml_to_json(
-        "gaps: []\nmerge-reference: \"PR #1\"\nclosure-confirmation: Done\n",
-    );
+    let instance =
+        common::yaml_to_json("gaps: []\nmerge-reference: \"PR #1\"\nclosure-confirmation: Done\n");
     assert!(
         !validator.is_valid(&instance),
         "missing behavior-coverage-summary should be rejected"

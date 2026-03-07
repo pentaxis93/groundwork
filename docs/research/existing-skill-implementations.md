@@ -218,12 +218,11 @@ codex = true
 groundwork = { gh = "pentaxis93/groundwork" }
 ```
 
-For individual phases:
+For grouped bundles:
 
 ```toml
 [dependencies]
-foundation = { gh = "pentaxis93/groundwork", path = "skills/foundation" }
-decomposition = { gh = "pentaxis93/groundwork", path = "skills/decomposition" }
+groundwork = { gh = "pentaxis93/groundwork", path = "skills" }
 ```
 
 Then `sk sync` installs skills into the agent's skill directory.

@@ -12,10 +12,10 @@ const AGENTS_TOML: &str = "agents.toml";
 const SCHEMA_DIR: &str = ".groundwork/schemas";
 const ARTIFACTS_DIR: &str = ".groundwork/artifacts";
 const LOCK_PATH: &str = ".groundwork/installed.lock.toml";
-const ORIGINALS_REPO: &str = "pentaxis93/groundwork";
+const GROUNDWORK_REPO: &str = "pentaxis93/groundwork";
 const SKILLS_SUPPLY_FORK_URL: &str = "https://github.com/pentaxis93/skills-supply";
 const SKILLS_SUPPLY_FORK_REF: &str = "groundwork-v1";
-const CURATION_MANIFEST_TOML: &str = include_str!("../../../manifests/curation.v1.toml");
+const SHIPPED_SKILLS_TOML: &str = include_str!("../../../skills/skills.toml");
 const EMBEDDED_SCHEMAS: [EmbeddedSchema; 8] = [
     EmbeddedSchema {
         filename: "artifact-frontmatter.schema.json",
@@ -50,18 +50,6 @@ const EMBEDDED_SCHEMAS: [EmbeddedSchema; 8] = [
         content: include_str!("../../../schemas/test-evidence.schema.json"),
     },
 ];
-const ORIGINAL_SKILLS: [(&str, &str); 9] = [
-    ("ground", "skills/foundation/ground"),
-    ("research", "skills/foundation/research"),
-    ("bdd", "skills/specification/bdd"),
-    ("next-issue", "skills/decomposition/next-issue"),
-    ("plan", "skills/decomposition/plan"),
-    ("issue-craft", "skills/decomposition/issue-craft"),
-    ("documentation", "skills/verification/documentation"),
-    ("land", "skills/completion/land"),
-    ("using-groundwork", "skills/using-groundwork"),
-];
-
 #[derive(Parser)]
 #[command(name = "groundwork", version, about = "Groundwork installer")]
 struct Cli {
@@ -183,30 +171,20 @@ impl SchemaSyncPlan {
 }
 
 #[derive(Debug, Deserialize)]
-struct CurationManifest {
+struct SkillsManifest {
     version: String,
-    curated_sources: Vec<CuratedSource>,
+    skills: Vec<ShippedSkill>,
 }
 
 #[derive(Debug, Deserialize)]
-struct CuratedSource {
-    id: String,
-    source: String,
-    repo: String,
-    path: Option<String>,
-    rev: Option<String>,
-    tag: Option<String>,
-    license: String,
-    attribution: String,
-    url: String,
-    skills: Vec<CuratedSkill>,
-}
-
-#[derive(Debug, Deserialize)]
-struct CuratedSkill {
+struct ShippedSkill {
     name: String,
     path: String,
-    reason: String,
+    provider: String,
+    repo: String,
+    rev: Option<String>,
+    tag: Option<String>,
+    use_when: String,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -425,6 +403,9 @@ fn run_list() -> Result<()> {
     let lock_text = fs::read_to_string(&lock_path)
         .with_context(|| format!("failed to read {}", lock_path.display()))?;
     let lock: InstallLock = toml::from_str(&lock_text).context("failed to parse install lock")?;
+    let manifest = read_manifest()?;
+    validate_manifest(&manifest)?;
+    let order = manifest_position_map(&manifest);
 
     println!("Groundwork install lock");
     println!("- installer: {}", lock.installer_version);
@@ -437,7 +418,10 @@ fn run_list() -> Result<()> {
     }
     println!("- entries: {}", lock.entries.len());
 
-    for entry in lock.entries {
+    let mut entries = lock.entries;
+    entries.sort_by_key(|entry| order.get(&entry.alias).copied().unwrap_or(usize::MAX));
+
+    for entry in entries {
         let ref_str = entry.pinned_ref.as_deref().map_or("unpinned", |r| r);
         let skill_str = entry.skill.as_deref().unwrap_or("(unspecified)");
         println!(
@@ -474,8 +458,7 @@ fn run_doctor() -> Result<()> {
         let ver = first_line_version(run_command_capture(&["sk", "--version"]));
         println!("ok: sk available ({})", ver);
         let help_output = run_command_capture_ignore_status(&["sk", "sync", "--help"]);
-        if !supports_skill_target_option(&help_output)
-        {
+        if !supports_skill_target_option(&help_output) {
             println!(
                 "error: sk is missing required `--skill-target` sync option; install forked sk from {}",
                 SKILLS_SUPPLY_FORK_URL
@@ -511,11 +494,12 @@ fn run_doctor() -> Result<()> {
     } else {
         let (has_curl, has_go) = issue_sync_install_methods_available();
         println!("warn: gh-issue-sync not found");
-        println!("info: auto-install capability: curl={} go={}", has_curl, has_go);
+        println!(
+            "info: auto-install capability: curl={} go={}",
+            has_curl, has_go
+        );
         if !has_curl && !has_go {
-            println!(
-                "info: install manually from https://github.com/mitsuhiko/gh-issue-sync"
-            );
+            println!("info: install manually from https://github.com/mitsuhiko/gh-issue-sync");
         } else {
             println!("info: will auto-install on next init/update");
         }
@@ -527,9 +511,9 @@ fn run_doctor() -> Result<()> {
     }
 
     println!(
-        "ok: manifest v{} with {} curated sources",
+        "ok: manifest v{} with {} shipped skills",
         manifest.version,
-        manifest.curated_sources.len()
+        manifest.skills.len()
     );
     print_schema_doctor_report(&cwd, inspect_schema_directory(&cwd)?);
 
@@ -556,7 +540,8 @@ fn plan_schema_sync(base_path: &Path) -> Result<SchemaSyncPlan> {
         let action = if !target.exists() {
             SchemaFileAction::Create
         } else {
-            let existing = fs::read(&target).with_context(|| format!("failed to read {}", target.display()))?;
+            let existing = fs::read(&target)
+                .with_context(|| format!("failed to read {}", target.display()))?;
             if existing == schema.content.as_bytes() {
                 SchemaFileAction::Unchanged
             } else {
@@ -709,7 +694,10 @@ fn print_schema_doctor_report(base_path: &Path, report: SchemaDoctorReport) {
         return;
     }
     if !report.schema_dir_is_directory {
-        println!("warn: {} exists but is not a directory", schema_dir.display());
+        println!(
+            "warn: {} exists but is not a directory",
+            schema_dir.display()
+        );
         return;
     }
 
@@ -757,56 +745,53 @@ fn print_schema_doctor_report(base_path: &Path, report: SchemaDoctorReport) {
     }
 }
 
-fn read_manifest() -> Result<CurationManifest> {
-    toml::from_str::<CurationManifest>(CURATION_MANIFEST_TOML)
-        .context("failed to parse embedded curation manifest")
+fn read_manifest() -> Result<SkillsManifest> {
+    toml::from_str::<SkillsManifest>(SHIPPED_SKILLS_TOML)
+        .context("failed to parse embedded shipped skills manifest")
 }
 
-fn validate_manifest(manifest: &CurationManifest) -> Result<()> {
+fn validate_manifest(manifest: &SkillsManifest) -> Result<()> {
     if manifest.version.trim().is_empty() {
         bail!("manifest version is empty");
     }
 
-    for source in &manifest.curated_sources {
-        if source.id.trim().is_empty() {
-            bail!("curated source has empty id");
+    if manifest.skills.is_empty() {
+        bail!("manifest has no shipped skills");
+    }
+
+    let mut names = HashSet::new();
+    let mut paths = HashSet::new();
+    for skill in &manifest.skills {
+        if skill.name.trim().is_empty() {
+            bail!("manifest has skill with empty name");
         }
-        if source.source != "gh" && source.source != "git" {
+        if !names.insert(skill.name.clone()) {
+            bail!("duplicate skill name in manifest: {}", skill.name);
+        }
+        if skill.path.trim().is_empty() {
+            bail!("skill `{}` missing path", skill.name);
+        }
+        if !paths.insert(skill.path.clone()) {
+            bail!("duplicate skill path in manifest: {}", skill.path);
+        }
+        if skill.provider != "gh" && skill.provider != "git" {
             bail!(
                 "unsupported source type `{}` in `{}`",
-                source.source,
-                source.id
+                skill.provider,
+                skill.name
             );
         }
-        if source.rev.is_none() && source.tag.is_none() {
-            bail!("source `{}` must pin either `rev` or `tag`", source.id);
+        if skill.repo.trim().is_empty() {
+            bail!("skill `{}` missing repo", skill.name);
         }
-        if source.skills.is_empty() {
-            bail!("source `{}` has no curated skills", source.id);
+        if skill.rev.is_some() && skill.tag.is_some() {
+            bail!("skill `{}` cannot pin both `rev` and `tag`", skill.name);
         }
-        if source.license.trim().is_empty() {
-            bail!("source `{}` missing license", source.id);
+        if skill.repo != GROUNDWORK_REPO && skill.rev.is_none() && skill.tag.is_none() {
+            bail!("skill `{}` must pin either `rev` or `tag`", skill.name);
         }
-        if source.attribution.trim().is_empty() {
-            bail!("source `{}` missing attribution", source.id);
-        }
-        if source.url.trim().is_empty() {
-            bail!("source `{}` missing url", source.id);
-        }
-        for skill in &source.skills {
-            if skill.name.trim().is_empty() {
-                bail!("source `{}` has skill with empty name", source.id);
-            }
-            if skill.path.trim().is_empty() {
-                bail!("source `{}` skill `{}` missing path", source.id, skill.name);
-            }
-            if skill.reason.trim().is_empty() {
-                bail!(
-                    "source `{}` skill `{}` missing reason",
-                    source.id,
-                    skill.name
-                );
-            }
+        if skill.use_when.trim().is_empty() {
+            bail!("skill `{}` missing use_when", skill.name);
         }
     }
 
@@ -857,59 +842,49 @@ fn ensure_dependencies_table(doc: &mut DocumentMut) {
     }
 }
 
-fn build_managed_specs(manifest: &CurationManifest) -> Vec<ManagedDependencySpec> {
+fn build_managed_specs(manifest: &SkillsManifest) -> Vec<ManagedDependencySpec> {
     let mut specs = Vec::new();
 
-    for (skill_name, dependency_path) in ORIGINAL_SKILLS {
-        specs.push(ManagedDependencySpec {
-            alias: managed_alias(skill_name),
-            origin: "original".to_string(),
-            source_key: "gh".to_string(),
-            repo: ORIGINALS_REPO.to_string(),
-            dependency_path: dependency_path.to_string(),
-            skill: Some(skill_name.to_string()),
-            pin: None,
-        });
-    }
-
-    for source in &manifest.curated_sources {
-        for skill in &source.skills {
-            let alias = managed_alias(&skill.name);
-            let dependency_path = resolve_curated_path(source.path.as_deref(), &skill.path);
-            let pin = source
-                .rev
-                .as_ref()
-                .map(|v| PinRef {
-                    key: "rev".to_string(),
+    for skill in &manifest.skills {
+        let pin = skill
+            .rev
+            .as_ref()
+            .map(|v| PinRef {
+                key: "rev".to_string(),
+                value: v.clone(),
+            })
+            .or_else(|| {
+                skill.tag.as_ref().map(|v| PinRef {
+                    key: "tag".to_string(),
                     value: v.clone(),
                 })
-                .or_else(|| {
-                    source.tag.as_ref().map(|v| PinRef {
-                        key: "tag".to_string(),
-                        value: v.clone(),
-                    })
-                });
-
-            specs.push(ManagedDependencySpec {
-                alias,
-                origin: "curated".to_string(),
-                source_key: source.source.clone(),
-                repo: source.repo.clone(),
-                dependency_path,
-                skill: Some(skill.name.clone()),
-                pin,
             });
-        }
+
+        specs.push(ManagedDependencySpec {
+            alias: managed_alias(&skill.name),
+            origin: if skill.repo == GROUNDWORK_REPO {
+                "local".to_string()
+            } else {
+                "upstream".to_string()
+            },
+            source_key: skill.provider.clone(),
+            repo: skill.repo.clone(),
+            dependency_path: skill.path.clone(),
+            skill: Some(skill.name.clone()),
+            pin,
+        });
     }
 
     specs
 }
 
-fn resolve_curated_path(source_root: Option<&str>, skill_path: &str) -> String {
-    match source_root {
-        Some(root) => format!("{}/{}", root.trim_end_matches('/'), skill_path),
-        None => skill_path.to_string(),
-    }
+fn manifest_position_map(manifest: &SkillsManifest) -> std::collections::HashMap<String, usize> {
+    manifest
+        .skills
+        .iter()
+        .enumerate()
+        .map(|(index, skill)| (managed_alias(&skill.name), index))
+        .collect()
 }
 
 fn reconcile_manifest_to_doc(
@@ -1074,7 +1049,14 @@ fn install_sk_from_fork() -> Result<PathBuf> {
     ));
 
     let clone = Command::new("git")
-        .args(["clone", "--depth", "1", "--branch", SKILLS_SUPPLY_FORK_REF, SKILLS_SUPPLY_FORK_URL])
+        .args([
+            "clone",
+            "--depth",
+            "1",
+            "--branch",
+            SKILLS_SUPPLY_FORK_REF,
+            SKILLS_SUPPLY_FORK_URL,
+        ])
         .arg(&temp_dir)
         .stdout(Stdio::inherit())
         .stderr(Stdio::inherit())
@@ -1087,7 +1069,13 @@ fn install_sk_from_fork() -> Result<PathBuf> {
     }
 
     let deps = Command::new("npm")
-        .args(["install", "--workspace", "packages/core", "--workspace", "packages/sk"])
+        .args([
+            "install",
+            "--workspace",
+            "packages/core",
+            "--workspace",
+            "packages/sk",
+        ])
         .current_dir(&temp_dir)
         .stdout(Stdio::inherit())
         .stderr(Stdio::inherit())
@@ -1197,8 +1185,8 @@ fn install_sk_from_fork() -> Result<PathBuf> {
         bail!("failed to install sk from {}", SKILLS_SUPPLY_FORK_URL);
     }
 
-    let npm_prefix =
-        run_command_capture(&["npm", "prefix", "-g"]).context("failed to resolve npm global prefix")?;
+    let npm_prefix = run_command_capture(&["npm", "prefix", "-g"])
+        .context("failed to resolve npm global prefix")?;
     let installed_sk = PathBuf::from(npm_prefix).join("bin").join("sk");
     if !installed_sk.exists() {
         bail!(
@@ -1214,10 +1202,16 @@ impl SkRunner {
     fn sk_bin(&self) -> Result<String> {
         match self.mode {
             SkMode::Binary => {
-                let bin = self.binary_path.as_deref().unwrap_or_else(|| Path::new("sk"));
+                let bin = self
+                    .binary_path
+                    .as_deref()
+                    .unwrap_or_else(|| Path::new("sk"));
                 Ok(bin.to_string_lossy().to_string())
             }
-            SkMode::Npx => bail!("npx mode is no longer supported; install sk binary from {}", SKILLS_SUPPLY_FORK_URL),
+            SkMode::Npx => bail!(
+                "npx mode is no longer supported; install sk binary from {}",
+                SKILLS_SUPPLY_FORK_URL
+            ),
         }
     }
 
@@ -1316,7 +1310,10 @@ fn ensure_issue_sync_available() -> Option<IssueSyncMode> {
     None
 }
 
-fn bootstrap_issue_sync(base_path: &Path, is_init: bool) -> Result<Option<(IssueSyncMode, String)>> {
+fn bootstrap_issue_sync(
+    base_path: &Path,
+    is_init: bool,
+) -> Result<Option<(IssueSyncMode, String)>> {
     let mode = match ensure_issue_sync_available() {
         Some(mode) => mode,
         None if is_init => {
@@ -1349,9 +1346,12 @@ fn bootstrap_issue_sync(base_path: &Path, is_init: bool) -> Result<Option<(Issue
         should_pull = true;
     }
 
-    if !should_pull && issue_sync_status_is_never_pulled(
-        &run_command_capture_ignore_status_in_dir(&["gh-issue-sync", "status"], base_path),
-    ) {
+    if !should_pull
+        && issue_sync_status_is_never_pulled(&run_command_capture_ignore_status_in_dir(
+            &["gh-issue-sync", "status"],
+            base_path,
+        ))
+    {
         should_pull = true;
     }
 
@@ -1379,7 +1379,10 @@ fn bootstrap_issue_sync(base_path: &Path, is_init: bool) -> Result<Option<(Issue
                         detail.push_str(&format!("; {}", hint));
                     }
                     detail.push_str("; run `gh-issue-sync status` after remediation");
-                    bail!("gh-issue-sync pull failed during `groundwork init`: {}", detail);
+                    bail!(
+                        "gh-issue-sync pull failed during `groundwork init`: {}",
+                        detail
+                    );
                 }
                 println!("warn: gh-issue-sync pull failed");
                 if !stderr.is_empty() {
@@ -1611,21 +1614,18 @@ fn write_lock(
         .with_context(|| format!("failed to write {}", lock_path.display()))
 }
 
-fn print_manifest_summary(manifest: &CurationManifest) {
-    println!("Curated sources:");
-    for source in &manifest.curated_sources {
-        let pin = source
+fn print_manifest_summary(manifest: &SkillsManifest) {
+    println!("Shipped skills:");
+    for skill in &manifest.skills {
+        let pin = skill
             .rev
             .as_deref()
-            .or(source.tag.as_deref())
-            .unwrap_or("none");
+            .or(skill.tag.as_deref())
+            .unwrap_or("unpinned");
         println!(
-            "- {} ({}, {} @ {})",
-            source.id, source.repo, source.source, pin
+            "- {} ({}, {} path={}, ref={})",
+            skill.name, skill.repo, skill.provider, skill.path, pin
         );
-        for skill in &source.skills {
-            println!("    - {} ({})", skill.name, skill.path);
-        }
     }
 }
 
@@ -1638,39 +1638,109 @@ mod tests {
         input.parse::<DocumentMut>().expect("valid toml")
     }
 
-    fn test_manifest() -> CurationManifest {
-        CurationManifest {
+    fn sample_manifest() -> SkillsManifest {
+        SkillsManifest {
             version: "1".to_string(),
-            curated_sources: vec![CuratedSource {
-                id: "superpowers".to_string(),
-                source: "gh".to_string(),
-                repo: "obra/superpowers".to_string(),
-                path: Some("bundle".to_string()),
-                rev: Some("abc123".to_string()),
-                tag: None,
-                license: "MIT".to_string(),
-                attribution: "x".to_string(),
-                url: "https://example.com".to_string(),
-                skills: vec![CuratedSkill {
+            skills: vec![
+                ShippedSkill {
+                    name: "ground".to_string(),
+                    path: "skills/ground".to_string(),
+                    provider: "gh".to_string(),
+                    repo: GROUNDWORK_REPO.to_string(),
+                    rev: None,
+                    tag: None,
+                    use_when: "before creating designs".to_string(),
+                },
+                ShippedSkill {
                     name: "test-driven-development".to_string(),
-                    path: "skills/test-driven-development".to_string(),
-                    reason: "reason".to_string(),
-                }],
-            }],
+                    path: "bundle/skills/test-driven-development".to_string(),
+                    provider: "gh".to_string(),
+                    repo: "obra/superpowers".to_string(),
+                    rev: Some("abc123".to_string()),
+                    tag: None,
+                    use_when: "when implementing".to_string(),
+                },
+            ],
         }
     }
 
     #[test]
-    fn resolve_curated_path_merges_root_and_skill_path() {
+    fn manifest_validation_rejects_duplicate_skill_names() {
+        let manifest = SkillsManifest {
+            version: "1".to_string(),
+            skills: vec![
+                ShippedSkill {
+                    name: "ground".to_string(),
+                    path: "skills/ground".to_string(),
+                    provider: "gh".to_string(),
+                    repo: GROUNDWORK_REPO.to_string(),
+                    rev: None,
+                    tag: None,
+                    use_when: "before designing".to_string(),
+                },
+                ShippedSkill {
+                    name: "ground".to_string(),
+                    path: "skills/ground-2".to_string(),
+                    provider: "gh".to_string(),
+                    repo: GROUNDWORK_REPO.to_string(),
+                    rev: None,
+                    tag: None,
+                    use_when: "duplicate".to_string(),
+                },
+            ],
+        };
+
+        let err = validate_manifest(&manifest).expect_err("expected duplicate-name error");
+        assert_eq!(err.to_string(), "duplicate skill name in manifest: ground");
+    }
+
+    #[test]
+    fn managed_specs_follow_shipped_skill_order_and_flat_paths() {
+        let manifest = read_manifest().expect("embedded shipped-skill manifest parses");
+        let specs = build_managed_specs(&manifest);
+
+        let aliases: Vec<&str> = specs.iter().map(|spec| spec.alias.as_str()).collect();
         assert_eq!(
-            resolve_curated_path(Some("bundle"), "skills/test"),
-            "bundle/skills/test"
+            aliases,
+            vec![
+                "using_groundwork",
+                "ground",
+                "research",
+                "bdd",
+                "brainstorming",
+                "plan",
+                "issue_craft",
+                "next_issue",
+                "test_driven_development",
+                "subagent_driven_development",
+                "systematic_debugging",
+                "requesting_code_review",
+                "receiving_code_review",
+                "documentation",
+                "verification_before_completion",
+                "land",
+            ]
         );
+
+        let local_paths: Vec<&str> = specs
+            .iter()
+            .filter(|spec| spec.repo == GROUNDWORK_REPO)
+            .map(|spec| spec.dependency_path.as_str())
+            .collect();
         assert_eq!(
-            resolve_curated_path(Some("bundle/"), "skills/test"),
-            "bundle/skills/test"
+            local_paths,
+            vec![
+                "skills/using-groundwork",
+                "skills/ground",
+                "skills/research",
+                "skills/bdd",
+                "skills/plan",
+                "skills/issue-craft",
+                "skills/next-issue",
+                "skills/documentation",
+                "skills/land",
+            ]
         );
-        assert_eq!(resolve_curated_path(None, "skills/test"), "skills/test");
     }
 
     #[test]
@@ -1680,16 +1750,18 @@ mod tests {
 claude-code = true
 
 [dependencies]
-old_bdd = { gh = "pentaxis93/groundwork", path = "skills/specification/bdd" }
-old_ground = { gh = "pentaxis93/groundwork", path = "skills/foundation/ground" }
+old_bdd = { gh = "pentaxis93/groundwork", path = "skills/bdd" }
+old_ground = { gh = "pentaxis93/groundwork", path = "skills/ground" }
 external_dep = { gh = "org/repo", path = "y" }
 "#,
         );
 
-        let previously_managed: HashSet<String> =
-            ["old_bdd", "old_ground"].iter().map(|s| s.to_string()).collect();
+        let previously_managed: HashSet<String> = ["old_bdd", "old_ground"]
+            .iter()
+            .map(|s| s.to_string())
+            .collect();
 
-        let specs = build_managed_specs(&test_manifest());
+        let specs = build_managed_specs(&read_manifest().expect("embedded manifest"));
         let result =
             reconcile_manifest_to_doc(&mut doc, &specs, &previously_managed).expect("reconcile ok");
 
@@ -1719,7 +1791,7 @@ claude-code = true
 "#,
         );
 
-        let specs = build_managed_specs(&test_manifest());
+        let specs = build_managed_specs(&sample_manifest());
         let previously_managed = HashSet::new();
         let result =
             reconcile_manifest_to_doc(&mut doc, &specs, &previously_managed).expect("reconcile ok");
@@ -1750,7 +1822,7 @@ claude-code = true
 "#,
         );
 
-        let specs = build_managed_specs(&test_manifest());
+        let specs = build_managed_specs(&sample_manifest());
         let empty: HashSet<String> = HashSet::new();
 
         let first =
@@ -1841,11 +1913,14 @@ claude-code = true
         assert!(plan.unchanged_count() >= 1);
 
         apply_schema_sync(base, &plan).expect("schema sync apply");
-        assert_eq!(fs::read_to_string(&artifact_file).expect("artifact still readable"), "keep me");
+        assert_eq!(
+            fs::read_to_string(&artifact_file).expect("artifact still readable"),
+            "keep me"
+        );
         assert!(extra_schema.exists());
 
-        let refreshed =
-            fs::read_to_string(schema_dir.join(second.filename)).expect("refreshed schema readable");
+        let refreshed = fs::read_to_string(schema_dir.join(second.filename))
+            .expect("refreshed schema readable");
         assert_eq!(refreshed, second.content);
     }
 
@@ -1867,17 +1942,13 @@ claude-code = true
         assert!(report.schema_dir_exists);
         assert!(report.schema_dir_is_directory);
         assert!(
-            report
-                .missing_files
-                .contains(&EMBEDDED_SCHEMAS[2].filename),
+            report.missing_files.contains(&EMBEDDED_SCHEMAS[2].filename),
             "expected at least one managed schema to be reported missing"
         );
         assert!(report.mismatched_files.contains(&mismatched.filename));
-        assert!(
-            report
-                .extra_files
-                .contains(&"custom-extra.schema.json".to_string())
-        );
+        assert!(report
+            .extra_files
+            .contains(&"custom-extra.schema.json".to_string()));
         assert!(report.unreadable_files.is_empty());
     }
 
@@ -2059,10 +2130,10 @@ version = "1.0.0"
 
 [[entries]]
 alias = "ground"
-origin = "original"
+origin = "local"
 source = "gh"
 repo = "pentaxis93/groundwork"
-path = "skills/foundation/ground"
+path = "skills/ground"
 skill = "ground"
 "#;
 

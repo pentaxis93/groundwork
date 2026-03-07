@@ -10,25 +10,29 @@ Groundwork is a methodology library — a set of skills that guide AI coding age
 
 ### Skills (the product)
 
-Each skill is a single SKILL.md file with YAML frontmatter (`name`, `description`) and markdown body. Skills define procedures, constraints, corruption modes, and triggers. They are organized by pipeline stage:
+Each skill is a single SKILL.md file with YAML frontmatter (`name`, `description`) and markdown body. Skills define procedures, constraints, corruption modes, and triggers. The tracked `skills/` directory stores the local skill files plus one manifest that makes the shipped inventory explicit:
 
 ```
 skills/
-  foundation/       ground, research
-  specification/    bdd
-  decomposition/    issue-craft, next-issue, plan
-  completion/       land
-  verification/     documentation
-  using-groundwork  (meta-skill: methodology orientation)
+  skills.toml        authoritative shipped-skill manifest
+  using-groundwork/  methodology orientation
+  ground/            first-principles grounding
+  research/          external evidence gathering
+  bdd/               behavior contract definition
+  plan/              design convergence
+  issue-craft/       issue lifecycle
+  next-issue/        work selection
+  documentation/     documentation review/update
+  land/              closeout workflow
 ```
 
-The directory structure reflects the pipeline, not the filesystem. A skill's stage determines when it fires and what it hands off to.
+The directory structure is storage, not the methodology model. Order and inventory come from `skills/skills.toml`; the workflow narrative explains how those skills relate.
 
 ### CLI (the installer)
 
-`crates/groundwork-cli/` is a Rust binary that reads a curated manifest, fetches skills via [`sk`](https://github.com/nickarora/sk), and populates the consumer's `agents.toml`. Commands: `init`, `update`, `list`, `doctor`. The CLI is a thin install layer — it has no role at runtime.
+`crates/groundwork-cli/` is a Rust binary that reads `skills/skills.toml`, fetches skills via [`sk`](https://github.com/nickarora/sk), and populates the consumer's `agents.toml`. Commands: `init`, `update`, `list`, `doctor`. The CLI is a thin install layer — it has no role at runtime.
 
-The curated manifest (`manifests/curation.v1.toml`) pins upstream skill sources to specific commits. The CLI embeds this manifest at compile time, so it works outside the repository.
+`skills/skills.toml` pins upstream skill sources to specific commits and lists the local ones by path. The CLI embeds this manifest at compile time, so it works outside the repository.
 
 ### agents.toml (the configuration)
 
@@ -40,11 +44,11 @@ The curated manifest (`manifests/curation.v1.toml`) pins upstream skill sources 
 
 ## Composition Model
 
-Groundwork has two kinds of skills, distinguished by where they are maintained:
+Groundwork ships skills from two maintenance locations, but inventory is unified in one manifest:
 
-**Core skills** are maintained in this repository. The authoritative inventory is the `agents.toml` `[dependencies]` entries that point to `gh = "pentaxis93/groundwork"` (local paths under `skills/`). These skills define the pipeline's structure — what stages exist, what handoff contracts connect them, and what cognitive discipline the pipeline enforces.
+Skills maintained in this repository are listed in `skills/skills.toml` with local paths under `skills/`. These skills define the pipeline's structure — what stages exist, what handoff contracts connect them, and what cognitive discipline the pipeline enforces.
 
-**Curated skills** (from [obra/superpowers](https://github.com/obra/superpowers)) are referenced by the manifest and fetched at install time. The authoritative inventory is `manifests/curation.v1.toml` (and the corresponding `agents.toml` entries with `gh = "obra/superpowers"`). They fill the execution phase — TDD, debugging, subagent orchestration, code review, verification — where high-quality implementations already exist.
+Skills maintained upstream (from [obra/superpowers](https://github.com/obra/superpowers)) are listed in the same manifest with pinned commits and fetched at install time. They fill the execution phase — TDD, debugging, subagent orchestration, code review, verification — where high-quality implementations already exist.
 
 Curated skills are pinned to a specific commit. They are not forked, vendored, or modified. Integration happens through documentation: WORKFLOW.md defines handoff rules that connect curated skills to the pipeline's input/output contracts.
 
@@ -73,6 +77,6 @@ Formal handoff contracts and anti-divergence rules are defined in `docs/architec
 | `WORKFLOW.md` | Integration manual — the authoritative reference for operating the pipeline |
 | `docs/architecture/pipeline-design.md` | Canonical pipeline design: as-built baseline + clearly marked target-state design |
 | `docs/architecture/pipeline-contract.md` | Formal handoff contracts and anti-divergence rules |
-| `manifests/curation.v1.toml` | Curated upstream skills with pinned commits |
+| `skills/skills.toml` | Shipped skill inventory and upstream pinning |
 | `agents.toml` | Skill system configuration (sk-compatible) |
 | `crates/groundwork-cli/src/main.rs` | CLI source — init, update, list, doctor |

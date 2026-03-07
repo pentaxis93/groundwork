@@ -2,6 +2,8 @@
 
 This is the integration manual for operating Groundwork's skills as one connected pipeline from problem framing to shipped change.
 
+For the shortest inventory-and-order reference, read `skills/skills.toml`. This document is the narrative explanation of how those skills interact.
+
 ## Pipeline
 
 There is one path, not a menu. Every piece of work flows through five stages: frame constraints, define behavior, decompose, execute and verify, land. Skills from different sources slot into this sequence. Each step produces an artifact or state change that the next step consumes.
