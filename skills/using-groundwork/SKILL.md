@@ -55,7 +55,7 @@ Every handoff in the pipeline passes **outcomes** (WHAT must be true), never **i
 
 When this boundary breaks, agents execute instructions instead of solving problems — and prescribed steps that encode wrong assumptions propagate unchallenged. Example: Issue #5 prescribed "Replace ATTRIBUTION.md with a standard NOTICE file." An implementing agent planned exactly that — but NOTICE is an Apache convention (wrong for MIT), and the file should have been deleted.
 
-This skill teaches the map; agent judgment navigates it.
+This skill teaches the map; agent judgment navigates it. The behavior contract flows from `bdd` through execution to `land`, but skip what the work does not need, return to what it does.
 
 ## Corruption Modes
 
