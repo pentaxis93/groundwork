@@ -86,7 +86,7 @@ Treating past decisions, existing implementations, or prior investment as requir
 
 Maintaining complexity because removing it seems risky.
 
-**Recognition:** You are preserving structure not because it serves current requirements, but because removing it might break something you do not understand.
+**Recognition:** You are preserving structure not because it serves current requirements, but because removing it might break something you do not understand — or adding structure for requirements that do not yet exist.
 **Corrective:** "What is the simplest design that meets requirements?" If simpler than what exists, the complexity needs justification or removal.
 
 ### 6. Audience Assumption
