@@ -5,7 +5,7 @@ description: "One-word closeout workflow: merge active branch to main, sync loca
 
 # Land — Merge, Sync, Cleanup, Close
 
-**Version 1.1**
+**Version 1.2**
 
 ## Overview
 
@@ -13,12 +13,13 @@ Use this skill when the user wants full delivery closure in one command.
 
 `land` means:
 1. Verify CHANGELOG covers user-visible changes
-2. Merge the active feature branch into `main`
-3. Push `main`
-4. Remove the feature branch (remote + local)
-5. Post a completion comment on the issue(s)
-6. Close the issue(s)
-7. Verify final state
+2. Run documentation coherence check; fix drifted docs on the feature branch
+3. Merge the active feature branch into `main`
+4. Push `main`
+5. Remove the feature branch (remote + local)
+6. Post a completion comment on the issue(s)
+7. Close the issue(s)
+8. Verify final state (including documentation coverage summary)
 
 Do not stop after merge.
 Do not ask for an additional confirmation before landing; invoking `land` is the user's approval to execute this workflow.
@@ -84,7 +85,25 @@ fi
 
 If the warning fires, confirm with the user before proceeding.
 
-### 3. Merge and push
+### 3. Documentation coherence check
+
+Identify changed files:
+
+```bash
+git diff origin/main...HEAD --name-only
+```
+
+Invoke the `documentation` skill's `documentation-review` mode against the changed files:
+
+1. Map code changes to documentation artifacts (README, WORKFLOW.md, architecture docs, CHANGELOG, inline comments, ADRs, CONTRIBUTING).
+2. Classify each mapped document as `accurate`, `drifted`, `missing`, or `obsolete`.
+3. Update or create drifted/missing docs on the feature branch. Commit fixes before proceeding.
+4. For deeper documentation work beyond the scope of this landing, file tracking issues using `issue-craft`.
+5. Record the classification results as `DOC_COVERAGE_SUMMARY` for the verify step.
+
+If all documentation is `accurate` and no updates are needed, record that and proceed.
+
+### 4. Merge and push
 
 ```bash
 git fetch origin --prune
@@ -95,7 +114,7 @@ git push origin main
 MERGE_SHA="$(git rev-parse --short HEAD)"
 ```
 
-### 4. Delete feature branch
+### 5. Delete feature branch
 
 ```bash
 git push origin --delete "$FEATURE_BRANCH" || true
@@ -103,7 +122,7 @@ git branch -d "$FEATURE_BRANCH"
 git fetch origin --prune
 ```
 
-### 5. Discover PR number (best effort)
+### 6. Discover PR number (best effort)
 
 ```bash
 PR_NUMBER="$(gh pr list --head "$FEATURE_BRANCH" --state merged --json number --jq '.[0].number')"
@@ -111,7 +130,7 @@ PR_NUMBER="$(gh pr list --head "$FEATURE_BRANCH" --state merged --json number --
 
 If PR is not found, continue with issue close using merge commit only.
 
-### 6. Comment and close issue(s)
+### 7. Comment and close issue(s)
 
 ```bash
 if [ -n "$PR_NUMBER" ]; then
@@ -132,13 +151,13 @@ if [ "${#FAILED_ISSUES[@]}" -gt 0 ]; then
 fi
 ```
 
-### 6a. Sync issue state to local mirror
+### 7a. Sync issue state to local mirror
 
 ```bash
 gh-issue-sync pull
 ```
 
-### 7. Verify and report
+### 8. Verify and report
 
 ```bash
 git status --short
@@ -150,11 +169,14 @@ for ISSUE_NUMBER in "${ISSUE_NUMBERS[@]}"; do
 done
 ```
 
+Report `DOC_COVERAGE_SUMMARY` from step 3: which docs were updated, verified accurate, or flagged with tracking issues.
+
 Success conditions:
 - current branch is `main`
 - working tree is clean
 - feature branch absent on origin
 - every target issue state is `CLOSED`
+- documentation coverage summary reported
 
 ---
 
