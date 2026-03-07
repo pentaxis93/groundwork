@@ -3,9 +3,9 @@ name: research
 description: Systematic multi-source research with citations and synthesis using 6-phase workflow and Tavily
 license: MIT
 metadata:
-  version: "1.2.0"
+  version: "1.3.0"
   source: internal
-  updated: "2026-01-31"
+  updated: "2026-03-07"
   workflow: 6-phase (Clarify → Decompose → Gather → Evaluate → Resolve → Synthesize)
 ---
 
@@ -44,6 +44,8 @@ Before researching, clarify the query:
 4. **Note constraints**: Time period, specific technologies, geographic scope?
 
 If the query is vague, ask clarifying questions before proceeding. Do not research a vague question — you'll waste cycles on wrong targets.
+
+**When to abbreviate:** Not every query needs full clarification. If the question is specific and unambiguous — "What's the latest stable version of React?" or "Does library X support Python 3.12?" — move directly to Phase 2 or even Phase 3. Clarification earns its time when a vague query would send you searching in the wrong direction. A good heuristic: if you can write the sub-questions without asking anything, the query was clear enough.
 
 ### Phase 2: Query Decomposition
 
@@ -91,26 +93,14 @@ Tavily is the primary research engine. It has two tools with distinct roles:
 
 #### `tavily-search` — Discovery
 
-Use for finding sources across the web. Key parameters:
-
-| Parameter | When to Use | Example |
-|-----------|------------|---------|
-| `search_depth: "basic"` | Default. Start here (Start Simple principle) | Initial sub-question sweep |
-| `search_depth: "advanced"` | Basic returned thin results, or topic is niche | Deep technical questions, obscure APIs |
-| `topic: "news"` | Current events, recent developments, breaking changes | `topic: "news", days: 7` for last week |
-| `topic: "general"` | Default. Technical docs, tutorials, established knowledge | Most research |
-| `time_range` | Version-sensitive research (anchors Principle 4) | `time_range: "month"` for recent only |
-| `include_domains` | Target specific source types from the table above | `["github.com", "docs.rs"]` |
-| `exclude_domains` | Filter known low-quality or irrelevant sites | `["w3schools.com", "geeksforgeeks.org"]` |
-| `max_results` | Control breadth | 5 for focused, 15-20 for survey |
-| `include_raw_content: true` | Need full text without a separate fetch | When result snippets look promising |
+Use for finding sources across the web. Start with `search_depth: "basic"` — the tool schema documents all parameters.
 
 **Parallelization pattern:** Sub-questions from Phase 2 are independent. Fire multiple `tavily-search` calls simultaneously, each with different queries and domain filters:
 
 ```
 # Parallel execution — all at once
 Search 1: sub-question 1, include_domains: ["docs.python.org"]
-Search 2: sub-question 2, include_domains: ["github.com"]  
+Search 2: sub-question 2, include_domains: ["github.com"]
 Search 3: sub-question 3, search_depth: "advanced"
 Search 4: sub-question 4, topic: "news", days: 30
 ```
@@ -122,13 +112,7 @@ Search 4: sub-question 4, topic: "news", days: 30
 
 #### `tavily-extract` — Deep Reading
 
-Use for pulling full content from specific URLs. Key parameters:
-
-| Parameter | When to Use | Example |
-|-----------|------------|---------|
-| `extract_depth: "basic"` | Default. Most web pages | Blog posts, docs, SO answers |
-| `extract_depth: "advanced"` | LinkedIn, paywalled, or JS-heavy pages | Professional profiles, dynamic content |
-| `urls` (batch) | Multiple sources to read in one call | Pass 3-5 URLs from search results |
+Use for pulling full content from specific URLs. The tool schema documents parameters; the strategic question is *when* to extract.
 
 **When to extract vs. when search is enough:**
 - Search result snippets answer the question → don't extract, move on
@@ -142,21 +126,21 @@ Use for pulling full content from specific URLs. Key parameters:
 tavily-extract(urls: [url1, url2, url3, url4])
 ```
 
-This is faster than sequential `webfetch` calls and returns cleaned content.
+This is faster than sequential `WebFetch` calls and returns cleaned content.
 
-#### When to Use `webfetch` Instead
+#### When to Use `WebFetch` Instead
 
-Tavily handles most cases, but fall back to `webfetch` when:
+Tavily handles most cases, but fall back to `WebFetch` when:
 - You need a specific URL that Tavily extract can't parse (rare edge cases)
 - The URL was provided directly by the user (not discovered via search)
 - You need markdown-formatted output for readability
 
-#### When to Use `google_search` Instead
+#### When to Use `WebSearch` Instead
 
-Use `google_search` when:
-- You need Google's specific ranking signals for a query
-- Tavily results seem off or incomplete for a particular topic
-- You want a second search engine's perspective for the Three-Source Rule
+`WebSearch` provides a second search engine perspective. Use it when:
+- Tavily results seem thin or off-target for a particular topic
+- You want independent corroboration for the Three-Source Rule
+- The query benefits from different ranking signals
 
 ---
 
@@ -164,15 +148,7 @@ Use `google_search` when:
 
 ### Phase 4: Source Evaluation
 
-Score each source on:
-
-| Criterion | Question | Weight |
-|-----------|----------|--------|
-| **Relevance** | Does it directly address the question? | High |
-| **Credibility** | Author expertise? Peer review? Maintainer? | High |
-| **Currency** | How recent? Still applicable? | Medium-High |
-| **Specificity** | Contains concrete data, examples, code? | Medium |
-| **Consensus** | Does it align with other sources? | Medium |
+Evaluate sources on relevance, credibility, currency, and specificity — but the practical question is *which sources to trust when they disagree*.
 
 **Trust hierarchy (highest to lowest):**
 1. Source code behavior (empirical test)
@@ -212,70 +188,53 @@ Key quality standards:
 - The Confidence section honestly assesses source quality and consensus level
 - Conflicts are surfaced, not hidden
 
+**Output template:** Structure research output to be immediately actionable. Adapt the template to scope — a quick version lookup doesn't need every section, while a technology comparison needs all of them.
+
+````markdown
+## [Direct Answer to the Research Question]
+
+[1-3 sentence answer. Be specific. If the answer is "use X," say why.]
+
+### Key Findings
+
+1. **[Finding]** — [Detail with citation] ([source](URL), [date])
+2. **[Finding]** — [Detail with citation] ([source](URL), [date])
+3. **[Finding]** — [Detail with citation] ([source](URL), [date])
+
+### Conflicts and Disagreements
+
+[Where sources disagreed and what that means. If no conflicts, say so
+explicitly — it's a signal of high consensus.]
+
+### Confidence Assessment
+
+- **Overall confidence**: [High/Medium/Low]
+- **Reasoning**: [What makes the evidence strong or weak]
+- **Source agreement**: [Did sources converge or diverge?]
+
+### Limitations
+
+- [What this research did NOT cover]
+- [Conditions under which findings might not apply]
+- [Time-sensitivity: when these findings should be re-verified]
+````
+
 ---
 
 ## Capturing Practical Wisdom
 
-Official docs miss the "clever hacks" and "power user moves." Find them by:
+Official docs miss the "clever hacks" and "power user moves." Target them with queries like these (combine with `include_domains` for precision):
 
-### Search Patterns
+| Pattern | Query Template | Domain Filter |
+|---------|---------------|---------------|
+| GitHub issue archaeology | `[tech] workaround OR hack OR trick` | `github.com` |
+| Maintainer statements | `[tech] [problem] fix OR resolved` | `github.com` |
+| Stack Overflow deep cuts | `[tech] [problem] note that OR also need to` | `stackoverflow.com` |
+| Recent developments | `[tech] [feature] announcement OR release` | Use `time_range: "month"` |
+| Breaking changes | `[tech] breaking change OR migration guide` | Use `topic: "news"` |
+| Config wisdom | `[tool] dotfiles OR awesome-[tool] config` | `github.com` |
 
-These patterns work with both `tavily-search` and `google_search`. For Tavily, combine the query text with `include_domains` for precision:
-
-```
-# GitHub issue archaeology
-query: "[technology] workaround OR hack OR trick"
-include_domains: ["github.com"]
-
-# Maintainer statements
-query: "[technology] [problem] fix OR resolved"
-include_domains: ["github.com"]
-search_depth: "advanced"
-
-# Stack Overflow deep cuts
-query: "[technology] [problem] note that OR also need to"
-include_domains: ["stackoverflow.com"]
-
-# Recent developments (last 30 days)
-query: "[technology] [feature] announcement OR release"
-time_range: "month"
-
-# Breaking changes / migration
-query: "[technology] breaking change OR migration guide"
-topic: "news", days: 90
-
-# Dotfile / config wisdom
-query: "[tool] dotfiles OR awesome-[tool] config"
-include_domains: ["github.com"]
-
-# Conference talk wisdom
-query: "[technology] conference talk transcript"
-search_depth: "advanced"
-```
-
-**Follow-up pattern:** When a search surfaces promising URLs, batch them:
-```
-tavily-extract(urls: [promising_url_1, promising_url_2, promising_url_3])
-```
-
-### Emotional Language Signals
-
-Hard-won knowledge often comes with emotional markers:
-- "Finally!"
-- "After hours of debugging..."
-- "The trick is..."
-- "What the docs don't tell you..."
-- "I wish I knew this earlier..."
-
-When you find such knowledge, preserve context:
-```
-## [Problem]
-**Source**: [URL] ([date])
-**Version**: [when this worked]
-**The trick**: [solution]
-**Why**: [explanation if known]
-**Caveats**: [when this might break]
-```
+**Emotional language signals:** Hard-won knowledge often comes with markers like "Finally!", "After hours of debugging...", "The trick is...", "What the docs don't tell you..." When you find such knowledge, preserve the source, version, solution, and caveats alongside it.
 
 ---
 
@@ -311,13 +270,8 @@ Before concluding research, verify:
 
 ---
 
-## Vault Integration
+## Persisting Findings
 
-Research outputs stay in conversation by default. When the user wants to persist findings:
-
-- **Actionable findings** -> tasks in relevant project/area files
-- **Knowledge insights** -> permanent notes via `archive` skill
-- **Reference material** -> `vault/03-resources/reference-notes/`
-- **Full research report** -> `vault/archives/intelligence/research/research-YYYY-MM-DD-slug.md`
+Research outputs stay in conversation by default. When findings need to persist beyond the session, use the project's preferred knowledge management approach — save to designated reference locations, create issues for actionable findings, or archive insights as project conventions dictate.
 
 Persistence is the user's decision, not automatic.
