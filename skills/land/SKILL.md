@@ -22,9 +22,10 @@ Use this skill when the user wants full delivery closure in one command.
 4. Evaluate commit history; squash when iterative refinement adds noise
 5. Merge the active feature branch into `main`
 6. Push `main`
-7. Remove the feature branch (remote + local)
-8. Close satisfied issue(s); comment progress on partial issue(s)
-9. Verify final state (including documentation coverage summary)
+7. Discover PR number (best effort)
+8. Remove the feature branch (remote + local)
+9. Close satisfied issue(s); comment progress on partial issue(s)
+10. Verify final state (including documentation coverage summary)
 
 Do not stop after merge — stopping leaves branches dangling and issues unclosed. The full sequence is atomic: merge through close.
 
@@ -91,12 +92,7 @@ If an issue fetch fails, treat that issue as partial and log a warning.
 
 ### 5. Evaluate commit history for squash
 
-Examine the branch's commit history to decide whether to squash on merge.
-
-```bash
-git log origin/main..HEAD --oneline
-git log origin/main..HEAD --name-only --pretty=format:""
-```
+Examine the branch's commit history to decide whether to squash on merge. Use `git log origin/main..HEAD` variants to inspect commit subjects and touched files.
 
 **Decision framework** (apply judgment, not mechanical rules):
 
@@ -110,20 +106,20 @@ Record the squash decision. If squashing, also record the drafted commit message
 ### 6. Merge and push
 
 1. Fetch and fast-forward `main` to match origin (`git fetch origin --prune`, `git checkout main`, `git pull --ff-only origin main`).
-2. Merge the feature branch — `git merge --squash` with the drafted message if squashing, `git merge --no-ff` if preserving history.
+2. Merge the feature branch. If squashing: `git merge --squash`, then `git commit` with the drafted message (squash stages but does not commit). If preserving: `git merge --no-ff`.
 3. Push `main` to origin.
 4. Record the merge commit SHA for use in issue comments.
 
-### 7. Delete feature branch
+### 7. Discover PR number (best effort)
+
+Look up the PR associated with the feature branch (`gh pr list --head <branch> --state merged`). Run this before branch deletion so the branch reference is still live on the remote. If no PR is found, continue — issue comments will reference the merge commit only.
+
+### 8. Delete feature branch
 
 Delete the feature branch from both remote and local:
 - Remote: `git push origin --delete <branch>` (tolerate failure if already gone).
 - Local: `git branch -D <branch>`. The `-D` flag (force delete) is required because squash merges don't record merge parentage, so `-d` refuses even though the content is safely on `main`. This is safe because the push in step 6 verified the content landed.
 - Prune stale remote-tracking references: `git fetch origin --prune`.
-
-### 8. Discover PR number (best effort)
-
-Look up the PR associated with the feature branch (`gh pr list --head <branch> --state merged`). If no PR is found, continue — issue comments will reference the merge commit only.
 
 ### 9. Comment and close issue(s)
 
@@ -174,7 +170,7 @@ Report the final state including:
 ## Failure Policy
 
 - If merge/push fails: stop immediately, do not close issue.
-- If branch deletion fails after successful merge: report partial completion and keep issue(s) open.
+- If branch deletion fails after successful merge and push: warn about the deletion failure and continue to issue close/comment steps. The code is safely on `main`; branch cleanup is not a prerequisite for issue closure.
 - If issue comment/close API fails for one issue: continue processing remaining issues, then report failed issue number(s) explicitly.
 - If acceptance criteria evaluation fails (issue fetch error, criteria unparseable): treat the issue as partial, log a warning, and do not close it. The operator must resolve manually.
 - If documentation drift scan fails (skill unavailable, classification error): report the error in the coverage summary and proceed. Do not block the merge.
@@ -184,6 +180,6 @@ Report the final state including:
 
 ## Related Skills
 
-- `documentation` for documentation coherence check (step 3)
+- `documentation` for deeper documentation review beyond the drift scan in step 3
 - `issue-craft` for issue lifecycle patterns and tracking issues from doc review
 - `next-issue` for issue selection and session workflow
