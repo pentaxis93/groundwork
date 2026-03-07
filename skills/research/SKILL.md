@@ -4,7 +4,7 @@ description: Systematic multi-source research with citations and synthesis using
 license: MIT
 metadata:
   version: "1.2.0"
-  source: internal (adapted for eterne)
+  source: internal
   updated: "2026-01-31"
   workflow: 6-phase (Clarify → Decompose → Gather → Evaluate → Resolve → Synthesize)
 ---
@@ -28,7 +28,7 @@ Never trust a single source. Cross-reference with at least two independent sourc
 Most source conflicts dissolve when versions/dates are explicit. Always anchor findings to specific versions and timestamps.
 
 ### 5. Empirical Verification Over Authority
-When stakes are high, test claims directly rather than trusting even authoritative sources. Code behavior beats documentation. **Constraint-aware:** the researcher agent is read-only with no shell access. When empirical verification is needed, delegate to the `explore` agent for codebase evidence, or explicitly note the limitation in the Confidence section rather than skipping the step silently.
+When stakes are high, test claims directly rather than trusting even authoritative sources. Code behavior beats documentation.
 
 ---
 
@@ -202,7 +202,7 @@ When sources disagree:
 
 ### Phase 6: Synthesis
 
-Follow the output format defined in the researcher agent. Key quality standards:
+Key quality standards:
 
 - Every factual claim has a citation
 - Quantitative data preferred over qualitative assertions
@@ -307,7 +307,7 @@ Before concluding research, verify:
 - [ ] Conclusion is concrete, not hedged
 - [ ] Confidence level stated with reasoning
 - [ ] Limitations and caveats acknowledged
-- [ ] Output follows the format defined in researcher agent
+- [ ] Output is structured, cited, and directly answers the question
 
 ---
 
