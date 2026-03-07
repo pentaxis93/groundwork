@@ -31,8 +31,6 @@ Do not ask for an additional confirmation before landing; invoking `land` is the
 - Issue number must be known:
   - Prefer explicit user-provided issue number.
   - Else infer from branch name pattern `issue-<number>`.
-- Use WeForge API token from `pass`:
-  - Default: `pass show weforge/fulcrum-token`
 
 ---
 
@@ -49,11 +47,6 @@ fi
 git diff --quiet && git diff --cached --quiet || {
   echo "ERROR: working tree not clean"; exit 1;
 }
-
-ORIGIN_URL="$(git remote get-url origin)"
-REPO_PATH="$(echo "$ORIGIN_URL" | sed -E 's#(https?://[^/]+/|git@[^:]+:)##; s#\\.git$##')"
-OWNER="${REPO_PATH%%/*}"
-REPO="${REPO_PATH##*/}"
 
 ISSUE_NUMBER="$(echo "$FEATURE_BRANCH" | sed -nE 's#.*issue-([0-9]+).*#\\1#p')"
 if [ -z "$ISSUE_NUMBER" ]; then
@@ -83,11 +76,7 @@ git fetch origin --prune
 ### 4. Discover PR number (best effort)
 
 ```bash
-PR_NUMBER="$(curl -sf \
-  -H "Authorization: token $(pass show weforge/fulcrum-token)" \
-  "https://weforge.build/api/v1/repos/${OWNER}/${REPO}/pulls?state=closed&limit=100" \
-  | jq -r --arg b "$FEATURE_BRANCH" '.[] | select(.head.ref == $b) | .number' \
-  | head -n1)"
+PR_NUMBER="$(gh pr list --head "$FEATURE_BRANCH" --state merged --json number --jq '.[0].number')"
 ```
 
 If PR is not found, continue with issue close using merge commit only.
@@ -101,17 +90,8 @@ else
   BODY="Implemented and merged in commit ${MERGE_SHA}. Closing as complete."
 fi
 
-curl -sf -X POST \
-  -H "Authorization: token $(pass show weforge/fulcrum-token)" \
-  -H "Content-Type: application/json" \
-  -d "$(jq -n --arg body "$BODY" '{body: $body}')" \
-  "https://weforge.build/api/v1/repos/${OWNER}/${REPO}/issues/${ISSUE_NUMBER}/comments" >/dev/null
-
-curl -sf -X PATCH \
-  -H "Authorization: token $(pass show weforge/fulcrum-token)" \
-  -H "Content-Type: application/json" \
-  -d '{"state":"closed"}' \
-  "https://weforge.build/api/v1/repos/${OWNER}/${REPO}/issues/${ISSUE_NUMBER}" >/dev/null
+gh issue comment "$ISSUE_NUMBER" --body "$BODY"
+gh issue close "$ISSUE_NUMBER" --reason completed
 ```
 
 ### 5a. Sync issue state to local mirror
@@ -127,10 +107,7 @@ git status --short
 git branch --show-current
 git rev-parse --short HEAD
 
-curl -sf \
-  -H "Authorization: token $(pass show weforge/fulcrum-token)" \
-  "https://weforge.build/api/v1/repos/${OWNER}/${REPO}/issues/${ISSUE_NUMBER}" \
-  | jq -r '.state'
+gh issue view "$ISSUE_NUMBER" --json state --jq '.state'
 ```
 
 Success conditions:
@@ -151,5 +128,5 @@ Success conditions:
 
 ## Related Skills
 
-- `forgejo-api` for API endpoint details
-- `credentials` for token-safe command patterns
+- `issue-craft` for issue lifecycle patterns
+- `next-issue` for issue selection and session workflow
