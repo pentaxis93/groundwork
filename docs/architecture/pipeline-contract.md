@@ -61,7 +61,7 @@ Fail condition:
 
 ### `documentation -> verification-before-completion`
 Requirement:
-- completion claims include documentation accuracy evidence from `documentation-review`.
+- completion claims include documentation accuracy evidence from the `documentation` skill's review mode.
 
 Fail condition:
 - work claimed complete without documentation review; drifted docs remain untracked.

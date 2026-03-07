@@ -5,19 +5,20 @@ description: "One-word closeout workflow: merge active branch to main, sync loca
 
 # Land — Merge, Sync, Cleanup, Close
 
-**Version 1.0**
+**Version 1.1**
 
 ## Overview
 
 Use this skill when the user wants full delivery closure in one command.
 
 `land` means:
-1. Merge the active feature branch into `main`
-2. Push `main`
-3. Remove the feature branch (remote + local)
-4. Post a completion comment on the issue(s)
-5. Close the issue(s)
-6. Verify final state
+1. Verify CHANGELOG covers user-visible changes
+2. Merge the active feature branch into `main`
+3. Push `main`
+4. Remove the feature branch (remote + local)
+5. Post a completion comment on the issue(s)
+6. Close the issue(s)
+7. Verify final state
 
 Do not stop after merge.
 Do not ask for an additional confirmation before landing; invoking `land` is the user's approval to execute this workflow.
