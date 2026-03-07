@@ -103,11 +103,14 @@ Invoke the `documentation` skill's `documentation-review` mode against the chang
 
 If all documentation is `accurate` and no updates are needed, record that and proceed.
 
-### 3a. Evaluate acceptance criteria
+### 4. Evaluate acceptance criteria
 
 Fetch each target issue and evaluate whether the branch changes satisfy its acceptance criteria. This step runs pre-merge while the branch diff is available.
 
+**Fetch issues** (evaluation follows below):
+
 ```bash
+# Fetch only — evaluation is performed per-issue after all fetches.
 for ISSUE_NUMBER in "${ISSUE_NUMBERS[@]}"; do
   gh issue view "$ISSUE_NUMBER" --json title,body --jq '"\(.title)\n\n\(.body)"' || {
     echo "WARNING: could not fetch issue #$ISSUE_NUMBER — treating as partial"
@@ -116,17 +119,17 @@ for ISSUE_NUMBER in "${ISSUE_NUMBERS[@]}"; do
 done
 ```
 
-For each successfully fetched issue:
+**Evaluate** each successfully fetched issue:
 
 1. **Extract acceptance criteria** from the issue body — checklist items (`- [ ]`), an acceptance criteria section, or explicitly stated requirements.
 2. **Evaluate each criterion** against the branch diff (`git diff origin/main...HEAD`). A criterion is met when the changes demonstrably satisfy it.
 3. **Classify:**
-   - **Satisfied** — all criteria met, or no acceptance criteria found in the issue body.
-   - **Partial** — some criteria met, others remain. Record which criteria are satisfied and which remain.
+   - **Satisfied** — all extracted criteria met.
+   - **Partial** — some criteria met but others remain, **or** no acceptance criteria found in the issue body. Closing an issue without verified criteria is not safe — the issue stays open for human review.
 
-Record results as `SATISFIED` and `PARTIAL` issue lists for step 7. Every issue in `ISSUE_NUMBERS` must appear in exactly one list.
+For each partial issue, store its satisfied and remaining criteria lists separately, keyed by issue number. Record results as `SATISFIED` and `PARTIAL` issue lists for step 8. Every issue in `ISSUE_NUMBERS` must appear in exactly one list.
 
-### 4. Merge and push
+### 5. Merge and push
 
 ```bash
 git fetch origin --prune
@@ -137,7 +140,7 @@ git push origin main
 MERGE_SHA="$(git rev-parse --short HEAD)"
 ```
 
-### 5. Delete feature branch
+### 6. Delete feature branch
 
 ```bash
 git push origin --delete "$FEATURE_BRANCH" || true
@@ -145,7 +148,7 @@ git branch -d "$FEATURE_BRANCH"
 git fetch origin --prune
 ```
 
-### 6. Discover PR number (best effort)
+### 7. Discover PR number (best effort)
 
 ```bash
 PR_NUMBER="$(gh pr list --head "$FEATURE_BRANCH" --state merged --json number --jq '.[0].number')"
@@ -153,9 +156,9 @@ PR_NUMBER="$(gh pr list --head "$FEATURE_BRANCH" --state merged --json number --
 
 If PR is not found, continue with issue close using merge commit only.
 
-### 7. Comment and close issue(s)
+### 8. Comment and close issue(s)
 
-Apply the classifications from step 3a.
+Apply the classifications from step 4.
 
 ```bash
 FAILED_OPS=()
@@ -176,13 +179,14 @@ for ISSUE_NUMBER in "${PARTIAL[@]}"; do
   else
     REF="commit ${MERGE_SHA}"
   fi
+  # Retrieve the per-issue criteria recorded in step 4.
   BODY="Progress from ${REF}:
 
 **Delivered:**
-$(for c in "${SATISFIED_CRITERIA[@]}"; do echo "- $c"; done)
+$(for c in "${SATISFIED_CRITERIA[$ISSUE_NUMBER]}"; do echo "- $c"; done)
 
 **Remaining:**
-$(for c in "${REMAINING_CRITERIA[@]}"; do echo "- $c"; done)"
+$(for c in "${REMAINING_CRITERIA[$ISSUE_NUMBER]}"; do echo "- $c"; done)"
   gh issue comment "$ISSUE_NUMBER" --body "$BODY" || FAILED_OPS+=("comment:#$ISSUE_NUMBER")
 done
 
@@ -191,15 +195,13 @@ if [ "${#FAILED_OPS[@]}" -gt 0 ]; then
 fi
 ```
 
-`SATISFIED_CRITERIA` and `REMAINING_CRITERIA` are the per-issue criterion lists recorded in step 3a.
-
-### 7a. Sync issue state to local mirror
+### 8a. Sync issue state to local mirror
 
 ```bash
 gh-issue-sync pull
 ```
 
-### 8. Verify and report
+### 9. Verify and report
 
 ```bash
 git status --short

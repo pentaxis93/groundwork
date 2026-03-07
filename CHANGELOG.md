@@ -25,6 +25,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - `pipeline-contract.md` updated to v0.2: fixed heading levels (## → ###), updated step 3 to include brainstorming, clarified `documentation-review` reference to "`documentation` skill's review mode"
 - Added `CLAUDE.md` documenting skill management with `sk` fork
 - Migrated license from Apache-2.0 to MIT
+- `land` skill upgraded to v1.3: added pre-merge acceptance criteria evaluation — satisfied issues are closed, partial issues receive a progress comment listing delivered and remaining criteria, issues without extractable criteria stay open for human review. Prevents premature closure when a branch delivers part of an issue's scope.
 - `land` skill now supports closing multiple issues inferred from `issues-<N>-<M>-.../<slug>` branches, while preserving `issue-<N>/<slug>` behavior
 - Rewrote README from first principles around the pipeline concept
 - Renamed `planning` skill to `next-issue`; added separate `plan` skill for design convergence
