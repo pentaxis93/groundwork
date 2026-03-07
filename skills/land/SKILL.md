@@ -218,7 +218,7 @@ Success conditions:
 - If merge/push fails: stop immediately, do not close issue.
 - If branch deletion fails after successful merge: report partial completion and keep issue(s) open.
 - If issue comment/close API fails for one issue: continue processing remaining issues, then report failed issue number(s) explicitly.
-- If acceptance criteria evaluation fails (issue fetch error, criteria unparseable): default to satisfied for that issue and log a warning. Do not block the landing on evaluation ambiguity.
+- If acceptance criteria evaluation fails (issue fetch error, criteria unparseable): treat the issue as partial, log a warning, and do not close it. The operator must resolve manually.
 - If documentation coherence check fails (skill unavailable, classification error, or commit failure): stop and report the error. Do not proceed to merge with unresolved documentation state.
 
 ---
