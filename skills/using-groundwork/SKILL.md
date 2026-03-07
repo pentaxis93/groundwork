@@ -5,7 +5,7 @@ description: >-
   initiation, or any moment requiring methodology orientation. Activates the
   full skill system as one connected methodology rather than isolated skills.
 metadata:
-  version: "2.1.0"
+  version: "3.0.0"
   updated: "2026-03-07"
 ---
 
@@ -19,52 +19,52 @@ Groundwork is one connected methodology, not a skill collection. Every skill clo
 
 Read the issue graph first. Whether starting a session, picking up work, or orienting mid-task, the issue graph tells you where you are: what's in progress, what's blocked, what's next. Work from the graph, not from memory.
 
+Why the issue graph matters: agent sessions are bounded — context windows end, sessions close, agents rotate. The issue graph is the persistence layer that survives those boundaries. It holds what remains to be done, what blocks what, and what state each piece of work is in. Working from the graph instead of from memory is what makes multi-session progress reliable.
+
+Local issues (`.issues/`) mirror the forge — `gh-issue-sync pull` before reading, `push` after writing. See [`WORKFLOW.md` § Issue-Based Development](https://github.com/pentaxis93/groundwork/blob/main/WORKFLOW.md#issue-based-development) for operational definitions.
+
 ## The Flow
 
-There is one path, not a menu. Every piece of work flows through five stages:
+Five stages, in dependency order. Each produces what the next consumes.
 
-1. **Frame constraints.** `ground` establishes what the work must enable. Local issues (`.issues/`) mirror the forge — `gh-issue-sync pull` before reading, `push` after writing. Trigger: you're about to design, spec, architect, or frame a problem.
+1. **Frame constraints.** `ground` establishes what the work must enable — verified constraints, not inherited assumptions.
 
-2. **Define behavior.** `bdd` defines the behavior contract in Given/When/Then scenarios. This contract threads through every subsequent stage — planning, decomposition, testing, verification, and landing should all maintain behavior traceability. Trigger: outcomes are unclear or behavior is undefined.
+2. **Define behavior.** `bdd` defines the behavior contract in Given/When/Then scenarios. This contract threads through every subsequent stage.
 
-3. **Decompose.** `brainstorming` explores approaches before committing to a design — when it completes, continue to `plan` (for design convergence) or `issue-craft` (for decomposition) according to need. `plan` converges from exploration to a decision-complete implementation design. `issue-craft` decomposes that design into agent-executable issues with binary acceptance criteria. `next-issue` selects session-sized work from the issue graph. Trigger: multiple approaches exist, scope is unclear, or work needs breaking down.
+3. **Decompose.** Explore approaches (`brainstorming`), converge to a decision-complete design (`plan`), break the design into agent-executable issues (`issue-craft`), and select session-sized work (`next-issue`).
 
-4. **Execute and verify.** `test-driven-development` implements through RED-GREEN-REFACTOR — each RED test maps to a named behavior scenario. When tasks are independent, `subagent-driven-development` parallelizes them. When something breaks unexpectedly, `systematic-debugging` finds root cause before proposing fixes — don't guess. `requesting-code-review` and `receiving-code-review` handle review. Before any completion claim, `verification-before-completion` demands behavior-level evidence, and `documentation` ensures doc accuracy is verified. Trigger: you're writing code, debugging, or claiming done.
+4. **Execute and verify.** Implement through RED-GREEN-REFACTOR (`test-driven-development`), parallelize independent tasks (`subagent-driven-development`), find root cause before fixing (`systematic-debugging`), review code (`requesting-code-review`, `receiving-code-review`), verify behavior-level evidence before claiming done (`verification-before-completion`), and ensure documentation accuracy (`documentation`).
 
-5. **Land.** `land` closes the loop: merge, cleanup, behavior coverage record, documentation coverage status, and issue closure. Trigger: work is verified and ready to ship.
+5. **Land.** `land` closes the loop: merge, cleanup, behavior coverage record, documentation coverage status, and issue closure.
 
-## Why Issues Are Central
+The stages are in order but not all required for every piece of work. Enter the pipeline where the work needs you. A bug fix with an existing issue enters at Execute. A new capability enters at Frame. The constraint is sequence — you can't land before executing — not completeness.
 
-Agent sessions are bounded — context windows end, sessions close, agents rotate. Issues are the persistence layer that survives those boundaries. The issue graph is the project's working memory: it holds what remains to be done, what blocks what, and what state each piece of work is in. Working from the issue graph instead of from memory is what makes multi-session progress reliable. See [`WORKFLOW.md` § Issue-Based Development](https://github.com/pentaxis93/groundwork/blob/main/WORKFLOW.md#issue-based-development) for operational definitions.
+See [`WORKFLOW.md`](https://github.com/pentaxis93/groundwork/blob/main/WORKFLOW.md) for detailed skill descriptions and triggers.
 
-## Cross-Cutting Disciplines
+## Integration Principles
+
+These thread across the pipeline. They aren't phases — they're disciplines that engage when relevant and stay active from that point forward.
+
+**Sovereignty.** Every handoff passes outcomes (WHAT must be true), never implementation steps (HOW to achieve it). Issues define acceptance criteria, not procedure. Plans define interfaces and decisions, not copy-paste instructions. When this boundary breaks, agents execute instructions instead of solving problems — and prescribed steps that encode wrong assumptions propagate unchallenged. Example: Issue #5 prescribed "Replace ATTRIBUTION.md with a standard NOTICE file." An implementing agent planned exactly that — but NOTICE is an Apache convention (wrong for MIT), and the file should have been deleted. This skill teaches the map; agent judgment navigates it.
+
+**Behavior traceability.** The behavior contract from stage 2 should be traceable at every subsequent stage. Plans link design decisions to behavior statements. Issues map acceptance criteria to behaviors. Tests correspond to named scenarios. Verification cites behavior-level evidence. Landing records what coverage shipped. If you're at any stage past Define and can't trace back to the behavior contract, traceability has broken.
+
+**Documentation obligation.** User-facing changes carry documentation obligations: acceptance criteria include doc updates, completion claims include doc accuracy evidence, and landing records documentation coverage status. User-visible changes require a CHANGELOG entry.
 
 **Ground re-fires.** `ground` is not step-one-once. New generative work mid-session requires re-grounding. The trigger is creation, not sequence position.
 
-**Research fires at any stage.** `research` provides reliable external evidence when decisions depend on facts outside the codebase. Framing, design, decomposition, and implementation can all require it.
+**Research fires at any stage.** `research` provides reliable external evidence when decisions depend on facts outside the codebase — framing, design, decomposition, and implementation can all require it.
 
-**BDD threads the full pipeline.** The behavior contract defined in stage 2 should be traceable at every subsequent stage. If you're planning, decomposing, testing, verifying, or landing, check that behavior traceability is intact — tests map to named scenarios, verification evidence is behavior-level, and landing records what coverage shipped.
-
-**Documentation threads the full pipeline.** User-facing changes carry documentation obligations through the pipeline: acceptance criteria include doc updates, completion claims include doc accuracy evidence, and landing records documentation coverage status. User-visible changes require a CHANGELOG entry.
-
-For the formal handoff contracts, fail conditions, and anti-divergence rules, see [`docs/architecture/pipeline-contract.md`](https://github.com/pentaxis93/groundwork/blob/main/docs/architecture/pipeline-contract.md).
-
-## Sovereignty
-
-Every handoff in the pipeline passes **outcomes** (WHAT must be true), never **implementation steps** (HOW to achieve it). Issues define acceptance criteria, not procedure. Plans define interfaces and decisions, not copy-paste instructions.
-
-When this boundary breaks, agents execute instructions instead of solving problems — and prescribed steps that encode wrong assumptions propagate unchallenged. Example: Issue #5 prescribed "Replace ATTRIBUTION.md with a standard NOTICE file." An implementing agent planned exactly that — but NOTICE is an Apache convention (wrong for MIT), and the file should have been deleted.
-
-This skill teaches the map; agent judgment navigates it. The behavior contract flows from `bdd` through execution to `land`, but skip what the work does not need, return to what it does.
+For the formal handoff contracts, fail conditions, and anti-divergence rules, see [`pipeline-contract.md`](https://github.com/pentaxis93/groundwork/blob/main/docs/architecture/pipeline-contract.md).
 
 ## Corruption Modes
 
-**Methodology misuse:** Treating groundwork as fixed sequential gates, or using individual skills by keyword match without methodology context. The flow is a connected path, not a checklist.
+**Methodology as gates.** Recognition: you're checking off skills in order regardless of whether the work needs them, or refusing to use a later-stage skill because you haven't completed an earlier stage that doesn't apply. The flow is a connected path with entry points, not a checklist where every box must be ticked.
 
-**Behavior traceability loss:** Treating `bdd` as a one-time preface, writing tests that pass but don't map to named behaviors, or claiming completion with command output but no behavior-level evidence.
+**Behavior traceability loss.** Recognition: your tests pass but you can't name which behavior scenario each test verifies, or your completion claim says "all tests pass" without mapping results to named behaviors. Treating `bdd` as a one-time preface rather than a contract that threads through execution.
 
-**Issue discipline failure:** Working from memory instead of reading the issue graph, starting work without checking issue state and dependencies, or treating issues as documentation artifacts rather than the project's working memory.
+**Issue discipline failure.** Recognition: you're deciding what to work on from the conversation or your own reasoning instead of reading the issue graph, or you've started implementation without checking whether the issue is blocked. The issue graph is the project's working memory — working from anything else means you're navigating from a snapshot that may already be stale.
 
-**Sovereignty violation:** Prescribing HOW in handoffs instead of passing WHAT — issues with implementation steps instead of acceptance criteria.
+**Sovereignty violation.** Recognition: your issue's acceptance criteria describe steps to perform rather than outcomes to verify, or your plan reads like a script to follow rather than decisions that constrain a solution space. Prescribing HOW instead of passing WHAT.
 
-**Documentation drift:** Claiming completion without documentation review — drifted docs remain untracked.
+**Documentation drift.** Recognition: you're claiming completion but haven't checked whether the change affects any documentation, or you're aware of drifted docs but treating the update as separate future work. Drifted docs compound — each one trains readers to distrust all docs.
