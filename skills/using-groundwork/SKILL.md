@@ -25,7 +25,13 @@ There is one path, not a menu. Every piece of work flows through five stages:
 
 3. **Decompose.** `brainstorming` explores approaches before committing to a design. `plan` converges from exploration to a decision-complete implementation design. `issue-craft` decomposes that design into agent-executable issues with binary acceptance criteria. `next-issue` selects session-sized work from the issue graph.
 
-4. **Execute and verify.** `test-driven-development` implements through RED-GREEN-REFACTOR — each RED test maps to a named behavior scenario. `subagent-driven-development` parallelizes independent tasks. `systematic-debugging` finds root cause before proposing fixes. `requesting-code-review` and `receiving-code-review` handle review. `verification-before-completion` demands behavior-level evidence before any completion claim. `documentation` ensures doc accuracy is verified before completion.
+4. **Execute and verify.**
+   - `test-driven-development` implements through RED-GREEN-REFACTOR — each RED test maps to a named behavior scenario.
+   - `subagent-driven-development` parallelizes independent tasks.
+   - `systematic-debugging` finds root cause before proposing fixes.
+   - `requesting-code-review` and `receiving-code-review` handle review.
+   - `verification-before-completion` demands behavior-level evidence before any completion claim.
+   - `documentation` ensures doc accuracy is verified before completion.
 
 5. **Land.** `land` closes the loop: merge, cleanup, behavior coverage record, documentation coverage status, and issue closure.
 
@@ -76,6 +82,7 @@ This skill teaches the map; agent judgment navigates it. The behavior contract m
 | Creating, decomposing, or refining issues | `issue-craft` |
 | Selecting next work from the issue graph | `next-issue` |
 | Multiple approaches or unclear scope | `brainstorming`, then `plan` |
+| Converging a design from explored options | `plan` |
 | Implementing behavior | `test-driven-development` |
 | Multiple independent tasks to parallelize | `subagent-driven-development` |
 | Bug or unexpected failure | `systematic-debugging` |

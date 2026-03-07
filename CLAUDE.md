@@ -2,16 +2,18 @@
 
 ## Skill Management
 
-Skills are managed by `sk` (Skills Supply CLI). This project uses a **forked version** at `~/src/skills-supply` — not the upstream release.
+Skills are managed by `sk` (Skills Supply CLI). This project uses a **forked version** of `skills-supply` — not the upstream release.
 
 The fork adds `--skill-target name` which installs skills with unprefixed directory names (e.g., `using-groundwork/`) instead of the upstream's prefixed format (`using_groundwork-using-groundwork/`).
 
 ### Installing the fork
 
+Clone the fork and build:
+
 ```bash
-cd ~/src/skills-supply
+git clone <skills-supply-fork-url> && cd skills-supply
 npm run build --workspace=packages/sk
-\cp packages/sk/bin/sk ~/.local/bin/sk
+cp packages/sk/bin/sk ~/.local/bin/sk
 ```
 
 ### Syncing skills
