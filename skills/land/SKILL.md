@@ -99,7 +99,7 @@ Invoke the `documentation` skill's `documentation-review` mode against the chang
 2. Classify each mapped document as `accurate`, `drifted`, `missing`, or `obsolete`.
 3. Update or create drifted/missing docs on the feature branch. Commit fixes before proceeding.
 4. For deeper documentation work beyond the scope of this landing, file tracking issues using `issue-craft`.
-5. Record the classification results as `DOC_COVERAGE_SUMMARY` for the verify step.
+5. Record the classification results as `DOC_COVERAGE_SUMMARY` for the verify step: a plain-text summary listing each documentation artifact checked, its classification (`accurate`/`drifted`/`missing`/`obsolete`), and the action taken (updated, verified, or tracking issue filed with number).
 
 If all documentation is `accurate` and no updates are needed, record that and proceed.
 
@@ -185,10 +185,12 @@ Success conditions:
 - If merge/push fails: stop immediately, do not close issue.
 - If branch deletion fails after successful merge: report partial completion and keep issue(s) open.
 - If issue comment/close API fails for one issue: continue processing remaining issues, then report failed issue number(s) explicitly.
+- If documentation coherence check fails (skill unavailable, classification error, or commit failure): stop and report the error. Do not proceed to merge with unresolved documentation state.
 
 ---
 
 ## Related Skills
 
-- `issue-craft` for issue lifecycle patterns
+- `documentation` for documentation coherence check (step 3)
+- `issue-craft` for issue lifecycle patterns and tracking issues from doc review
 - `next-issue` for issue selection and session workflow
