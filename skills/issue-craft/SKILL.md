@@ -1,6 +1,6 @@
 ---
 name: issue-craft
-description: Full issue lifecycle for GitHub/Forgejo projects. Use for creating, decomposing, refining, triaging, and closing issues that autonomous agents can execute without clarification.
+description: Full issue lifecycle for GitHub projects. Use for creating, decomposing, refining, triaging, and closing issues that autonomous agents can execute without clarification.
 ---
 
 # Issue Craft

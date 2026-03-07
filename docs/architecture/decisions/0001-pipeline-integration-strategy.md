@@ -30,7 +30,7 @@ Integration strategy depends on where a skill sits relative to pipeline boundari
 **Own (make first-party)** when the skill is at a pipeline boundary and must produce or consume specific handoff artifacts, or when the upstream skill embeds context assumptions that conflict with Groundwork's general-purpose scope. The signal is: documentation alone cannot make the skill behave correctly in the pipeline.
 
 **Current evidence for this distinction:**
-- `land` (core, boundary skill) has 8 hardcoded WeForge API calls — a legacy from personal tooling. It works for one forge but breaks the README's promise of "a methodology library for AI coding agents." This is a boundary skill that must eventually be generalized.
+- `land` (core, boundary skill) uses `gh` CLI for forge operations. This is a boundary skill that should remain tool-agnostic where practical.
 - `research` (core, boundary skill) declares `compatibility: opencode` and references an opencode-specific agent file. Same pattern — context assumptions from a prior environment.
 - `test-driven-development` (curated, mid-pipeline) works with any codebase and any agent. No pipeline-specific adaptation needed. Curation is correct here.
 
@@ -53,5 +53,5 @@ Integration strategy depends on where a skill sits relative to pipeline boundari
 
 ### Risks
 
-- Legacy skill debt (`land`, `research`) is acknowledged but not resolved by this ADR. These skills need separate issues to generalize their context assumptions.
+- Legacy skill debt (`research`) is acknowledged but not resolved by this ADR. `land` was generalized in issue #23; `research` still needs a separate issue to generalize its context assumptions.
 - Future upstream skills may change in ways that break curation assumptions. Pinning to commits mitigates this but does not eliminate it.
