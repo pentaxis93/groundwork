@@ -33,3 +33,4 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - Removed namespace stutter from skill aliases (e.g., `ground` instead of prefixed variants)
 - Corrected dependency ordering across pipeline documentation
 - Unified skills table by pipeline stage instead of by source
+- Hardened CLI tool bootstrap security: `gh-issue-sync` auto-install now uses pinned release assets with SHA-256 verification, and install lock writing now fails if tool version capture is missing/empty instead of silently recording unknown provenance

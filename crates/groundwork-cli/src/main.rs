@@ -4,6 +4,7 @@ use clap::{Args, Parser, Subcommand};
 use serde::{Deserialize, Serialize};
 use std::collections::{BTreeSet, HashSet};
 use std::fs;
+use std::io::Read;
 use std::path::{Path, PathBuf};
 use std::process::{Command, Stdio};
 use toml_edit::{value, DocumentMut, InlineTable, Item, Table, Value};
@@ -15,6 +16,9 @@ const LOCK_PATH: &str = ".groundwork/installed.lock.toml";
 const GROUNDWORK_REPO: &str = "pentaxis93/groundwork";
 const SKILLS_SUPPLY_FORK_URL: &str = "https://github.com/pentaxis93/skills-supply";
 const SKILLS_SUPPLY_FORK_REF: &str = "groundwork-v1";
+const SKILLS_SUPPLY_FORK_COMMIT: &str = "ec257c4057c32230478e5c1b86347177134e1469";
+const GH_ISSUE_SYNC_REPO: &str = "mitsuhiko/gh-issue-sync";
+const GH_ISSUE_SYNC_RELEASE_TAG: &str = "v0.3.0";
 const SHIPPED_SKILLS_TOML: &str = include_str!("../../../skills/skills.toml");
 const EMBEDDED_SCHEMAS: [EmbeddedSchema; 8] = [
     EmbeddedSchema {
@@ -278,6 +282,12 @@ struct SkRunner {
     binary_path: Option<PathBuf>,
 }
 
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+struct IssueSyncReleaseAsset {
+    name: &'static str,
+    sha256: &'static str,
+}
+
 fn main() -> Result<()> {
     let cli = Cli::parse();
     match cli.command {
@@ -357,7 +367,7 @@ fn run_install_in_directory(
 
     apply_schema_sync(base_path, &schema_plan)?;
 
-    let sk_version = first_line_version(sk_runner.version());
+    let sk_version = capture_required_version("sk", sk_runner.version())?;
     write_lock(
         base_path,
         sk_runner.mode,
@@ -492,14 +502,17 @@ fn run_doctor() -> Result<()> {
         println!("ok: gh-issue-sync available ({})", ver);
         true
     } else {
-        let (has_curl, has_go) = issue_sync_install_methods_available();
+        let (has_gh, supported_platform) = issue_sync_install_methods_available();
         println!("warn: gh-issue-sync not found");
         println!(
-            "info: auto-install capability: curl={} go={}",
-            has_curl, has_go
+            "info: auto-install capability: gh={} verified-platform={}",
+            has_gh, supported_platform
         );
-        if !has_curl && !has_go {
-            println!("info: install manually from https://github.com/mitsuhiko/gh-issue-sync");
+        if !has_gh || !supported_platform {
+            println!(
+                "info: install manually from https://github.com/{}/releases/tag/{}",
+                GH_ISSUE_SYNC_REPO, GH_ISSUE_SYNC_RELEASE_TAG
+            );
         } else {
             println!("info: will auto-install on next init/update");
         }
@@ -1068,6 +1081,16 @@ fn install_sk_from_fork() -> Result<PathBuf> {
         bail!("failed to clone sk fork from {}", SKILLS_SUPPLY_FORK_URL);
     }
 
+    let head = run_command_capture_in_dir(&["git", "rev-parse", "HEAD"], &temp_dir)
+        .context("failed to read cloned sk fork commit")?;
+    if let Err(err) = check_trusted_commit(head.trim(), SKILLS_SUPPLY_FORK_COMMIT) {
+        let _ = fs::remove_dir_all(&temp_dir);
+        return Err(err).context(format!(
+            "refusing to bootstrap sk from {} {}",
+            SKILLS_SUPPLY_FORK_URL, SKILLS_SUPPLY_FORK_REF
+        ));
+    }
+
     let deps = Command::new("npm")
         .args([
             "install",
@@ -1257,7 +1280,10 @@ fn supports_skill_target_option(help: &str) -> bool {
 }
 
 fn issue_sync_install_methods_available() -> (bool, bool) {
-    (command_exists("curl"), command_exists("go"))
+    (
+        command_exists("gh"),
+        issue_sync_release_asset_for(std::env::consts::OS, std::env::consts::ARCH).is_some(),
+    )
 }
 
 fn ensure_issue_sync_available() -> Option<IssueSyncMode> {
@@ -1270,44 +1296,191 @@ fn ensure_issue_sync_available() -> Option<IssueSyncMode> {
         return None;
     }
 
-    let (has_curl, has_go) = issue_sync_install_methods_available();
-
-    if has_curl {
-        println!("info: installing gh-issue-sync via install script...");
-        let install = Command::new("sh")
-            .args([
-                "-c",
-                "curl -sSfL https://github.com/mitsuhiko/gh-issue-sync/releases/latest/download/install.sh | sh",
-            ])
-            .stdout(Stdio::inherit())
-            .stderr(Stdio::inherit())
-            .status();
-
-        if install.map(|s| s.success()).unwrap_or(false) && command_exists("gh-issue-sync") {
-            return Some(IssueSyncMode::Binary);
-        }
-    }
-
-    if has_go {
-        println!("info: installing gh-issue-sync via go install...");
-        let install = Command::new("go")
-            .args([
-                "install",
-                "github.com/mitsuhiko/gh-issue-sync/cmd/gh-issue-sync@latest",
-            ])
-            .stdout(Stdio::inherit())
-            .stderr(Stdio::inherit())
-            .status();
-
-        if install.map(|s| s.success()).unwrap_or(false) && command_exists("gh-issue-sync") {
-            return Some(IssueSyncMode::GoInstall);
-        }
+    if issue_sync_release_asset_for(std::env::consts::OS, std::env::consts::ARCH).is_none() {
+        println!(
+            "note: no verified gh-issue-sync asset is configured for platform {}-{}; install manually from https://github.com/{}/releases/tag/{}",
+            std::env::consts::OS,
+            std::env::consts::ARCH,
+            GH_ISSUE_SYNC_REPO,
+            GH_ISSUE_SYNC_RELEASE_TAG
+        );
+        return None;
     }
 
     println!(
-        "note: could not auto-install gh-issue-sync; install manually from https://github.com/mitsuhiko/gh-issue-sync"
+        "info: installing gh-issue-sync from verified release asset ({} {})...",
+        GH_ISSUE_SYNC_REPO, GH_ISSUE_SYNC_RELEASE_TAG
     );
-    None
+    match install_issue_sync_verified_release() {
+        Ok(path) => {
+            println!("ok: installed gh-issue-sync to {}", path.display());
+            Some(IssueSyncMode::Binary)
+        }
+        Err(err) => {
+            println!("warn: verified gh-issue-sync auto-install failed: {}", err);
+            println!(
+                "note: install manually from https://github.com/{}/releases/tag/{}",
+                GH_ISSUE_SYNC_REPO, GH_ISSUE_SYNC_RELEASE_TAG
+            );
+            None
+        }
+    }
+}
+
+fn issue_sync_release_asset_for(
+    target_os: &str,
+    target_arch: &str,
+) -> Option<IssueSyncReleaseAsset> {
+    match (target_os, target_arch) {
+        ("linux", "x86_64") => Some(IssueSyncReleaseAsset {
+            name: "gh-issue-sync-linux-amd64",
+            sha256: "095749599f9d6c81d91765bd16b14d5c76215fd1d3ef6bccf5d005efb2d9b84e",
+        }),
+        ("linux", "aarch64") => Some(IssueSyncReleaseAsset {
+            name: "gh-issue-sync-linux-arm64",
+            sha256: "ca86c002640426b2282cc947a5b34da3e51c91e62423c3996085587110704785",
+        }),
+        ("macos", "aarch64") => Some(IssueSyncReleaseAsset {
+            name: "gh-issue-sync-darwin-arm64",
+            sha256: "928d8a9ca9d9a8588b72ef38f22f9e067f9619d12be6cf28a1bef41ff04713e7",
+        }),
+        ("windows", "x86_64") => Some(IssueSyncReleaseAsset {
+            name: "gh-issue-sync-windows-amd64.exe",
+            sha256: "f8b1f1a0a1bb53c8c378848ac1423f7ff7660c141134ce2ee4fcd62b008840ac",
+        }),
+        ("windows", "aarch64") => Some(IssueSyncReleaseAsset {
+            name: "gh-issue-sync-windows-arm64.exe",
+            sha256: "e6a4cb05c91f6e283ab2743cb3961c0ccd62d2fc85008019f8ca8c9674e92ba5",
+        }),
+        _ => None,
+    }
+}
+
+fn install_issue_sync_verified_release() -> Result<PathBuf> {
+    let asset = issue_sync_release_asset_for(std::env::consts::OS, std::env::consts::ARCH)
+        .ok_or_else(|| {
+            anyhow!(
+                "unsupported platform {}-{}",
+                std::env::consts::OS,
+                std::env::consts::ARCH
+            )
+        })?;
+
+    let temp_path = std::env::temp_dir().join(format!(
+        "{}-{}-{}",
+        asset.name,
+        std::process::id(),
+        Utc::now().timestamp_nanos_opt().unwrap_or_default()
+    ));
+
+    let download = Command::new("gh")
+        .args([
+            "release",
+            "download",
+            GH_ISSUE_SYNC_RELEASE_TAG,
+            "--repo",
+            GH_ISSUE_SYNC_REPO,
+            "--pattern",
+            asset.name,
+            "--output",
+        ])
+        .arg(&temp_path)
+        .stdout(Stdio::inherit())
+        .stderr(Stdio::inherit())
+        .status()
+        .context("failed to download verified gh-issue-sync release asset")?;
+    if !download.success() {
+        let _ = fs::remove_file(&temp_path);
+        bail!("`gh release download` did not succeed");
+    }
+
+    let digest = sha256_file_hex(&temp_path)?;
+    if !digest.eq_ignore_ascii_case(asset.sha256) {
+        let _ = fs::remove_file(&temp_path);
+        bail!(
+            "checksum mismatch for {}: expected {}, got {}",
+            asset.name,
+            asset.sha256,
+            digest
+        );
+    }
+
+    let install_dir = issue_sync_install_dir()?;
+    fs::create_dir_all(&install_dir)
+        .with_context(|| format!("failed to create install dir {}", install_dir.display()))?;
+    let binary_name = if cfg!(windows) {
+        "gh-issue-sync.exe"
+    } else {
+        "gh-issue-sync"
+    };
+    let target = install_dir.join(binary_name);
+    fs::copy(&temp_path, &target)
+        .with_context(|| format!("failed to install gh-issue-sync to {}", target.display()))?;
+    let _ = fs::remove_file(&temp_path);
+
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::PermissionsExt;
+        let mut perms = fs::metadata(&target)
+            .with_context(|| format!("failed to read {}", target.display()))?
+            .permissions();
+        perms.set_mode(0o755);
+        fs::set_permissions(&target, perms)
+            .with_context(|| format!("failed to set executable bit on {}", target.display()))?;
+    }
+
+    prepend_to_path(&install_dir);
+    Ok(target)
+}
+
+fn issue_sync_install_dir() -> Result<PathBuf> {
+    if cfg!(windows) {
+        let local =
+            std::env::var_os("LOCALAPPDATA").ok_or_else(|| anyhow!("LOCALAPPDATA is not set"))?;
+        return Ok(PathBuf::from(local).join("groundwork").join("bin"));
+    }
+
+    let home = std::env::var_os("HOME").ok_or_else(|| anyhow!("HOME is not set"))?;
+    Ok(PathBuf::from(home).join(".local").join("bin"))
+}
+
+fn prepend_to_path(dir: &Path) {
+    let mut paths = vec![dir.to_path_buf()];
+    if let Some(existing) = std::env::var_os("PATH") {
+        paths.extend(std::env::split_paths(&existing));
+    }
+    if let Ok(joined) = std::env::join_paths(paths) {
+        std::env::set_var("PATH", joined);
+    }
+}
+
+fn sha256_file_hex(path: &Path) -> Result<String> {
+    use sha2::{Digest, Sha256};
+    let mut file = fs::File::open(path)
+        .with_context(|| format!("failed to open {} for checksum", path.display()))?;
+    let mut hasher = Sha256::new();
+    let mut buf = [0u8; 8192];
+    loop {
+        let n = file
+            .read(&mut buf)
+            .with_context(|| format!("failed to read {} for checksum", path.display()))?;
+        if n == 0 {
+            break;
+        }
+        hasher.update(&buf[..n]);
+    }
+    Ok(format!("{:x}", hasher.finalize()))
+}
+
+fn check_trusted_commit(actual: &str, expected: &str) -> Result<()> {
+    if actual == expected {
+        return Ok(());
+    }
+    bail!(
+        "trusted commit mismatch: expected {}, got {}",
+        expected,
+        actual
+    );
 }
 
 fn bootstrap_issue_sync(
@@ -1324,7 +1497,10 @@ fn bootstrap_issue_sync(
         None => return Ok(None),
     };
 
-    let version = first_line_version(run_command_capture(&["gh-issue-sync", "--version"]));
+    let version = capture_required_version(
+        "gh-issue-sync",
+        run_command_capture(&["gh-issue-sync", "--version"]),
+    )?;
 
     let issues_dir = base_path.join(".issues");
     let mut should_pull = false;
@@ -1555,6 +1731,25 @@ fn run_command_capture(args: &[&str]) -> Result<String> {
     Ok(String::from_utf8_lossy(&output.stdout).trim().to_string())
 }
 
+fn run_command_capture_in_dir(args: &[&str], cwd: &Path) -> Result<String> {
+    let (program, rest) = args
+        .split_first()
+        .ok_or_else(|| anyhow!("empty command invocation"))?;
+    let output = Command::new(program)
+        .args(rest)
+        .current_dir(cwd)
+        .output()
+        .with_context(|| format!("failed to run `{}`", args.join(" ")))?;
+    if !output.status.success() {
+        bail!(
+            "command `{}` failed: {}",
+            args.join(" "),
+            String::from_utf8_lossy(&output.stderr)
+        );
+    }
+    Ok(String::from_utf8_lossy(&output.stdout).trim().to_string())
+}
+
 /// Capture stdout regardless of exit code (useful for `--help` which may return non-zero).
 fn run_command_capture_ignore_status(args: &[&str]) -> String {
     let (program, rest) = match args.split_first() {
@@ -1572,6 +1767,23 @@ fn first_line_version(result: Result<String>) -> String {
     result
         .map(|v| v.lines().next().unwrap_or("unknown").to_string())
         .unwrap_or_else(|_| "unknown".to_string())
+}
+
+fn parse_version_line(raw: &str) -> Option<String> {
+    raw.lines()
+        .map(str::trim)
+        .find(|line| !line.is_empty())
+        .map(ToOwned::to_owned)
+}
+
+fn capture_required_version(tool: &str, result: Result<String>) -> Result<String> {
+    let raw = result.with_context(|| format!("failed to capture {} version", tool))?;
+    parse_version_line(&raw).ok_or_else(|| {
+        anyhow!(
+            "{} version output is empty; refusing to record unverified provenance",
+            tool
+        )
+    })
 }
 
 fn command_exists(name: &str) -> bool {
@@ -2239,5 +2451,61 @@ No local changes
     fn pull_error_hint_none_for_unclassified_error() {
         let stderr = "some unexpected output";
         assert!(issue_sync_pull_remediation_hint(stderr).is_none());
+    }
+
+    #[test]
+    fn parse_version_line_uses_first_non_empty_trimmed_line() {
+        let parsed = parse_version_line("\n\n  gh-issue-sync 0.3.0\nbuild info");
+        assert_eq!(parsed.as_deref(), Some("gh-issue-sync 0.3.0"));
+    }
+
+    #[test]
+    fn strict_version_capture_rejects_empty_output() {
+        let err = capture_required_version("sk", Ok("\n\n".to_string())).expect_err("must fail");
+        assert!(err.to_string().contains("version output is empty"));
+    }
+
+    #[test]
+    fn strict_version_capture_surfaces_command_failures() {
+        let err =
+            capture_required_version("gh-issue-sync", Err(anyhow!("boom"))).expect_err("must fail");
+        assert!(err
+            .to_string()
+            .contains("failed to capture gh-issue-sync version"));
+    }
+
+    #[test]
+    fn release_asset_maps_linux_amd64() {
+        let asset =
+            issue_sync_release_asset_for("linux", "x86_64").expect("linux amd64 should map");
+        assert_eq!(asset.name, "gh-issue-sync-linux-amd64");
+        assert_eq!(
+            asset.sha256,
+            "095749599f9d6c81d91765bd16b14d5c76215fd1d3ef6bccf5d005efb2d9b84e"
+        );
+    }
+
+    #[test]
+    fn release_asset_rejects_unsupported_target() {
+        assert!(issue_sync_release_asset_for("macos", "x86_64").is_none());
+    }
+
+    #[test]
+    fn trusted_commit_check_accepts_exact_match() {
+        assert!(check_trusted_commit(
+            "ec257c4057c32230478e5c1b86347177134e1469",
+            "ec257c4057c32230478e5c1b86347177134e1469"
+        )
+        .is_ok());
+    }
+
+    #[test]
+    fn trusted_commit_check_rejects_mismatch() {
+        let err = check_trusted_commit(
+            "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "ec257c4057c32230478e5c1b86347177134e1469",
+        )
+        .expect_err("must reject mismatch");
+        assert!(err.to_string().contains("trusted commit mismatch"));
     }
 }
