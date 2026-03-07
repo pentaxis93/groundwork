@@ -28,6 +28,7 @@ Do not ask for an additional confirmation before landing; invoking `land` is the
 
 - Working tree must be clean before starting.
 - Current branch must not be `main`.
+- Commands in this skill are Bash-specific and must be run under `bash`.
 - Issue number(s) must be known:
   - Prefer explicit user-provided issue number(s).
   - Else infer from branch name using one of:
@@ -44,6 +45,10 @@ Do not ask for an additional confirmation before landing; invoking `land` is the
 FEATURE_BRANCH="$(git branch --show-current)"
 if [ "$FEATURE_BRANCH" = "main" ]; then
   echo "ERROR: land must run from a feature branch"; exit 1
+fi
+
+if [ -z "${BASH_VERSION:-}" ]; then
+  echo "ERROR: land requires bash (BASH_VERSION not set)"; exit 1
 fi
 
 git diff --quiet && git diff --cached --quiet || {
