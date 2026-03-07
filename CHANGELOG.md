@@ -21,6 +21,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ### Changed
 
 - Migrated license from Apache-2.0 to MIT
+- `land` skill now supports closing multiple issues inferred from `issues-<N>-<M>-.../<slug>` branches, while preserving `issue-<N>/<slug>` behavior
 - Rewrote README from first principles around the pipeline concept
 - Renamed `planning` skill to `next-issue`; added separate `plan` skill for design convergence
 - Reframed sovereignty as a fractal principle (applies at every interface, not just human-agent)
