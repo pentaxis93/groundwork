@@ -166,9 +166,9 @@ Recommendation: adapt to "solo shipping checklist" (especially migrations, flags
 
 22. **`groundwork:land`** (in this repo)
 Solves: "shipping without cleanup/closure" with a one-word closeout workflow.
-Quality: strong but WeForge-specific.
+Quality: strong; generalized to GitHub CLI.
 Mission fit: high.
-Recommendation: keep; consider forge-agnostic wrapper plus WeForge plugin variant.
+Recommendation: keep.
 
 ### D) Security and Safety of Inputs (prevents: prompt injection, tool abuse, poisoned requirements)
 

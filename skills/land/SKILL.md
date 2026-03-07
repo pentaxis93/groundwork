@@ -91,7 +91,7 @@ else
 fi
 
 gh issue comment "$ISSUE_NUMBER" --body "$BODY"
-gh issue close "$ISSUE_NUMBER" --reason completed
+gh issue close "$ISSUE_NUMBER"
 ```
 
 ### 5a. Sync issue state to local mirror
@@ -114,7 +114,7 @@ Success conditions:
 - current branch is `main`
 - working tree is clean
 - feature branch absent on origin
-- issue state is `closed`
+- issue state is `CLOSED`
 
 ---
 
