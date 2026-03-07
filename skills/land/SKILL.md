@@ -182,8 +182,7 @@ Report the final state including:
 
 ## Failure Policy
 
-- If `gh pr merge` fails: stop immediately, do not close issue. If the failure is transient (network), retry once. If structural (merge conflict, check failure), report and stop.
-- If PR API merge fails but local fallback succeeds: warn that the PR will show as "closed" rather than "merged" on GitHub.
+- If `gh pr merge` fails: stop immediately, do not close issue. If the failure is transient (network), retry once. If structural (merge conflict, check failure), report and stop. Do not fall back to local merge — the whole point of using the API is to preserve PR merge metadata.
 - If branch deletion fails after successful merge: warn about the deletion failure and continue to issue close/comment steps. The code is safely on `main`; branch cleanup is not a prerequisite for issue closure.
 - If issue comment/close API fails for one issue: continue processing remaining issues, then report failed issue number(s) explicitly.
 - If acceptance criteria evaluation fails (issue fetch error, criteria unparseable): treat the issue as partial, log a warning, and do not close it. The operator must resolve manually.
