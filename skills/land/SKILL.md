@@ -9,14 +9,14 @@ description: >-
 
 # Land — Merge, Sync, Cleanup, Close
 
-**Version 1.6**
+**Version 1.7**
 
 ## Overview
 
 Use this skill when the user wants full delivery closure in one command.
 
 `land` means:
-1. Verify CHANGELOG covers user-visible changes
+1. Check whether changes warrant a CHANGELOG entry
 2. Scan for documentation drift; fix or flag
 3. Evaluate acceptance criteria against the branch diff
 4. Evaluate commit history; squash when iterative refinement adds noise
@@ -36,7 +36,6 @@ Do not ask for confirmation before landing. Invoking `land` IS the user's approv
 
 - Working tree must be clean before starting.
 - Current branch must not be `main`.
-- CHANGELOG must include entries for user-visible changes. Version bumps must state the rationale for the increment level.
 - Issue number(s) must be known:
   - Prefer explicit user-provided issue number(s).
   - Else infer from branch name using one of:
@@ -57,23 +56,19 @@ Extract issue numbers from the branch name:
 
 If neither the user nor the branch name provides issue numbers, stop and ask the user.
 
-### 2. Verify CHANGELOG
+### 2. Check whether changes warrant a CHANGELOG entry
 
 Check whether `CHANGELOG.md` appears in the branch diff (`git diff origin/main...HEAD --name-only`).
 
-This is a **hard gate** per the pipeline contract — user-visible changes must not land without a CHANGELOG entry. If absent, confirm with the user before proceeding. The only valid exception is a branch with zero user-visible changes, which the user must explicitly confirm.
+The changelog is how users discover what changed between versions — without it, behavior changes silently. Evaluate whether the branch changes are significant enough to warrant an entry. New features, behavior changes, bug fixes, and breaking changes generally belong in the changelog. Internal refactoring, typo fixes, and CI tweaks generally don't. If the changes look user-visible but no entry exists, flag it to the user before proceeding.
 
 ### 3. Documentation drift scan
 
-Scan for obvious documentation impacts from the changed files. This is a focused drift check, not a full documentation review.
+Quick check for obvious documentation impacts — not a full review. Look at the changed files and check whether they affect areas with documentation artifacts (README, ARCHITECTURE, CONTRIBUTING, API docs). Fix simple drift directly and commit; file tracking issues for anything deeper.
 
-1. List changed files in the branch diff.
-2. Check whether changes affect areas with documentation artifacts (README, ARCHITECTURE, CONTRIBUTING, API docs).
-3. Fix simple drift directly on the feature branch and commit the fix.
-4. For deeper documentation work beyond this landing's scope, file tracking issues.
-5. Record a documentation coverage summary: each artifact checked, its status (accurate, drifted, missing, not applicable), and action taken (updated, verified, or tracking issue filed with number).
+Record a coverage summary: each artifact checked, its status, and any action taken.
 
-**Failures are warnings, not blockers.** If the drift scan encounters errors (skill unavailable, classification unclear), report the issue in the coverage summary and proceed to merge. The CHANGELOG gate in step 2 satisfies the pipeline contract minimum; the drift scan is best-effort.
+This step is best-effort — if the scan encounters errors, note them in the summary and proceed to merge.
 
 ### 4. Evaluate acceptance criteria
 
@@ -83,7 +78,9 @@ Fetch each target issue (`gh issue view`) and evaluate whether the branch change
 2. **Evaluate each criterion** against the branch diff (`git diff origin/main...HEAD`). A criterion is met when the changes demonstrably satisfy it.
 3. **Classify:**
    - **Satisfied** — all extracted criteria met.
-   - **Partial** — some criteria met but others remain, **or** no acceptance criteria found in the issue body. Closing an issue without verified criteria is not safe — the issue stays open for human review.
+   - **Partial** — some criteria met but others remain.
+
+   If no acceptance criteria can be extracted from the issue body, classify it as partial. An issue without explicit criteria may have unstated requirements — closing it without verification risks premature closure. Leave it open for human review.
 
 For each partial issue, store its satisfied and remaining criteria lists separately, keyed by issue number. Every issue must appear in exactly one classification.
 
@@ -118,6 +115,8 @@ Merge through GitHub's PR API so the PR is recorded as "merged," not just "close
 **Why not local merge:** A local `git merge` + `git push` lands the code on main but bypasses GitHub's PR merge tracking. GitHub sees the PR's commits already on main and auto-closes the PR as "closed" rather than "merged" when the branch is deleted. This loses PR merge metadata and breaks PR history.
 
 #### 7a. Fallback: local merge (no PR exists)
+
+This path is only for branches that never had a PR — not a fallback for when `gh pr merge` fails. If the API merge fails, the failure policy applies (stop, don't retry locally).
 
 If no PR was found in step 6, merge locally:
 
@@ -186,7 +185,7 @@ Report the final state including:
 - If branch deletion fails after successful merge: warn about the deletion failure and continue to issue close/comment steps. The code is safely on `main`; branch cleanup is not a prerequisite for issue closure.
 - If issue comment/close API fails for one issue: continue processing remaining issues, then report failed issue number(s) explicitly.
 - If acceptance criteria evaluation fails (issue fetch error, criteria unparseable): treat the issue as partial, log a warning, and do not close it. The operator must resolve manually.
-- If documentation drift scan fails (skill unavailable, classification error): report the error in the coverage summary and proceed. Do not block the merge.
+- If documentation drift scan encounters errors: report them in the coverage summary and proceed. Do not block the merge.
 - If commit history evaluation is uncertain: default to preserve (`--no-ff`). Squashing is an optimization; when in doubt, keep the original history.
 
 ---
