@@ -1,6 +1,6 @@
 ---
 name: land
-description: "One-word closeout workflow: merge active branch to main, sync local main, delete feature branch (remote+local), post issue completion comment, and close the issue. Trigger on: 'land', 'merge and close', 'ship it'."
+description: "One-word closeout workflow: merge active branch to main, sync local main, delete feature branch (remote+local), post issue completion comment, and close issue(s). Trigger on: 'land', 'merge and close', 'ship it'."
 ---
 
 # Land — Merge, Sync, Cleanup, Close
@@ -15,8 +15,8 @@ Use this skill when the user wants full delivery closure in one command.
 1. Merge the active feature branch into `main`
 2. Push `main`
 3. Remove the feature branch (remote + local)
-4. Post a completion comment on the issue
-5. Close the issue
+4. Post a completion comment on the issue(s)
+5. Close the issue(s)
 6. Verify final state
 
 Do not stop after merge.
@@ -28,9 +28,11 @@ Do not ask for an additional confirmation before landing; invoking `land` is the
 
 - Working tree must be clean before starting.
 - Current branch must not be `main`.
-- Issue number must be known:
-  - Prefer explicit user-provided issue number.
-  - Else infer from branch name pattern `issue-<number>`.
+- Issue number(s) must be known:
+  - Prefer explicit user-provided issue number(s).
+  - Else infer from branch name using one of:
+    - `issue-<number>/<slug>` (single issue)
+    - `issues-<number>-<number>-.../<slug>` (multi-issue, unbounded)
 
 ---
 
@@ -48,9 +50,18 @@ git diff --quiet && git diff --cached --quiet || {
   echo "ERROR: working tree not clean"; exit 1;
 }
 
-ISSUE_NUMBER="$(echo "$FEATURE_BRANCH" | sed -nE 's#.*issue-([0-9]+).*#\\1#p')"
-if [ -z "$ISSUE_NUMBER" ]; then
-  echo "ERROR: cannot infer issue number from branch name; require explicit issue"; exit 1
+ISSUE_NUMBERS=()
+
+if [[ "$FEATURE_BRANCH" =~ ^issue-([0-9]+)/ ]]; then
+  ISSUE_NUMBERS=("${BASH_REMATCH[1]}")
+elif [[ "$FEATURE_BRANCH" =~ ^issues-([0-9]+(-[0-9]+)*)/ ]]; then
+  IFS='-' read -r -a ISSUE_NUMBERS <<< "${BASH_REMATCH[1]}"
+else
+  echo "ERROR: cannot infer issue number(s) from branch name; require explicit issue number(s)"; exit 1
+fi
+
+if [ "${#ISSUE_NUMBERS[@]}" -eq 0 ]; then
+  echo "ERROR: parsed zero issue numbers"; exit 1
 fi
 ```
 
@@ -81,7 +92,7 @@ PR_NUMBER="$(gh pr list --head "$FEATURE_BRANCH" --state merged --json number --
 
 If PR is not found, continue with issue close using merge commit only.
 
-### 5. Comment and close issue
+### 5. Comment and close issue(s)
 
 ```bash
 if [ -n "$PR_NUMBER" ]; then
@@ -90,8 +101,16 @@ else
   BODY="Implemented and merged in commit ${MERGE_SHA}. Closing as complete."
 fi
 
-gh issue comment "$ISSUE_NUMBER" --body "$BODY"
-gh issue close "$ISSUE_NUMBER" --reason completed
+FAILED_ISSUES=()
+for ISSUE_NUMBER in "${ISSUE_NUMBERS[@]}"; do
+  gh issue comment "$ISSUE_NUMBER" --body "$BODY" || FAILED_ISSUES+=("$ISSUE_NUMBER")
+  gh issue close "$ISSUE_NUMBER" --reason completed || FAILED_ISSUES+=("$ISSUE_NUMBER")
+done
+
+# Optional: de-duplicate failures before reporting.
+if [ "${#FAILED_ISSUES[@]}" -gt 0 ]; then
+  echo "WARNING: failed issue operations for: ${FAILED_ISSUES[*]}"
+fi
 ```
 
 ### 5a. Sync issue state to local mirror
@@ -107,22 +126,24 @@ git status --short
 git branch --show-current
 git rev-parse --short HEAD
 
-gh issue view "$ISSUE_NUMBER" --json state --jq '.state'
+for ISSUE_NUMBER in "${ISSUE_NUMBERS[@]}"; do
+  gh issue view "$ISSUE_NUMBER" --json state --jq '.state'
+done
 ```
 
 Success conditions:
 - current branch is `main`
 - working tree is clean
 - feature branch absent on origin
-- issue state is `CLOSED`
+- every target issue state is `CLOSED`
 
 ---
 
 ## Failure Policy
 
 - If merge/push fails: stop immediately, do not close issue.
-- If branch deletion fails after successful merge: report partial completion and keep issue open.
-- If issue comment/close API fails: report partial completion and include exact failing step.
+- If branch deletion fails after successful merge: report partial completion and keep issue(s) open.
+- If issue comment/close API fails for one issue: continue processing remaining issues, then report failed issue number(s) explicitly.
 
 ---
 
