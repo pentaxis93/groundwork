@@ -91,7 +91,7 @@ else
 fi
 
 gh issue comment "$ISSUE_NUMBER" --body "$BODY"
-gh issue close "$ISSUE_NUMBER"
+gh issue close "$ISSUE_NUMBER" --reason completed
 ```
 
 ### 5a. Sync issue state to local mirror
