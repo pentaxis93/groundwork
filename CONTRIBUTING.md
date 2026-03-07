@@ -46,6 +46,28 @@ To curate an upstream skill:
 1. Add the source and skill entries to `manifests/curation.v1.toml` with a pinned `rev`
 2. Run `groundwork update` to sync
 
+## Skill Authoring Boundary
+
+Groundwork stores the skills it ships, but it does not ship its own
+skill-authoring toolchain. Use the external sibling repository
+`/home/pentaxis93/src/skill-creator` when you need to:
+
+- create a new skill
+- regenerate an existing Groundwork skill
+- evaluate whether a skill change actually improves behavior
+
+Treat Groundwork as the destination for committed skill outputs and pipeline
+documentation:
+
+1. Do the authoring or regeneration work in `skill-creator`
+2. Bring the resulting `SKILL.md` content or curation change back into this repo
+3. Update `agents.toml`, `manifests/curation.v1.toml`, README/WORKFLOW entries,
+   ADRs, and CHANGELOG only if the shipped Groundwork inventory or methodology
+   changes
+
+Do not add `skill-creator` to `agents.toml` or `manifests/curation.v1.toml`.
+It is contributor tooling, not part of Groundwork's runtime skill inventory.
+
 ## Agent Workspace Policy
 
 - `.codex/` is agent-local runtime/workspace state and is intentionally gitignored.

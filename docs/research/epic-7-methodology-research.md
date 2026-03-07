@@ -401,7 +401,7 @@ It maps precisely to FDD's "Design by Feature" phase: the Chief Programmer produ
 
 4. **Add "problem context" to the task template.** Distinct from "scope" and "acceptance criteria," problem context explains WHY the acceptance criteria matter, giving the implementing agent enough understanding to exercise judgment when the landscape differs from expectations.
 
-**File:** `skills/decomposition/issue-craft/SKILL.md` -- regeneration via Issue #9 using `writing-skills` TDD process.
+**File:** `skills/decomposition/issue-craft/SKILL.md` -- regeneration via Issue #9 using the adopted external `skill-creator` workflow.
 
 #### No new decomposition skills needed
 
@@ -483,7 +483,7 @@ The composite does not introduce sovereignty violations at the seams because eac
 | `requesting-code-review` | Verification | Curated | No |
 | `receiving-code-review` | Verification | Curated | No |
 | `verification-before-completion` | Verification | Curated | No |
-| `writing-skills` | Meta | Curated | No |
+| `writing-skills` | Meta (historical) | Removed | N/A -- superseded by external `skill-creator` for authoring |
 
 ### 4.3 Meta Skills
 
@@ -510,7 +510,7 @@ All other curated skills (TDD, debugging, subagent orchestration, code review, v
 
 Ordered by dependency and leverage:
 
-1. **Regenerate `issue-craft`** (Issue #9) -- Add `decompose-design` procedure, refocus on problem transfer, strengthen anti-prescription guardrails. Use `writing-skills` TDD process.
+1. **Regenerate `issue-craft`** (Issue #9) -- Add `decompose-design` procedure, refocus on problem transfer, strengthen anti-prescription guardrails. Use the adopted external `skill-creator` workflow.
 
 2. **Update pipeline documentation** -- Remove `writing-plans` from default flow in WORKFLOW.md, pipeline-contract.md, and `using-groundwork`. Update handoff contracts. Document `plan -> issue-craft` as the canonical decomposition boundary. Override `brainstorming` terminal routing.
 

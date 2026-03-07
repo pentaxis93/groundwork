@@ -25,7 +25,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - Renamed `planning` skill to `next-issue`; added separate `plan` skill for design convergence
 - Reframed sovereignty as a fractal principle (applies at every interface, not just human-agent)
 - Removed the prescriptive step-script decomposition skill from the curated set and live pipeline docs; rationale recorded in [`docs/research/epic-7-methodology-research.md`](docs/research/epic-7-methodology-research.md). Groundwork intentionally overrides `brainstorming`'s upstream `writing-plans` handoff through `WORKFLOW.md` and `using-groundwork`.
-- Removed the curated skill-authoring meta-skill from runtime docs/config so first-session agents only load pipeline-relevant skills.
+- Removed the curated skill-authoring meta-skill from runtime docs/config and adopted external `skill-creator` as the contributor-facing skill-authoring system, so first-session agents only load pipeline-relevant skills.
 
 ### Fixed
 
