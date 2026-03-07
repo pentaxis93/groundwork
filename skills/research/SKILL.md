@@ -28,7 +28,7 @@ Never trust a single source. Cross-reference with at least two independent sourc
 Most source conflicts dissolve when versions/dates are explicit. Always anchor findings to specific versions and timestamps.
 
 ### 5. Empirical Verification Over Authority
-When stakes are high, test claims directly rather than trusting even authoritative sources. Code behavior beats documentation. **Constraint-aware:** when the current environment is read-only or lacks shell access, gather the strongest available codebase evidence using the tools you do have, or explicitly note the limitation in the Confidence section rather than skipping the step silently.
+When stakes are high, test claims directly rather than trusting even authoritative sources. Code behavior beats documentation. **Constraint-aware:** when the current environment is read-only or lacks shell access, gather the strongest available source-code evidence using the tools you do have, or explicitly note the limitation in the Confidence section rather than skipping the step silently.
 
 ---
 
@@ -73,7 +73,7 @@ Consult sources in this priority order, adapting to the domain:
 | **Official Docs** | Authoritative, maintained | API signatures, core concepts | `include_domains` targeting official site |
 | **GitHub Issues/PRs** | Real problems, maintainer input | Edge cases, bugs, workarounds | `include_domains: ["github.com"]` |
 | **Stack Overflow** | Curated answers, voting signal | Common problems, quick fixes | `include_domains: ["stackoverflow.com"]` |
-| **Source Code** | Ground truth | When docs are unclear | Inspect the local codebase with available repo-reading tools |
+| **Source Code** | Ground truth | When docs are unclear | Inspect the relevant source code with the tools available in the current environment |
 | **Blog Posts** | Deep dives, tutorials | Learning workflows, context | General search, then `tavily-extract` |
 | **Discord/Forums** | Cutting-edge, insider knowledge | Latest changes, community consensus | `include_domains` targeting community sites |
 
@@ -160,7 +160,7 @@ Use `google_search` when:
 
 ---
 
-**Codebase grounding:** When the research topic intersects with the current codebase, inspect the relevant files and project artifacts before or during source gathering.
+**Codebase grounding:** When the research topic intersects with the current project, inspect the relevant files and project artifacts before or during source gathering.
 
 ### Phase 4: Source Evaluation
 
@@ -196,7 +196,7 @@ When sources disagree:
 1. **Check versions**: Conflict often means different versions, not factual disagreement. Use `tavily-search` with `time_range` to find version-specific information
 2. **Find the maintainer**: Their comment trumps community answers. Search `include_domains: ["github.com"]` for maintainer statements in issues/PRs
 3. **Deep-read both sides**: Use `tavily-extract` on the conflicting URLs to get full context — snippets often make sources seem more contradictory than they are
-4. **Test empirically**: Inspect the codebase directly when the environment allows it, or note the limitation
+4. **Test empirically**: Inspect the relevant source code directly when the environment allows it, or note the limitation
 5. **Apply consensus weighting**: Run a broader search (`max_results: 20`) to gauge which position has more independent support
 6. **Note the disagreement**: If unresolved, report both positions with evidence in the Conflicts section of output
 
