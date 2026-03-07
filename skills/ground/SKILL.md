@@ -8,8 +8,8 @@ description: >-
   enable before decomposing to verified constraints, then builds from what
   is actually true.
 metadata:
-  version: "2.0.0"
-  updated: "2026-03-01"
+  version: "2.1.0"
+  updated: "2026-03-07"
   origin: >-
     Successor to clean-slate. The predecessor caught migration failures
     (fabricated switching costs, compatibility layering) but missed the
@@ -106,7 +106,14 @@ Defaulting to the abstraction level of adjacent or existing systems.
 **Recognition:** Your design operates at the same abstraction level as the system it replaces or resembles, without questioning whether that level is correct.
 **Corrective:** "What abstraction level does this problem actually require?" The existing system's level is a data point, not a default.
 
-### 9. Descriptive-Normative Confusion
+### 9. Local Coherence
+
+A detail follows a valid pattern and sounds right in isolation, but contradicts the purpose established in Orient.
+
+**Recognition:** Your output would be correct in a generic context — it follows established engineering conventions, uses appropriate technical language, and reads as a reasonable decision. But you have not checked it against the specific purpose of this work. The fluency of the output masks the contradiction. Common vectors: failure-mode defaults that negate the feature ("if the safety check fails, skip it"), error paths that undo the work, fallbacks to the behavior the feature exists to replace.
+**Corrective:** Restate the purpose from Orient. Re-evaluate the detail: "If this fires, does the feature still accomplish its goal?" If no, the detail defeats the feature.
+
+### 10. Descriptive-Normative Confusion
 
 Documenting what is instead of designing what's needed.
 
