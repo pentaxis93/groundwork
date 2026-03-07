@@ -64,7 +64,8 @@ toward complete coverage of what matters.
 
 **Implementation maps to behavior.** Every implementation increment connects
 to one or more behavior statements. If you can't name which behavior a code
-change advances, the change is unanchored.
+change advances, the change is unanchored. This traceability runs the full
+chain — from specification through implementation to verification evidence.
 
 ### Example: Complete Scenario
 
@@ -86,6 +87,26 @@ def test_rejects_expired_tokens_with_401():
 The test name is the specification line. The Given/When/Then structure makes
 the behavior contract visible. The assertion checks observable outcome
 (status code, error message), not internal state.
+
+### Example: Bad to Good
+
+```python
+# Before — testing implementation
+def test_token_validation():
+    validator = TokenValidator()
+    validator._cache = {}
+    result = validator._parse_jwt(expired_token)
+    assert result.internal_state == "expired"
+
+# After — testing behavior
+def test_rejects_expired_tokens_with_401():
+    token = create_token(expires_at=one_hour_ago)
+    response = client.get("/api/protected", headers=auth_header(token))
+    assert response.status_code == 401
+```
+
+The before test breaks if internals change. The after test survives any
+refactor that preserves the behavior.
 
 ## Procedures
 
@@ -183,7 +204,7 @@ test has multiple When/Then sequences or assertions testing different things.
 *Recognition:* Tests pass but describe behavior nobody requires. You're afraid
 to delete them because "they might catch something."
 
-**Framework over thinking.** Choosing or debating test frameworks instead of
+**Framework overthinking.** Choosing or debating test frameworks instead of
 writing behaviors.
 *Recognition:* You've spent time evaluating frameworks, configuring runners, or
 comparing assertion libraries — but no behavior has been specified yet.
