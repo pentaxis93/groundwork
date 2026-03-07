@@ -5,7 +5,7 @@ description: "One-word closeout workflow: merge active branch to main, sync loca
 
 # Land — Merge, Sync, Cleanup, Close
 
-**Version 1.3**
+**Version 1.4**
 
 ## Overview
 
@@ -15,11 +15,12 @@ Use this skill when the user wants full delivery closure in one command.
 1. Verify CHANGELOG covers user-visible changes
 2. Run documentation coherence check; fix drifted docs on the feature branch
 3. Evaluate acceptance criteria against the branch diff
-4. Merge the active feature branch into `main`
-5. Push `main`
-6. Remove the feature branch (remote + local)
-7. Close satisfied issue(s); comment progress on partial issue(s)
-8. Verify final state (including documentation coverage summary)
+4. Evaluate commit history; squash when iterative refinement adds noise
+5. Merge the active feature branch into `main`
+6. Push `main`
+7. Remove the feature branch (remote + local)
+8. Close satisfied issue(s); comment progress on partial issue(s)
+9. Verify final state (including documentation coverage summary)
 
 Do not stop after merge.
 Do not ask for an additional confirmation before landing; invoking `land` is the user's approval to execute this workflow.
@@ -127,28 +128,53 @@ done
    - **Satisfied** — all extracted criteria met.
    - **Partial** — some criteria met but others remain, **or** no acceptance criteria found in the issue body. Closing an issue without verified criteria is not safe — the issue stays open for human review.
 
-For each partial issue, store its satisfied and remaining criteria lists separately, keyed by issue number. Record results as `SATISFIED` and `PARTIAL` issue lists for step 8. Every issue in `ISSUE_NUMBERS` must appear in exactly one list.
+For each partial issue, store its satisfied and remaining criteria lists separately, keyed by issue number. Record results as `SATISFIED` and `PARTIAL` issue lists for step 9. Every issue in `ISSUE_NUMBERS` must appear in exactly one list.
 
-### 5. Merge and push
+### 5. Evaluate commit history for squash
+
+Examine the branch's commit history to decide whether to squash on merge.
+
+```bash
+git log origin/main..HEAD --oneline
+git log origin/main..HEAD --name-only --pretty=format:""
+```
+
+**Decision framework** (apply judgment, not mechanical rules):
+
+- **Squash when** the history is iterative refinement — a feature commit followed by fix-ups that revise the same change: majority of commits are fixes of the initial change, commits touch the same files, all share the same scope/component.
+- **Preserve when** commits represent distinct work units — single-commit branches, different components/scopes, multi-step features where each step is meaningful independently.
+
+**When squashing**, draft a consolidated commit message: use the conventional-commit prefix/scope from the initial commit, summarize the consolidated change, don't enumerate squashed commits.
+
+Set `SQUASH=true` or `SQUASH=false`. If squashing, set `SQUASH_MSG` to the drafted commit message.
+
+### 6. Merge and push
 
 ```bash
 git fetch origin --prune
 git checkout main
 git pull --ff-only origin main
-git merge --no-ff "$FEATURE_BRANCH"
+if [ "$SQUASH" = "true" ]; then
+  git merge --squash "$FEATURE_BRANCH"
+  git commit -m "$SQUASH_MSG"
+else
+  git merge --no-ff "$FEATURE_BRANCH"
+fi
 git push origin main
 MERGE_SHA="$(git rev-parse --short HEAD)"
 ```
 
-### 6. Delete feature branch
+### 7. Delete feature branch
 
 ```bash
 git push origin --delete "$FEATURE_BRANCH" || true
-git branch -d "$FEATURE_BRANCH"
+# -D required: --squash merges don't record merge parentage, so -d refuses.
+# Safety: content is verified merged by the push in step 6.
+git branch -D "$FEATURE_BRANCH"
 git fetch origin --prune
 ```
 
-### 7. Discover PR number (best effort)
+### 8. Discover PR number (best effort)
 
 ```bash
 PR_NUMBER="$(gh pr list --head "$FEATURE_BRANCH" --state merged --json number --jq '.[0].number')"
@@ -156,7 +182,7 @@ PR_NUMBER="$(gh pr list --head "$FEATURE_BRANCH" --state merged --json number --
 
 If PR is not found, continue with issue close using merge commit only.
 
-### 8. Comment and close issue(s)
+### 9. Comment and close issue(s)
 
 Apply the classifications from step 4.
 
@@ -195,13 +221,13 @@ if [ "${#FAILED_OPS[@]}" -gt 0 ]; then
 fi
 ```
 
-### 8a. Sync issue state to local mirror
+### 9a. Sync issue state to local mirror
 
 ```bash
 gh-issue-sync pull
 ```
 
-### 9. Verify and report
+### 10. Verify and report
 
 ```bash
 git status --short
@@ -234,6 +260,7 @@ Success conditions:
 - If issue comment/close API fails for one issue: continue processing remaining issues, then report failed issue number(s) explicitly.
 - If acceptance criteria evaluation fails (issue fetch error, criteria unparseable): treat the issue as partial, log a warning, and do not close it. The operator must resolve manually.
 - If documentation coherence check fails (skill unavailable, classification error, or commit failure): stop and report the error. Do not proceed to merge with unresolved documentation state.
+- If commit history evaluation is uncertain: default to preserve (`--no-ff`). Squashing is an optimization; when in doubt, keep the original history.
 
 ---
 

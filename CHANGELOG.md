@@ -26,6 +26,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - Added `CLAUDE.md` documenting skill management with `sk` fork
 - Migrated license from Apache-2.0 to MIT
 - `land` skill upgraded to v1.3: added pre-merge acceptance criteria evaluation — satisfied issues are closed, partial issues receive a progress comment listing delivered and remaining criteria, issues without extractable criteria stay open for human review. Prevents premature closure when a branch delivers part of an issue's scope.
+- `land` skill upgraded to v1.4: added conditional squash step — evaluates commit history pre-merge and squashes when iterative refinement (feature + fix-ups on same files) would read as noise on `main`. Preserves history for distinct work units. Uses `git merge --squash` with a consolidated commit message when squashing, `--no-ff` otherwise. Branch deletion upgraded to `-D` to handle squash merges. Defaults to preserve when uncertain. Minor version bump: additive behavioral change (new decision step).
 - `land` skill now supports closing multiple issues inferred from `issues-<N>-<M>-.../<slug>` branches, while preserving `issue-<N>/<slug>` behavior
 - Rewrote README from first principles around the pipeline concept
 - Renamed `planning` skill to `next-issue`; added separate `plan` skill for design convergence
