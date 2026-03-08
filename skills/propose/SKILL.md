@@ -83,8 +83,9 @@ If on `main` (or detached HEAD):
 
 ### 3. Analyze changes and commit
 
-This step preserves the commit analysis that is storyline's core value, with
-project-convention awareness.
+This step is the skill's core analytical value: understanding changes well
+enough to produce meaningful commit structure, not just staging everything at
+once.
 
 If all changes are already committed (only unpushed commits exist), skip to
 step 4.
@@ -104,8 +105,11 @@ Use conventional commit format: `type(scope): description` where type is
 known, reference them in the commit body (not the title): `Refs #N`. Commit
 messages explain **why**, not just what.
 
-**3d. Execute commits.** Stage and commit each logical group. Use `git add -p`
-when splitting changes within a single file. Verify each commit leaves the
+**3d. Execute commits.** Stage and commit each logical group using
+`git add <paths>`. When a single file contains changes for different commits,
+stage it with the dominant change set and note the grouping compromise in the
+commit message — intra-file splitting (`git add -p`) requires interactive input
+and may not be available in agent environments. Verify each commit leaves the
 working tree in a valid state.
 
 If analysis produces no clear grouping (one tangled change), fall back to a
