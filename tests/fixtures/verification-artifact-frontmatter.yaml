@@ -1,6 +1,6 @@
 schema: schemas/test-evidence.schema.json
 freshness: stale
-produced_by: test-driven-development
+produced_by: test-first
 produced_at: "2026-03-05T16:45:00+00:00"
 depends_on:
   - artifact: behavior-contract

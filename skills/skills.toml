@@ -50,12 +50,11 @@ repo = "pentaxis93/groundwork"
 use_when = "Use when starting a work session: selecting issue(s), preparing the workspace (feature branch), and declaring session direction."
 
 [[skills]]
-name = "test-driven-development"
-path = "skills/test-driven-development"
+name = "test-first"
+path = "skills/test-first"
 provider = "gh"
-repo = "obra/superpowers"
-rev = "e4a2375cb705ca5800f0833528ce36a3faf9017a"
-use_when = "Use when implementing any feature or bugfix."
+repo = "pentaxis93/groundwork"
+use_when = "Use when implementing any feature or bugfix, before writing implementation code."
 
 [[skills]]
 name = "subagent-driven-development"

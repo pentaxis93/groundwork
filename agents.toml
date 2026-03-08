@@ -18,7 +18,7 @@ documentation = { gh = "pentaxis93/groundwork", path = "skills/documentation" }
 using_groundwork = { gh = "pentaxis93/groundwork", path = "skills/using-groundwork" }
 third_force = { gh = "pentaxis93/groundwork", path = "skills/third-force" }
 subagent_driven_development = { gh = "obra/superpowers", path = "skills/subagent-driven-development", rev = "e4a2375cb705ca5800f0833528ce36a3faf9017a" }
-test_driven_development = { gh = "obra/superpowers", path = "skills/test-driven-development", rev = "e4a2375cb705ca5800f0833528ce36a3faf9017a" }
+test_first = { gh = "pentaxis93/groundwork", path = "skills/test-first" }
 systematic_debugging = { gh = "obra/superpowers", path = "skills/systematic-debugging", rev = "e4a2375cb705ca5800f0833528ce36a3faf9017a" }
 verification_before_completion = { gh = "obra/superpowers", path = "skills/verification-before-completion", rev = "e4a2375cb705ca5800f0833528ce36a3faf9017a" }
 requesting_code_review = { gh = "obra/superpowers", path = "skills/requesting-code-review", rev = "e4a2375cb705ca5800f0833528ce36a3faf9017a" }

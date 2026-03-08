@@ -193,9 +193,9 @@ When encountering existing documentation (e.g., onboarding to a project):
 - `issue-craft`: user-facing changes include documentation expectations in
   acceptance criteria. This skill defines what that means: identify which
   artifacts need creation or update, and include those as criteria.
-- `test-driven-development`: inline documentation (doc comments, type
-  annotations) is written alongside code — doc comments are implementation
-  work, not afterthought.
+- `test-first`: inline documentation (doc comments, type annotations) is
+  written alongside code — doc comments are implementation work, not
+  afterthought.
 - `verification-before-completion`: documentation accuracy is completion
   evidence; `documentation-review` fires before verification.
 - `land`: CHANGELOG entry required for user-visible changes. Documentation

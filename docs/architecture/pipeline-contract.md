@@ -11,9 +11,9 @@ Groundwork has one coherent path:
 4. Curated middle skills implement and verify the same behavior contract.
 5. `land` closes work with behavior coverage visibility.
 
-`bdd` and `test-driven-development` are not alternatives.
+`bdd` and `test-first` are not alternatives.
 - `bdd` defines behavior.
-- `test-driven-development` is the execution discipline that realizes behavior.
+- `test-first` is the execution discipline that realizes behavior.
 
 ## Handoff Contracts
 
@@ -31,7 +31,7 @@ Requirement:
 Fail condition:
 - issue acceptance criteria exist but no behavior mapping is stated.
 
-### `bdd -> test-driven-development`
+### `bdd -> test-first`
 Requirement:
 - each RED test corresponds to a named behavior scenario.
 

@@ -1864,11 +1864,11 @@ mod tests {
                     use_when: "before creating designs".to_string(),
                 },
                 ShippedSkill {
-                    name: "test-driven-development".to_string(),
-                    path: "bundle/skills/test-driven-development".to_string(),
+                    name: "test-first".to_string(),
+                    path: "skills/test-first".to_string(),
                     provider: "gh".to_string(),
-                    repo: "obra/superpowers".to_string(),
-                    rev: Some("abc123".to_string()),
+                    repo: GROUNDWORK_REPO.to_string(),
+                    rev: None,
                     tag: None,
                     use_when: "when implementing".to_string(),
                 },
@@ -1922,7 +1922,7 @@ mod tests {
                 "plan",
                 "issue_craft",
                 "begin",
-                "test_driven_development",
+                "test_first",
                 "subagent_driven_development",
                 "systematic_debugging",
                 "requesting_code_review",
@@ -1950,6 +1950,7 @@ mod tests {
                 "skills/plan",
                 "skills/issue-craft",
                 "skills/begin",
+                "skills/test-first",
                 "skills/third-force",
                 "skills/documentation",
                 "skills/propose",
@@ -1992,7 +1993,7 @@ external_dep = { gh = "org/repo", path = "y" }
         assert!(deps.contains_key("issue_craft"));
         assert!(deps.contains_key("land"));
         assert!(deps.contains_key("using_groundwork"));
-        assert!(deps.contains_key("test_driven_development"));
+        assert!(deps.contains_key("test_first"));
         assert_eq!(result.pruned, 2);
     }
 
@@ -2011,9 +2012,9 @@ claude-code = true
         let result =
             reconcile_manifest_to_doc(&mut doc, &specs, &previously_managed).expect("reconcile ok");
 
-        let alias = "test_driven_development";
+        let alias = "test_first";
         let deps_str = doc.to_string();
-        assert!(deps_str.contains("path = \"bundle/skills/test-driven-development\""));
+        assert!(deps_str.contains("path = \"skills/test-first\""));
 
         let lock_entry = result
             .lock_entries
@@ -2023,7 +2024,7 @@ claude-code = true
 
         assert_eq!(
             lock_entry.path.as_deref(),
-            Some("bundle/skills/test-driven-development")
+            Some("skills/test-first")
         );
     }
 
