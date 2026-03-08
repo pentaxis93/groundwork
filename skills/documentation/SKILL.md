@@ -57,8 +57,8 @@ as code evolves.
 - `changelog-before-land`: user-visible changes include a CHANGELOG entry
   before landing, because consumers need to understand what changed without
   reading code or commits. Keep a Changelog categories (Added/Changed/
-  Deprecated/Removed/Fixed/Security) work well because they map directly to
-  how the change affects the consumer.
+  Deprecated/Removed/Fixed/Security) map directly to how the change affects
+  the consumer.
 - `adr-for-decisions`: significant architectural decisions get an ADR.
   "Significant" means: affects contributor work, is hard to reverse, or is
   not obvious. MADR format (Context, Decision Drivers, Options, Outcome,
@@ -151,7 +151,9 @@ When encountering existing documentation (e.g., onboarding to a project):
 
 - `structure-not-understanding`: document headings mirror the directory tree.
   Sentences begin with "This file..." not "To accomplish...". Restructure
-  around tasks and concepts.
+  around tasks and concepts. When documenting sequences, presentation order
+  must respect the dependency graph — outputs of one step are inputs to the
+  next.
 - `verbose-not-useful`: document is long but a reader cannot extract what they
   need. Ask: "Could this section be removed without reducing the reader's
   ability to accomplish their task?"
@@ -186,7 +188,7 @@ When encountering existing documentation (e.g., onboarding to a project):
   must enable — that output defines the documentation audience. Fires before
   writing ARCHITECTURE docs or ADRs; grounded constraints belong in
   ARCHITECTURE.md, significant decisions in ADRs.
-- `bdd`: behavior contracts are the authoritative source for API documentation.
+- `bdd`: behavior contracts are the authoritative source for what the API does.
   Public behaviors should be reflected in user-facing docs, not only test files.
 - `issue-craft`: user-facing changes include documentation expectations in
   acceptance criteria. This skill defines what that means: identify which
