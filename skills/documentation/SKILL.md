@@ -18,30 +18,6 @@ description: >-
 Ensure every documentation artifact is accurate, audience-aware, and maintained
 as code evolves.
 
-## Lifecycle Role
-
-Documentation is a cross-cutting discipline, not a pipeline phase. It threads
-through every stage:
-
-- **Frame constraints** (`ground`): Ground's Orient identifies who this serves
-  and what it must enable — that output defines the documentation audience.
-  Capture grounded constraints in ARCHITECTURE.md. Record significant decisions
-  as ADRs.
-- **Define behavior** (`bdd`): Behavior contracts are the authoritative source
-  for what the API does. Public behaviors should be reflected in user-facing
-  docs, not only test files.
-- **Decompose** (`issue-craft`): issue-craft's guidelines require that
-  user-facing changes include documentation expectations in acceptance criteria.
-  This skill defines what that means: identify which artifacts need creation or
-  update, and include those as acceptance criteria.
-- **Execute** (`test-driven-development`): Inline documentation (doc comments,
-  type annotations) is written alongside code. Doc comments are implementation
-  work, not afterthought.
-- **Verify**: `documentation-review` fires before `verification-before-completion`.
-  Documentation accuracy is completion evidence.
-- **Land** (`land`): CHANGELOG entry required for user-visible changes.
-  Documentation coverage is recorded alongside behavior coverage.
-
 ## Artifact Types
 
 | Artifact | Audience | When Produced |
@@ -66,29 +42,31 @@ through every stage:
 - `minimum-viable-detail`: include enough to prevent mistakes, no more. Three
   clear sentences beat two verbose paragraphs.
 - `same-pr`: documentation updates ship in the same PR as the code change that
-  caused them. If the update requires deeper work, create a tracking issue —
-  never leave drift untracked.
+  caused them, because deferred documentation updates become forgotten ones —
+  drift is invisible until a reader hits it. If the update requires deeper work,
+  create a tracking issue — never leave drift untracked.
 - `source-of-truth-over-counts`: avoid hardcoded aggregate counts for dynamic
-  sets (skills, endpoints, flags, supported providers). Prefer referencing the
+  sets (skills, endpoints, flags, supported providers) — they drift silently and
+  mislead readers without any visible signal. Prefer referencing the
   authoritative object (manifest/config/schema) or generating the value.
 
 ## Requirements
 
-- `audience-stated`: every document identifies its audience, either explicitly
-  or by artifact type convention (see table above).
 - `task-oriented`: documents are organized around what the reader needs to
   accomplish, not around the codebase's file structure.
 - `changelog-before-land`: user-visible changes include a CHANGELOG entry
-  before landing. Format: Keep a Changelog v1.1.0 (Added/Changed/Deprecated/
-  Removed/Fixed/Security).
-- `adr-for-decisions`: significant architectural decisions get an ADR using
-  MADR 4.0 format (Context, Decision Drivers, Options, Outcome, Consequences).
+  before landing, because consumers need to understand what changed without
+  reading code or commits. Keep a Changelog categories (Added/Changed/
+  Deprecated/Removed/Fixed/Security) work well because they map directly to
+  how the change affects the consumer.
+- `adr-for-decisions`: significant architectural decisions get an ADR.
   "Significant" means: affects contributor work, is hard to reverse, or is
-  not obvious.
+  not obvious. MADR format (Context, Decision Drivers, Options, Outcome,
+  Consequences) is a good default because each section forces the writer to
+  articulate a different aspect of the decision — but the structure matters
+  less than capturing the reasoning.
 - `docs-in-acceptance-criteria`: user-facing changes include documentation
   updates as explicit acceptance criteria in the issue.
-- `numeric-claims-traceable`: if a dynamic numeric claim is kept, it must cite
-  its source object and update path (generated, or verified in review).
 
 ## Procedures
 
@@ -138,10 +116,6 @@ Fires after code changes, before `verification-before-completion`.
    reader know what to do after reading this?"
 7. **Record coverage.** In the PR or commit, state: which docs were updated,
    which were verified accurate, which were flagged with tracking issues.
-
-**CI integration pattern (lightweight):** A pre-commit check that diffs changed
-source files, greps documentation files for references to those files/modules,
-and warns if no documentation files are included in the commit.
 
 ### write-artifact
 
@@ -196,14 +170,6 @@ When encountering existing documentation (e.g., onboarding to a project):
   drift compounds. Documentation review is part of completion, not a separate
   phase. If velocity makes full review impractical, reduce documentation scope
   to what can be maintained — less accurate docs beat more stale ones.
-- `sequence-without-dependency`: workflows or skills presented in an order
-  that assumes outputs exist before the step that creates them. Selection
-  listed before creation, verification before the thing it verifies. When
-  documenting a sequence of workflows, the presentation order must respect
-  the dependency graph — outputs of one step are inputs to the next.
-- `count-fragility`: docs encode "X items" for a set that changes over time.
-  This drifts silently and misleads readers. Replace with source-of-truth
-  references, generated values, or remove the aggregate.
 
 ## Principles
 
@@ -216,11 +182,19 @@ When encountering existing documentation (e.g., onboarding to a project):
 
 ## Cross-References
 
-- `ground`: fires before writing ARCHITECTURE docs or ADRs; Orient output
-  defines the documentation audience.
+- `ground`: Ground's Orient identifies who documentation serves and what it
+  must enable — that output defines the documentation audience. Fires before
+  writing ARCHITECTURE docs or ADRs; grounded constraints belong in
+  ARCHITECTURE.md, significant decisions in ADRs.
 - `bdd`: behavior contracts are the authoritative source for API documentation.
-- `issue-craft`: documentation updates as acceptance criteria for user-facing
-  changes.
+  Public behaviors should be reflected in user-facing docs, not only test files.
+- `issue-craft`: user-facing changes include documentation expectations in
+  acceptance criteria. This skill defines what that means: identify which
+  artifacts need creation or update, and include those as criteria.
+- `test-driven-development`: inline documentation (doc comments, type
+  annotations) is written alongside code — doc comments are implementation
+  work, not afterthought.
 - `verification-before-completion`: documentation accuracy is completion
   evidence; `documentation-review` fires before verification.
-- `land`: CHANGELOG entry and documentation coverage recorded at landing.
+- `land`: CHANGELOG entry required for user-visible changes. Documentation
+  coverage is recorded alongside behavior coverage.
