@@ -42,7 +42,7 @@ Use `requesting-code-review` after implementation, before merging. Use `receivin
 
 Use `verification-before-completion` before claiming any work is complete. It requires running the actual verification command and confirming the output matches the claim. Completion evidence must be behavior-level — not just "tests pass" but explicit behavior coverage.
 
-Use `propose` to package verified changes into a PR: ensure feature branch, analyze and commit changes, push, and create PR with derived title/body linked to issue(s). This produces the open PR that `land` will merge in stage 5. The session lifecycle is: `next-issue` (select work) → implement → `propose` (package for review) → review → `land` (merge and close).
+Use `propose` to package verified changes into a PR: ensure feature branch, analyze and commit changes, push, and create PR with derived title/body linked to issue(s). This produces the open PR that `land` will merge in stage 5. The session lifecycle is: `next-issue` (initiate session) → implement → `propose` (package for review) → review → `land` (merge and close).
 
 ### 5. Land
 
