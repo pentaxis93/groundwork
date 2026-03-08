@@ -73,6 +73,20 @@ Requirement:
 Fail condition:
 - user-visible change landed without CHANGELOG entry or documentation coverage statement.
 
+### `third-force -> documentation`
+Requirement:
+- structural fixes that change operational instructions are reflected in CLAUDE.md, CONTRIBUTING.md, or WORKFLOW.md.
+
+Fail condition:
+- tool installed or config fixed without updating relevant documentation.
+
+### `third-force -> issue-craft`
+Requirement:
+- friction that exceeds side-quest scope is filed as an issue, not deferred silently.
+
+Fail condition:
+- agent applied a workaround without filing an issue for the structural fix.
+
 ## Anti-Divergence Rules
 
 1. Do not document BDD as specification-only.
@@ -82,6 +96,7 @@ Fail condition:
 5. Do not accept completion evidence that lacks documentation review.
 6. Do not land user-visible changes without a CHANGELOG entry.
 7. Do not treat stale documentation as authoritative over code behavior.
+8. Do not collapse the triad by routing around operational friction — resolve it structurally or file an issue.
 
 ## Quick Compliance Checklist
 
