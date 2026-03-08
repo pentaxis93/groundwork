@@ -120,10 +120,11 @@ Set up the workspace for the selected work.
 1. Ensure on `main` and up-to-date: `git checkout main && git pull --ff-only`.
 2. Create a feature branch:
    - Single issue: `issue-<N>/<slug>`
-   - Issue batch: `issues-<N>-<M>/<slug>`
-   - Topic without issue: `feat/<slug>` or `fix/<slug>`
+   - Issue batch: `issues-<N>-<M>-.../<slug>` (unbounded)
+   - Topic without issue: `feat/<slug>`, `fix/<slug>`, or `chore/<slug>`
 
-   Where slug is the issue title — lowercase, hyphenated, truncated to 40 chars.
+   Where slug is the issue title (or topic string, when no issue) — lowercase,
+   hyphenated, truncated to 40 chars.
 3. Load issue context: read issue body, comments, and linked issues to build
    working understanding.
 
