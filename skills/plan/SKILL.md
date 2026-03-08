@@ -73,9 +73,6 @@ code.
 4. Identify existing patterns, utilities, and conventions to reuse.
 5. Note what you still do not know after exploration.
 
-Do not skip this phase. Planning from imagination produces plans that
-collide with the actual codebase.
-
 ### phase-2-resolve-intent
 
 Clarify what the change must achieve and what is out of scope. Without
