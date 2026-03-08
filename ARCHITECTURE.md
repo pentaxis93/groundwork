@@ -21,7 +21,7 @@ skills/
   bdd/               behavior contract definition
   plan/              design convergence
   issue-craft/       issue lifecycle
-  next-issue/        work initiation
+  begin/             work initiation
   documentation/     documentation review/update
   land/              closeout workflow
 ```
@@ -60,7 +60,7 @@ The five stages are not a taxonomy — they are an integration architecture. Eac
 
 1. **Frame constraints** (`ground`, `research`) produces verified constraints and substantiated evidence
 2. **Define behavior** (`bdd`) produces Given/When/Then behavior contracts
-3. **Decompose** (`issue-craft`, `next-issue`, `plan`) produces executable issues and implementation designs
+3. **Decompose** (`issue-craft`, `begin`, `plan`) produces executable issues and implementation designs
 4. **Execute and verify** (curated skills) produces tested implementations and review evidence
 5. **Land** (`land`) produces closed issues, merged code, and behavior coverage records
 

@@ -3,7 +3,7 @@ name: propose
 description: >-
   Package working changes into a PR: ensure feature branch, analyze and commit
   changes, push, create PR with derived title/body linked to issue(s).
-  The middle phase of the session lifecycle between next-issue and land.
+  The middle phase of the session lifecycle between begin and land.
   Trigger on: 'propose', 'submit pr', 'create pr', 'open pr',
   'send for review', 'package this up'.
 ---
@@ -24,7 +24,7 @@ Use this skill when implementation is complete and changes need to become a PR.
 5. Create a PR with derived title/body and issue linkage
 6. Report the result and suggest next steps
 
-The session lifecycle is: `next-issue` (initiate session) → implement → `propose`
+The session lifecycle is: `begin` (initiate session) → implement → `propose`
 (package for review) → review → `land` (merge and close). `propose` is the
 transition from execution to review.
 
@@ -212,7 +212,7 @@ Output:
 
 ## Related Skills
 
-- `next-issue` for work initiation — select issue(s), prepare workspace, declare direction (the preceding phase)
+- `begin` for work initiation — select issue(s), prepare workspace, declare direction (the preceding phase)
 - `land` for merge, cleanup, and issue closure (the following phase)
 - `requesting-code-review` for dispatching review after the PR exists
 - `verification-before-completion` — should fire before `propose`

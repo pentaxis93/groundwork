@@ -43,8 +43,8 @@ repo = "pentaxis93/groundwork"
 use_when = "Use when creating, decomposing, refining, or closing issues."
 
 [[skills]]
-name = "next-issue"
-path = "skills/next-issue"
+name = "begin"
+path = "skills/begin"
 provider = "gh"
 repo = "pentaxis93/groundwork"
 use_when = "Use when starting a work session: selecting issue(s), preparing the workspace (feature branch), and declaring session direction."

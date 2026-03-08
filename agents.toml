@@ -9,7 +9,7 @@ opencode = false
 ground = { gh = "pentaxis93/groundwork", path = "skills/ground" }
 research = { gh = "pentaxis93/groundwork", path = "skills/research" }
 bdd = { gh = "pentaxis93/groundwork", path = "skills/bdd" }
-next_issue = { gh = "pentaxis93/groundwork", path = "skills/next-issue" }
+begin = { gh = "pentaxis93/groundwork", path = "skills/begin" }
 plan = { gh = "pentaxis93/groundwork", path = "skills/plan" }
 issue_craft = { gh = "pentaxis93/groundwork", path = "skills/issue-craft" }
 land = { gh = "pentaxis93/groundwork", path = "skills/land" }

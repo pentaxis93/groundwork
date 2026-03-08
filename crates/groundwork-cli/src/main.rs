@@ -1921,14 +1921,16 @@ mod tests {
                 "bdd",
                 "plan",
                 "issue_craft",
-                "next_issue",
+                "begin",
                 "test_driven_development",
                 "subagent_driven_development",
                 "systematic_debugging",
                 "requesting_code_review",
                 "receiving_code_review",
+                "third_force",
                 "documentation",
                 "verification_before_completion",
+                "propose",
                 "land",
             ]
         );
@@ -1947,8 +1949,10 @@ mod tests {
                 "skills/bdd",
                 "skills/plan",
                 "skills/issue-craft",
-                "skills/next-issue",
+                "skills/begin",
+                "skills/third-force",
                 "skills/documentation",
+                "skills/propose",
                 "skills/land",
             ]
         );
@@ -1983,7 +1987,7 @@ external_dep = { gh = "org/repo", path = "y" }
         assert!(deps.contains_key("ground"));
         assert!(deps.contains_key("research"));
         assert!(deps.contains_key("bdd"));
-        assert!(deps.contains_key("next_issue"));
+        assert!(deps.contains_key("begin"));
         assert!(deps.contains_key("plan"));
         assert!(deps.contains_key("issue_craft"));
         assert!(deps.contains_key("land"));

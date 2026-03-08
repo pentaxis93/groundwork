@@ -155,7 +155,7 @@ When producing a plan for handoff to another agent, write it to a file.
   the problem space itself is unclear.
 - `bdd`: behavior contract — provides the behavior statements the plan
   must implement.
-- `next-issue`: work initiation — selects which issue to plan for and prepares the session.
+- `begin`: work initiation — selects which issue to plan for and prepares the session.
 - `issue-craft`: executable work-unit decomposition and issue quality —
   turns a decision-complete design into agent-executable issues with
   binary acceptance criteria.

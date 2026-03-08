@@ -1,12 +1,12 @@
 ---
-name: next-issue
+name: begin
 description: >-
   Session work initiation: select issue(s), prepare workspace, declare
   direction. Opening bookend of the session lifecycle — `land` is the closing
-  bookend. Trigger on: 'next-issue', 'next issue', 'start issue', 'begin work'.
+  bookend. Trigger on: 'begin', 'begin work', 'start session', 'start issue'.
 ---
 
-# Next Issue — Work Selection & Initiation
+# Begin — Work Selection & Initiation
 
 **Version 2.1**
 
@@ -15,8 +15,8 @@ description: >-
 Use this skill to start a work session: choose what to work on, prepare the
 workspace, and declare the session's direction.
 
-`next-issue` is the opening bookend of the session lifecycle:
-`next-issue` (select + prepare) → implement → `propose` (package for review) →
+`begin` is the opening bookend of the session lifecycle:
+`begin` (select + prepare) → implement → `propose` (package for review) →
 review → `land` (merge and close).
 
 Plan from the issue graph, not from memory. Agent sessions end and context
@@ -229,7 +229,7 @@ this — refine it with what you learned during selection and preparation.
 - `propose`: the next lifecycle phase — commit, push, and PR creation after
   implementation.
 - `land`: the closing bookend — merge, cleanup, and issue closure after review.
-  `next-issue` opens the session lifecycle; `land` closes it.
+  `begin` opens the session lifecycle; `land` closes it.
 - `issue-craft`: decomposition, issue boundaries, acceptance criteria contracts.
 - `ground`: validate assumptions before committing to an approach.
 - `bdd`: behavior-first test strategy for implementation increments.
