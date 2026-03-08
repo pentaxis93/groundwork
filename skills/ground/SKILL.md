@@ -1,36 +1,46 @@
 ---
 name: ground
 description: >-
-  First-principles cognitive discipline for all generative work. Use when
-  creating specs, architectures, processes, solutions, methodologies, problem
-  framings — any task requiring original design. Use for migration, upgrade,
-  and technology selection decisions. Use before defaulting to the existing
-  approach. Establishes what the work must enable before decomposing to
-  verified constraints, then builds from what is actually true.
+  First-principles cognitive discipline. Use when creating specs,
+  architectures, processes, solutions, or methodologies. Use when analyzing
+  costs, structures, strategies, or decisions. Use when reframing problems.
+  Use before accepting any frame, cost, constraint, or convention without
+  verification. Establishes what is actually needed and what is actually true
+  before decomposing to verified constraints, then builds from what survives
+  decomposition.
 metadata:
-  version: "2.3.0"
-  updated: "2026-03-07"
+  version: "3.0.0"
+  updated: "2026-03-08"
   origin: >-
     Successor to clean-slate. The predecessor caught migration failures
     (fabricated switching costs, compatibility layering) but missed the
     broader pattern: agents default to inherited thinking in ALL generative
     work. The same instinct that fabricates switching costs also accepts
     problem statements uncritically, copies categories from adjacent systems,
-    and preserves complexity out of fear.
+    and preserves complexity out of fear. v3.0 broadened scope beyond
+    generative work to cover all first-principles reasoning — strategic
+    analysis, cost decomposition, problem reframing, and any context where
+    assumed constraints need stripping. Added active excavation techniques
+    and multiple decomposition modes.
   replaces: "clean-slate"
 ---
 
 # Ground
 
-*What must this enable? What is actually required? Build from that.*
+*What is actually true? What is actually needed? Build from that.*
 
 ## The Move
 
 Six steps. Always the same.
 
-0. **Orient.** Before touching anything, establish the need. What must this enable? Who does it serve? What do they need to accomplish? These answers are the actual constraints. Everything else — existing code, existing patterns, existing implementations — is evidence about one attempt to meet those constraints, not the constraints themselves.
+0. **Orient.** Before touching anything, establish the purpose of the inquiry. For design: What must this enable? Who does it serve? What do they need to accomplish? For analysis: What is actually being examined? What question are we trying to answer? For cost or structure: What is the claimed structure, and what is the actual structure? These answers are the actual constraints. Everything else — existing code, existing patterns, existing implementations, current prices, current processes — is evidence about one attempt or one state, not the constraints themselves.
 
-1. **Decompose.** Strip the problem to its actual constraints. What must be true? What is assumed? What was inherited from the prompt, the existing system, or the adjacent example? The Assumed-Constraint Patterns below are the common forms these inherited assumptions take.
+1. **Decompose.** Strip the situation to its actual constituents. Orient determines the decomposition mode:
+   - *Requirements decomposition* — for design work: What must be true? What is assumed? What was inherited from the prompt, the existing system, or the adjacent example?
+   - *Constituent decomposition* — for cost and structure analysis: What is this made of? What does each component actually cost? Where is the gap between material reality and current price or complexity?
+   - *Process decomposition* — for workflow and efficiency analysis: What are the actual steps? Which steps serve current needs and which are inherited ritual?
+
+   The Assumed-Constraint Patterns below are the common forms inherited assumptions take across all modes.
 
 2. **Verify.** For each constraint: is this real (physics, contract, measured need) or inherited (convention, precedent, comfort)? If you cannot point to evidence, it is assumed.
 
@@ -42,7 +52,7 @@ Six steps. Always the same.
 
 **Why Orient comes first.** 80% of solving a problem is defining the problem. Orient exists because without it, decomposition has no anchor — you will decompose whatever is in front of you, which is usually the existing system. Orient points decomposition at the right target: the need, not the implementation.
 
-**The descriptive/normative distinction.** There are two kinds of truth relevant to design work. *Descriptive truth* is what currently exists — the code, the configuration, the running system. *Normative truth* is what's actually needed — the requirements, the capabilities, the outcomes that matter. For design work, you ground in normative truth. Descriptive truth is evidence about one implementation, useful for gap analysis after the design exists, but never the starting point. Confusing these — treating what the system currently does as the definition of what it should do — is the most common grounding failure.
+**The descriptive/normative distinction.** There are two kinds of truth relevant to grounding. *Descriptive truth* is what currently exists — the code, the configuration, the running system, the current cost structure. *Normative truth* is what's actually needed — the requirements, the capabilities, the outcomes that matter. For design, ground in normative truth. For cost or structure analysis, ground in material truth — what things are actually made of, what they actually cost, what each component contributes. Material truth is normative in the sense that it is the verified reality against which the current price or structure should be evaluated, not a description of the current state. In both cases, descriptive truth is evidence, useful for gap analysis or baseline comparison, but never the starting point. Confusing these — treating what currently exists as the definition of what should exist — is the most common grounding failure.
 
 **Grounding is the opposite of analogy.** Analogy copies solutions and their embedded assumptions. Grounding derives solutions from constraints and discovers which assumptions were load-bearing.
 
@@ -52,7 +62,7 @@ Six steps. Always the same.
 
 ## Assumed-Constraint Patterns
 
-These fire on all generative work. When you notice any of these, stop and ground.
+These fire on all first-principles work — design, analysis, strategy, decomposition. When you notice any of these, stop and ground.
 
 ### 1. Problem-as-Given
 
@@ -124,9 +134,37 @@ These fire specifically when existing state creates gravitational pull — migra
 
 ---
 
+## Active Excavation
+
+The patterns above are passive — they catch drift. These techniques actively drill to bedrock.
+
+### Socratic Drilling
+
+Five question types, applied in sequence or as the situation demands:
+
+1. **Origin.** "Where did this come from? Who established it? When?" — Traces the genealogy of a constraint, cost, frame, or assumption. Many constraints are inherited from contexts that no longer apply.
+2. **Assumption.** "What are we assuming when we accept this? What would have to be true for this to be correct?" — Surfaces hidden premises. The assumption beneath the assumption is usually where the inherited thinking lives.
+3. **Evidence.** "What evidence supports this? Is the evidence current? Would we accept this evidence in a different context?" — Demands verification. Convention and repetition are not evidence.
+4. **Alternatives.** "What would this look like if this constraint did not exist? What alternatives have we not considered because we accepted the frame?" — Opens the solution space that the inherited frame has closed.
+5. **Consequences.** "If we accept this, what follows? If we reject this, what follows?" — Tests load-bearing status. If rejecting a constraint has no real consequences, it was not a real constraint.
+
+### Recursive Why
+
+Drill past surface explanations by asking "why" recursively until you hit bedrock — a physical law, a measured fact, a contractual obligation, or a verified user need.
+
+***Recognition that you have hit bedrock:*** The answer is independently verifiable and does not depend on convention, precedent, or "how things are done." If the answer is "because that is how it has always been done" or "because the existing system does it that way," you have not reached bedrock — keep drilling.
+
+***Recognition that you have overshot:*** You are questioning constraints that are independently verified (physics, contracts, measured data). Stop. That is ground.
+
+### Patterns vs. Techniques
+
+Patterns are defensive — they catch you drifting from first principles during the work. Techniques are offensive — they get you to first principles before the work begins. Use techniques during Orient and Decompose. Use patterns throughout.
+
+---
+
 ## When to Ground
 
-**The trigger:** You are about to create something. Ask: "Have I established what this must enable, or am I starting from what already exists?"
+**The trigger:** You are about to accept a frame, a cost, a constraint, a structure, or a "how things work" — or you are about to create something. Ask: "Have I established what is actually true and what is actually needed, or am I starting from what already exists?"
 
 ## When NOT to Ground
 
@@ -144,10 +182,12 @@ These fire specifically when existing state creates gravitational pull — migra
 
 **Implementation survey as design.** Thorough research of the existing system presented as a design document. The research is valuable — for gap analysis. But organizing implementation facts is not designing. If your output would be equally true as a README for the current system, you have not designed anything.
 
+**Structure survey as analysis.** Thorough research of an existing cost structure, process, or system presented as analysis. Gathering current prices, listing current steps, or documenting current architecture is data collection, not first-principles analysis. If your output describes what exists without questioning whether it should exist, you have not grounded anything.
+
 **Infinite decomposition.** Using grounding to delay decisions. Decomposition serves reconstruction. If you are decomposing without rebuilding, you have stalled.
 
 **Rejection as reflex.** Dismissing all inherited structure because it is inherited. Some precedents are correct. Grounding is verification, not contrarianism.
 
 ---
 
-*The default is to float — in inherited frames, borrowed categories, precedent as constraint, descriptions of what is. Orient returns you to what is needed. Grounding returns you to what is true. Build from there.*
+*The default is to float — in inherited frames, borrowed categories, accepted costs, unquestioned structures, precedent as constraint, descriptions of what is. Orient returns you to what is needed. Grounding returns you to what is true. Build from there.*
