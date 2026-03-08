@@ -74,7 +74,7 @@ Documentation is a cross-cutting communication discipline, not a pipeline phase.
 
 - **Frame constraints**: `ground`'s Orient identifies who this serves and what it must enable — that output defines the documentation audience. Capture grounded constraints in ARCHITECTURE.md. Record significant decisions as ADRs.
 - **Define behavior**: behavior contracts from `bdd` are the authoritative source for API documentation. Public behaviors should be reflected in user-facing docs, not only test files.
-- **Decompose**: `issue-craft` requires `criteria-include-docs`. The `documentation` skill defines what that means: identify which artifacts need creation or update and include those as acceptance criteria.
+- **Decompose**: `issue-craft` requires that user-facing changes include documentation expectations in acceptance criteria. The `documentation` skill defines what that means: identify which artifacts need creation or update and include those as acceptance criteria.
 - **Execute**: inline documentation (doc comments, type annotations) is written alongside code during implementation. Doc comments are implementation work, not afterthought.
 - **Verify**: `documentation-review` fires before `verification-before-completion`. Documentation accuracy is completion evidence.
 - **Land**: CHANGELOG entry required for user-visible changes. Documentation coverage is recorded alongside behavior coverage.
