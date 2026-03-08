@@ -9,7 +9,7 @@ description: >-
 
 # Land — Merge, Sync, Cleanup, Close
 
-**Version 1.7**
+**Version 1.8**
 
 ## Overview
 
@@ -36,11 +36,12 @@ Do not ask for confirmation before landing. Invoking `land` IS the user's approv
 
 - Working tree must be clean before starting.
 - Current branch must not be `main`.
-- Issue number(s) must be known:
+- Issue numbers are optional:
   - Prefer explicit user-provided issue number(s).
   - Else infer from branch name using one of:
     - `issue-<number>/<slug>` (single issue)
     - `issues-<number>-<number>-.../<slug>` (multi-issue, unbounded)
+  - If no issue numbers are available, continue with the no-issue closeout path.
 
 ---
 
@@ -54,7 +55,7 @@ Extract issue numbers from the branch name:
 - `issue-42/fix-login` → issue 42
 - `issues-5-8/license-cleanup` → issues 5 and 8
 
-If neither the user nor the branch name provides issue numbers, stop and ask the user.
+If neither the user nor the branch name provides issue numbers, mark the landing as no-issue and continue.
 
 ### 2. Check whether changes warrant a CHANGELOG entry
 
@@ -70,7 +71,9 @@ Record a coverage summary: each artifact checked, its status, and any action tak
 
 This step is best-effort — if the scan encounters errors, note them in the summary and proceed to merge.
 
-### 4. Evaluate acceptance criteria
+### 4. Evaluate acceptance criteria (issue-linked branches only)
+
+Skip this step when no issue numbers are available.
 
 Fetch each target issue (`gh issue view`) and evaluate whether the branch changes satisfy its acceptance criteria. This step runs pre-merge while the branch diff is available.
 
@@ -132,7 +135,9 @@ Delete any remaining branch references:
 - Local: `git branch -D <branch>`. The `-D` flag (force delete) is required because squash merges don't record merge parentage, so `-d` refuses even though the content is safely on `main`.
 - Prune stale remote-tracking references: `git fetch origin --prune`.
 
-### 9. Comment and close issue(s)
+### 9. Comment and close issue(s) (issue-linked branches only)
+
+If no issues were provided or inferred, skip this step.
 
 Apply the classifications from step 4.
 
@@ -159,6 +164,8 @@ If any comment or close operation fails, continue processing remaining issues, t
 
 ### 9a. Sync issue state to local mirror
 
+If no issues were provided or inferred, this step is optional and may be skipped.
+
 If `gh-issue-sync` is available on `PATH`, run `gh-issue-sync pull` to update the local issue mirror. If the tool is not installed or the sync fails, skip gracefully — a sync failure after successful merge is not catastrophic. Remote state is already correct; only the local mirror is stale.
 
 ### 10. Verify and report
@@ -168,12 +175,14 @@ Confirm success conditions:
 - Working tree is clean
 - Feature branch absent on origin
 - PR state is `MERGED` (not just `CLOSED`)
-- Every satisfied issue state is `CLOSED`
-- Every partial issue has a progress comment listing remaining criteria
+- For issue-linked landings: every satisfied issue state is `CLOSED`
+- For issue-linked landings: every partial issue has a progress comment listing remaining criteria
 - Documentation coverage summary reported
 
 Report the final state including:
-- Issue disposition: satisfied (closed) and partial (open with remaining criteria)
+- Issue disposition:
+  - Issue-linked: satisfied (closed) and partial (open with remaining criteria)
+  - No-issue: explicitly report "no issue linked"
 - Documentation coverage summary from step 3
 - Any warnings or failed operations from earlier steps
 
@@ -185,6 +194,7 @@ Report the final state including:
 - If branch deletion fails after successful merge: warn about the deletion failure and continue to issue close/comment steps. The code is safely on `main`; branch cleanup is not a prerequisite for issue closure.
 - If issue comment/close API fails for one issue: continue processing remaining issues, then report failed issue number(s) explicitly.
 - If acceptance criteria evaluation fails (issue fetch error, criteria unparseable): treat the issue as partial, log a warning, and do not close it. The operator must resolve manually.
+- If no issue numbers are available: do not prompt for issue IDs during `land`; proceed with merge/sync/cleanup and report a no-issue landing.
 - If documentation drift scan encounters errors: report them in the coverage summary and proceed. Do not block the merge.
 - If commit history evaluation is uncertain: default to preserve (`--no-ff`). Squashing is an optimization; when in doubt, keep the original history.
 
