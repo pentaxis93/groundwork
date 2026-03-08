@@ -28,7 +28,7 @@ metadata:
 
 Five steps. The side quest.
 
-0. **Stop.** You have hit friction. Do not route around it. Do not continue the original task with a workaround. The instinct to keep moving is the failure mode this skill exists to catch.
+0. **Stop.** You have hit friction. Do not route around it. Do not continue the original task with a workaround. The instinct to keep moving is the failure mode this skill exists to catch. The fix you are about to make is infrastructure — its cost is paid once; its benefit recurs across every future session.
 
 1. **Step back.** Assess the friction at the meta-level. You are not debugging a bug — you are encountering an obstacle in the operational environment. Name the friction: what specifically is impeding progress? What category does it fall into? (See Recognition Patterns below.)
 
