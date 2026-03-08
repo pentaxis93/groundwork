@@ -46,6 +46,35 @@ To add a shipped skill maintained upstream:
 1. Add the skill entry to `skills/skills.toml` with its pinned `rev`
 2. Run `groundwork update` to sync
 
+Curated skills fetched via `sk sync` from external `gh` references are not stored in this repo's tree — no `LICENSE-UPSTREAM` file is needed here. The upstream repo's own license governs the fetched content. To verify a curated skill's license, check its upstream repository directly.
+
+## Upstream Attribution
+
+Any skill in `skills/` that adapts, derives from, or reproduces substantial portions of upstream work must include a `LICENSE-UPSTREAM` file co-located with `SKILL.md`.
+
+### When LICENSE-UPSTREAM is required
+
+If the skill preserves structural frameworks, tables, terminology, enumerated lists, or near-verbatim text from an upstream source, it requires a `LICENSE-UPSTREAM` file. Skills that are merely "inspired by" a concept without reproducing protected expression do not.
+
+### What LICENSE-UPSTREAM must contain
+
+1. **Prose preamble** identifying the upstream project name, URL, and pinned revision (commit hash), plus an honest accounting of which elements are derived from the original and which are original to this adaptation.
+2. **Full upstream copyright notice and license text** — the complete notice as it appears in the upstream project, not a summary or paraphrase.
+
+### Origin metadata standard
+
+The `origin:` field in `SKILL.md` frontmatter must:
+
+- Name the upstream author or organization
+- Identify the correct license (verify — do not assume)
+- Reference `LICENSE-UPSTREAM` when one exists
+- Honestly characterize the degree of derivation (e.g. "preserves substantial portions" vs. "adapted from" vs. "inspired by")
+
+### Reference examples
+
+- `skills/plan/LICENSE-UPSTREAM` — adapted from OpenAI Codex (Apache-2.0), with itemized derived vs. original elements
+- `skills/test-first/LICENSE-UPSTREAM` — adapted from obra/superpowers (MIT), with description of preserved portions
+
 ## Skill Authoring Boundary
 
 Groundwork stores the skills it ships, but it does not ship its own
@@ -61,7 +90,8 @@ documentation:
 
 1. Do the authoring or regeneration work in `skill-creator`
 2. Bring the resulting `SKILL.md` content or curation change back into this repo
-3. Update `skills/skills.toml`, `agents.toml`, README/WORKFLOW entries,
+3. If the skill adapts upstream material, add a `LICENSE-UPSTREAM` file alongside `SKILL.md` and include an `origin:` field in frontmatter referencing it. See [Upstream Attribution](#upstream-attribution).
+4. Update `skills/skills.toml`, `agents.toml`, README/WORKFLOW entries,
    ADRs, and CHANGELOG only if the shipped Groundwork inventory or methodology
    changes
 
