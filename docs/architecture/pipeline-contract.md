@@ -73,14 +73,14 @@ Requirement:
 Fail condition:
 - user-visible change landed without CHANGELOG entry or documentation coverage statement.
 
-### `clear -> documentation`
+### `third-force -> documentation`
 Requirement:
 - structural fixes that change operational instructions are reflected in CLAUDE.md, CONTRIBUTING.md, or WORKFLOW.md.
 
 Fail condition:
 - tool installed or config fixed without updating relevant documentation.
 
-### `clear -> issue-craft`
+### `third-force -> issue-craft`
 Requirement:
 - friction that exceeds side-quest scope is filed as an issue, not deferred silently.
 
@@ -96,7 +96,7 @@ Fail condition:
 5. Do not accept completion evidence that lacks documentation review.
 6. Do not land user-visible changes without a CHANGELOG entry.
 7. Do not treat stale documentation as authoritative over code behavior.
-8. Do not route around operational friction without resolving it structurally or filing an issue.
+8. Do not collapse the triad by routing around operational friction — resolve it structurally or file an issue.
 
 ## Quick Compliance Checklist
 

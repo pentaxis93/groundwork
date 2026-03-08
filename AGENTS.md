@@ -30,12 +30,8 @@ Dependencies are declared in `agents.toml`. Skills with `gh = "pentaxis93/ground
 
 ## Agent Principles
 
-### Clear friction, don't route around it
+### Introduce third force on friction
 
-When you encounter operational friction — a missing tool, a broken config, a stale convention, an undocumented requirement — do not work around it. Stop, assess the structural cause, and resolve it permanently before continuing your original task.
+When you encounter operational friction — a missing tool, a broken config, a stale convention, an undocumented requirement — do not route around it. Stop, step outside, and resolve the structural cause permanently before continuing your original task. Structural fixes include: installing a tool, fixing a configuration, updating documentation (including this file), adding a CLAUDE.md instruction, filing an issue for deeper work.
 
-The default agent behavior is to route around obstacles: skip the install, avoid the config change, find a workaround. This means every future agent encounters the same friction. The correct response is the opposite: treat friction as a side quest that earns a permanent fix.
-
-Structural fixes include: installing a tool, fixing a configuration, updating documentation (including this file), adding a CLAUDE.md instruction, filing an issue for deeper work.
-
-For the full methodology, see the `clear` skill.
+For the full methodology, see the `third-force` skill.

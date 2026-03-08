@@ -90,8 +90,8 @@ rev = "e4a2375cb705ca5800f0833528ce36a3faf9017a"
 use_when = "Use when processing review feedback."
 
 [[skills]]
-name = "clear"
-path = "skills/clear"
+name = "third-force"
+path = "skills/third-force"
 provider = "gh"
 repo = "pentaxis93/groundwork"
 use_when = "Use when encountering operational friction — missing tools, broken configs, stale conventions, undocumented requirements."
