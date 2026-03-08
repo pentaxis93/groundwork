@@ -3,10 +3,13 @@ name: plan
 description: >-
   Use when an implementation task needs design convergence before code
   changes — multiple valid approaches exist, scope is unclear, or
-  modifications cut across multiple files or subsystems.
+  modifications cut across multiple files or subsystems. Use this before
+  any implementation that changes interfaces, touches multiple subsystems,
+  or where the approach isn't obvious. If you're about to start coding
+  without a clear design, plan first.
 metadata:
-  version: "1.0.0"
-  updated: "2026-03-04"
+  version: "1.1.0"
+  updated: "2026-03-08"
   origin: >-
     Adapted from Codex CLI plan mode (MIT license,
     github.com/openai/codex). The original is a human-interactive UI
@@ -55,28 +58,13 @@ without making any design decisions.
   decide with rationale and record it as an explicit assumption. Never
   leave a design choice implicit.
 
-## Requirements
-
-- `plan-has-title-and-summary`: the plan opens with a clear title and brief
-  summary of what changes and why.
-- `plan-names-key-changes`: list important interface, API, schema, or
-  behavioral changes. Group by subsystem or behavior, not file-by-file.
-  Mention files only to disambiguate non-obvious changes — prefer
-  behavior-level descriptions over file inventories.
-- `plan-includes-test-strategy`: describe how to verify the changes
-  end-to-end — which tests to run, what new tests to write, what
-  behaviors to confirm.
-- `plan-records-assumptions`: list every assumption made where exploration
-  could not determine the answer, with rationale for each choice.
-- `plan-reuses-existing-patterns`: identify and reference existing
-  functions, utilities, and conventions found during exploration.
-
 ## Procedures
 
 ### phase-1-ground-in-environment
 
 Explore the codebase to build a concrete understanding of current state.
-Eliminate unknowns by discovering facts, not by guessing.
+Without this, plans describe imagined systems that collide with the actual
+code.
 
 1. Read the issue, task, or request to identify what must change.
 2. Search for relevant files: entrypoints, configs, schemas, types,
@@ -85,12 +73,11 @@ Eliminate unknowns by discovering facts, not by guessing.
 4. Identify existing patterns, utilities, and conventions to reuse.
 5. Note what you still do not know after exploration.
 
-Do not skip this phase. Planning from imagination produces plans that
-collide with the actual codebase.
-
 ### phase-2-resolve-intent
 
-Clarify what the change must achieve and what is out of scope.
+Clarify what the change must achieve and what is out of scope. Without
+intent boundaries, every approach looks equally valid and trade-offs
+cannot be evaluated.
 
 1. State the goal and success criteria derived from the issue and
    exploration.
@@ -99,14 +86,17 @@ Clarify what the change must achieve and what is out of scope.
    performance budgets, existing tests that must keep passing.
 4. For each remaining ambiguity, classify and resolve:
    - **Discoverable fact** (repo/system truth): explore further. Search
-     configs, manifests, entrypoints, schemas, types.
+     configs, manifests, entrypoints, schemas, types. Never guess what
+     you can read.
    - **Preference or tradeoff** (not discoverable): choose the option best
      supported by codebase evidence, record it as an explicit assumption
      with rationale.
 
 ### phase-3-converge-implementation
 
-Design the implementation until decision-complete.
+Design the implementation until decision-complete. This is where multiple
+valid approaches collapse into a single chosen design — without convergence,
+the implementer re-opens every trade-off the planner evaluated.
 
 1. Choose the approach. When multiple valid approaches exist, compare
    trade-offs against the constraints from phase 2 and select one.
@@ -121,32 +111,26 @@ Design the implementation until decision-complete.
 
 ### write-plan
 
-Record the converged design.
+Record the converged design. Include enough detail to prevent
+implementation mistakes, no more — expand only where ambiguity is
+dangerous.
 
 1. **Title** — what this plan achieves.
 2. **Summary** — 1-3 sentences on the change and its rationale.
 3. **Key changes** — grouped by subsystem or behavior. Mention paths
    only when needed to prevent ambiguity. Compress related changes into
-   high-signal bullets.
+   high-signal bullets. Reference existing patterns, utilities, and
+   conventions found during exploration.
 4. **Test plan** — how to verify correctness end-to-end.
 5. **Assumptions** — every unresolvable unknown with rationale for the
    chosen default.
 
-Keep it concise. Prefer the minimum detail needed for implementation
-safety. Omit repeated repo facts and edge cases that cannot cause
-implementation mistakes.
+Omit repeated repo facts and edge cases that cannot cause implementation
+mistakes.
 
-## Two Kinds of Unknowns
-
-1. **Discoverable facts** (repo/system truth): explore first. Before
-   assuming, run targeted searches and check likely sources of truth —
-   configs, manifests, entrypoints, schemas, types, constants. Never
-   guess what you can read.
-
-2. **Preferences and tradeoffs** (not discoverable): intent or
-   implementation preferences that cannot be derived from exploration.
-   Choose the option best supported by codebase evidence. Provide
-   rationale. Record as explicit assumption.
+In interactive sessions, present the plan in the conversation for review.
+When producing a plan for handoff to another agent, write it to a file.
+(The pipeline contract will formalize artifact routing when implemented.)
 
 ## Corruption Modes
 
@@ -164,15 +148,6 @@ implementation mistakes.
 - `incomplete-plan`: leaving a design choice unresolved ("TBD", "decide
   later", "depends"). Either resolve it or record an explicit assumption
   with rationale.
-
-## Principles
-
-- `facts-before-opinions`: exploration-derived evidence outweighs
-  intuition. Read the code before forming an opinion about it.
-- `decision-completeness-is-the-bar`: the plan is done when a separate
-  agent could implement it without asking any questions.
-- `minimum-viable-detail`: include enough to prevent implementation
-  mistakes, no more. Expand only when ambiguity is dangerous.
 
 ## Cross-References
 
