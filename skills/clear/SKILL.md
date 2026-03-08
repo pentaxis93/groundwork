@@ -52,14 +52,14 @@ These are the categories of friction that trigger `clear`. When you notice any o
 
 A tool, binary, or dependency that should be available is not installed.
 
-***Recognition:*** You are about to skip a step because a tool is not available, or you are about to implement a manual workaround for what the tool does.
+***Recognition:*** You are about to skip a step because a tool is not available, or you are about to implement a manual workaround for what the tool does. The workaround feels pragmatic — "I can do this without the tool."
 ***Fix:*** Install the tool. Add install instructions to project docs if the installation is non-obvious.
 
 ### 2. Broken Configuration
 
 A configuration file is wrong, stale, or missing.
 
-***Recognition:*** You are about to edit code to work around a configuration problem, or you are ignoring an error/warning because "it still works."
+***Recognition:*** You are about to edit code to work around a configuration problem, or you are ignoring an error/warning because "it still works." Configuration drift is invisible friction — it does not block, but it degrades every operation.
 ***Fix:*** Fix the configuration at source.
 
 ### 3. Stale Convention
