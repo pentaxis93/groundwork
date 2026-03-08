@@ -220,6 +220,7 @@ Report the final state including:
 
 ## Related Skills
 
+- `propose` for the preceding phase: commit, push, and PR creation
 - `documentation` for deeper documentation review beyond the drift scan in step 3
 - `issue-craft` for issue lifecycle patterns and tracking issues from doc review
 - `next-issue` for issue selection and session workflow

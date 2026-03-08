@@ -95,6 +95,7 @@ Development for the full treatment.
 
 ## Cross-References
 
+- `propose`: the next lifecycle phase — commit, push, and PR creation after implementation.
 - `issue-craft`: decomposition, issue boundaries, acceptance criteria contracts.
 - `ground`: validate assumptions before committing to an approach.
 - `bdd`: behavior-first test strategy for implementation increments.
