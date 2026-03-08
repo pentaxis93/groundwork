@@ -5,9 +5,13 @@ description: >-
   a missing tool, broken config, stale convention, undocumented requirement, or
   any obstacle that the agent's default is to route around. Assesses the
   structural cause and resolves it permanently as a side quest before resuming
-  the original task.
+  the original task. Trigger signals: you are about to skip a step because
+  something is not installed; you are writing a workaround instead of fixing the
+  source; you used language like "for now" or "we can fix this later"; a tool
+  produced an error you are about to ignore; you are doing a manual step that a
+  tool should handle; you are making a decision that is not documented anywhere.
 metadata:
-  version: "1.0.0"
+  version: "1.1.0"
   updated: "2026-03-08"
   origin: >-
     Agents encountering operational friction default to routing around it —
@@ -28,9 +32,9 @@ Five steps. The side quest.
 
 1. **Step back.** Assess the friction at the meta-level. You are not debugging a bug — you are encountering an obstacle in the operational environment. Name the friction: what specifically is impeding progress? What category does it fall into? (See Recognition Patterns below.)
 
-2. **Ground.** Apply `ground`'s Orient: what should the operational environment enable here? What is the simplest structural state that would make this friction not exist — not just for you, but for every future agent? This is the grounded fix target. Do not design a workaround; design the absence of the obstacle.
+2. **Ground.** Apply `ground`'s Orient: what should the operational environment enable here? What is the simplest structural state that would make this friction not exist — not just for you, but for every future agent? This is the grounded fix target. Do not design a workaround; design the absence of the obstacle. Your workaround instinct is diagnostic data — it shows you exactly what the environment *should* provide but does not. Use that insight to design the structural fix.
 
-3. **Side quest.** Resolve the friction permanently. This is a bounded interruption to the original task, not a replacement for it. Execute the fix: install the tool, update the config, add the instruction, fix the convention, update the documentation. If the fix exceeds side-quest scope (see Scope Guidance below), file an issue and apply the minimum viable workaround — but the issue is mandatory.
+3. **Side quest.** Resolve the friction permanently. This is a bounded interruption to the original task, not a replacement for it. Execute the fix: install the tool, update the config, add the instruction, fix the convention, update the documentation. Verify the fix works before returning — run the tool, test the config, confirm the instruction is loadable. If the fix exceeds side-quest scope (see Scope Guidance below), file an issue and apply the minimum viable workaround — but the issue is mandatory.
 
 4. **Return.** Resume the original task. The path is now clear.
 
@@ -48,49 +52,43 @@ These are the categories of friction that trigger `clear`. When you notice any o
 
 A tool, binary, or dependency that should be available is not installed.
 
-***Recognition:*** You are about to skip a step because a tool is not available, or you are about to implement a manual workaround for what the tool does. The workaround feels pragmatic — "I can do this without the tool."
-***Examples:*** `gh` not installed, `sk` not on PATH, linter not configured, test runner missing, `gh-issue-sync` unavailable.
-***Structural fix:*** Install the tool. Add install instructions to CLAUDE.md or project docs if the installation is non-obvious.
+***Recognition:*** You are about to skip a step because a tool is not available, or you are about to implement a manual workaround for what the tool does.
+***Fix:*** Install the tool. Add install instructions to project docs if the installation is non-obvious.
 
 ### 2. Broken Configuration
 
 A configuration file is wrong, stale, or missing.
 
-***Recognition:*** You are about to edit code to work around a configuration problem, or you are ignoring an error/warning from a tool because "it still works." Configuration drift is invisible friction — it does not block, but it degrades every operation.
-***Examples:*** Wrong default branch in a config, stale dependency pins, missing env var, incorrect path in agents.toml, pre-commit hook misconfigured.
-***Structural fix:*** Fix the configuration at source.
+***Recognition:*** You are about to edit code to work around a configuration problem, or you are ignoring an error/warning because "it still works."
+***Fix:*** Fix the configuration at source.
 
 ### 3. Stale Convention
 
 A documented convention no longer matches reality, or an undocumented convention is creating confusion.
 
 ***Recognition:*** You are following a convention that produces wrong results, or you are unsure which of two contradictory conventions to follow, or you are making a decision that every future agent will also need to make because the convention is not written down.
-***Examples:*** CLAUDE.md instruction that references a removed tool, commit message format that does not match what the repo actually uses, undocumented branch naming convention.
-***Structural fix:*** Update the documentation. If the convention itself is wrong, fix the convention.
+***Fix:*** Update the documentation. If the convention itself is wrong, fix the convention.
 
 ### 4. Missing Instruction
 
-An important operational instruction is not in CLAUDE.md, CONTRIBUTING.md, or another always-loaded file.
+An important operational instruction is not in CLAUDE.md or another always-loaded file.
 
-***Recognition:*** You just learned something the hard way that should have been obvious from the project's instructions. Or you are about to make a decision that depends on project-specific knowledge that is not documented.
-***Examples:*** The project uses a forked version of a tool (not the upstream), a specific workflow step is required before landing, a particular directory structure must be followed.
-***Structural fix:*** Add the instruction to the appropriate file (CLAUDE.md for always-on, CONTRIBUTING.md for contributor workflow, WORKFLOW.md for operational process).
+***Recognition:*** You just learned something the hard way that should have been obvious from the project's instructions, or you are about to make a decision that depends on undocumented project-specific knowledge.
+***Fix:*** Add the instruction to the appropriate file.
 
 ### 5. Degraded Tooling
 
-A tool is present but not working correctly, or is working at reduced capability.
+A tool is present but not working correctly or at reduced capability.
 
-***Recognition:*** You are tolerating errors, warnings, or degraded output from a tool because "it mostly works." You have silently adopted a mental model of what the tool "actually" does versus what it claims to do.
-***Examples:*** Linter producing false positives and being ignored, test runner with flaky tests that are mentally excluded, CI pipeline with a known-failing step that is skipped.
-***Structural fix:*** Fix the tool, update its configuration, or remove it if it is not earning its place.
+***Recognition:*** You are tolerating errors, warnings, or degraded output because "it mostly works." You have silently adopted a mental model of what the tool "actually" does versus what it claims to do.
+***Fix:*** Fix the tool, update its configuration, or remove it if it is not earning its place.
 
 ### 6. Process Gap
 
-A step in the workflow requires knowledge or action that is not part of any documented process.
+A workflow step requires knowledge or action that is not part of any documented process.
 
-***Recognition:*** You are about to perform a step that you know from prior context but that a fresh agent would not know. Or you are about to skip a step because you do not know whether it applies.
-***Examples:*** "After merging, you need to manually run X" (undocumented), sync step that only appears in conversation history, approval step with no documented criteria.
-***Structural fix:*** Document the process step in WORKFLOW.md, update the relevant skill, or file an issue.
+***Recognition:*** You are about to perform a step that you know from prior context but that a fresh agent would not know, or you are about to skip a step because you do not know whether it applies.
+***Fix:*** Document the process step. Update the relevant skill or file an issue.
 
 ---
 
@@ -130,18 +128,6 @@ When filing an issue, still apply a **minimum viable workaround** for the curren
 **Friction blindness.** Not recognizing friction as friction. Recognition: you are consistently working around the same obstacle across multiple tasks, and it feels normal. If you find yourself doing the same manual step repeatedly, or if a fresh agent would be surprised by the step, it is friction.
 
 **Premature issue.** Filing an issue for friction that could be resolved inline in under five minutes. Recognition: you are using the issue as a way to defer a trivial fix. The issue takes longer to write than the fix takes to apply. Just fix it.
-
----
-
-## Principles
-
-**Friction compounds.** One unresolved obstacle is a minor annoyance. Ten unresolved obstacles is an environment where agents spend more time navigating friction than doing work. Every "for now" workaround is a tax on every future session.
-
-**Structural fixes are infrastructure.** Installing a tool, updating a config, adding an instruction — these are investments in the operational environment that pay off across every future agent session. The cost is paid once; the benefit recurs.
-
-**The side quest is bounded.** Clearing friction is a discipline, not a license to wander. The scope guidance exists because unbounded improvement is its own failure mode. Clear the obstacle, return to the task.
-
-**Workarounds are evidence.** When you encounter friction, your workaround instinct provides valuable diagnostic data: it shows you exactly what the environment *should* provide but does not. Use that insight to design the structural fix, then discard the workaround.
 
 ---
 
