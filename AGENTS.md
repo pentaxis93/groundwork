@@ -28,6 +28,10 @@ Dependencies are declared in `agents.toml`. Skills with `gh = "pentaxis93/ground
 - Installed copies: `.claude/skills/<skill-name>/SKILL.md`, `.codex/skills/<skill-name>/SKILL.md`
 - Installed copies are managed by `sk sync` — do not edit them directly.
 
+## Local Issue Mirror
+
+Issues are mirrored locally in `.issues/open/` and `.issues/closed/` via `gh-issue-sync`. Use these local files instead of `gh issue view` when reading issue content — they are faster and avoid API calls. Use `gh-issue-sync pull` to sync before scanning, and `gh-issue-sync push` to sync changes back.
+
 ## Agent Principles
 
 ### Introduce third force on friction
