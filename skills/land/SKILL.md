@@ -9,7 +9,7 @@ description: >-
 
 # Land — Merge, Sync, Cleanup, Close
 
-**Version 1.8**
+**Version 1.9**
 
 ## Overview
 
@@ -23,8 +23,9 @@ Use this skill when the user wants full delivery closure in one command.
 5. Discover PR number
 6. Merge via PR API and sync local state
 7. Remove the feature branch (local; remote usually handled by merge)
-8. Close satisfied issue(s); comment progress on partial issue(s)
-9. Verify final state (including documentation coverage summary)
+8. Sync installed skill copies if the branch touched skill sources
+9. Close satisfied issue(s); comment progress on partial issue(s)
+10. Verify final state (including documentation coverage summary)
 
 Do not stop after merge — stopping leaves branches dangling and issues unclosed. The full sequence is atomic: merge through close.
 
@@ -168,7 +169,21 @@ If no issues were provided or inferred, this step is optional and may be skipped
 
 If `gh-issue-sync` is available on `PATH`, run `gh-issue-sync pull` to update the local issue mirror. If the tool is not installed or the sync fails, skip gracefully — a sync failure after successful merge is not catastrophic. Remote state is already correct; only the local mirror is stale.
 
-### 10. Verify and report
+### 10. Sync installed skill copies
+
+Check if the merge introduced changes under `skills/` by inspecting the diff of the merge commit (`git diff --name-only HEAD~1 HEAD | grep '^skills/'`).
+
+**If no skill files changed:** skip, record "no skill changes."
+
+**If skill files changed:**
+
+1. Check if `sk` is on PATH (`command -v sk`).
+2. If not found: skip with a warning ("sk not on PATH; installed skill copies may be stale"), record "skipped (sk not found)."
+3. If found: run `sk sync --skill-target name --non-interactive`.
+   - On success: record "synced."
+   - On failure: warn but do not roll back the merge. Record "sync failed" with the error.
+
+### 11. Verify and report
 
 Confirm success conditions:
 - Current branch is `main`
@@ -184,6 +199,7 @@ Report the final state including:
   - Issue-linked: satisfied (closed) and partial (open with remaining criteria)
   - No-issue: explicitly report "no issue linked"
 - Documentation coverage summary from step 3
+- Skill sync outcome: one of `synced`, `skipped (no skill changes)`, `skipped (sk not found)`, `sync failed`
 - Any warnings or failed operations from earlier steps
 
 ---
@@ -197,6 +213,8 @@ Report the final state including:
 - If no issue numbers are available: do not prompt for issue IDs during `land`; proceed with merge/sync/cleanup and report a no-issue landing.
 - If documentation drift scan encounters errors: report them in the coverage summary and proceed. Do not block the merge.
 - If commit history evaluation is uncertain: default to preserve (`--no-ff`). Squashing is an optimization; when in doubt, keep the original history.
+- If `sk sync` fails: report the failure but do not roll back — the code is safely on main, only installed copies are stale.
+- If `sk` is not on PATH: skip with a warning, not a failure.
 
 ---
 
