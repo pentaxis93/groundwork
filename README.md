@@ -25,7 +25,7 @@ There is one path, not a menu. Every piece of work flows through five stages:
 
 **3. Decompose** — `issue-craft` produces agent-executable issues with binary acceptance criteria from the behavior contract. `next-issue` selects session-sized work from the issue graph. `plan` converges to a decision-complete implementation design. Approved designs become executable work through `issue-craft`. The issue graph is the project's working memory across sessions.
 
-**4. Execute and verify** — `test-driven-development` implements behavior through RED-GREEN-REFACTOR — each RED test maps to a named scenario from stage 2. `systematic-debugging` finds root cause before proposing fixes. Code review and `verification-before-completion` gate completion with behavior-level evidence.
+**4. Execute and verify** — `test-driven-development` implements behavior through RED-GREEN-REFACTOR — each RED test maps to a named scenario from stage 2. `systematic-debugging` finds root cause before proposing fixes. Code review and `verification-before-completion` gate completion with behavior-level evidence. `propose` packages verified changes into a PR with derived title/body and issue linkage.
 
 **5. Land** — `land` closes the loop: merge, push, delete branch, comment on issue, close issue. Closure records behavior coverage and remaining gaps. Do not stop after merge.
 
@@ -49,6 +49,7 @@ For the concise inventory and shipped order reference, see [`skills/skills.toml`
 | `receiving-code-review` | Verification | Performative agreement with review feedback |
 | `verification-before-completion` | Verification | False completion claims without evidence |
 | `documentation` | Verification | Drifted docs, missing artifact updates |
+| `propose` | Delivery | Manual ad-hoc commit/push/PR between implementation and merge |
 | `land` | Completion | Branch rot, unclosed issues, incomplete delivery |
 | `using-groundwork` | Meta | Using skills in isolation instead of as a connected pipeline |
 
@@ -98,6 +99,7 @@ skills/                     # Groundwork's tracked skills and shipped inventory
   issue-craft/              #   issue lifecycle
   next-issue/               #   work selection
   documentation/            #   documentation review/update
+  propose/                  #   commit, push, PR creation
   land/                     #   closeout workflow
 
 crates/
