@@ -9,8 +9,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ### Added
 
 - Five-stage methodology pipeline: frame constraints, define behavior, decompose, execute and verify, land
-- Nine core skills: `ground`, `research`, `bdd`, `issue-craft`, `begin`, `plan`, `documentation`, `land`, and `using-groundwork` (methodology orientation)
-- Six curated skills from [obra/superpowers](https://github.com/obra/superpowers): `subagent-driven-development`, `test-driven-development`, `systematic-debugging`, `verification-before-completion`, `requesting-code-review`, `receiving-code-review`
+- Ten core skills: `ground`, `research`, `bdd`, `issue-craft`, `begin`, `plan`, `test-first`, `documentation`, `land`, and `using-groundwork` (methodology orientation)
+- Five curated skills from [obra/superpowers](https://github.com/obra/superpowers): `subagent-driven-development`, `systematic-debugging`, `verification-before-completion`, `requesting-code-review`, `receiving-code-review`
 - Rust CLI (`groundwork init`, `update`, `list`, `doctor`) with curated manifest and `sk` integration
 - Automatic `gh-issue-sync` installation during `groundwork init`
 - Schema distribution in CLI: `init/update` now provision `.groundwork/schemas/`, create `.groundwork/artifacts/`, and `doctor` reports schema completeness/drift
@@ -22,6 +22,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Changed
 
+- Replaced curated `test-driven-development` (obra/superpowers) with groundwork-native `test-first` skill (v1.0.0). Preserves core discipline (Iron Law, red-green-refactor, delete-and-start-over, anti-rationalization patterns) while adding bidirectional composition with `bdd`, `verification-before-completion`, `systematic-debugging`, and `documentation`. Lifecycle Role section establishes pipeline position. Corruption Modes section added. Language-agnostic examples replace TypeScript-only. Companion `testing-anti-patterns.md` migrated to `references/`.
 - `ground` skill upgraded to v3.0.0: broadened from design-only to full first-principles cognitive discipline covering strategic analysis, cost decomposition, and problem reframing. Added Active Excavation section (Socratic Drilling, Recursive Why). Decompose step now supports three modes (requirements, constituent, process) with Orient determining which applies. Orient step broadened with mode-specific questions. New "Structure survey as analysis" corruption mode. All existing patterns and corruption modes retained.
 - Renamed `next-issue` skill to `begin`; session lifecycle is now `begin` → `propose` → `land`
 - `ground` skill upgraded to v2.2.0: consolidated patterns from 17 to 12 by merging overlaps (#2+#10 → "Description as Design", #3+#4 → "Borrowed Structure", #5+BC#3+BC#5 → "Precedent as Constraint"). Merged Decision Protocol into The Move as steps 4–5 (Compare, Default). Folded backward-compat patterns into main section as "Preservation Variants" subsection. Deleted Exponential Context section. Trimmed "When to Ground" to trigger question only. 193 → 153 lines, no recognition power lost. Patch bump: structural consolidation, no behavioral change.

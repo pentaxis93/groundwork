@@ -18,7 +18,7 @@ Invoke `ground` before creating any design, spec, architecture, or process. It e
 
 Invoke `bdd` to define the behavior contract in Given/When/Then scenarios. Each scenario names an observable behavior the system must exhibit. This contract is not a one-time artifact — it threads through every subsequent step. See [BDD Thread](#bdd-thread) for how it integrates with execution and verification.
 
-`bdd` and `test-driven-development` are not alternatives. `bdd` defines what behavior must exist. `test-driven-development` is the execution discipline that realizes it.
+`bdd` and `test-first` are not alternatives. `bdd` defines what behavior must exist. `test-first` is the execution discipline that realizes it.
 
 ### 3. Decompose into executable work
 
@@ -32,7 +32,7 @@ After a design is approved, use `issue-craft` to express the implementation as a
 
 ### 4. Execute and verify
 
-Use `test-driven-development` to implement each plan step through RED-GREEN-REFACTOR. Each RED test corresponds to a named behavior scenario from `bdd`. Write one failing test, verify it fails for the right reason, write the simplest code to pass it, verify it passes, refactor.
+Use `test-first` to implement each plan step through RED-GREEN-REFACTOR. Each RED test corresponds to a named behavior scenario from `bdd`. Write one failing test, verify it fails for the right reason, write the simplest code to pass it, verify it passes, refactor.
 
 Use `subagent-driven-development` when the plan contains independent tasks that can run in parallel. It dispatches a fresh subagent per task with two-stage review (spec compliance, then code quality).
 
@@ -57,14 +57,14 @@ For the formal handoff contracts, anti-divergence rules, and compliance checklis
 BDD is a cross-cutting integration mechanism, not a pipeline phase. It runs through specification, execution, and verification:
 
 - **Specification**: define behavior in Given/When/Then terms.
-- **Execution**: `test-driven-development` implements those behaviors via RED-GREEN-REFACTOR.
+- **Execution**: `test-first` implements those behaviors via RED-GREEN-REFACTOR.
 - **Verification**: completion evidence is checked against those behaviors, not just command success.
 
 ### Handoff Rules
 
 1. `bdd -> plan`: design decisions preserve explicit behavior traceability.
 2. `bdd -> issue-craft`: acceptance criteria and work units map back to behavior statements.
-3. `bdd -> test-driven-development`: each RED test corresponds to a named behavior scenario.
+3. `bdd -> test-first`: each RED test corresponds to a named behavior scenario.
 4. `bdd -> verification-before-completion`: completion claims require behavior-level evidence.
 5. `bdd -> land`: closure records behavior coverage status and remaining gaps, if any.
 
@@ -175,7 +175,7 @@ If `gh-issue-sync pull` fails with missing project scope (`read:project`) or `gr
 | `issue-craft` | creating/refining task/epic/bug/spike issues |
 | `begin` | initiating a work session: selecting work, preparing workspace, declaring direction |
 | `plan` | implementation needs design convergence — multiple approaches, unclear scope, or cross-cutting changes |
-| `test-driven-development` | when implementing any feature or bugfix — RED → GREEN → REFACTOR |
+| `test-first` | when implementing any feature or bugfix — RED → GREEN → REFACTOR |
 | `subagent-driven-development` | when executing a plan whose tasks are independent and can run in parallel |
 | `systematic-debugging` | when a test fails or behavior is unexpected, before proposing any fix |
 | `requesting-code-review` | after implementation, before merging |

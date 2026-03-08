@@ -32,7 +32,7 @@ Integration strategy depends on where a skill sits relative to pipeline boundari
 **Current evidence for this distinction:**
 - `land` (core, boundary skill) uses `gh` CLI for forge operations. This is a boundary skill that should remain tool-agnostic where practical.
 - `research` (core, boundary skill) declares `compatibility: opencode` and references an opencode-specific agent file. Same pattern — context assumptions from a prior environment.
-- `test-driven-development` (curated, mid-pipeline) works with any codebase and any agent. No pipeline-specific adaptation needed. Curation is correct here.
+- `test-driven-development` (curated, mid-pipeline) works with any codebase and any agent. No pipeline-specific adaptation needed. Curation is correct here. **Superseded by #44/#91:** integration review found one-directional composition, missing BDD handoff, verification/debugging overlap without delineation, and vocabulary drift. Replaced with groundwork-native `test-first` skill.
 
 ## Consequences
 

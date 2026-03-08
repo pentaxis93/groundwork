@@ -1,6 +1,6 @@
-name: test-driven-development
+name: test-first
 description: >-
-  Behaviour-driven TDD wrapper that translates a behavior contract
+  Test-first execution discipline that translates a behavior contract
   into a tested implementation through red-green-refactor cycles.
 groundwork:
   stage: execution

@@ -239,5 +239,5 @@ cycle for each behavior.
 
 - `begin`: session-level prioritization and execution sequencing.
 - `issue-craft`: acceptance-criteria rigor, issue decomposition, and behavior traceability.
-- `test-driven-development`: executes RED-GREEN-REFACTOR for BDD-defined behaviors.
+- `test-first`: executes RED-GREEN-REFACTOR for BDD-defined behaviors.
 - `verification-before-completion`: requires fresh evidence for behavior-level completion claims.
