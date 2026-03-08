@@ -15,6 +15,7 @@ issue_craft = { gh = "pentaxis93/groundwork", path = "skills/issue-craft" }
 land = { gh = "pentaxis93/groundwork", path = "skills/land" }
 documentation = { gh = "pentaxis93/groundwork", path = "skills/documentation" }
 using_groundwork = { gh = "pentaxis93/groundwork", path = "skills/using-groundwork" }
+clear = { gh = "pentaxis93/groundwork", path = "skills/clear" }
 subagent_driven_development = { gh = "obra/superpowers", path = "skills/subagent-driven-development", rev = "e4a2375cb705ca5800f0833528ce36a3faf9017a" }
 test_driven_development = { gh = "obra/superpowers", path = "skills/test-driven-development", rev = "e4a2375cb705ca5800f0833528ce36a3faf9017a" }
 systematic_debugging = { gh = "obra/superpowers", path = "skills/systematic-debugging", rev = "e4a2375cb705ca5800f0833528ce36a3faf9017a" }

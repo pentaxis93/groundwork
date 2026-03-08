@@ -55,6 +55,8 @@ These thread across the pipeline. They aren't phases — they're disciplines tha
 
 **Research fires at any stage.** `research` provides reliable external evidence when decisions depend on facts outside the codebase — framing, design, decomposition, and implementation can all require it.
 
+**Clear friction, don't route around it.** When operational friction appears — a missing tool, broken config, stale convention, undocumented requirement — stop and resolve it structurally before continuing. `clear` provides the assessment methodology and scope guidance. Friction that exceeds side-quest scope becomes an issue via `issue-craft`. Unresolved friction compounds.
+
 For the formal handoff contracts, fail conditions, and anti-divergence rules, see [`pipeline-contract.md`](https://github.com/pentaxis93/groundwork/blob/main/docs/architecture/pipeline-contract.md).
 
 ## Corruption Modes

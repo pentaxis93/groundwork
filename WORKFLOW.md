@@ -87,6 +87,17 @@ Documentation is a cross-cutting communication discipline, not a pipeline phase.
 
 For fail conditions and anti-divergence rules, see [docs/architecture/pipeline-contract.md](docs/architecture/pipeline-contract.md).
 
+## Friction Resolution Thread
+
+Friction resolution is a cross-cutting discipline. It fires at any pipeline stage when the operational environment impedes progress. See `clear` for the full methodology.
+
+### Handoff Rules
+
+1. `clear -> documentation`: structural fixes that change operational instructions are reflected in CLAUDE.md, CONTRIBUTING.md, or WORKFLOW.md.
+2. `clear -> issue-craft`: friction exceeding side-quest scope is filed as an issue, not deferred silently.
+
+For fail conditions and anti-divergence rules, see [docs/architecture/pipeline-contract.md](docs/architecture/pipeline-contract.md).
+
 ## Issue-Based Development
 
 The issue graph is the persistence layer across sessions. Agent sessions end, context windows close, agents rotate — the issue graph survives. Work from the graph, not from memory.
@@ -167,6 +178,7 @@ If `gh-issue-sync pull` fails with missing project scope (`read:project`) or `gr
 | `systematic-debugging` | when a test fails or behavior is unexpected, before proposing any fix |
 | `requesting-code-review` | after implementation, before merging |
 | `receiving-code-review` | when receiving review feedback, before implementing suggestions |
+| `clear` | operational friction — missing tools, broken configs, stale conventions, undocumented requirements |
 | `documentation` | after code changes that may cause drift, at project initialization, when architectural decisions are made, or when docs fail the audience test |
 | `verification-before-completion` | before claiming work is complete, fixed, or passing — evidence first |
 | `land` | merge-and-close completion events: `land`, `merge and close`, `ship it` |
