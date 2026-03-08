@@ -9,8 +9,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ### Added
 
 - Five-stage methodology pipeline: frame constraints, define behavior, decompose, execute and verify, land
-- Nine core skills: `ground`, `research`, `bdd`, `issue-craft`, `begin`, `plan`, `documentation`, `land`, and `using-groundwork` (methodology orientation)
-- Six curated skills from [obra/superpowers](https://github.com/obra/superpowers): `subagent-driven-development`, `test-driven-development`, `systematic-debugging`, `verification-before-completion`, `requesting-code-review`, `receiving-code-review`
+- Ten core skills: `ground`, `research`, `bdd`, `issue-craft`, `begin`, `plan`, `test-first`, `documentation`, `land`, and `using-groundwork` (methodology orientation)
+- Five curated skills from [obra/superpowers](https://github.com/obra/superpowers): `subagent-driven-development`, `systematic-debugging`, `verification-before-completion`, `requesting-code-review`, `receiving-code-review`
 - Rust CLI (`groundwork init`, `update`, `list`, `doctor`) with curated manifest and `sk` integration
 - Automatic `gh-issue-sync` installation during `groundwork init`
 - Schema distribution in CLI: `init/update` now provision `.groundwork/schemas/`, create `.groundwork/artifacts/`, and `doctor` reports schema completeness/drift
