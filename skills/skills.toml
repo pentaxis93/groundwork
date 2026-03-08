@@ -29,14 +29,6 @@ repo = "pentaxis93/groundwork"
 use_when = "Use when defining or refining behavior expectations."
 
 [[skills]]
-name = "brainstorming"
-path = "skills/brainstorming"
-provider = "gh"
-repo = "obra/superpowers"
-rev = "e4a2375cb705ca5800f0833528ce36a3faf9017a"
-use_when = "Use before designing a solution or making a significant architectural choice."
-
-[[skills]]
 name = "plan"
 path = "skills/plan"
 provider = "gh"

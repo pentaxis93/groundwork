@@ -84,7 +84,7 @@ Epic 1 implementation integration (`#36`):
 
 ### Structural/decomposition open area (`Pending`)
 
-- Decomposition-stage topology is settled in the live pipeline as `brainstorming` for exploration, `plan` for convergence, and `issue-craft` for executable work units.
+- Decomposition-stage topology is settled in the live pipeline as `plan` for convergence and `issue-craft` for executable work units.
 - Wrapper-skill policy for curated boundary skills remains open beyond the current decomposition routing.
 
 ## Source of Truth and Cross-References

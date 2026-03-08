@@ -1919,7 +1919,6 @@ mod tests {
                 "ground",
                 "research",
                 "bdd",
-                "brainstorming",
                 "plan",
                 "issue_craft",
                 "next_issue",
