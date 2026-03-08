@@ -39,10 +39,12 @@ Development for the full treatment.
   intentionally excluded). Without an explicit goal, scope creep is invisible
   until the session is over.
 - **One session, one increment.** Commit to one independently verifiable
-  increment. This keeps work finishable and reviewable.
+  increment. Fewer, sharper goals beat broad, vague activity — this keeps
+  work finishable and reviewable.
 - **Dependencies are hard blockers.** Do not start work whose dependencies are
   still open — blocked work produces partial results that complicate the graph.
-- **Every session closes with a handoff.** End with an honest state update and a
+- **Every session closes with a handoff.** Either finish the increment or
+  clearly frame unfinished state. End with an honest state update and a
   concrete, actionable next step. The next session (same or different agent)
   should be able to pick up without guessing.
 - **Next actions are executable.** Each next action names an artifact, a command,
@@ -90,12 +92,6 @@ Development for the full treatment.
 - `open-loop-close`: ending session without a concrete next step.
 - `undefined-state`: using terms like "unblocked" or "session-sized" without
   operational definitions — see Key Terms above.
-
-## Principles
-
-- `clarity-over-volume`: fewer, sharper goals beat broad, vague activity.
-- `truthful-state`: inaccurate issue state is planning debt.
-- `finish-or-frame`: either finish the increment or clearly frame unfinished state.
 
 ## Cross-References
 
