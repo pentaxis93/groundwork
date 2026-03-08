@@ -11,7 +11,9 @@ metadata:
 BDD reframes testing as behavior specification: what the system should do,
 under what context, with observable outcomes.
 
-Reference: [Dan North: Introducing BDD](https://dannorth.net/introducing-bdd/)
+References:
+- [Dan North: Introducing BDD](https://dannorth.net/introducing-bdd/)
+- For concrete language-specific patterns, see [references/language-patterns.md](references/language-patterns.md)
 
 ## Goal
 
