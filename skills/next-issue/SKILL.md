@@ -8,7 +8,7 @@ description: >-
 
 # Next Issue — Work Selection & Initiation
 
-**Version 2.0**
+**Version 2.1**
 
 ## Overview
 
@@ -85,9 +85,69 @@ Development for the full treatment.
 
 ### session-open
 
+#### Phase 0: Opening
+
+Establish the working frame before selection. Follows the LBRP sequence:
+observe → frame → banish.
+
+##### 0a. Observe
+
+Compact workspace snapshot. This is the only status check — do not repeat these
+commands in later phases.
+
+```
+◈ STATUS
+Git: [clean/dirty] | Branch: [name] | Last: [commit-oneline]
+```
+
+Implementation: `git status --short`, `git log --oneline -1`,
+`git branch --show-current`. Report in one block.
+
+##### 0b. Frame
+
+Establish the session's purpose using the Four Touches:
+
+| Touch | Question |
+|-------|----------|
+| **Purpose** | Why does this session exist? |
+| **Success** | What does a completed increment look like? |
+| **In scope** | What boundaries contain this work? |
+| **Out of scope** | What nearby work is explicitly excluded? |
+
+**When issue number(s) provided:** derive all four from the issue body —
+purpose from the summary, success from acceptance criteria, scope from the
+issue boundary.
+
+**When topic or no arguments:** frame directionally — purpose is "advance the
+project," success is "one session-sized increment," scope sharpens after
+selection. Do not block here; a partial frame is expected.
+
+```
+◈ FRAME
+Purpose: [one sentence]
+Success: [verifiable outcome]
+Scope: [in] / [out]
+```
+
+##### 0c. Banish
+
+Evaluate workspace state (observed in 0a) against the frame (established in
+0b). Clear debris so selection starts clean.
+
+- **Clean workspace** → proceed.
+- **Changes relevant to frame** → keep and note.
+- **Stale or unrelated changes** → stash or discard (confirm with user before
+  destructive action).
+
+```
+◈ BANISH
+[CLEAN | kept: reason | stashed: reason]
+```
+
 #### Phase 1: Selection
 
-Determine what to work on. The path depends on invocation mode.
+Determine what to work on. The path depends on invocation mode. Use
+observations from Phase 0a — do not re-run status checks.
 
 **If issue number(s) provided:** fetch issue thread(s) via `gh issue view`,
 confirm they are open and unblocked, and skip to Phase 2.
@@ -130,7 +190,8 @@ Set up the workspace for the selected work.
 
 #### Phase 3: Declaration
 
-Declare the session's direction:
+Declare the session's direction. The frame from Phase 0b feeds directly into
+this — refine it with what you learned during selection and preparation.
 
 - **Starting direction**: what you intend to accomplish (a direction, not a
   rigid prediction — this will sharpen as you work).
@@ -157,6 +218,11 @@ Declare the session's direction:
   operational definitions — see Key Terms above.
 - `skip-preparation`: jumping from selection to implementation without setting
   up a feature branch — loses workspace isolation and makes `propose` harder.
+- `ceremony-without-substance`: executing Phase 0 mechanically without actually
+  grounding in the observations — status block emitted but not read, frame
+  written but not used to inform selection.
+- `skip-ceremony`: jumping straight to selection without observing workspace
+  state or framing the goal — loses the deliberate transition into focused work.
 
 ## Cross-References
 
@@ -167,3 +233,5 @@ Declare the session's direction:
 - `issue-craft`: decomposition, issue boundaries, acceptance criteria contracts.
 - `ground`: validate assumptions before committing to an approach.
 - `bdd`: behavior-first test strategy for implementation increments.
+- Opening ceremony pattern adapted from LBRP (`aiandi-dev-environment`) —
+  internalized, no runtime dependency.
