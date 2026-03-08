@@ -30,7 +30,8 @@ through every stage:
 - **Define behavior** (`bdd`): Behavior contracts are the authoritative source
   for what the API does. Public behaviors should be reflected in user-facing
   docs, not only test files.
-- **Decompose** (`issue-craft`): `criteria-include-docs` is already required.
+- **Decompose** (`issue-craft`): issue-craft's guidelines require that
+  user-facing changes include documentation expectations in acceptance criteria.
   This skill defines what that means: identify which artifacts need creation or
   update, and include those as acceptance criteria.
 - **Execute** (`test-driven-development`): Inline documentation (doc comments,
@@ -218,8 +219,8 @@ When encountering existing documentation (e.g., onboarding to a project):
 - `ground`: fires before writing ARCHITECTURE docs or ADRs; Orient output
   defines the documentation audience.
 - `bdd`: behavior contracts are the authoritative source for API documentation.
-- `issue-craft`: `criteria-include-docs` requirement; documentation updates
-  as acceptance criteria.
+- `issue-craft`: documentation updates as acceptance criteria for user-facing
+  changes.
 - `verification-before-completion`: documentation accuracy is completion
   evidence; `documentation-review` fires before verification.
 - `land`: CHANGELOG entry and documentation coverage recorded at landing.
