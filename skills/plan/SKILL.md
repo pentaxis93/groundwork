@@ -11,13 +11,16 @@ metadata:
   version: "1.1.0"
   updated: "2026-03-08"
   origin: >-
-    Adapted from Codex CLI plan mode (MIT license,
-    github.com/openai/codex). The original is a human-interactive UI
-    mode with 3-phase conversational workflow. This skill preserves
-    the core discipline — explore before deciding, decision-complete
-    plans, read-only until converged — and adapts it for autonomous
-    execution where ambiguity is resolved through exploration and
-    explicit assumptions rather than human conversation.
+    Adapted from OpenAI's Codex CLI plan mode (Apache-2.0 license,
+    https://github.com/openai/codex). The original is a human-interactive
+    UI mode with 3-phase conversational workflow. This skill preserves
+    the core framework — three-phase structure, decision-completeness,
+    the unknowns taxonomy, the read-only constraint enumeration — and
+    adapts it for autonomous execution where ambiguity is resolved
+    through exploration and explicit assumptions rather than human
+    conversation. Corruption modes, named constraints, write-plan
+    template, and skill cross-references are original. See
+    LICENSE-UPSTREAM for the full copyright notice and license terms.
 ---
 
 # Plan
