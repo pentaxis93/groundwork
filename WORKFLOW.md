@@ -24,7 +24,7 @@ Invoke `bdd` to define the behavior contract in Given/When/Then scenarios. Each 
 
 Use `issue-craft` to create, decompose, refine, and close issues. It produces agent-executable issues with binary acceptance criteria, explicit dependencies, and bounded scope. For epics with 4+ tasks, it builds dependency graphs with execution layers.
 
-Use `next-issue` to select session-sized work from the issue graph. It reads unblocked issues, ranks by value and unblock leverage, and declares a session goal with a binary done condition and explicit scope gate.
+Use `next-issue` to initiate a work session. It selects session-sized work from the issue graph, prepares the workspace (feature branch, issue context), and declares the session's starting direction with an explicit scope gate.
 
 Use `plan` to converge from exploration to a decision-complete implementation design before modifying code. It explores the codebase, resolves intent, and produces a plan where every design choice is explicit — the implementer does not need to make any decisions. Based on Codex CLI plan mode (MIT), adapted for autonomous execution.
 
@@ -42,7 +42,7 @@ Use `requesting-code-review` after implementation, before merging. Use `receivin
 
 Use `verification-before-completion` before claiming any work is complete. It requires running the actual verification command and confirming the output matches the claim. Completion evidence must be behavior-level — not just "tests pass" but explicit behavior coverage.
 
-Use `propose` to package verified changes into a PR: ensure feature branch, analyze and commit changes, push, and create PR with derived title/body linked to issue(s). This produces the open PR that `land` will merge in stage 5. The session lifecycle is: `next-issue` (select work) → implement → `propose` (package for review) → review → `land` (merge and close).
+Use `propose` to package verified changes into a PR: ensure feature branch, analyze and commit changes, push, and create PR with derived title/body linked to issue(s). This produces the open PR that `land` will merge in stage 5. The session lifecycle is: `next-issue` (initiate session) → implement → `propose` (package for review) → review → `land` (merge and close).
 
 ### 5. Land
 
@@ -173,7 +173,7 @@ If `gh-issue-sync pull` fails with missing project scope (`read:project`) or `gr
 | `research` | when reliable external evidence is needed for decisions |
 | `bdd` | when defining or refining behavior expectations |
 | `issue-craft` | creating/refining task/epic/bug/spike issues |
-| `next-issue` | selecting session-sized work from issue graph, or when a task feels too big to hold in one session |
+| `next-issue` | initiating a work session: selecting work, preparing workspace, declaring direction |
 | `plan` | implementation needs design convergence — multiple approaches, unclear scope, or cross-cutting changes |
 | `test-driven-development` | when implementing any feature or bugfix — RED → GREEN → REFACTOR |
 | `subagent-driven-development` | when executing a plan whose tasks are independent and can run in parallel |

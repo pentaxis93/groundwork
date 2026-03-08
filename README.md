@@ -23,7 +23,7 @@ There is one path, not a menu. Every piece of work flows through five stages:
 
 **2. Define behavior** — `bdd` defines the behavior contract in Given/When/Then scenarios. This contract threads through every subsequent stage — it is the integration mechanism, not a planning artifact.
 
-**3. Decompose** — `issue-craft` produces agent-executable issues with binary acceptance criteria from the behavior contract. `next-issue` selects session-sized work from the issue graph. `plan` converges to a decision-complete implementation design. Approved designs become executable work through `issue-craft`. The issue graph is the project's working memory across sessions.
+**3. Decompose** — `issue-craft` produces agent-executable issues with binary acceptance criteria from the behavior contract. `next-issue` selects session-sized work from the issue graph, prepares the workspace, and declares the session's direction. `plan` converges to a decision-complete implementation design. Approved designs become executable work through `issue-craft`. The issue graph is the project's working memory across sessions.
 
 **4. Execute and verify** — `test-driven-development` implements behavior through RED-GREEN-REFACTOR — each RED test maps to a named scenario from stage 2. `systematic-debugging` finds root cause before proposing fixes. Code review and `verification-before-completion` gate completion with behavior-level evidence. `propose` packages verified changes into a PR with derived title/body and issue linkage.
 
@@ -97,7 +97,7 @@ skills/                     # Groundwork's tracked skills and shipped inventory
   bdd/                      #   behavior contract definition
   plan/                     #   design convergence
   issue-craft/              #   issue lifecycle
-  next-issue/               #   work selection
+  next-issue/               #   work initiation
   documentation/            #   documentation review/update
   propose/                  #   commit, push, PR creation
   land/                     #   closeout workflow

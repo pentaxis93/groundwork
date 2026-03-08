@@ -21,7 +21,7 @@ skills/
   bdd/               behavior contract definition
   plan/              design convergence
   issue-craft/       issue lifecycle
-  next-issue/        work selection
+  next-issue/        work initiation
   documentation/     documentation review/update
   land/              closeout workflow
 ```
