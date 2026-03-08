@@ -223,4 +223,4 @@ Report the final state including:
 - `propose` for the preceding phase: commit, push, and PR creation
 - `documentation` for deeper documentation review beyond the drift scan in step 3
 - `issue-craft` for issue lifecycle patterns and tracking issues from doc review
-- `next-issue` for work initiation and session opening — the opening bookend to `land`'s closing bookend
+- `begin` for work initiation and session opening — the opening bookend to `land`'s closing bookend

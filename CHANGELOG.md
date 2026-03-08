@@ -9,7 +9,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ### Added
 
 - Five-stage methodology pipeline: frame constraints, define behavior, decompose, execute and verify, land
-- Nine core skills: `ground`, `research`, `bdd`, `issue-craft`, `next-issue`, `plan`, `documentation`, `land`, and `using-groundwork` (methodology orientation)
+- Nine core skills: `ground`, `research`, `bdd`, `issue-craft`, `begin`, `plan`, `documentation`, `land`, and `using-groundwork` (methodology orientation)
 - Six curated skills from [obra/superpowers](https://github.com/obra/superpowers): `subagent-driven-development`, `test-driven-development`, `systematic-debugging`, `verification-before-completion`, `requesting-code-review`, `receiving-code-review`
 - Rust CLI (`groundwork init`, `update`, `list`, `doctor`) with curated manifest and `sk` integration
 - Automatic `gh-issue-sync` installation during `groundwork init`
@@ -18,10 +18,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - Integration manual (`WORKFLOW.md`) covering pipeline stages, BDD thread, documentation thread, issue-based development, and skill routing
 - Local issue mirroring via `gh-issue-sync`
 
-- `propose` skill (v1.0): commit strategy, push, and PR creation — the middle phase of the session lifecycle between `next-issue` and `land`. Pipeline contract, routing table, and cross-references updated.
+- `propose` skill (v1.0): commit strategy, push, and PR creation — the middle phase of the session lifecycle between `begin` and `land`. Pipeline contract, routing table, and cross-references updated.
 
 ### Changed
 
+- Renamed `next-issue` skill to `begin`; session lifecycle is now `begin` → `propose` → `land`
 - `ground` skill upgraded to v2.2.0: consolidated patterns from 17 to 12 by merging overlaps (#2+#10 → "Description as Design", #3+#4 → "Borrowed Structure", #5+BC#3+BC#5 → "Precedent as Constraint"). Merged Decision Protocol into The Move as steps 4–5 (Compare, Default). Folded backward-compat patterns into main section as "Preservation Variants" subsection. Deleted Exponential Context section. Trimmed "When to Ground" to trigger question only. 193 → 153 lines, no recognition power lost. Patch bump: structural consolidation, no behavioral change.
 - `ground` skill upgraded to v2.1.0: added Local Coherence as assumed-constraint pattern #9 — captures details that follow valid engineering patterns but contradict the purpose of the work they belong to. Renumbered Descriptive-Normative Confusion to #10.
 - `using-groundwork` skill upgraded to v2.1.0: added Entry Point section, folded routing table triggers into flow stages (single source of truth), compressed BDD/Documentation threading from enumerated arrows to principle-based guidance, consolidated corruption modes from 11 items to 5 named categories, added relationship cues to stage 4 execution skills. 108 → 70 lines, same skill coverage. Patch bump: structural refinement, no behavioral change.

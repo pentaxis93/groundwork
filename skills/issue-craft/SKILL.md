@@ -191,7 +191,7 @@ A well-bounded task has:
 
 ## Cross-References
 
-- `next-issue`: session-level prioritization and execution discipline.
+- `begin`: session-level prioritization and execution discipline.
 - `bdd`: behavior framing and test naming discipline.
 - `plan`: design convergence before implementation.
 - `land`: merge-and-close completion events.
