@@ -212,7 +212,7 @@ Output:
 
 ## Related Skills
 
-- `next-issue` for work initiation and session opening (the preceding phase)
+- `next-issue` for work initiation — select issue(s), prepare workspace, declare direction (the preceding phase)
 - `land` for merge, cleanup, and issue closure (the following phase)
 - `requesting-code-review` for dispatching review after the PR exists
 - `verification-before-completion` — should fire before `propose`
