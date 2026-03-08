@@ -31,7 +31,7 @@ Five stages, in dependency order. Each produces what the next consumes.
 
 2. **Define behavior.** `bdd` defines the behavior contract in Given/When/Then scenarios. This contract threads through every subsequent stage.
 
-3. **Decompose.** Converge to a decision-complete design (`plan`), break the design into agent-executable issues (`issue-craft`), and select session-sized work (`next-issue`).
+3. **Decompose.** Converge to a decision-complete design (`plan`), break the design into agent-executable issues (`issue-craft`), and initiate the work session (`next-issue`).
 
 4. **Execute and verify.** Implement through RED-GREEN-REFACTOR (`test-driven-development`), parallelize independent tasks (`subagent-driven-development`), find root cause before fixing (`systematic-debugging`), review code (`requesting-code-review`, `receiving-code-review`), verify behavior-level evidence before claiming done (`verification-before-completion`), ensure documentation accuracy (`documentation`), and package verified changes into a PR (`propose`).
 

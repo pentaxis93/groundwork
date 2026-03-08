@@ -24,7 +24,7 @@ Use this skill when implementation is complete and changes need to become a PR.
 5. Create a PR with derived title/body and issue linkage
 6. Report the result and suggest next steps
 
-The session lifecycle is: `next-issue` (select work) → implement → `propose`
+The session lifecycle is: `next-issue` (initiate session) → implement → `propose`
 (package for review) → review → `land` (merge and close). `propose` is the
 transition from execution to review.
 
@@ -212,7 +212,7 @@ Output:
 
 ## Related Skills
 
-- `next-issue` for issue selection and session opening (the preceding phase)
+- `next-issue` for work initiation and session opening (the preceding phase)
 - `land` for merge, cleanup, and issue closure (the following phase)
 - `requesting-code-review` for dispatching review after the PR exists
 - `verification-before-completion` — should fire before `propose`
