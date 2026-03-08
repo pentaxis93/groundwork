@@ -1,149 +1,194 @@
 ---
 name: issue-craft
-description: Full issue lifecycle for GitHub projects. Use for creating, decomposing, refining, triaging, and closing issues that autonomous agents can execute without clarification.
+description: >-
+  Transfer problem understanding across context boundaries through well-formed
+  issues. Use for creating, decomposing, refining, triaging, and closing issues
+  in GitHub projects.
 ---
 
 # Issue Craft
 
-Issues are the contract between intent and execution. A strong issue is
-agent-executable without clarification.
+An issue transfers problem understanding across a context boundary — from the
+person who sees the problem to the agent who will solve it. The agent has no
+access to your context, your codebase familiarity, or your unstated assumptions.
+Everything it needs must be in the issue.
 
-For concrete task/epic/bug templates, see
-[references/templates.md](references/templates.md).
-For the issue state model, dependency graph format, and operational definitions,
-see WORKFLOW.md § Issue-Based Development.
+For concrete templates, see [references/templates.md](references/templates.md).
+For the issue state model and dependency graph format, see WORKFLOW.md §
+Issue-Based Development.
 
-## Goal
-Produce and maintain issues that autonomous agents can execute end-to-end
-without clarification.
+## The Central Discipline
 
-## Constraints
-- `agent-executable`: each task issue should be completable in one focused session.
-- `independently-verifiable`: each acceptance criterion supports yes/no verification.
-- `explicit-dependencies`: dependency links are explicit issue references.
-- `hard-dependencies-only`: dependencies represent true blockers, not preferred ordering.
-- `single-concern`: one logical change per issue.
-- `scope-bounded`: scope names specific modules/files.
-- `vertical-slice-bias`: decomposition favors independently shippable slices.
+**Issues describe what must be true, not how to get there.**
 
-## Requirements
-- `summary-states-what-and-why`: concise summary with explicit rationale.
-- `scope-names-artifacts`: scope lists concrete code locations.
-- `criteria-are-behaviors`: criteria describe outcomes, not implementation steps.
-- `criteria-include-tests`: testing expectation is explicit.
-- `criteria-include-docs`: user-facing changes include documentation updates.
-- `criteria-are-binary`: each criterion can be verified as pass/fail.
-- `dependencies-link-issues`: dependency references use issue numbers.
-- `size-is-visible`: size class included (`small`, `medium`, `large`).
-- `epic-has-dependency-graph`: epics with 4+ tasks include execution order graph.
-- `tasks-are-session-sized`: each task can complete in one focused session.
+An issue that says "Replace X with Y" has already made the design decision. If
+that decision is wrong, the implementing agent will faithfully execute the wrong
+solution — and the further the prescription travels through decomposition,
+planning, and implementation, the harder it is to catch. The issue author's job
+is to describe the problem and the desired end state. The implementer's job is
+to find the path.
+
+This is not a stylistic preference. It is the structural defense against the
+most common failure mode in issue-driven development.
+
+## Guidelines
+
+### Scope and sizing
+
+**One concern per issue.** An issue that touches unrelated modules forces the
+implementer to hold multiple problem contexts simultaneously and makes partial
+completion ambiguous. When you notice scope creeping across boundaries, split.
+
+**Session-sized work.** Each task issue should be completable in one focused
+agent session — from reading context through passing verification. Oversized
+issues cause context loss mid-execution; undersized issues create coordination
+overhead that exceeds the work itself.
+
+### Acceptance criteria
+
+**Criteria describe outcomes, not activities.** "Refactor the parser" is an
+activity — it passes when someone did something, not when something is true.
+"Parser returns typed errors for malformed input" is an outcome — it passes when
+a specific observable behavior exists. Every criterion should be verifiable by
+running a command or inspecting an artifact.
+
+**Include testing and documentation expectations.** If the change needs tests,
+say what kind (unit, integration, behavior). If it affects user-facing behavior,
+include documentation updates as criteria. Making these explicit prevents the
+implementer from treating them as optional.
+
+### Dependencies
+
+**Explicit and hard only.** Dependencies are issue references (`#N`) that
+represent true blockers — work that literally cannot proceed without the
+dependency being complete. Preferred ordering is not a dependency. Soft
+dependencies create false bottlenecks that serialize work unnecessarily.
+
+### Epics and decomposition
+
+**Vertical slices with dependency graphs.** Decompose epics into independently
+shippable slices, not horizontal layers. Each slice delivers observable value.
+For epics with 4+ tasks, include a dependency graph showing execution layers
+(see WORKFLOW.md § Dependency Graph Format) so implementers can parallelize
+independent work.
+
+### The issue as contract
+
+**Must stand alone without external context.** An issue is a contract, not a
+conversation. The implementer may be a different agent, in a different session,
+with no access to the discussion that produced the issue. Summary states what
+and why. Scope names concrete files or modules. Criteria are binary pass/fail.
+If the issue requires reading a Slack thread or "seeing the earlier discussion"
+to understand, it is incomplete.
 
 ## Procedures
 
 ### create-issue
+
 1. Classify issue type (`task`, `epic`, `bug`, `spike`).
-2. Write summary (what and why, not how).
-3. Define scope with concrete files/modules.
-4. Write acceptance criteria by category:
-- functional outcome
-- verification/testing
-- documentation
-5. Identify dependencies by searching existing issues.
-6. Estimate size.
-7. Title format: `<type>(<scope>): <what>`.
-8. Run deterministic lint:
-`python scripts/issue_lint.py --type <task|epic|bug|spike> <issue.md>`.
-9. Assemble using template from `references/templates.md`.
-10. Push to remote: `gh-issue-sync push`.
+2. Write summary: what needs to exist and why. Not how.
+3. Define scope with concrete files or modules.
+4. Write acceptance criteria as observable outcomes — functional behavior,
+   testing expectations, documentation updates where applicable.
+5. Identify dependencies by searching existing issues. Link with `#N`.
+6. Assemble using template from `references/templates.md`. Title format:
+   `<type>(<scope>): <what>`.
 
 ### decompose-epic
-1. Extract deliverables (artifacts that must exist when done).
+
+1. Extract deliverables — artifacts that must exist when done.
 2. Split into vertical slices that are independently verifiable.
 3. Group by module boundary where it clarifies ownership.
-4. Build dependency graph using hard blockers only (Mermaid `graph TD` +
-   layered text summary — see WORKFLOW.md § Dependency Graph Format).
-5. Size-check each candidate:
-- split if oversized
-- merge if trivial
+4. Build dependency graph (Mermaid `graph TD` + layered text summary —
+   see WORKFLOW.md § Dependency Graph Format).
+5. Size-check each candidate: split if oversized, merge if trivial.
 6. Create task issues in topological order (lowest execution layer first).
-7. Validate each task has binary acceptance criteria.
-8. Create parent epic with checklist and graph.
 
 ### define-task-boundary
-Task template:
-- title: verb + object + short outcome
-- scope: concrete files/modules touched
-- goal: one sentence observable outcome
-- acceptance criteria: binary pass/fail checks
-- test plan: exact verification command or scenario
-- effort: `small`, `medium`, or `large`
 
-Pre-save checks:
-- one logical concern only
-- executable in one session
-- dependencies are hard blockers only
-- no implementation prescription in acceptance criteria
+A well-bounded task has:
+
+- **Title**: verb + object + short outcome
+- **Scope**: concrete files or modules touched
+- **Goal**: one sentence describing the observable outcome
+- **Acceptance criteria**: binary pass/fail checks describing end state
+- **Test plan**: exact verification command or scenario
+- **Effort**: `small`, `medium`, or `large`
 
 ### refine-issue
-1. Diagnose problems:
-- vague summary
-- missing scope
-- untestable criteria
-- missing tests/docs criteria
-- implicit dependencies
-- oversized/mixed concern
-- missing size
-2. Apply targeted fixes only where weak.
-3. Keep already-strong criteria unchanged.
-4. Re-run `scripts/issue_lint.py`.
-Prefer strict mode when type is known:
-`python scripts/issue_lint.py --type <task|epic|bug|spike> <issue.md>`.
+
+1. Diagnose: vague summary, missing scope, untestable criteria, implicit
+   dependencies, oversized scope, or prescription leaking into criteria.
+2. Apply targeted fixes only where weak. Keep already-strong sections unchanged.
+3. Re-verify the central discipline — does any criterion or scope statement
+   prescribe an implementation approach?
 
 ### triage-issues
-0. Sync local issues: `gh-issue-sync pull`.
+
 1. Refine non-ready issues first.
-2. Build dependency graph for backlog.
+2. Build dependency graph for the backlog.
 3. Create topological execution layers.
 4. Apply labels (`size:*`, module/area).
-5. Assign milestones.
-6. Flag stale issues (no progress comment for 14+ days) for review.
-   Resolution: resume work, split into smaller issues, or close as wont-fix
-   with rationale.
+5. Flag stale issues (no progress for 14+ days) for review. Resolution:
+   resume, split, or close as wont-fix with rationale.
 
 ### close-issue
+
 1. Verify all acceptance criteria against implementation.
-2. Check scope deviations and split unintended extra work.
-3. Update parent epic/task checklist.
+2. Check scope deviations — split unintended extra work into new issues.
+3. Update parent epic checklist.
 4. Close with commit/PR reference (`Closes #N`).
-5. Sync closure to remote: `gh-issue-sync push`.
 
 ## Triggers
-- creating issues
-- decomposing large goals
-- refining vague issues
-- triaging/prioritizing backlog
+
+- creating or refining issues
+- decomposing large goals into executable work
+- triaging or prioritizing a backlog
 - closing completed work
-- planning milestones/releases
+- planning milestones or releases
 
 ## Corruption Modes
-- `activity-criteria`: criteria describe activities, not outcomes.
-- `scope-sprawl`: issue spans unrelated modules.
-- `implicit-how`: implementation prescription leaks into issue contract.
-- `orphan-issues`: no epic/milestone context.
-- `dependency-blindness`: hidden blockers.
-- `kitchen-sink-epic`: oversized epic without phasing.
-- `premature-issues`: filing work too far out.
-- `test-afterthought`: no testing expectation.
-- `docs-afterthought`: user-facing change without docs criterion.
-- `graph-omission`: epic with 4+ tasks missing dependency graph or layered
-  execution order.
 
-## Principles
-- `contract-not-conversation`: issue must stand alone.
-- `outcomes-over-activities`: define required end state.
-- `right-sized`: optimize for single focused execution session.
+- `implicit-how`: implementation prescription leaks into scope or criteria.
+  The issue says "use library X" or "replace A with B" instead of describing
+  the required end state.
+  *Recognition: read scope and criteria aloud — if they name tools, patterns,
+  or implementation steps rather than observable outcomes, prescription has
+  leaked in.*
+
+- `activity-criteria`: criteria describe activities ("refactor", "clean up",
+  "investigate") rather than outcomes. They pass when someone did something,
+  not when something is true.
+  *Recognition: ask "can I verify this by running a command or inspecting an
+  artifact?" If no, it is an activity.*
+
+- `dependency-blindness`: blockers exist but are not surfaced. The implementer
+  discovers mid-session that prerequisite work is incomplete.
+  *Recognition: before filing, ask "what must already be true for this work
+  to start?" If the answer references unfinished work, that is a dependency.*
+
+- `kitchen-sink-epic`: an epic that accumulates loosely related work until it
+  is too large to reason about or track. No clear deliverable boundary.
+  *Recognition: if you cannot state the epic's done condition in one sentence,
+  it is too broad.*
+
+- `premature-issues`: filing detailed task issues for work that depends on
+  unresolved design decisions. The issues will need rewriting when the
+  decisions land.
+  *Recognition: if the issue's scope would change based on an open question,
+  the question must be answered first (spike issue).*
+
+- `graph-omission`: an epic with 4+ tasks has no dependency graph or layered
+  execution order, forcing implementers to discover sequencing by reading
+  every task.
+  *Recognition: if someone asked "what can I work on right now?" and you
+  cannot answer without reading all task bodies, the graph is missing.*
 
 ## Cross-References
+
 - `next-issue`: session-level prioritization and execution discipline.
 - `bdd`: behavior framing and test naming discipline.
-- `dev-workflow`: issue-to-commit linkage and completion hygiene.
+- `plan`: design convergence before implementation.
+- `land`: merge-and-close completion events.
+- `documentation`: documentation updates as acceptance criteria for user-facing
+  changes.

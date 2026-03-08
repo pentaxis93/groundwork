@@ -247,6 +247,61 @@ Good criteria describe **outcomes**, not activities.
 | "Add tests" | No scope | "Unit tests covering path expansion and config resolution" |
 | "Update docs" | No specifics | "README install section reflects cargo install method" |
 
+### Prescription anti-pattern
+
+The most dangerous anti-pattern is an issue that is structurally correct — it
+has scope, criteria, and checkboxes — but prescribes a wrong solution. An
+implementing agent will faithfully execute the prescription.
+
+**Prescriptive (problematic):**
+
+```markdown
+## Summary
+
+Replace ATTRIBUTION.md with a standard NOTICE file. The current attribution
+file uses a non-standard name and format.
+
+## Scope
+
+- `ATTRIBUTION.md` — delete
+- `NOTICE` — create with standard format
+
+## Acceptance criteria
+
+- [ ] NOTICE file exists with proper attribution entries
+- [ ] ATTRIBUTION.md is deleted
+- [ ] License compliance is maintained
+```
+
+The issue author assumed NOTICE was the right replacement. But NOTICE is an
+Apache convention — wrong for an MIT project, where the file should simply be
+deleted. An agent planned exactly the prescribed solution until a human caught
+it.
+
+**Outcome-oriented (correct):**
+
+```markdown
+## Summary
+
+ATTRIBUTION.md lists upstream skill sources, but skills are fetched at install
+time — not distributed. Evaluate whether this file serves a purpose under the
+project's MIT license.
+
+## Scope
+
+- `ATTRIBUTION.md` — evaluate necessity
+
+## Acceptance criteria
+
+- [ ] If ATTRIBUTION.md has no legal or practical purpose, it is removed
+- [ ] If attribution is required, the format matches the project's license
+      conventions (not Apache NOTICE format for an MIT project)
+- [ ] No attribution obligation is left unmet
+```
+
+The rewrite describes the problem (file may be unnecessary) and the desired
+end state (correct attribution posture) without prescribing the solution.
+
 ---
 
 ## Dependency Graph Notation
