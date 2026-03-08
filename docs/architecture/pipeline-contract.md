@@ -73,6 +73,20 @@ Requirement:
 Fail condition:
 - user-visible change landed without CHANGELOG entry or documentation coverage statement.
 
+### `verification-before-completion -> propose`
+Requirement:
+- changes are verified before being proposed for review.
+
+Fail condition:
+- PR created for unverified work — no behavior coverage evidence exists.
+
+### `propose -> land`
+Requirement:
+- `propose` produces an open PR on a feature branch. `land` consumes that PR.
+
+Fail condition:
+- `land` invoked on a branch with no PR, falling back to local merge and losing PR merge metadata.
+
 ### `third-force -> documentation`
 Requirement:
 - structural fixes that change operational instructions are reflected in CLAUDE.md, CONTRIBUTING.md, or WORKFLOW.md.

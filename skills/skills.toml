@@ -112,6 +112,13 @@ rev = "e4a2375cb705ca5800f0833528ce36a3faf9017a"
 use_when = "Use before claiming work is complete, fixed, or passing."
 
 [[skills]]
+name = "propose"
+path = "skills/propose"
+provider = "gh"
+repo = "pentaxis93/groundwork"
+use_when = "Use when changes are ready to package into a PR for review."
+
+[[skills]]
 name = "land"
 path = "skills/land"
 provider = "gh"

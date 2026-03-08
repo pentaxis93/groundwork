@@ -42,6 +42,8 @@ Use `requesting-code-review` after implementation, before merging. Use `receivin
 
 Use `verification-before-completion` before claiming any work is complete. It requires running the actual verification command and confirming the output matches the claim. Completion evidence must be behavior-level — not just "tests pass" but explicit behavior coverage.
 
+Use `propose` to package verified changes into a PR: ensure feature branch, analyze and commit changes, push, and create PR with derived title/body linked to issue(s). This produces the open PR that `land` will merge in stage 5. The session lifecycle is: `next-issue` (select work) → implement → `propose` (package for review) → review → `land` (merge and close).
+
 ### 5. Land
 
 Invoke `land` to close the loop. It merges the feature branch to main, pushes, deletes the branch (remote and local), posts a completion comment on the issue, and closes the issue. Closure records behavior coverage status and any remaining gaps.
@@ -181,6 +183,7 @@ If `gh-issue-sync pull` fails with missing project scope (`read:project`) or `gr
 | `third-force` | operational friction — missing tools, broken configs, stale conventions, undocumented requirements |
 | `documentation` | after code changes that may cause drift, at project initialization, when architectural decisions are made, or when docs fail the audience test |
 | `verification-before-completion` | before claiming work is complete, fixed, or passing — evidence first |
+| `propose` | packaging changes for review: `propose`, `submit pr`, `create pr`, `open pr`, `send for review` |
 | `land` | merge-and-close completion events: `land`, `merge and close`, `ship it` |
 
 ## Install

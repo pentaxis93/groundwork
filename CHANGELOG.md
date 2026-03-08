@@ -18,6 +18,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - Integration manual (`WORKFLOW.md`) covering pipeline stages, BDD thread, documentation thread, issue-based development, and skill routing
 - Local issue mirroring via `gh-issue-sync`
 
+- `propose` skill (v1.0): commit strategy, push, and PR creation — the middle phase of the session lifecycle between `next-issue` and `land`. Pipeline contract, routing table, and cross-references updated.
+
 ### Changed
 
 - `ground` skill upgraded to v2.2.0: consolidated patterns from 17 to 12 by merging overlaps (#2+#10 → "Description as Design", #3+#4 → "Borrowed Structure", #5+BC#3+BC#5 → "Precedent as Constraint"). Merged Decision Protocol into The Move as steps 4–5 (Compare, Default). Folded backward-compat patterns into main section as "Preservation Variants" subsection. Deleted Exponential Context section. Trimmed "When to Ground" to trigger question only. 193 → 153 lines, no recognition power lost. Patch bump: structural consolidation, no behavioral change.
