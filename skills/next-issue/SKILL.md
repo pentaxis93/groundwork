@@ -7,8 +7,9 @@ description: Session work-selection discipline for issue-tracker-first execution
 
 Plan from the issue graph, not from memory. Agent sessions end and context
 windows close, but the issue graph persists — it is the only working memory
-that survives across sessions. The goal is always a single, verifiable increment
-that can be completed in one focused session.
+that survives across sessions. The goal: choose the highest-leverage unblocked
+issue, execute one session-sized increment, and leave the next session a
+truthful handoff.
 
 For issue decomposition and boundary contracts, use `issue-craft`.
 For first-principles design decisions, use `ground`.
