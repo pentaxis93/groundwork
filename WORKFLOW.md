@@ -26,8 +26,6 @@ Use `issue-craft` to create, decompose, refine, and close issues. It produces ag
 
 Use `next-issue` to select session-sized work from the issue graph. It reads unblocked issues, ranks by value and unblock leverage, and declares a session goal with a binary done condition and explicit scope gate.
 
-Use `brainstorming` before designing a solution or making a significant architectural choice. It explores 2-3 approaches with trade-offs and produces an approved design document.
-
 Use `plan` to converge from exploration to a decision-complete implementation design before modifying code. It explores the codebase, resolves intent, and produces a plan where every design choice is explicit — the implementer does not need to make any decisions. Based on Codex CLI plan mode (MIT), adapted for autonomous execution.
 
 After a design is approved, use `issue-craft` to express the implementation as agent-executable work units with binary acceptance criteria. Approved designs flow into `plan` for convergence and into `issue-craft` for decomposition.
@@ -163,7 +161,6 @@ If `gh-issue-sync pull` fails with missing project scope (`read:project`) or `gr
 | `bdd` | when defining or refining behavior expectations |
 | `issue-craft` | creating/refining task/epic/bug/spike issues |
 | `next-issue` | selecting session-sized work from issue graph, or when a task feels too big to hold in one session |
-| `brainstorming` | before designing a solution or making a significant architectural choice |
 | `plan` | implementation needs design convergence — multiple approaches, unclear scope, or cross-cutting changes |
 | `test-driven-development` | when implementing any feature or bugfix — RED → GREEN → REFACTOR |
 | `subagent-driven-development` | when executing a plan whose tasks are independent and can run in parallel |

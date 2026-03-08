@@ -10,7 +10,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 - Five-stage methodology pipeline: frame constraints, define behavior, decompose, execute and verify, land
 - Nine core skills: `ground`, `research`, `bdd`, `issue-craft`, `next-issue`, `plan`, `documentation`, `land`, and `using-groundwork` (methodology orientation)
-- Seven curated skills from [obra/superpowers](https://github.com/obra/superpowers): `brainstorming`, `subagent-driven-development`, `test-driven-development`, `systematic-debugging`, `verification-before-completion`, `requesting-code-review`, `receiving-code-review`
+- Six curated skills from [obra/superpowers](https://github.com/obra/superpowers): `subagent-driven-development`, `test-driven-development`, `systematic-debugging`, `verification-before-completion`, `requesting-code-review`, `receiving-code-review`
 - Rust CLI (`groundwork init`, `update`, `list`, `doctor`) with curated manifest and `sk` integration
 - Automatic `gh-issue-sync` installation during `groundwork init`
 - Schema distribution in CLI: `init/update` now provision `.groundwork/schemas/`, create `.groundwork/artifacts/`, and `doctor` reports schema completeness/drift
@@ -25,7 +25,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - `using-groundwork` skill upgraded to v2.1.0: added Entry Point section, folded routing table triggers into flow stages (single source of truth), compressed BDD/Documentation threading from enumerated arrows to principle-based guidance, consolidated corruption modes from 11 items to 5 named categories, added relationship cues to stage 4 execution skills. 108 → 70 lines, same skill coverage. Patch bump: structural refinement, no behavioral change.
 - `using-groundwork` skill upgraded to v2.0.0: restructured as five numbered pipeline stages, added sovereignty guardrail with anti-prescription principle (WHAT/HOW boundary), expanded cross-cutting disciplines (documentation threading, research at any stage), converted routing to table format, added corruption modes for prescription and documentation gaps. Major version bump reflects structural rewrite of the methodology orientation document.
 - `land` skill upgraded to v1.1: added CHANGELOG verification step before merge, updated overview to reflect 7-step procedure. Minor version bump: additive behavioral change (new precondition check).
-- `pipeline-contract.md` updated to v0.2: fixed heading levels (## → ###), updated step 3 to include brainstorming, clarified `documentation-review` reference to "`documentation` skill's review mode"
+- `pipeline-contract.md` updated to v0.2: fixed heading levels (## → ###), clarified `documentation-review` reference to "`documentation` skill's review mode"
 - Added `CLAUDE.md` documenting skill management with `sk` fork
 - Migrated license from Apache-2.0 to MIT
 - `land` skill upgraded to v1.3: added pre-merge acceptance criteria evaluation — satisfied issues are closed, partial issues receive a progress comment listing delivered and remaining criteria, issues without extractable criteria stay open for human review. Prevents premature closure when a branch delivers part of an issue's scope.
