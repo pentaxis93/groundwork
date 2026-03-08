@@ -47,7 +47,7 @@ name = "next-issue"
 path = "skills/next-issue"
 provider = "gh"
 repo = "pentaxis93/groundwork"
-use_when = "Use when selecting the next session-sized piece of work from the issue graph."
+use_when = "Use when starting a work session: selecting issue(s), preparing the workspace (feature branch), and declaring session direction."
 
 [[skills]]
 name = "test-driven-development"
