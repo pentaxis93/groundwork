@@ -78,8 +78,9 @@ independent work.
 conversation. The implementer may be a different agent, in a different session,
 with no access to the discussion that produced the issue. Summary states what
 and why. Scope names concrete files or modules. Criteria are binary pass/fail.
-If the issue requires reading a Slack thread or "seeing the earlier discussion"
-to understand, it is incomplete.
+Task issues reference their parent epic or milestone so the work has context
+in the issue graph. If the issue requires reading a Slack thread or "seeing
+the earlier discussion" to understand, it is incomplete.
 
 ## Procedures
 
@@ -94,6 +95,9 @@ to understand, it is incomplete.
 6. Assemble using template from `references/templates.md`. Title format:
    `<type>(<scope>): <what>`.
 
+A structural linter is available at `scripts/issue_lint.py` for validating
+issue bodies against template schemas.
+
 ### decompose-epic
 
 1. Extract deliverables — artifacts that must exist when done.
@@ -103,6 +107,7 @@ to understand, it is incomplete.
    see WORKFLOW.md § Dependency Graph Format).
 5. Size-check each candidate: split if oversized, merge if trivial.
 6. Create task issues in topological order (lowest execution layer first).
+7. Create or update parent epic with task checklist and dependency graph.
 
 ### define-task-boundary
 
