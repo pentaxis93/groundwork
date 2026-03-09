@@ -20,6 +20,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 - `propose` skill (v1.0): commit strategy, push, and PR creation — the middle phase of the session lifecycle between `begin` and `land`. Pipeline contract, routing table, and cross-references updated.
 
+### Removed
+
+- Removed curated `subagent-driven-development` (obra/superpowers) — the last external skill dependency. Investigation found no real exigence: fresh-subagent isolation is default tool behavior, two-stage review is covered by CI, and remaining patterns are basic prompt engineering. Two genuinely useful insights (use fresh subagents to manage context across multi-task execution; match subagent model to task complexity) preserved as integrated guidance in `using-groundwork` stage 4 and `WORKFLOW.md` stage 4.
+
 ### Changed
 
 - Replaced curated `verification-before-completion` (obra/superpowers) with groundwork-native original (v1.0.0). Preserves core discipline (Iron Law, gate function, common-failures table, anti-rationalization patterns, red flags). Adds Lifecycle Role section establishing pipeline position, Corruption Modes section, and cross-references. Removes superpowers-specific vocabulary.

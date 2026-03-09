@@ -1923,7 +1923,6 @@ mod tests {
                 "issue_craft",
                 "begin",
                 "test_first",
-                "subagent_driven_development",
                 "systematic_debugging",
                 "third_force",
                 "documentation",

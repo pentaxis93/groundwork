@@ -34,7 +34,7 @@ After a design is approved, use `issue-craft` to express the implementation as a
 
 Use `test-first` to implement each plan step through RED-GREEN-REFACTOR. Each RED test corresponds to a named behavior scenario from `bdd`. Write one failing test, verify it fails for the right reason, write the simplest code to pass it, verify it passes, refactor.
 
-Use `subagent-driven-development` when the plan contains independent tasks that can run in parallel. It dispatches a fresh subagent per task with two-stage review (spec compliance, then code quality).
+When the plan contains independent tasks, dispatch a fresh subagent per task to keep execution context clean — stale context from earlier tasks pollutes later ones. Match subagent model to task complexity: use cheaper/faster models for straightforward work, reserve the most capable model for subtle or cross-cutting changes.
 
 Use `systematic-debugging` when a test fails or behavior is unexpected. It finds root cause before proposing fixes — no symptom-patching. Although listed here because most debugging occurs during execution, it is a cross-cutting discipline that fires at any pipeline stage when failures appear.
 
@@ -188,7 +188,6 @@ If `gh-issue-sync pull` fails with missing project scope (`read:project`) or `gr
 | `begin` | initiating a work session: selecting work, preparing workspace, declaring direction |
 | `plan` | implementation needs design convergence — multiple approaches, unclear scope, or cross-cutting changes |
 | `test-first` | when implementing any feature or bugfix — RED → GREEN → REFACTOR |
-| `subagent-driven-development` | when executing a plan whose tasks are independent and can run in parallel |
 | `systematic-debugging` | when a test fails or behavior is unexpected, before proposing any fix |
 | `third-force` | operational friction — missing tools, broken configs, stale conventions, undocumented requirements |
 | `documentation` | after code changes that may cause drift, at project initialization, when architectural decisions are made, or when docs fail the audience test |
