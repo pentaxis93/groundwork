@@ -33,7 +33,7 @@ Five stages, in dependency order. Each produces what the next consumes.
 
 3. **Decompose.** Converge to a decision-complete design (`plan`), break the design into agent-executable issues (`issue-craft`), and initiate the work session (`begin`).
 
-4. **Execute and verify.** Implement through RED-GREEN-REFACTOR (`test-first`), parallelize independent tasks (`subagent-driven-development`), find root cause before fixing (`systematic-debugging`), review code (`requesting-code-review`, `receiving-code-review`), verify behavior-level evidence before claiming done (`verification-before-completion`), ensure documentation accuracy (`documentation`), and package verified changes into a PR (`propose`).
+4. **Execute and verify.** Implement through RED-GREEN-REFACTOR (`test-first`), parallelize independent tasks (`subagent-driven-development`), find root cause before fixing (`systematic-debugging`), verify behavior-level evidence before claiming done (`verification-before-completion`), ensure documentation accuracy (`documentation`), and package verified changes into a PR (`propose`).
 
 5. **Land.** `land` closes the loop: merge, cleanup, behavior coverage record, documentation coverage status, and issue closure.
 

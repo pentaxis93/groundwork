@@ -21,5 +21,3 @@ subagent_driven_development = { gh = "obra/superpowers", path = "skills/subagent
 test_first = { gh = "pentaxis93/groundwork", path = "skills/test-first" }
 systematic_debugging = { gh = "obra/superpowers", path = "skills/systematic-debugging", rev = "e4a2375cb705ca5800f0833528ce36a3faf9017a" }
 verification_before_completion = { gh = "obra/superpowers", path = "skills/verification-before-completion", rev = "e4a2375cb705ca5800f0833528ce36a3faf9017a" }
-requesting_code_review = { gh = "obra/superpowers", path = "skills/requesting-code-review", rev = "e4a2375cb705ca5800f0833528ce36a3faf9017a" }
-receiving_code_review = { gh = "obra/superpowers", path = "skills/receiving-code-review", rev = "e4a2375cb705ca5800f0833528ce36a3faf9017a" }

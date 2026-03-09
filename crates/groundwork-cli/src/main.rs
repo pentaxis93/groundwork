@@ -1925,8 +1925,6 @@ mod tests {
                 "test_first",
                 "subagent_driven_development",
                 "systematic_debugging",
-                "requesting_code_review",
-                "receiving_code_review",
                 "third_force",
                 "documentation",
                 "verification_before_completion",
