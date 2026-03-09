@@ -45,7 +45,6 @@ jobs:
         run: |
           codex exec \
             --sandbox read-only \
-            --ask-for-approval never \
             --json \
             --output-last-message codex-review.md \
             review \
