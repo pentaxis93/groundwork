@@ -38,7 +38,7 @@ Use `subagent-driven-development` when the plan contains independent tasks that 
 
 Use `systematic-debugging` when a test fails or behavior is unexpected. It finds root cause before proposing fixes — no symptom-patching.
 
-Use `requesting-code-review` after implementation, before merging. Use `receiving-code-review` when processing feedback — verify technically before implementing.
+Code review is handled by CI/CD infrastructure, not a methodology skill. The pipeline requires review before landing but does not prescribe the mechanism.
 
 Use `verification-before-completion` before claiming any work is complete. It requires running the actual verification command and confirming the output matches the claim. Completion evidence must be behavior-level — not just "tests pass" but explicit behavior coverage.
 
@@ -178,8 +178,6 @@ If `gh-issue-sync pull` fails with missing project scope (`read:project`) or `gr
 | `test-first` | when implementing any feature or bugfix — RED → GREEN → REFACTOR |
 | `subagent-driven-development` | when executing a plan whose tasks are independent and can run in parallel |
 | `systematic-debugging` | when a test fails or behavior is unexpected, before proposing any fix |
-| `requesting-code-review` | after implementation, before merging |
-| `receiving-code-review` | when receiving review feedback, before implementing suggestions |
 | `third-force` | operational friction — missing tools, broken configs, stale conventions, undocumented requirements |
 | `documentation` | after code changes that may cause drift, at project initialization, when architectural decisions are made, or when docs fail the audience test |
 | `verification-before-completion` | before claiming work is complete, fixed, or passing — evidence first |

@@ -165,8 +165,7 @@ Output:
 - Branch name.
 - Commit summary (count and brief subjects).
 - Issue linkage (which issues referenced, close vs. ref).
-- Next step: "`requesting-code-review` to get review, then `land` when
-  approved."
+- Next step: "Get review, then `land` when approved."
 
 ---
 
@@ -214,6 +213,5 @@ Output:
 
 - `begin` for work initiation — select issue(s), prepare workspace, declare direction (the preceding phase)
 - `land` for merge, cleanup, and issue closure (the following phase)
-- `requesting-code-review` for dispatching review after the PR exists
 - `verification-before-completion` — should fire before `propose`
 - `documentation` for documentation review before proposing

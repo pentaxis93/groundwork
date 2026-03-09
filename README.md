@@ -25,7 +25,7 @@ There is one path, not a menu. Every piece of work flows through five stages:
 
 **3. Decompose** — `issue-craft` produces agent-executable issues with binary acceptance criteria from the behavior contract. `begin` selects session-sized work from the issue graph, prepares the workspace, and declares the session's direction. `plan` converges to a decision-complete implementation design. Approved designs become executable work through `issue-craft`. The issue graph is the project's working memory across sessions.
 
-**4. Execute and verify** — `test-first` implements behavior through RED-GREEN-REFACTOR — each RED test maps to a named scenario from stage 2. `systematic-debugging` finds root cause before proposing fixes. Code review and `verification-before-completion` gate completion with behavior-level evidence. `propose` packages verified changes into a PR with derived title/body and issue linkage.
+**4. Execute and verify** — `test-first` implements behavior through RED-GREEN-REFACTOR — each RED test maps to a named scenario from stage 2. `systematic-debugging` finds root cause before proposing fixes. `verification-before-completion` gate completion with behavior-level evidence. `propose` packages verified changes into a PR with derived title/body and issue linkage.
 
 **5. Land** — `land` closes the loop: merge, push, delete branch, comment on issue, close issue. Closure records behavior coverage and remaining gaps. Do not stop after merge.
 
@@ -45,8 +45,6 @@ For the concise inventory and shipped order reference, see [`skills/skills.toml`
 | `test-first` | Execution | Implementation-first regressions |
 | `subagent-driven-development` | Execution | Context drift in parallel work |
 | `systematic-debugging` | Execution | Thrashing and symptom-fixing |
-| `requesting-code-review` | Verification | Unreviewed changes reaching main |
-| `receiving-code-review` | Verification | Performative agreement with review feedback |
 | `verification-before-completion` | Verification | False completion claims without evidence |
 | `documentation` | Verification | Drifted docs, missing artifact updates |
 | `propose` | Delivery | Manual ad-hoc commit/push/PR between implementation and merge |

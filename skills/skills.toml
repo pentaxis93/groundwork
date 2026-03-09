@@ -73,22 +73,6 @@ rev = "e4a2375cb705ca5800f0833528ce36a3faf9017a"
 use_when = "Use when tests fail or behavior is unexpected and root cause is not yet established."
 
 [[skills]]
-name = "requesting-code-review"
-path = "skills/requesting-code-review"
-provider = "gh"
-repo = "obra/superpowers"
-rev = "e4a2375cb705ca5800f0833528ce36a3faf9017a"
-use_when = "Use after implementation and before merging."
-
-[[skills]]
-name = "receiving-code-review"
-path = "skills/receiving-code-review"
-provider = "gh"
-repo = "obra/superpowers"
-rev = "e4a2375cb705ca5800f0833528ce36a3faf9017a"
-use_when = "Use when processing review feedback."
-
-[[skills]]
 name = "third-force"
 path = "skills/third-force"
 provider = "gh"
