@@ -108,6 +108,7 @@ jobs:
         env:
           REVIEW_FILE: codex-review.md
           OUTPUT_JSONL: codex-review.jsonl
+          REVIEW_COMMENT_AUTHOR_LOGIN: ${{ vars.REVIEW_COMMENT_AUTHOR_LOGIN || '' }}
         with:
           github-token: ${{ secrets.REVIEW_BOT_TOKEN || github.token }}
           script: |
@@ -119,6 +120,7 @@ jobs:
             const MAX_REVIEW_COMMENT_CHARS = 60000;
             const REVIEW_FILE = process.env.REVIEW_FILE || "codex-review.md";
             const OUTPUT_JSONL = process.env.OUTPUT_JSONL || "codex-review.jsonl";
+            const REVIEW_COMMENT_AUTHOR_LOGIN = (process.env.REVIEW_COMMENT_AUTHOR_LOGIN || "").trim();
             const workspace = (process.env.GITHUB_WORKSPACE || "").replace(/\\/g, "/");
             const { owner, repo } = context.repo;
             const pullNumber = context.payload.pull_request.number;
@@ -196,6 +198,24 @@ jobs:
               return findings;
             }
 
+            async function resolveCommentAuthorLogin() {
+              if (REVIEW_COMMENT_AUTHOR_LOGIN) {
+                return REVIEW_COMMENT_AUTHOR_LOGIN;
+              }
+
+              try {
+                const authenticated = await github.rest.users.getAuthenticated();
+                const login = authenticated?.data?.login;
+                if (typeof login === "string" && login.trim()) {
+                  return login.trim();
+                }
+              } catch (error) {
+                core.warning(`Could not resolve authenticated login; defaulting to github-actions[bot]. (${error.message})`);
+              }
+
+              return "github-actions[bot]";
+            }
+
             async function upsertOverallReviewComment(text) {
               const trimmedReview = text.trim();
               const reviewBody = trimmedReview
@@ -219,6 +239,7 @@ jobs:
               );
               const existingOverall = issueComments.find(
                 (comment) =>
+                  comment.user?.login === commentAuthorLogin &&
                   typeof comment.body === "string" &&
                   comment.body.includes(OVERALL_MARKER)
               );
@@ -240,6 +261,7 @@ jobs:
               }
             }
 
+            const commentAuthorLogin = await resolveCommentAuthorLogin();
             const reviewText = fs.readFileSync(REVIEW_FILE, "utf8");
             await upsertOverallReviewComment(reviewText);
             const findings = parseFindings(reviewText);
@@ -256,7 +278,7 @@ jobs:
             );
 
             for (const comment of existingComments) {
-              if (comment.body?.includes(MARKER)) {
+              if (comment.user?.login === commentAuthorLogin && comment.body?.includes(MARKER)) {
                 await github.rest.pulls.deleteReviewComment({
                   owner,
                   repo,
@@ -326,6 +348,7 @@ jobs:
             );
             const existingSummary = issueComments.find(
               (comment) =>
+                comment.user?.login === commentAuthorLogin &&
                 typeof comment.body === "string" &&
                 comment.body.includes(MARKER) &&
                 comment.body.includes("could not be posted inline")
