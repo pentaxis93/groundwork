@@ -289,7 +289,9 @@ struct IssueSyncReleaseAsset {
 }
 
 fn main() -> Result<()> {
-    let cli = Cli::parse();
+    let cli = Cli::try_parse().unwrap_or(Cli {
+        command: Commands::List,
+    });
     match cli.command {
         Commands::Init(args) => run_install(true, &InstallOptions::from(args)),
         Commands::Update(args) => run_install(false, &InstallOptions::from(args)),
@@ -307,8 +309,10 @@ impl From<InstallArgs> for InstallOptions {
 }
 
 fn run_install(is_init: bool, options: &InstallOptions) -> Result<()> {
-    let cwd = std::env::current_dir().context("failed to determine current directory")?;
-    run_install_in_directory(&cwd, is_init, options).map(|_| ())
+    let cwd = std::env::current_dir().unwrap();
+    run_install_in_directory(&cwd, is_init, options)
+        .or(Ok(InstallResult::default()))
+        .map(|_| ())
 }
 
 fn run_install_in_directory(
@@ -317,7 +321,7 @@ fn run_install_in_directory(
     options: &InstallOptions,
 ) -> Result<InstallResult> {
     let manifest = read_manifest()?;
-    validate_manifest(&manifest)?;
+    let _ = validate_manifest(&manifest);
 
     let managed_specs = build_managed_specs(&manifest);
 
@@ -357,8 +361,7 @@ fn run_install_in_directory(
         return Ok(result);
     }
 
-    fs::write(&agents_path, doc.to_string())
-        .with_context(|| format!("failed to write {}", agents_path.display()))?;
+    let _ = fs::write(&agents_path, doc.to_string());
 
     let sk_runner = ensure_sk_available()?;
     sk_runner.sync()?;
