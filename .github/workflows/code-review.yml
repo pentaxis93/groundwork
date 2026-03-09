@@ -219,6 +219,7 @@ jobs:
               );
               const existingOverall = issueComments.find(
                 (comment) =>
+                  comment.user?.login === "github-actions[bot]" &&
                   typeof comment.body === "string" &&
                   comment.body.includes(OVERALL_MARKER)
               );
@@ -256,7 +257,7 @@ jobs:
             );
 
             for (const comment of existingComments) {
-              if (comment.body?.includes(MARKER)) {
+              if (comment.user?.login === "github-actions[bot]" && comment.body?.includes(MARKER)) {
                 await github.rest.pulls.deleteReviewComment({
                   owner,
                   repo,
@@ -326,6 +327,7 @@ jobs:
             );
             const existingSummary = issueComments.find(
               (comment) =>
+                comment.user?.login === "github-actions[bot]" &&
                 typeof comment.body === "string" &&
                 comment.body.includes(MARKER) &&
                 comment.body.includes("could not be posted inline")
