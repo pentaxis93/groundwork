@@ -57,14 +57,6 @@ repo = "pentaxis93/groundwork"
 use_when = "Use when implementing any feature or bugfix, before writing implementation code."
 
 [[skills]]
-name = "subagent-driven-development"
-path = "skills/subagent-driven-development"
-provider = "gh"
-repo = "obra/superpowers"
-rev = "e4a2375cb705ca5800f0833528ce36a3faf9017a"
-use_when = "Use when a verified plan contains independent tasks that can run in parallel."
-
-[[skills]]
 name = "systematic-debugging"
 path = "skills/systematic-debugging"
 provider = "gh"

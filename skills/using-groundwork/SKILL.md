@@ -33,7 +33,7 @@ Five stages, in dependency order. Each produces what the next consumes.
 
 3. **Decompose.** Converge to a decision-complete design (`plan`), break the design into agent-executable issues (`issue-craft`), and initiate the work session (`begin`).
 
-4. **Execute and verify.** Implement through RED-GREEN-REFACTOR (`test-first`), parallelize independent tasks (`subagent-driven-development`), verify behavior-level evidence before claiming done (`verification-before-completion`), ensure documentation accuracy (`documentation`), and package verified changes into a PR (`propose`).
+4. **Execute and verify.** Implement through RED-GREEN-REFACTOR (`test-first`), verify behavior-level evidence before claiming done (`verification-before-completion`), ensure documentation accuracy (`documentation`), and package verified changes into a PR (`propose`). When a plan contains independent tasks, dispatch fresh subagents for each to keep execution context clean — stale context from earlier tasks pollutes later ones. Match subagent model to task complexity: use cheaper/faster models for straightforward work, reserve the most capable model for subtle or cross-cutting changes.
 
 5. **Land.** `land` closes the loop: merge, cleanup, behavior coverage record, documentation coverage status, and issue closure.
 
