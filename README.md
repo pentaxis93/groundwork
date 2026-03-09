@@ -44,7 +44,7 @@ For the concise inventory and shipped order reference, see [`skills/skills.toml`
 | `plan` | Decomposition | Unclear scope, design choices left to implementer |
 | `test-first` | Execution | Implementation-first regressions |
 | `subagent-driven-development` | Execution | Context drift in parallel work |
-| `systematic-debugging` | Execution | Thrashing and symptom-fixing |
+| `systematic-debugging` | Cross-cutting | Thrashing and symptom-fixing |
 | `verification-before-completion` | Verification | False completion claims without evidence |
 | `documentation` | Verification | Drifted docs, missing artifact updates |
 | `propose` | Delivery | Manual ad-hoc commit/push/PR between implementation and merge |

@@ -48,7 +48,7 @@ Groundwork ships skills from two maintenance locations, but inventory is unified
 
 Skills maintained in this repository are listed in `skills/skills.toml` with local paths under `skills/`. These skills define the pipeline's structure — what stages exist, what handoff contracts connect them, and what cognitive discipline the pipeline enforces.
 
-Skills maintained upstream (from [obra/superpowers](https://github.com/obra/superpowers)) are listed in the same manifest with pinned commits and fetched at install time. They fill the execution phase — debugging and subagent orchestration — where high-quality implementations already exist.
+Skills maintained upstream (from [obra/superpowers](https://github.com/obra/superpowers)) are listed in the same manifest with pinned commits and fetched at install time. They fill the execution phase — subagent orchestration — where high-quality implementations already exist.
 
 Curated skills are pinned to a specific commit. They are not forked, vendored, or modified. Integration happens through documentation: WORKFLOW.md defines handoff rules that connect curated skills to the pipeline's input/output contracts.
 
