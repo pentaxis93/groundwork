@@ -196,13 +196,8 @@ jobs:
               return findings;
             }
 
-            const reviewText = fs.readFileSync(REVIEW_FILE, "utf8");
-            const findings = parseFindings(reviewText);
-
-            if (!findings.length) {
-              core.info("No line-addressable findings were parsed from Codex output.");
-
-              const trimmedReview = reviewText.trim();
+            async function upsertOverallReviewComment(text) {
+              const trimmedReview = text.trim();
               const reviewBody = trimmedReview
                 ? trimmedReview.length > MAX_REVIEW_COMMENT_CHARS
                   ? `${trimmedReview.slice(0, MAX_REVIEW_COMMENT_CHARS)}\n\n_(Review text truncated for GitHub comment limits.)_`
@@ -211,7 +206,7 @@ jobs:
 
               const overallBody = [
                 OVERALL_MARKER,
-                "Codex overall review (no line-addressable findings).",
+                "Codex final review output.",
                 "",
                 reviewBody,
                 "",
@@ -244,6 +239,14 @@ jobs:
                   body: overallBody,
                 });
               }
+            }
+
+            const reviewText = fs.readFileSync(REVIEW_FILE, "utf8");
+            await upsertOverallReviewComment(reviewText);
+            const findings = parseFindings(reviewText);
+
+            if (!findings.length) {
+              core.info("No line-addressable findings were parsed from Codex output.");
 
               return;
             }
