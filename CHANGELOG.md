@@ -22,6 +22,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Changed
 
+- Documented upstream attribution convention in CONTRIBUTING.md: LICENSE-UPSTREAM requirements for adapted skills, origin metadata standard, curated-skills attribution reasoning, and attribution checklist at the skill-authoring boundary
 - Replaced curated `test-driven-development` (obra/superpowers) with groundwork-native `test-first` skill (v1.0.0). Preserves core discipline (Iron Law, red-green-refactor, delete-and-start-over, anti-rationalization patterns) while adding bidirectional composition with `bdd`, `verification-before-completion`, `systematic-debugging`, and `documentation`. Lifecycle Role section establishes pipeline position. Corruption Modes section added. Language-agnostic examples replace TypeScript-only. Companion `testing-anti-patterns.md` migrated to `references/`.
 - `ground` skill upgraded to v3.0.0: broadened from design-only to full first-principles cognitive discipline covering strategic analysis, cost decomposition, and problem reframing. Added Active Excavation section (Socratic Drilling, Recursive Why). Decompose step now supports three modes (requirements, constituent, process) with Orient determining which applies. Orient step broadened with mode-specific questions. New "Structure survey as analysis" corruption mode. All existing patterns and corruption modes retained.
 - Renamed `next-issue` skill to `begin`; session lifecycle is now `begin` → `propose` → `land`
