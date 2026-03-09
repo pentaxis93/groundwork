@@ -1,0 +1,249 @@
+name: Codex Code Review
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out PR merge ref
+        uses: actions/checkout@v5
+        with:
+          ref: refs/pull/${{ github.event.pull_request.number }}/merge
+          fetch-depth: 0
+
+      - name: Pre-fetch base and head refs
+        run: |
+          git fetch --no-tags origin \
+            "${{ github.event.pull_request.base.ref }}" \
+            "+refs/pull/${{ github.event.pull_request.number }}/head"
+
+      - name: Validate OpenAI API key secret
+        run: |
+          if [ -z "${{ secrets.OPENAI_API_KEY }}" ]; then
+            echo "OPENAI_API_KEY is not configured for this repository." >&2
+            exit 1
+          fi
+
+      - name: Install Codex and start proxy
+        uses: openai/codex-action@v1
+        with:
+          openai-api-key: ${{ secrets.OPENAI_API_KEY }}
+          sandbox: read-only
+          safety-strategy: drop-sudo
+
+      - name: Run Codex review
+        env:
+          BASE_BRANCH: ${{ github.event.pull_request.base.ref }}
+        run: |
+          codex exec \
+            --sandbox read-only \
+            --json \
+            --output-last-message codex-review.md \
+            review \
+            --base "${BASE_BRANCH}" \
+            > codex-review.jsonl
+
+      - name: Post inline PR comments
+        uses: actions/github-script@v7
+        env:
+          REVIEW_FILE: codex-review.md
+          OUTPUT_JSONL: codex-review.jsonl
+        with:
+          github-token: ${{ github.token }}
+          script: |
+            const fs = require("node:fs");
+            const path = require("node:path");
+
+            const MARKER = "<!-- codex-inline-review -->";
+            const REVIEW_FILE = process.env.REVIEW_FILE || "codex-review.md";
+            const OUTPUT_JSONL = process.env.OUTPUT_JSONL || "codex-review.jsonl";
+            const workspace = (process.env.GITHUB_WORKSPACE || "").replace(/\\/g, "/");
+            const { owner, repo } = context.repo;
+            const pullNumber = context.payload.pull_request.number;
+            const headSha = context.payload.pull_request.head.sha;
+
+            if (!fs.existsSync(REVIEW_FILE)) {
+              core.warning(`Review output file '${REVIEW_FILE}' was not found.`);
+              return;
+            }
+
+            function normalizePath(rawPath) {
+              if (!rawPath) {
+                return null;
+              }
+              let normalized = rawPath.trim().replace(/\\/g, "/");
+              if (workspace && normalized.startsWith(`${workspace}/`)) {
+                normalized = normalized.slice(workspace.length + 1);
+              }
+              if (normalized.startsWith("./")) {
+                normalized = normalized.slice(2);
+              }
+              if (path.isAbsolute(normalized) || normalized.startsWith("/")) {
+                return null;
+              }
+              return normalized;
+            }
+
+            function parseFindings(text) {
+              const lines = text.split(/\r?\n/);
+              const findings = [];
+              let i = 0;
+              while (i < lines.length) {
+                const line = lines[i];
+                const match = line.match(/^- (.+?) (?:—|-) (.*):(\d+)-(\d+)\s*$/);
+                if (!match) {
+                  i += 1;
+                  continue;
+                }
+
+                const title = match[1].trim();
+                const rawPath = match[2].trim();
+                const start = Number.parseInt(match[3], 10);
+                const end = Number.parseInt(match[4], 10);
+
+                const bodyLines = [];
+                i += 1;
+                while (i < lines.length) {
+                  const bodyLine = lines[i];
+                  if (bodyLine.startsWith("  ")) {
+                    bodyLines.push(bodyLine.slice(2));
+                    i += 1;
+                    continue;
+                  }
+                  if (bodyLine.trim() === "") {
+                    i += 1;
+                    continue;
+                  }
+                  break;
+                }
+
+                const relPath = normalizePath(rawPath);
+                if (!relPath) {
+                  core.warning(`Skipping finding with non-repo path '${rawPath}'.`);
+                  continue;
+                }
+
+                findings.push({
+                  title,
+                  body: bodyLines.join("\n").trim(),
+                  path: relPath,
+                  start,
+                  end,
+                });
+              }
+              return findings;
+            }
+
+            const reviewText = fs.readFileSync(REVIEW_FILE, "utf8");
+            const findings = parseFindings(reviewText);
+
+            if (!findings.length) {
+              core.info("No line-addressable findings were parsed from Codex output.");
+              return;
+            }
+
+            const existingComments = await github.paginate(
+              github.rest.pulls.listReviewComments,
+              { owner, repo, pull_number: pullNumber, per_page: 100 }
+            );
+
+            for (const comment of existingComments) {
+              if (comment.user?.login === "github-actions[bot]" && comment.body?.includes(MARKER)) {
+                await github.rest.pulls.deleteReviewComment({
+                  owner,
+                  repo,
+                  comment_id: comment.id,
+                });
+              }
+            }
+
+            let posted = 0;
+            const failures = [];
+            for (const finding of findings) {
+              const low = Math.min(finding.start, finding.end);
+              const high = Math.max(finding.start, finding.end);
+              const body = `${MARKER}\n**${finding.title}**\n\n${finding.body || "No additional details provided."}`;
+
+              const params = {
+                owner,
+                repo,
+                pull_number: pullNumber,
+                commit_id: headSha,
+                path: finding.path,
+                side: "RIGHT",
+                line: high,
+                body,
+              };
+
+              if (low !== high) {
+                params.start_line = low;
+                params.start_side = "RIGHT";
+              }
+
+              try {
+                await github.rest.pulls.createReviewComment(params);
+                posted += 1;
+              } catch (error) {
+                failures.push({
+                  ...finding,
+                  message: error.message,
+                });
+              }
+            }
+
+            core.info(`Posted ${posted} inline Codex review comments.`);
+            if (failures.length === 0) {
+              return;
+            }
+
+            const summaryLines = [
+              MARKER,
+              "Codex produced findings that could not be posted inline.",
+              "",
+              `Parsed findings: ${findings.length}`,
+              `Inline comments posted: ${posted}`,
+              "",
+              "Unposted findings:",
+              ...failures.map((f) =>
+                `- ${f.title} (${f.path}:${Math.min(f.start, f.end)}-${Math.max(f.start, f.end)}): ${f.message}`
+              ),
+              "",
+              `Raw outputs: ${REVIEW_FILE}, ${OUTPUT_JSONL}`,
+            ];
+            const summaryBody = summaryLines.join("\n");
+
+            const issueComments = await github.paginate(
+              github.rest.issues.listComments,
+              { owner, repo, issue_number: pullNumber, per_page: 100 }
+            );
+            const existingSummary = issueComments.find(
+              (comment) =>
+                comment.user?.login === "github-actions[bot]" &&
+                typeof comment.body === "string" &&
+                comment.body.includes(MARKER) &&
+                comment.body.includes("could not be posted inline")
+            );
+
+            if (existingSummary) {
+              await github.rest.issues.updateComment({
+                owner,
+                repo,
+                comment_id: existingSummary.id,
+                body: summaryBody,
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner,
+                repo,
+                issue_number: pullNumber,
+                body: summaryBody,
+              });
+            }
