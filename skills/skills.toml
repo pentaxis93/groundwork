@@ -90,8 +90,7 @@ use_when = "Use when documentation may drift or when a decision or behavior chan
 name = "verification-before-completion"
 path = "skills/verification-before-completion"
 provider = "gh"
-repo = "obra/superpowers"
-rev = "e4a2375cb705ca5800f0833528ce36a3faf9017a"
+repo = "pentaxis93/groundwork"
 use_when = "Use before claiming work is complete, fixed, or passing."
 
 [[skills]]

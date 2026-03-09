@@ -8,7 +8,7 @@ Groundwork has one coherent path:
 1. `ground` frames constraints.
 2. `bdd` defines and maintains behavior contract.
 3. `plan` converges from exploration to a decision-complete implementation design. `issue-craft` decomposes that design into agent-executable issues. `begin` initiates the work session: selects session-sized work, prepares the workspace, and declares direction.
-4. Curated middle skills implement and verify the same behavior contract.
+4. Middle skills implement and verify the same behavior contract.
 5. `land` closes work with behavior coverage visibility.
 
 `bdd` and `test-first` are not alternatives.

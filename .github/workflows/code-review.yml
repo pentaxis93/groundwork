@@ -43,6 +43,8 @@ jobs:
         env:
           BASE_BRANCH: ${{ github.event.pull_request.base.ref }}
         run: |
+          set -euo pipefail
+
           codex exec \
             --sandbox read-only \
             --json \
@@ -50,6 +52,56 @@ jobs:
             review \
             --base "${BASE_BRANCH}" \
             > codex-review.jsonl
+
+          if [ -s codex-review.md ]; then
+            exit 0
+          fi
+
+          echo "codex-review.md is empty; attempting JSONL fallback."
+          node <<'NODE'
+          const fs = require("node:fs");
+
+          const outputPath = "codex-review.md";
+          const jsonlPath = "codex-review.jsonl";
+
+          if (!fs.existsSync(jsonlPath)) {
+            process.exit(0);
+          }
+
+          let lastAgentMessage = "";
+          const lines = fs.readFileSync(jsonlPath, "utf8").split(/\r?\n/);
+          for (const line of lines) {
+            if (!line.trim()) {
+              continue;
+            }
+
+            try {
+              const event = JSON.parse(line);
+              if (event?.type !== "item.completed") {
+                continue;
+              }
+              if (event?.item?.type !== "agent_message") {
+                continue;
+              }
+
+              const text = `${event?.item?.text ?? ""}`.trim();
+              if (text) {
+                lastAgentMessage = text;
+              }
+            } catch {
+              // Ignore malformed JSONL lines and keep searching for valid events.
+            }
+          }
+
+          if (lastAgentMessage) {
+            fs.writeFileSync(outputPath, `${lastAgentMessage}\n`, "utf8");
+          }
+          NODE
+
+          if [ ! -s codex-review.md ]; then
+            echo "Codex review produced no final message in codex-review.md or codex-review.jsonl." >&2
+            exit 1
+          fi
 
       - name: Post inline PR comments
         uses: actions/github-script@v7
@@ -63,6 +115,8 @@ jobs:
             const path = require("node:path");
 
             const MARKER = "<!-- codex-inline-review -->";
+            const OVERALL_MARKER = "<!-- codex-overall-review -->";
+            const MAX_REVIEW_COMMENT_CHARS = 60000;
             const REVIEW_FILE = process.env.REVIEW_FILE || "codex-review.md";
             const OUTPUT_JSONL = process.env.OUTPUT_JSONL || "codex-review.jsonl";
             const workspace = (process.env.GITHUB_WORKSPACE || "").replace(/\\/g, "/");
@@ -142,11 +196,57 @@ jobs:
               return findings;
             }
 
+            async function upsertOverallReviewComment(text) {
+              const trimmedReview = text.trim();
+              const reviewBody = trimmedReview
+                ? trimmedReview.length > MAX_REVIEW_COMMENT_CHARS
+                  ? `${trimmedReview.slice(0, MAX_REVIEW_COMMENT_CHARS)}\n\n_(Review text truncated for GitHub comment limits.)_`
+                  : trimmedReview
+                : "_Codex produced no review text._";
+
+              const overallBody = [
+                OVERALL_MARKER,
+                "",
+                reviewBody,
+                "",
+                `Raw outputs: ${REVIEW_FILE}, ${OUTPUT_JSONL}`,
+              ].join("\n");
+
+              const issueComments = await github.paginate(
+                github.rest.issues.listComments,
+                { owner, repo, issue_number: pullNumber, per_page: 100 }
+              );
+              const existingOverall = issueComments.find(
+                (comment) =>
+                  comment.user?.login === "github-actions[bot]" &&
+                  typeof comment.body === "string" &&
+                  comment.body.includes(OVERALL_MARKER)
+              );
+
+              if (existingOverall) {
+                await github.rest.issues.updateComment({
+                  owner,
+                  repo,
+                  comment_id: existingOverall.id,
+                  body: overallBody,
+                });
+              } else {
+                await github.rest.issues.createComment({
+                  owner,
+                  repo,
+                  issue_number: pullNumber,
+                  body: overallBody,
+                });
+              }
+            }
+
             const reviewText = fs.readFileSync(REVIEW_FILE, "utf8");
+            await upsertOverallReviewComment(reviewText);
             const findings = parseFindings(reviewText);
 
             if (!findings.length) {
               core.info("No line-addressable findings were parsed from Codex output.");
+
               return;
             }
 
