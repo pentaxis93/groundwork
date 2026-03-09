@@ -33,7 +33,7 @@ Five stages, in dependency order. Each produces what the next consumes.
 
 3. **Decompose.** Converge to a decision-complete design (`plan`), break the design into agent-executable issues (`issue-craft`), and initiate the work session (`begin`).
 
-4. **Execute and verify.** Implement through RED-GREEN-REFACTOR (`test-first`), parallelize independent tasks (`subagent-driven-development`), find root cause before fixing (`systematic-debugging`), verify behavior-level evidence before claiming done (`verification-before-completion`), ensure documentation accuracy (`documentation`), and package verified changes into a PR (`propose`).
+4. **Execute and verify.** Implement through RED-GREEN-REFACTOR (`test-first`), parallelize independent tasks (`subagent-driven-development`), verify behavior-level evidence before claiming done (`verification-before-completion`), ensure documentation accuracy (`documentation`), and package verified changes into a PR (`propose`).
 
 5. **Land.** `land` closes the loop: merge, cleanup, behavior coverage record, documentation coverage status, and issue closure.
 
@@ -54,6 +54,8 @@ These thread across the pipeline. They aren't phases — they're disciplines tha
 **Ground re-fires.** `ground` is not step-one-once. New generative work mid-session requires re-grounding. The trigger is creation, not sequence position.
 
 **Research fires at any stage.** `research` provides reliable external evidence when decisions depend on facts outside the codebase — framing, design, decomposition, and implementation can all require it.
+
+**Root cause before fixes.** When a test fails or behavior is unexpected, do not guess. Investigate root cause before proposing any fix. `systematic-debugging` provides the investigation methodology — a cross-cutting discipline that fires at any pipeline stage, not only during execution. Once root cause is established, `test-first` fix-bug owns the execution cycle. After 3 failed fix attempts, stop fixing and invoke `ground` to question the architecture.
 
 **Introduce third force on friction.** Friction is a two-force collision: task momentum vs obstacle. Routing around is the collapsed triad — both forces lose. When operational friction appears — a missing tool, broken config, stale convention, undocumented requirement — stop and introduce the reconciling move: resolve it structurally before continuing. `third-force` provides the assessment methodology and scope guidance. Friction that exceeds side-quest scope becomes an issue via `issue-craft`. Unresolved friction compounds.
 

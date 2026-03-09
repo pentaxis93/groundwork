@@ -68,8 +68,7 @@ use_when = "Use when a verified plan contains independent tasks that can run in 
 name = "systematic-debugging"
 path = "skills/systematic-debugging"
 provider = "gh"
-repo = "obra/superpowers"
-rev = "e4a2375cb705ca5800f0833528ce36a3faf9017a"
+repo = "pentaxis93/groundwork"
 use_when = "Use when tests fail or behavior is unexpected and root cause is not yet established."
 
 [[skills]]
