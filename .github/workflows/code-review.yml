@@ -206,7 +206,6 @@ jobs:
 
               const overallBody = [
                 OVERALL_MARKER,
-                "Codex final review output.",
                 "",
                 reviewBody,
                 "",
