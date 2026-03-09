@@ -1951,6 +1951,7 @@ mod tests {
                 "skills/test-first",
                 "skills/third-force",
                 "skills/documentation",
+                "skills/verification-before-completion",
                 "skills/propose",
                 "skills/land",
             ]
