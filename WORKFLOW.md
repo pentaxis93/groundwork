@@ -36,7 +36,7 @@ Use `test-first` to implement each plan step through RED-GREEN-REFACTOR. Each RE
 
 Use `subagent-driven-development` when the plan contains independent tasks that can run in parallel. It dispatches a fresh subagent per task with two-stage review (spec compliance, then code quality).
 
-Use `systematic-debugging` when a test fails or behavior is unexpected. It finds root cause before proposing fixes — no symptom-patching.
+Use `systematic-debugging` when a test fails or behavior is unexpected. It finds root cause before proposing fixes — no symptom-patching. Although listed here because most debugging occurs during execution, it is a cross-cutting discipline that fires at any pipeline stage when failures appear.
 
 Code review is handled by CI/CD infrastructure, not a methodology skill. The pipeline requires review before landing but does not prescribe the mechanism.
 
@@ -86,6 +86,18 @@ Documentation is a cross-cutting communication discipline, not a pipeline phase.
 1. `documentation -> issue-craft`: user-facing changes include documentation updates as acceptance criteria.
 2. `documentation -> verification-before-completion`: completion claims include documentation accuracy evidence.
 3. `documentation -> land`: landing records documentation coverage status.
+
+For fail conditions and anti-divergence rules, see [docs/architecture/pipeline-contract.md](docs/architecture/pipeline-contract.md).
+
+## Root-Cause Investigation Thread
+
+Root-cause investigation is a cross-cutting discipline. It fires at any pipeline stage when a test fails, behavior is unexpected, or any failure occurs — before proposing fixes. See `systematic-debugging` for the full methodology.
+
+### Handoff Rules
+
+1. `systematic-debugging -> test-first`: once root cause is established, hand off to `test-first` fix-bug to write a failing test and implement the fix.
+2. `systematic-debugging -> ground`: when the 3-fix escalation rule fires, invoke `ground` to re-examine architectural assumptions.
+3. `systematic-debugging -> third-force`: when investigation reveals the root cause is operational friction (missing tool, broken config, stale convention), hand off to `third-force`.
 
 For fail conditions and anti-divergence rules, see [docs/architecture/pipeline-contract.md](docs/architecture/pipeline-contract.md).
 

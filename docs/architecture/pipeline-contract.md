@@ -87,6 +87,20 @@ Requirement:
 Fail condition:
 - `land` invoked on a branch with no PR, falling back to local merge and losing PR merge metadata.
 
+### `systematic-debugging -> test-first`
+Requirement:
+- root cause is established before a fix is attempted through `test-first` fix-bug. Investigation output identifies the specific cause and the transition point where valid data becomes invalid.
+
+Fail condition:
+- fix-bug entered without root-cause analysis when the cause was unclear — agent proposed a fix from symptoms alone.
+
+### `systematic-debugging -> ground`
+Requirement:
+- the 3-fix escalation rule triggers architectural re-examination via `ground` when 3 fix attempts have failed. The debugging scope ends and the architectural scope begins.
+
+Fail condition:
+- fourth fix attempt without questioning the architecture — agent continued to apply fixes past the point where the methodology indicated an architectural problem.
+
 ### `third-force -> documentation`
 Requirement:
 - structural fixes that change operational instructions are reflected in CLAUDE.md, CONTRIBUTING.md, or WORKFLOW.md.
@@ -111,6 +125,7 @@ Fail condition:
 6. Do not land user-visible changes without a CHANGELOG entry.
 7. Do not treat stale documentation as authoritative over code behavior.
 8. Do not collapse the triad by routing around operational friction — resolve it structurally or file an issue.
+9. Do not propose fixes without root-cause investigation when the cause is unclear.
 
 ## Quick Compliance Checklist
 
@@ -122,3 +137,4 @@ Fail condition:
 - [ ] Documentation review completed before verification.
 - [ ] User-facing changes include CHANGELOG entry.
 - [ ] Documentation coverage status recorded at completion.
+- [ ] Root-cause investigation completed before fix when cause was unclear.

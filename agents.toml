@@ -19,5 +19,5 @@ using_groundwork = { gh = "pentaxis93/groundwork", path = "skills/using-groundwo
 third_force = { gh = "pentaxis93/groundwork", path = "skills/third-force" }
 subagent_driven_development = { gh = "obra/superpowers", path = "skills/subagent-driven-development", rev = "e4a2375cb705ca5800f0833528ce36a3faf9017a" }
 test_first = { gh = "pentaxis93/groundwork", path = "skills/test-first" }
-systematic_debugging = { gh = "obra/superpowers", path = "skills/systematic-debugging", rev = "e4a2375cb705ca5800f0833528ce36a3faf9017a" }
+systematic_debugging = { gh = "pentaxis93/groundwork", path = "skills/systematic-debugging" }
 verification_before_completion = { gh = "pentaxis93/groundwork", path = "skills/verification-before-completion" }
