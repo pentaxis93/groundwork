@@ -115,6 +115,8 @@ jobs:
             const path = require("node:path");
 
             const MARKER = "<!-- codex-inline-review -->";
+            const OVERALL_MARKER = "<!-- codex-overall-review -->";
+            const MAX_REVIEW_COMMENT_CHARS = 60000;
             const REVIEW_FILE = process.env.REVIEW_FILE || "codex-review.md";
             const OUTPUT_JSONL = process.env.OUTPUT_JSONL || "codex-review.jsonl";
             const workspace = (process.env.GITHUB_WORKSPACE || "").replace(/\\/g, "/");
@@ -199,6 +201,50 @@ jobs:
 
             if (!findings.length) {
               core.info("No line-addressable findings were parsed from Codex output.");
+
+              const trimmedReview = reviewText.trim();
+              const reviewBody = trimmedReview
+                ? trimmedReview.length > MAX_REVIEW_COMMENT_CHARS
+                  ? `${trimmedReview.slice(0, MAX_REVIEW_COMMENT_CHARS)}\n\n_(Review text truncated for GitHub comment limits.)_`
+                  : trimmedReview
+                : "_Codex produced no review text._";
+
+              const overallBody = [
+                OVERALL_MARKER,
+                "Codex overall review (no line-addressable findings).",
+                "",
+                reviewBody,
+                "",
+                `Raw outputs: ${REVIEW_FILE}, ${OUTPUT_JSONL}`,
+              ].join("\n");
+
+              const issueComments = await github.paginate(
+                github.rest.issues.listComments,
+                { owner, repo, issue_number: pullNumber, per_page: 100 }
+              );
+              const existingOverall = issueComments.find(
+                (comment) =>
+                  comment.user?.login === "github-actions[bot]" &&
+                  typeof comment.body === "string" &&
+                  comment.body.includes(OVERALL_MARKER)
+              );
+
+              if (existingOverall) {
+                await github.rest.issues.updateComment({
+                  owner,
+                  repo,
+                  comment_id: existingOverall.id,
+                  body: overallBody,
+                });
+              } else {
+                await github.rest.issues.createComment({
+                  owner,
+                  repo,
+                  issue_number: pullNumber,
+                  body: overallBody,
+                });
+              }
+
               return;
             }
 
