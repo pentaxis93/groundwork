@@ -39,3 +39,12 @@ Issues are mirrored locally in `.issues/open/` and `.issues/closed/` via `gh-iss
 When you encounter operational friction — a missing tool, a broken config, a stale convention, an undocumented requirement — do not route around it. Stop, step outside, and resolve the structural cause permanently before continuing your original task. Structural fixes include: installing a tool, fixing a configuration, updating documentation (including this file), adding a CLAUDE.md instruction, filing an issue for deeper work.
 
 For the full methodology, see the `third-force` skill.
+
+## Codex Review Guidelines
+
+Automated PR review runs in CI via `codex exec review`. Keep review output focused on actionable engineering risk in changed code.
+
+- Prioritize correctness, regressions, security, data integrity, and reliability.
+- Tie each finding to a precise file and line range.
+- Explain concrete impact and a minimal fix direction.
+- Avoid style-only or speculative nits unless they create a real defect risk.
