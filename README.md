@@ -83,6 +83,17 @@ Issue sync troubleshooting:
   `gh-issue-sync pull`
   `gh-issue-sync status`
 
+## Logo Assets
+
+Logo sources and generation tooling are under [`assets/logo/`](assets/logo/).  
+Regenerate derived branding assets from repo root with:
+
+```bash
+python3 assets/logo/generate.py
+```
+
+See [`assets/logo/README.md`](assets/logo/README.md) for dependency setup and output details.
+
 ## Project Layout
 
 ```

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+  <style>
+    .layer-1 { fill: #BDA06A; }
+    .layer-2 { fill: #9B7A3C; }
+    .layer-3 { fill: #7A5C1F; }
+  </style>
+  <rect class="layer-1" x="17.92" y="18.6" width="92.16" height="24.5" rx="4"/>
+  <rect class="layer-2" x="17.92" y="51.7" width="92.16" height="24.5" rx="4"/>
+  <rect class="layer-3" x="17.92" y="84.9" width="92.16" height="24.5" rx="4"/>
+</svg>
