@@ -1,6 +1,6 @@
 # ADR-0002: Groundwork Frontmatter Format
 
-**Status:** Accepted
+**Status:** Provisional
 **Date:** 2026-03-05
 
 ## Context

@@ -1,6 +1,6 @@
 # ADR-0004: Internal Development History Policy
 
-**Status:** Accepted \
+**Status:** Provisional \
 **Date:** 2026-03-10
 
 ## Context

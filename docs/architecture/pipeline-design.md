@@ -92,7 +92,7 @@ Epic 1 implementation integration (`#36`):
 - Pipeline operating contract: `docs/architecture/pipeline-contract.md`
 - System overview: `ARCHITECTURE.md`
 - Integration manual: `WORKFLOW.md`
-- Accepted architecture decisions:
-  - `docs/architecture/decisions/0001-pipeline-integration-strategy.md`
+- Current provisional architecture decisions:
   - `docs/architecture/decisions/0002-groundwork-frontmatter-format.md`
   - `docs/architecture/decisions/0003-artifact-frontmatter-format.md`
+  - `docs/architecture/decisions/0004-internal-development-history-policy.md`

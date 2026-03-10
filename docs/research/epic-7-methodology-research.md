@@ -377,7 +377,7 @@ It maps precisely to FDD's "Design by Feature" phase: the Chief Programmer produ
 3. Keep `writing-plans` as a curated skill available for explicit invocation
 4. Update its routing table entry: "when the operator explicitly requests a prescriptive step-by-step playbook"
 
-**Impact on `brainstorming`:** The curated `brainstorming` skill hard-routes its terminal state to `writing-plans` ("The ONLY skill you invoke after brainstorming is writing-plans"). Since `brainstorming` is curated (obra/superpowers, pinned commit), groundwork cannot modify it directly. The pipeline documentation must override this routing: after brainstorming produces a design document, the pipeline routes to `plan` (for design convergence) or `issue-craft` (for issue decomposition). This is the established pattern per ADR-0001: documentation overlays handle pipeline integration for curated skills. If this override proves insufficient in practice, `brainstorming` becomes a candidate for a wrapper skill (Epic 3).
+**Impact on `brainstorming`:** The curated `brainstorming` skill hard-routes its terminal state to `writing-plans` ("The ONLY skill you invoke after brainstorming is writing-plans"). Since `brainstorming` is curated (obra/superpowers, pinned commit), groundwork cannot modify it directly. The pipeline documentation must override this routing: after brainstorming produces a design document, the pipeline routes to `plan` (for design convergence) or `issue-craft` (for issue decomposition). This follows the repository's documentation-overlay approach for integrating curated skills at pipeline boundaries. If this override proves insufficient in practice, `brainstorming` becomes a candidate for a wrapper skill (Epic 3).
 
 **Decision Gate G4 resolution:** Option (c) -- let `issue-craft` absorb the territory. Creating a wrapper that constrains `writing-plans` to contract-level granularity (option a) would produce `issue-craft` by another name. Replacing it with a different skill (option b) is unnecessary since `issue-craft` already occupies the sovereign decomposition territory.
 
@@ -498,7 +498,7 @@ Only one curated skill requires a wrapper:
 **`brainstorming`** -- Its hard terminal routing ("The ONLY skill you invoke after brainstorming is writing-plans") conflicts with the pipeline's sovereignty model. The wrapper must:
 1. Preserve brainstorming's core value (exploring 2-3 design approaches with trade-offs)
 2. Override the terminal state to route to `plan` (for design convergence) or `issue-craft` (for issue decomposition)
-3. Not modify the curated skill directly (per ADR-0001)
+3. Not modify the curated skill directly; preserve the documentation-overlay approach
 
 The first attempt should be a documentation overlay in WORKFLOW.md and `using-groundwork`. If the override proves insufficient in practice (agents follow brainstorming's internal routing despite pipeline documentation), escalate to a wrapper skill that wraps the curated skill with corrected routing.
 
@@ -563,6 +563,5 @@ Ordered by dependency and leverage:
 - `skills/land/SKILL.md` -- closeout workflow
 - `.claude/skills/writing-plans/SKILL.md` -- curated implementation planning skill
 - `docs/architecture/pipeline-contract.md` -- formal handoff contracts
-- `docs/architecture/decisions/0001-pipeline-integration-strategy.md` -- curate-vs-own ADR
 - `WORKFLOW.md` -- integration manual
 - `ARCHITECTURE.md` -- system architecture
