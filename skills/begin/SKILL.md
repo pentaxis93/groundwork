@@ -8,8 +8,6 @@ description: >-
 
 # Begin — Work Selection & Initiation
 
-**Version 2.1**
-
 ## Overview
 
 Use this skill to start a work session: choose what to work on, prepare the
