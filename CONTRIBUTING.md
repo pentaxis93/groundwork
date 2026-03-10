@@ -75,28 +75,34 @@ The `origin:` field in `SKILL.md` frontmatter must:
 - `skills/plan/LICENSE-UPSTREAM` — adapted from OpenAI Codex (Apache-2.0), with itemized derived vs. original elements
 - `skills/test-first/LICENSE-UPSTREAM` — adapted from obra/superpowers (MIT), with description of preserved portions
 
-## Skill Authoring Boundary
+## Skill Quality Standards
 
-Groundwork stores the skills it ships, but it does not ship its own
-skill-authoring toolchain. Use the external sibling repository
-`/home/pentaxis93/src/skill-creator` when you need to:
+Groundwork cares about the quality and compatibility of the skills it ships,
+not which authoring tool produced them. A contribution meets the skill
+authoring bar when the tracked output is well-formed and integrates cleanly
+with the live methodology.
 
-- create a new skill
-- regenerate an existing Groundwork skill
-- evaluate whether a skill change actually improves behavior
+A repo-tracked skill contribution must:
 
-Treat Groundwork as the destination for committed skill outputs and pipeline
-documentation:
+- live at `skills/<skill-name>/SKILL.md`
+- use YAML frontmatter with, at minimum, `name` and `description`
+- include `metadata`, `origin`, and `replaces` fields when they apply
+- include a co-located `LICENSE-UPSTREAM` file when the skill adapts upstream
+  material, and reference it from `origin:` metadata
+- include a valid `groundwork:` frontmatter block when the skill participates
+  in runtime pipeline contracts; follow the accepted format in
+  `docs/architecture/decisions/0002-groundwork-frontmatter-format.md`
+- use valid Markdown/plain text encoding and stable relative references so the
+  skill can be installed and read without local-environment assumptions
 
-1. Do the authoring or regeneration work in `skill-creator`
-2. Bring the resulting `SKILL.md` content or curation change back into this repo
-3. If the skill adapts upstream material, add a `LICENSE-UPSTREAM` file alongside `SKILL.md` and include an `origin:` field in frontmatter referencing it. See [Upstream Attribution](#upstream-attribution).
-4. Update `skills/skills.toml`, `agents.toml`, README/WORKFLOW entries,
-   ADRs, and CHANGELOG only if the shipped Groundwork inventory or methodology
-   changes
+When a skill contribution changes the shipped Groundwork inventory or
+methodology, update the corresponding manifest and documentation surfaces in
+this repository (`skills/skills.toml`, `agents.toml`, README/WORKFLOW entries,
+pipeline docs, ADRs, CHANGELOG) so the tracked project state stays accurate.
 
-Do not add `skill-creator` to `agents.toml` or `skills/skills.toml`.
-It is contributor tooling, not part of Groundwork's runtime skill inventory.
+Contributor tooling is not part of Groundwork's runtime skill inventory. Only
+add entries to `agents.toml` or `skills/skills.toml` for skills Groundwork
+actually ships.
 
 ## Agent Workspace Policy
 
