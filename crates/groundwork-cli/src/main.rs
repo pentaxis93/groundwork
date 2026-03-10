@@ -834,7 +834,7 @@ fn fetch_remote_manifest_text() -> Result<String> {
         bail!("gh CLI not found");
     }
 
-    run_command_capture(&[
+    run_command_capture_raw(&[
         "gh",
         "api",
         "-H",
@@ -1911,6 +1911,26 @@ fn run_command_capture(args: &[&str]) -> Result<String> {
     Ok(String::from_utf8_lossy(&output.stdout).trim().to_string())
 }
 
+fn run_command_capture_raw(args: &[&str]) -> Result<String> {
+    let (program, rest) = args
+        .split_first()
+        .ok_or_else(|| anyhow!("empty command invocation"))?;
+    let output = Command::new(program)
+        .args(rest)
+        .output()
+        .with_context(|| format!("failed to run `{}`", args.join(" ")))?;
+    if !output.status.success() {
+        bail!(
+            "command `{}` failed: {}",
+            args.join(" "),
+            String::from_utf8_lossy(&output.stderr)
+        );
+    }
+
+    String::from_utf8(output.stdout)
+        .with_context(|| format!("command `{}` emitted non-UTF8 output", args.join(" ")))
+}
+
 fn run_command_capture_in_dir(args: &[&str], cwd: &Path) -> Result<String> {
     let (program, rest) = args
         .split_first()
@@ -2786,6 +2806,13 @@ No local changes
         assert!(err
             .to_string()
             .contains("failed to capture gh-issue-sync version"));
+    }
+
+    #[test]
+    fn raw_command_capture_preserves_trailing_newline() {
+        let out =
+            run_command_capture_raw(&["sh", "-c", "printf 'manifest-line\\n'"]).expect("capture");
+        assert_eq!(out, "manifest-line\n");
     }
 
     #[test]
