@@ -48,7 +48,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - Renamed `planning` skill to `next-issue`; added separate `plan` skill for design convergence
 - Reframed sovereignty as a fractal principle (applies at every interface, not just human-agent)
 - Removed the prescriptive step-script decomposition skill from the curated set and live pipeline docs; rationale recorded in [`docs/research/epic-7-methodology-research.md`](docs/research/epic-7-methodology-research.md). Live methodology docs no longer route work through the deprecated intermediary planning handoff.
-- Removed the curated skill-authoring meta-skill from runtime docs/config and adopted external `skill-creator` as the contributor-facing skill-authoring system, so first-session agents only load pipeline-relevant skills.
+- Replaced tool-specific skill-authoring policy with tool-agnostic skill acceptance standards in contributor docs, removed ADR-0004, and stripped active local-path authoring prescriptions from project documentation.
 - Replaced the separate curated manifest plus hardcoded local-skill inventory with one shipped-skill manifest at `skills/skills.toml`, flattened tracked skill paths under `skills/`, and made `groundwork list` follow that manifest order.
 
 ### Fixed
