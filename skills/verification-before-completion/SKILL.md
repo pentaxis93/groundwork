@@ -9,17 +9,7 @@ description: >-
 metadata:
   version: "1.0.0"
   updated: "2026-03-09"
-  origin: >-
-    Adapted from Jesse Vincent's verification-before-completion skill in
-    obra/superpowers (https://github.com/obra/superpowers, MIT license,
-    pinned at e4a2375). The original is a standalone verification discipline
-    forged through real use. This skill preserves substantial portions of the
-    original — the Iron Law, the gate function, the common-failures table,
-    the anti-rationalization patterns, and the red flags list — and adds
-    lifecycle positioning, corruption modes, and cross-references following
-    groundwork conventions. See LICENSE-UPSTREAM for the full copyright
-    notice and license terms.
-  replaces: "verification-before-completion (obra/superpowers)"
+  origin: "Adapted from obra/superpowers (MIT). See LICENSE-UPSTREAM."
 ---
 
 # Verification Before Completion

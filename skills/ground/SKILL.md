@@ -11,18 +11,6 @@ description: >-
 metadata:
   version: "3.0.0"
   updated: "2026-03-08"
-  origin: >-
-    Successor to clean-slate. The predecessor caught migration failures
-    (fabricated switching costs, compatibility layering) but missed the
-    broader pattern: agents default to inherited thinking in ALL generative
-    work. The same instinct that fabricates switching costs also accepts
-    problem statements uncritically, copies categories from adjacent systems,
-    and preserves complexity out of fear. v3.0 broadened scope beyond
-    generative work to cover all first-principles reasoning — strategic
-    analysis, cost decomposition, problem reframing, and any context where
-    assumed constraints need stripping. Added active excavation techniques
-    and multiple decomposition modes.
-  replaces: "clean-slate"
 ---
 
 # Ground

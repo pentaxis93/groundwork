@@ -9,19 +9,7 @@ description: >-
 metadata:
   version: "1.0.0"
   updated: "2026-03-09"
-  origin: >-
-    Adapted from Jesse Vincent's systematic-debugging skill in
-    obra/superpowers (https://github.com/obra/superpowers, MIT license,
-    pinned at e4a2375). The original is a standalone debugging discipline
-    with a four-phase investigation model, 3-fix architectural escalation
-    rule, and evidence-gathering-before-fixing discipline. This skill
-    preserves substantial portions of the original — the Iron Law, the
-    investigation phases, the escalation rule, the anti-rationalization
-    patterns — and restructures them as a cross-cutting discipline that
-    composes bidirectionally with groundwork's test-first, verification,
-    ground, and third-force skills. See LICENSE-UPSTREAM for the full
-    copyright notice and license terms.
-  replaces: "systematic-debugging (obra/superpowers)"
+  origin: "Adapted from obra/superpowers (MIT). See LICENSE-UPSTREAM."
 ---
 
 # Systematic Debugging
