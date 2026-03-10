@@ -41,13 +41,6 @@ To add a new shipped skill maintained in this repository:
 4. Add the skill to the skills table in `README.md` and the routing table in `WORKFLOW.md`
 5. If the skill participates in handoff contracts, update `docs/architecture/pipeline-contract.md`
 
-To add a shipped skill maintained upstream:
-
-1. Add the skill entry to `skills/skills.toml` with its pinned `rev`
-2. Run `groundwork update` to sync
-
-Curated skills fetched via `sk sync` from external `gh` references are not stored in this repo's tree — no `LICENSE-UPSTREAM` file is needed here. The upstream repo's own license governs the fetched content. To verify a curated skill's license, check its upstream repository directly.
-
 ## Upstream Attribution
 
 Any skill in `skills/` that adapts, derives from, or reproduces substantial portions of upstream work must include a `LICENSE-UPSTREAM` file co-located with `SKILL.md`.

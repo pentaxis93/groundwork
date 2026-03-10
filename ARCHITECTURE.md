@@ -14,16 +14,21 @@ Each skill is a single SKILL.md file with YAML frontmatter (`name`, `description
 
 ```
 skills/
-  skills.toml        authoritative shipped-skill manifest
-  using-groundwork/  methodology orientation
-  ground/            first-principles grounding
-  research/          external evidence gathering
-  bdd/               behavior contract definition
-  plan/              design convergence
-  issue-craft/       issue lifecycle
-  begin/             work initiation
-  documentation/     documentation review/update
-  land/              closeout workflow
+  skills.toml                  authoritative shipped-skill manifest
+  using-groundwork/            methodology orientation
+  ground/                      first-principles grounding
+  research/                    external evidence gathering
+  bdd/                         behavior contract definition
+  plan/                        design convergence
+  issue-craft/                 issue lifecycle
+  begin/                       work initiation
+  test-first/                  test-first development
+  systematic-debugging/        root-cause investigation
+  third-force/                 friction resolution
+  documentation/               documentation review/update
+  verification-before-completion/  completion gate
+  propose/                     commit, push, PR creation
+  land/                        closeout workflow
 ```
 
 The directory structure is storage, not the methodology model. Order and inventory come from `skills/skills.toml`; the workflow narrative explains how those skills relate.
@@ -32,7 +37,7 @@ The directory structure is storage, not the methodology model. Order and invento
 
 `crates/groundwork-cli/` is a Rust binary that reads `skills/skills.toml`, fetches skills via [`sk`](https://github.com/nickarora/sk), and populates the consumer's `agents.toml`. Commands: `init`, `update`, `list`, `doctor`. The CLI is a thin install layer — it has no role at runtime.
 
-`skills/skills.toml` pins upstream skill sources to specific commits and lists the local ones by path. The CLI embeds this manifest at compile time, so it works outside the repository.
+`skills/skills.toml` lists all shipped skills by path. The CLI embeds this manifest at compile time, so it works outside the repository.
 
 ### agents.toml (the configuration)
 
@@ -44,15 +49,7 @@ The directory structure is storage, not the methodology model. Order and invento
 
 ## Composition Model
 
-Groundwork ships skills from two maintenance locations, but inventory is unified in one manifest:
-
-Skills maintained in this repository are listed in `skills/skills.toml` with local paths under `skills/`. These skills define the pipeline's structure — what stages exist, what handoff contracts connect them, and what cognitive discipline the pipeline enforces.
-
-Skills maintained upstream (from [obra/superpowers](https://github.com/obra/superpowers)) are listed in the same manifest with pinned commits and fetched at install time. They fill the execution phase — subagent orchestration — where high-quality implementations already exist.
-
-Curated skills are pinned to a specific commit. They are not forked, vendored, or modified. Integration happens through documentation: WORKFLOW.md defines handoff rules that connect curated skills to the pipeline's input/output contracts.
-
-This model works when upstream skills have general context assumptions (TDD, debugging). It is under tension for boundary skills where pipeline-specific behavior matters — see `docs/architecture/decisions/` for the design record on curate-vs-own decisions.
+All skills are maintained in this repository under `skills/` and listed in `skills/skills.toml`. Each skill defines its pipeline position, handoff contracts, and cognitive discipline. Skills that adapt upstream work include a `LICENSE-UPSTREAM` file and `origin:` metadata documenting lineage.
 
 ## Pipeline as Integration Architecture
 
@@ -61,12 +58,13 @@ The five stages are not a taxonomy — they are an integration architecture. Eac
 1. **Frame constraints** (`ground`, `research`) produces verified constraints and substantiated evidence
 2. **Define behavior** (`bdd`) produces Given/When/Then behavior contracts
 3. **Decompose** (`issue-craft`, `begin`, `plan`) produces executable issues and implementation designs
-4. **Execute and verify** (curated skills) produces tested implementations and review evidence
+4. **Execute and verify** (`test-first`, `verification-before-completion`, `propose`) produces tested implementations and review evidence
 5. **Land** (`land`) produces closed issues, merged code, and behavior coverage records
 
-Two cross-cutting disciplines run through all stages rather than belonging to one:
+Three cross-cutting disciplines run through all stages rather than belonging to one:
 - **BDD thread**: behavior contracts from stage 2 thread through planning, execution, verification, and closure
 - **Documentation thread** (`documentation`): documentation review fires at every stage, not just at the end
+- **Debugging thread** (`systematic-debugging`, `third-force`): root-cause investigation and friction resolution fire at any stage when failures or obstacles appear
 
 Formal handoff contracts and anti-divergence rules are defined in `docs/architecture/pipeline-contract.md`.
 
