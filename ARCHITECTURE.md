@@ -44,15 +44,7 @@ The directory structure is storage, not the methodology model. Order and invento
 
 ## Composition Model
 
-Groundwork ships skills from two maintenance locations, but inventory is unified in one manifest:
-
-Skills maintained in this repository are listed in `skills/skills.toml` with local paths under `skills/`. These skills define the pipeline's structure — what stages exist, what handoff contracts connect them, and what cognitive discipline the pipeline enforces.
-
-Skills maintained upstream (from [obra/superpowers](https://github.com/obra/superpowers)) are listed in the same manifest with pinned commits and fetched at install time. They fill the execution phase — subagent orchestration — where high-quality implementations already exist.
-
-Curated skills are pinned to a specific commit. They are not forked, vendored, or modified. Integration happens through documentation: WORKFLOW.md defines handoff rules that connect curated skills to the pipeline's input/output contracts.
-
-This model works when upstream skills have general context assumptions (TDD, debugging). It is under tension for boundary skills where pipeline-specific behavior matters — see `docs/architecture/decisions/` for the design record on curate-vs-own decisions.
+All skills are maintained in this repository under `skills/` and listed in `skills/skills.toml`. Each skill defines its pipeline position, handoff contracts, and cognitive discipline. Skills that adapt upstream work include a `LICENSE-UPSTREAM` file and `origin:` metadata documenting lineage.
 
 ## Pipeline as Integration Architecture
 
@@ -61,7 +53,7 @@ The five stages are not a taxonomy — they are an integration architecture. Eac
 1. **Frame constraints** (`ground`, `research`) produces verified constraints and substantiated evidence
 2. **Define behavior** (`bdd`) produces Given/When/Then behavior contracts
 3. **Decompose** (`issue-craft`, `begin`, `plan`) produces executable issues and implementation designs
-4. **Execute and verify** (curated skills) produces tested implementations and review evidence
+4. **Execute and verify** (`test-first`, `systematic-debugging`, `verification-before-completion`, `propose`) produces tested implementations and review evidence
 5. **Land** (`land`) produces closed issues, merged code, and behavior coverage records
 
 Two cross-cutting disciplines run through all stages rather than belonging to one:

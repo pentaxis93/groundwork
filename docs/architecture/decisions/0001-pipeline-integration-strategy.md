@@ -1,7 +1,9 @@
 # ADR-0001: Pipeline Integration Strategy
 
-**Status:** Accepted
+**Status:** Accepted — **Superseded by:** #99
 **Date:** 2026-03-05
+
+> **Note (2026-03-10):** All skills are now groundwork-native. The curate-vs-own framework below is historical context; the "own" path won for every skill that reached a pipeline boundary.
 
 ## Context
 

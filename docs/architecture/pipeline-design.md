@@ -80,12 +80,12 @@ Epic 1 implementation integration (`#36`):
 - `groundwork check` command and full graph/state computation.
 - `pipeline.toml` parsing and approval policy configuration.
 - Extended schema set beyond Epic 1 (for example `intake-spec`, `design-exploration`, `execution-steps`, `review-record`, `documentation-review-record`).
-- Wrapper skill topology for curated boundary skills.
+- Wrapper skill topology for boundary skills.
 
 ### Structural/decomposition open area (`Pending`)
 
 - Decomposition-stage topology is settled in the live pipeline as `plan` for convergence and `issue-craft` for executable work units.
-- Wrapper-skill policy for curated boundary skills remains open beyond the current decomposition routing.
+- Wrapper-skill policy for boundary skills remains open beyond the current decomposition routing.
 
 ## Source of Truth and Cross-References
 

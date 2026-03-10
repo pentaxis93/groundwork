@@ -10,8 +10,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 - Five-stage methodology pipeline: frame constraints, define behavior, decompose, execute and verify, land
 - Ten core skills: `ground`, `research`, `bdd`, `issue-craft`, `begin`, `plan`, `test-first`, `documentation`, `land`, and `using-groundwork` (methodology orientation)
-- Two curated skills from [obra/superpowers](https://github.com/obra/superpowers): `subagent-driven-development`, `systematic-debugging`
-- Rust CLI (`groundwork init`, `update`, `list`, `doctor`) with curated manifest and `sk` integration
+- Rust CLI (`groundwork init`, `update`, `list`, `doctor`) with shipped-skill manifest and `sk` integration
 - Automatic `gh-issue-sync` installation during `groundwork init`
 - Schema distribution in CLI: `init/update` now provision `.groundwork/schemas/`, create `.groundwork/artifacts/`, and `doctor` reports schema completeness/drift
 - Pipeline contract with formal handoff rules and anti-divergence checks (`docs/architecture/pipeline-contract.md`)
@@ -22,13 +21,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Removed
 
-- Removed curated `subagent-driven-development` (obra/superpowers) — the last external skill dependency. Investigation found no real exigence: fresh-subagent isolation is default tool behavior, two-stage review is covered by CI, and remaining patterns are basic prompt engineering. Two genuinely useful insights (use fresh subagents to manage context across multi-task execution; match subagent model to task complexity) preserved as integrated guidance in `using-groundwork` stage 4 and `WORKFLOW.md` stage 4.
+- Removed `subagent-driven-development` — the last external skill dependency. No real exigence: fresh-subagent isolation is default tool behavior, two-stage review is covered by CI, remaining patterns are basic prompt engineering. Two useful insights preserved as integrated guidance in `using-groundwork` stage 4 and `WORKFLOW.md` stage 4.
 
 ### Changed
 
-- Replaced curated `verification-before-completion` (obra/superpowers) with groundwork-native original (v1.0.0). Preserves core discipline (Iron Law, gate function, common-failures table, anti-rationalization patterns, red flags). Adds Lifecycle Role section establishing pipeline position, Corruption Modes section, and cross-references. Removes superpowers-specific vocabulary.
+- Added groundwork-native `verification-before-completion` (v1.0.0). Preserves core discipline (Iron Law, gate function, common-failures table, anti-rationalization patterns, red flags). Adds Lifecycle Role section establishing pipeline position, Corruption Modes section, and cross-references.
 - Documented upstream attribution convention in CONTRIBUTING.md: LICENSE-UPSTREAM requirements for adapted skills, origin metadata standard, curated-skills attribution reasoning, and attribution checklist at the skill-authoring boundary
-- Replaced curated `test-driven-development` (obra/superpowers) with groundwork-native `test-first` skill (v1.0.0). Preserves core discipline (Iron Law, red-green-refactor, delete-and-start-over, anti-rationalization patterns) while adding bidirectional composition with `bdd`, `verification-before-completion`, `systematic-debugging`, and `documentation`. Lifecycle Role section establishes pipeline position. Corruption Modes section added. Language-agnostic examples replace TypeScript-only. Companion `testing-anti-patterns.md` migrated to `references/`.
+- Added groundwork-native `test-first` skill (v1.0.0). Preserves core discipline (Iron Law, red-green-refactor, delete-and-start-over, anti-rationalization patterns) while adding bidirectional composition with `bdd`, `verification-before-completion`, `systematic-debugging`, and `documentation`. Lifecycle Role section establishes pipeline position. Corruption Modes section added. Language-agnostic examples replace TypeScript-only. Companion `testing-anti-patterns.md` migrated to `references/`.
 - `ground` skill upgraded to v3.0.0: broadened from design-only to full first-principles cognitive discipline covering strategic analysis, cost decomposition, and problem reframing. Added Active Excavation section (Socratic Drilling, Recursive Why). Decompose step now supports three modes (requirements, constituent, process) with Orient determining which applies. Orient step broadened with mode-specific questions. New "Structure survey as analysis" corruption mode. All existing patterns and corruption modes retained.
 - Renamed `next-issue` skill to `begin`; session lifecycle is now `begin` → `propose` → `land`
 - `ground` skill upgraded to v2.2.0: consolidated patterns from 17 to 12 by merging overlaps (#2+#10 → "Description as Design", #3+#4 → "Borrowed Structure", #5+BC#3+BC#5 → "Precedent as Constraint"). Merged Decision Protocol into The Move as steps 4–5 (Compare, Default). Folded backward-compat patterns into main section as "Preservation Variants" subsection. Deleted Exponential Context section. Trimmed "When to Ground" to trigger question only. 193 → 153 lines, no recognition power lost. Patch bump: structural consolidation, no behavioral change.
@@ -47,7 +46,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - Rewrote README from first principles around the pipeline concept
 - Renamed `planning` skill to `next-issue`; added separate `plan` skill for design convergence
 - Reframed sovereignty as a fractal principle (applies at every interface, not just human-agent)
-- Removed the prescriptive step-script decomposition skill from the curated set and live pipeline docs; rationale recorded in [`docs/research/epic-7-methodology-research.md`](docs/research/epic-7-methodology-research.md). Live methodology docs no longer route work through the deprecated intermediary planning handoff.
+- Removed the prescriptive step-script decomposition skill from the skill inventory and live pipeline docs; rationale recorded in [`docs/research/epic-7-methodology-research.md`](docs/research/epic-7-methodology-research.md). Live methodology docs no longer route work through the deprecated intermediary planning handoff.
 - Replaced tool-specific skill-authoring policy with tool-agnostic skill acceptance standards in contributor docs, removed ADR-0004, and stripped active local-path authoring prescriptions from project documentation.
 - Replaced the separate curated manifest plus hardcoded local-skill inventory with one shipped-skill manifest at `skills/skills.toml`, flattened tracked skill paths under `skills/`, and made `groundwork list` follow that manifest order.
 
