@@ -86,7 +86,7 @@ A repo-tracked skill contribution must:
 - live at `skills/<skill-name>/SKILL.md`
 - use YAML frontmatter with, at minimum, `name` and `description`
 - include `metadata` and `origin` fields when they apply (see Origin metadata
-  standard below; `replaces` is not used)
+  standard above; `replaces` is not used)
 - include a co-located `LICENSE-UPSTREAM` file when the skill adapts upstream
   material, and reference it from `origin:` metadata
 - include a valid `groundwork:` frontmatter block when the skill participates

@@ -1,6 +1,6 @@
 # ADR-0004: Internal Development History Policy
 
-**Status:** Accepted
+**Status:** Accepted \
 **Date:** 2026-03-10
 
 ## Context
@@ -51,7 +51,8 @@ Two rules based on whether upstream work is involved:
 
 - **Upstream-adapted skills:** Terse attribution pointer — upstream project,
   license, and a reference to `LICENSE-UPSTREAM`. No narrative about what was
-  preserved, adapted, or restructured (that detail lives in LICENSE-UPSTREAM).
+  preserved, adapted, or restructured (that detail, including the pinned
+  commit hash, lives in LICENSE-UPSTREAM).
   Format: `"Adapted from <project> (<license>). See LICENSE-UPSTREAM."`
 
 - **Internal-only skills:** No `origin:` field. Internal genealogy (skill A
