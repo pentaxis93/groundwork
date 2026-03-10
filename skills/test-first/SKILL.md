@@ -10,17 +10,7 @@ description: >-
 metadata:
   version: "1.0.0"
   updated: "2026-03-08"
-  origin: >-
-    Adapted from Jesse Vincent's test-driven-development skill in
-    obra/superpowers (https://github.com/obra/superpowers, MIT license,
-    pinned at e4a2375). The original is a standalone TDD discipline with
-    TypeScript examples and superpowers-context vocabulary. This skill
-    preserves substantial portions of the original — the Iron Law,
-    red-green-refactor, delete-and-start-over, anti-rationalization
-    patterns — and integrates them bidirectionally with groundwork's BDD,
-    verification, debugging, and documentation skills. See LICENSE-UPSTREAM
-    for the full copyright notice and license terms.
-  replaces: "test-driven-development (obra/superpowers)"
+  origin: "Adapted from obra/superpowers (MIT). See LICENSE-UPSTREAM."
 ---
 
 # Test-First

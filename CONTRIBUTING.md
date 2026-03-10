@@ -56,12 +56,18 @@ If the skill preserves structural frameworks, tables, terminology, enumerated li
 
 ### Origin metadata standard
 
-The `origin:` field in `SKILL.md` frontmatter must:
+The `origin:` field in `SKILL.md` frontmatter is a terse attribution pointer,
+not a development narrative. See
+[ADR-0004](docs/architecture/decisions/0004-internal-development-history-policy.md)
+for the full policy.
 
-- Name the upstream author or organization
-- Identify the correct license (verify — do not assume)
-- Reference `LICENSE-UPSTREAM` when one exists
-- Honestly characterize the degree of derivation (e.g. "preserves substantial portions" vs. "adapted from" vs. "inspired by")
+- **Upstream-adapted skills:** Format:
+  `"Adapted from <project> (<license>). See LICENSE-UPSTREAM."`
+  Detailed preservation/adaptation accounting belongs in `LICENSE-UPSTREAM`,
+  not in frontmatter.
+- **Internal-only skills:** No `origin:` field. Internal genealogy belongs in
+  git log and issue threads, not frontmatter.
+- The `replaces:` field is not used. Do not add it to new skills.
 
 ### Reference examples
 
@@ -79,7 +85,8 @@ A repo-tracked skill contribution must:
 
 - live at `skills/<skill-name>/SKILL.md`
 - use YAML frontmatter with, at minimum, `name` and `description`
-- include `metadata`, `origin`, and `replaces` fields when they apply
+- include `metadata` and `origin` fields when they apply (see Origin metadata
+  standard above; `replaces` is not used)
 - include a co-located `LICENSE-UPSTREAM` file when the skill adapts upstream
   material, and reference it from `origin:` metadata
 - include a valid `groundwork:` frontmatter block when the skill participates
@@ -109,7 +116,31 @@ actually ships.
 - Branch from `main`
 - Ensure `cargo test -p groundwork-cli` passes
 - Include a documentation review: check which docs need updating per the changes (see the `documentation` skill for the full procedure)
-- Add a CHANGELOG entry for user-visible changes
+- Add a CHANGELOG entry for user-visible changes (see CHANGELOG discipline
+  below)
+
+## CHANGELOG Discipline
+
+Only log user-visible changes. An entry belongs in CHANGELOG when an end user
+or adopting agent would notice the difference. Internal iteration — version
+bumps to individual skills, renames of internal concepts, add-then-remove
+cycles, policy doc rewrites — does not.
+
+The `[Unreleased]` section describes what ships, not what happened during
+development. See
+[ADR-0004](docs/architecture/decisions/0004-internal-development-history-policy.md).
+
+## ADR Lifecycle
+
+When an ADR is superseded:
+
+1. Update the `Status:` line: `Accepted — Superseded by: <reference>`
+2. Add a dated note after the status block explaining what changed
+3. Preserve the full body as historical record
+
+ADRs document *why* a decision was made. The superseded note tells readers to
+follow the pointer for current policy; the body preserves the reasoning. See
+[ADR-0004](docs/architecture/decisions/0004-internal-development-history-policy.md).
 
 ## Where to Look
 
