@@ -89,6 +89,7 @@ Epic 1 implementation integration (`#36`):
 
 ## Source of Truth and Cross-References
 
+- Foundational principles: `docs/PRINCIPLES.md`
 - Pipeline operating contract: `docs/architecture/pipeline-contract.md`
 - System overview: `ARCHITECTURE.md`
 - Integration manual: `WORKFLOW.md`

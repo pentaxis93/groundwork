@@ -121,7 +121,9 @@ WORKFLOW.md                 # Integration manual — the authoritative reference
 agents.toml                 # Skill system configuration (sk-compatible)
 ```
 
-## Design Principles
+## Design Commitments
+
+These commitments derive from the project's [foundational principles](docs/PRINCIPLES.md).
 
 **One pipeline, not a menu.** Skills are not independently selectable utilities. They form a single path with handoff contracts between stages. Skipping a stage means the next stage receives malformed input.
 
