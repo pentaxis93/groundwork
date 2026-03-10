@@ -15,6 +15,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - Schema distribution: `init/update` provision `.groundwork/schemas/` and `.groundwork/artifacts/`; `doctor` reports schema completeness and drift
 - Pipeline contract with formal handoff rules and anti-divergence checks (`docs/architecture/pipeline-contract.md`)
 - Integration manual (`WORKFLOW.md`) covering pipeline stages, BDD thread, documentation thread, issue-based development, and skill routing
+- Foundational principles document (`docs/PRINCIPLES.md`) with README and pipeline-design cross-references
 - Local issue mirroring via `gh-issue-sync`
 - Upstream attribution convention: `LICENSE-UPSTREAM` requirements for adapted skills, origin metadata standard (CONTRIBUTING.md)
 - Runtime manifest freshness: CLI fetches current `skills/skills.toml` from GitHub, falls back to embedded manifest with warning; `doctor` reports when they differ
