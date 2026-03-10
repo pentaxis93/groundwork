@@ -9,8 +9,6 @@ description: >-
 
 # Land — Merge, Sync, Cleanup, Close
 
-**Version 1.9**
-
 ## Overview
 
 Use this skill when the user wants full delivery closure in one command.

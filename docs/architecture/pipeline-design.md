@@ -10,7 +10,7 @@ This document uses three status labels to separate descriptive truth from normat
 - `Designed` — agreed target design, not fully implemented.
 - `Pending` — open question or research-dependent area.
 
-As of **March 6, 2026**, Epic 1 tasks `#33`, `#34`, `#35`, and `#36` are closed; Epic issue `#32` remains open for later epics.
+Epic 1 schema and CLI integration work is implemented; later pipeline work remains in the designed and pending sections below.
 
 ## As-Built Baseline (`Implemented`)
 

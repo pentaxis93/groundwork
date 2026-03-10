@@ -10,8 +10,6 @@ description: >-
 
 # Propose — Commit, Push, PR
 
-**Version 1.0**
-
 ## Overview
 
 Use this skill when implementation is complete and changes need to become a PR.
