@@ -57,9 +57,7 @@ If the skill preserves structural frameworks, tables, terminology, enumerated li
 ### Origin metadata standard
 
 The `origin:` field in `SKILL.md` frontmatter is a terse attribution pointer,
-not a development narrative. See
-[ADR-0004](docs/architecture/decisions/0004-internal-development-history-policy.md)
-for the full policy.
+not a development narrative.
 
 - **Upstream-adapted skills:** Format:
   `"Adapted from <project> (<license>). See LICENSE-UPSTREAM."`
@@ -90,15 +88,15 @@ A repo-tracked skill contribution must:
 - include a co-located `LICENSE-UPSTREAM` file when the skill adapts upstream
   material, and reference it from `origin:` metadata
 - include a valid `groundwork:` frontmatter block when the skill participates
-  in runtime pipeline contracts; follow the accepted format in
-  `docs/architecture/decisions/0002-groundwork-frontmatter-format.md`
+  in runtime pipeline contracts; follow the shipped skill and schema
+  conventions already used in this repository
 - use valid Markdown/plain text encoding and stable relative references so the
   skill can be installed and read without local-environment assumptions
 
 When a skill contribution changes the shipped Groundwork inventory or
 methodology, update the corresponding manifest and documentation surfaces in
 this repository (`skills/skills.toml`, `agents.toml`, README/WORKFLOW entries,
-pipeline docs, ADRs, CHANGELOG) so the tracked project state stays accurate.
+pipeline docs, CHANGELOG) so the tracked project state stays accurate.
 
 Contributor tooling is not part of Groundwork's runtime skill inventory. Only
 add entries to `agents.toml` or `skills/skills.toml` for skills Groundwork
@@ -127,23 +125,7 @@ bumps to individual skills, renames of internal concepts, add-then-remove
 cycles, policy doc rewrites — does not.
 
 The `[Unreleased]` section describes what ships, not what happened during
-development. See
-[ADR-0004](docs/architecture/decisions/0004-internal-development-history-policy.md).
-
-## ADR Lifecycle
-
-ADR status communicates reasoning confidence, not just chronology.
-
-- Use `Provisional` when a decision is in active use but has not yet been
-  grounded strongly enough to treat as settled.
-- Use `Superseded by: <reference>` when a newer decision replaces an older ADR
-  and the historical rationale should remain readable.
-- Preserve the body whenever an ADR remains in the repository as historical
-  record.
-
-ADRs document *why* a decision was made. Status tells readers whether the ADR
-is a working convention, settled current policy, or historical context. See
-[ADR-0004](docs/architecture/decisions/0004-internal-development-history-policy.md).
+development.
 
 ## Where to Look
 
