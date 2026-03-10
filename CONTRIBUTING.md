@@ -132,14 +132,17 @@ development. See
 
 ## ADR Lifecycle
 
-When an ADR is superseded:
+ADR status communicates reasoning confidence, not just chronology.
 
-1. Update the `Status:` line: `Accepted — Superseded by: <reference>`
-2. Add a dated note after the status block explaining what changed
-3. Preserve the full body as historical record
+- Use `Provisional` when a decision is in active use but has not yet been
+  grounded strongly enough to treat as settled.
+- Use `Superseded by: <reference>` when a newer decision replaces an older ADR
+  and the historical rationale should remain readable.
+- Preserve the body whenever an ADR remains in the repository as historical
+  record.
 
-ADRs document *why* a decision was made. The superseded note tells readers to
-follow the pointer for current policy; the body preserves the reasoning. See
+ADRs document *why* a decision was made. Status tells readers whether the ADR
+is a working convention, settled current policy, or historical context. See
 [ADR-0004](docs/architecture/decisions/0004-internal-development-history-policy.md).
 
 ## Where to Look

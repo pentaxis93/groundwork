@@ -1,6 +1,6 @@
 # ADR-0003: Artifact Frontmatter Format
 
-**Status:** Accepted
+**Status:** Provisional
 **Date:** 2026-03-05
 
 ## Context
