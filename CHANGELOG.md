@@ -58,3 +58,4 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - Unified skills table by pipeline stage instead of by source
 - Hardened CLI tool bootstrap security: `gh-issue-sync` auto-install now uses pinned release assets with SHA-256 verification, and install lock writing now fails if tool version capture is missing/empty instead of silently recording unknown provenance
 - Fixed stale groundwork-managed dependency pruning when no install lock exists: `init/update` now removes old `gh = "pentaxis93/groundwork"` entries under `skills/*` even without prior lock history, while preserving non-groundwork dependencies.
+- Fixed stale embedded manifest behavior in `groundwork init/update`: the CLI now attempts to fetch the current `skills/skills.toml` from GitHub at runtime and falls back to the embedded manifest with a warning when unavailable; `groundwork doctor` now reports when embedded and current repo manifests differ.
