@@ -174,13 +174,13 @@ impl SchemaSyncPlan {
     }
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Clone, Deserialize)]
 struct SkillsManifest {
     version: String,
     skills: Vec<ShippedSkill>,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Clone, Deserialize)]
 struct ShippedSkill {
     name: String,
     path: String,
@@ -316,7 +316,11 @@ fn run_install_in_directory(
     is_init: bool,
     options: &InstallOptions,
 ) -> Result<InstallResult> {
-    let manifest = read_manifest()?;
+    let manifest_outcome = read_manifest_for_install()?;
+    if let Some(warning) = manifest_outcome.warning {
+        println!("warn: {}", warning);
+    }
+    let manifest = manifest_outcome.manifest;
     validate_manifest(&manifest)?;
 
     let managed_specs = build_managed_specs(&manifest);
@@ -528,6 +532,7 @@ fn run_doctor() -> Result<()> {
         manifest.version,
         manifest.skills.len()
     );
+    print_manifest_freshness_doctor_status();
     print_schema_doctor_report(&cwd, inspect_schema_directory(&cwd)?);
 
     Ok(())
@@ -761,6 +766,147 @@ fn print_schema_doctor_report(base_path: &Path, report: SchemaDoctorReport) {
 fn read_manifest() -> Result<SkillsManifest> {
     toml::from_str::<SkillsManifest>(SHIPPED_SKILLS_TOML)
         .context("failed to parse embedded shipped skills manifest")
+}
+
+#[derive(Debug)]
+struct ManifestLoadOutcome {
+    manifest: SkillsManifest,
+    warning: Option<String>,
+}
+
+#[derive(Debug)]
+enum ManifestFreshness {
+    Matching,
+    Stale {
+        embedded_sha256: String,
+        remote_sha256: String,
+    },
+    Skipped {
+        reason: String,
+    },
+}
+
+fn read_manifest_for_install() -> Result<ManifestLoadOutcome> {
+    read_manifest_for_install_with(fetch_remote_manifest_text)
+}
+
+fn read_manifest_for_install_with<F>(fetch_remote: F) -> Result<ManifestLoadOutcome>
+where
+    F: FnOnce() -> Result<String>,
+{
+    let embedded = read_manifest()?;
+    match fetch_remote() {
+        Ok(remote_text) => {
+            let remote_manifest = parse_manifest_text(
+                &remote_text,
+                "failed to parse runtime skills manifest fetched from GitHub",
+            )
+            .and_then(|manifest| {
+                validate_manifest(&manifest)?;
+                Ok(manifest)
+            });
+            match remote_manifest {
+                Ok(manifest) => Ok(ManifestLoadOutcome {
+                    manifest,
+                    warning: None,
+                }),
+                Err(err) => Ok(ManifestLoadOutcome {
+                    manifest: embedded,
+                    warning: Some(format!(
+                        "unable to use runtime skills manifest from GitHub: {}; using embedded fallback",
+                        first_line(&err.to_string())
+                    )),
+                }),
+            }
+        }
+        Err(err) => Ok(ManifestLoadOutcome {
+            manifest: embedded,
+            warning: Some(format!(
+                "unable to fetch runtime skills manifest from GitHub: {}; using embedded fallback",
+                first_line(&err.to_string())
+            )),
+        }),
+    }
+}
+
+fn fetch_remote_manifest_text() -> Result<String> {
+    if !command_exists("gh") {
+        bail!("gh CLI not found");
+    }
+
+    run_command_capture(&[
+        "gh",
+        "api",
+        "-H",
+        "Accept: application/vnd.github.raw",
+        "/repos/pentaxis93/groundwork/contents/skills/skills.toml?ref=main",
+    ])
+    .context("failed to fetch current skills manifest from GitHub")
+}
+
+fn parse_manifest_text(text: &str, context: &'static str) -> Result<SkillsManifest> {
+    toml::from_str::<SkillsManifest>(text).context(context)
+}
+
+fn check_embedded_manifest_freshness_with<F>(fetch_remote: F) -> ManifestFreshness
+where
+    F: FnOnce() -> Result<String>,
+{
+    let embedded_sha256 = sha256_bytes_hex(SHIPPED_SKILLS_TOML.as_bytes());
+    let remote_text = match fetch_remote() {
+        Ok(text) => text,
+        Err(err) => {
+            return ManifestFreshness::Skipped {
+                reason: format!(
+                    "unable to fetch current repo manifest ({})",
+                    first_line(&err.to_string())
+                ),
+            };
+        }
+    };
+
+    if let Err(err) = parse_manifest_text(
+        &remote_text,
+        "failed to parse current repo skills manifest from GitHub",
+    )
+    .and_then(|manifest| {
+        validate_manifest(&manifest)?;
+        Ok(())
+    }) {
+        return ManifestFreshness::Skipped {
+            reason: first_line(&err.to_string()).to_string(),
+        };
+    }
+
+    let remote_sha256 = sha256_bytes_hex(remote_text.as_bytes());
+    if remote_sha256 == embedded_sha256 {
+        ManifestFreshness::Matching
+    } else {
+        ManifestFreshness::Stale {
+            embedded_sha256,
+            remote_sha256,
+        }
+    }
+}
+
+fn print_manifest_freshness_doctor_status() {
+    match check_embedded_manifest_freshness_with(fetch_remote_manifest_text) {
+        ManifestFreshness::Matching => {
+            println!("ok: embedded manifest matches current repo manifest");
+        }
+        ManifestFreshness::Stale {
+            embedded_sha256,
+            remote_sha256,
+        } => {
+            println!(
+                "warn: embedded manifest differs from current repo manifest (embedded_sha256={}, remote_sha256={})",
+                embedded_sha256, remote_sha256
+            );
+        }
+        ManifestFreshness::Skipped { reason } => {
+            println!("info: manifest freshness check skipped: {}", reason);
+        }
+    }
 }
 
 fn validate_manifest(manifest: &SkillsManifest) -> Result<()> {
@@ -1483,11 +1629,10 @@ fn prepend_to_path(dir: &Path) {
 }
 
 fn sha256_file_hex(path: &Path) -> Result<String> {
-    use sha2::{Digest, Sha256};
     let mut file = fs::File::open(path)
         .with_context(|| format!("failed to open {} for checksum", path.display()))?;
-    let mut hasher = Sha256::new();
     let mut buf = [0u8; 8192];
+    let mut bytes = Vec::new();
     loop {
         let n = file
             .read(&mut buf)
@@ -1495,9 +1640,16 @@ fn sha256_file_hex(path: &Path) -> Result<String> {
         if n == 0 {
             break;
         }
-        hasher.update(&buf[..n]);
+        bytes.extend_from_slice(&buf[..n]);
     }
-    Ok(format!("{:x}", hasher.finalize()))
+    Ok(sha256_bytes_hex(&bytes))
+}
+
+fn sha256_bytes_hex(bytes: &[u8]) -> String {
+    use sha2::{Digest, Sha256};
+    let mut hasher = Sha256::new();
+    hasher.update(bytes);
+    format!("{:x}", hasher.finalize())
 }
 
 fn check_trusted_commit(actual: &str, expected: &str) -> Result<()> {
@@ -1901,6 +2053,96 @@ mod tests {
                     use_when: "when implementing".to_string(),
                 },
             ],
+        }
+    }
+
+    fn sample_manifest_toml(version: &str, skill_name: &str, skill_path: &str) -> String {
+        format!(
+            r#"version = "{version}"
+
+[[skills]]
+name = "{skill_name}"
+path = "{skill_path}"
+provider = "gh"
+repo = "pentaxis93/groundwork"
+use_when = "for testing"
+"#
+        )
+    }
+
+    #[test]
+    fn install_manifest_prefers_runtime_manifest_when_fetch_succeeds() {
+        let remote_text = sample_manifest_toml("999", "fresh-skill", "skills/fresh-skill");
+        let loaded =
+            read_manifest_for_install_with(|| Ok(remote_text)).expect("manifest should load");
+
+        assert!(loaded.warning.is_none());
+        assert_eq!(loaded.manifest.version, "999");
+        assert_eq!(loaded.manifest.skills.len(), 1);
+        assert_eq!(loaded.manifest.skills[0].name, "fresh-skill");
+    }
+
+    #[test]
+    fn install_manifest_falls_back_to_embedded_when_fetch_fails() {
+        let loaded = read_manifest_for_install_with(|| Err(anyhow!("network unavailable")))
+            .expect("fallback should succeed");
+
+        assert!(loaded.warning.is_some());
+        assert!(loaded
+            .warning
+            .as_deref()
+            .unwrap_or_default()
+            .contains("network unavailable"));
+
+        let embedded = read_manifest().expect("embedded parses");
+        assert_eq!(loaded.manifest.version, embedded.version);
+    }
+
+    #[test]
+    fn install_manifest_falls_back_to_embedded_when_runtime_manifest_is_invalid() {
+        let loaded = read_manifest_for_install_with(|| Ok("not valid toml".to_string()))
+            .expect("fallback should succeed");
+
+        assert!(loaded.warning.is_some());
+        assert!(loaded
+            .warning
+            .as_deref()
+            .unwrap_or_default()
+            .contains("failed to parse runtime skills manifest fetched from GitHub"));
+
+        let embedded = read_manifest().expect("embedded parses");
+        assert_eq!(loaded.manifest.version, embedded.version);
+    }
+
+    #[test]
+    fn freshness_check_reports_matching_when_remote_matches_embedded() {
+        let status = check_embedded_manifest_freshness_with(|| Ok(SHIPPED_SKILLS_TOML.to_string()));
+        assert!(matches!(status, ManifestFreshness::Matching));
+    }
+
+    #[test]
+    fn freshness_check_reports_stale_when_remote_differs() {
+        let remote = sample_manifest_toml("777", "different-skill", "skills/different-skill");
+        let status = check_embedded_manifest_freshness_with(|| Ok(remote));
+        match status {
+            ManifestFreshness::Stale {
+                embedded_sha256,
+                remote_sha256,
+            } => {
+                assert_ne!(embedded_sha256, remote_sha256);
+            }
+            _ => panic!("expected stale status"),
+        }
+    }
+
+    #[test]
+    fn freshness_check_skips_when_fetch_fails() {
+        let status = check_embedded_manifest_freshness_with(|| Err(anyhow!("offline")));
+        match status {
+            ManifestFreshness::Skipped { reason } => {
+                assert!(reason.contains("offline"));
+            }
+            _ => panic!("expected skipped status"),
         }
     }
 
