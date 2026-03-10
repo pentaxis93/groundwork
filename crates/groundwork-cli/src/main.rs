@@ -960,8 +960,10 @@ fn prune_stale_managed_dependencies(
 ) -> usize {
     let to_remove: Vec<String> = deps
         .iter()
-        .filter_map(|(k, _)| {
-            if previously_managed.contains(k) && !desired_aliases.contains(k) {
+        .filter_map(|(k, item)| {
+            let owns_entry =
+                previously_managed.contains(k) || is_groundwork_managed_dependency(item);
+            if owns_entry && !desired_aliases.contains(k) {
                 Some(k.to_string())
             } else {
                 None
@@ -974,6 +976,32 @@ fn prune_stale_managed_dependencies(
     }
 
     to_remove.len()
+}
+
+fn is_groundwork_managed_dependency(item: &Item) -> bool {
+    let Some(repo) = dependency_string_field(item, "gh") else {
+        return false;
+    };
+    let Some(path) = dependency_string_field(item, "path") else {
+        return false;
+    };
+
+    repo == GROUNDWORK_REPO && path.starts_with("skills/")
+}
+
+fn dependency_string_field(item: &Item, key: &str) -> Option<String> {
+    match item {
+        Item::Value(Value::InlineTable(inline)) => inline
+            .get(key)
+            .and_then(|v| v.as_str())
+            .map(|v| v.to_string()),
+        Item::Table(table) => table
+            .get(key)
+            .and_then(Item::as_value)
+            .and_then(Value::as_str)
+            .map(|v| v.to_string()),
+        _ => None,
+    }
 }
 
 fn upsert_dependency(deps: &mut Table, spec: &ManagedDependencySpec) -> bool {
@@ -1948,6 +1976,7 @@ mod tests {
                 "skills/issue-craft",
                 "skills/begin",
                 "skills/test-first",
+                "skills/systematic-debugging",
                 "skills/third-force",
                 "skills/documentation",
                 "skills/verification-before-completion",
@@ -2020,10 +2049,7 @@ claude-code = true
             .find(|e| e.alias == alias)
             .expect("lock entry exists");
 
-        assert_eq!(
-            lock_entry.path.as_deref(),
-            Some("skills/test-first")
-        );
+        assert_eq!(lock_entry.path.as_deref(), Some("skills/test-first"));
     }
 
     #[test]
@@ -2259,6 +2285,50 @@ unrelated = { gh = "org/repo", path = "y" }
         assert_eq!(pruned, 1);
         assert!(!deps.contains_key("old_skill"));
         assert!(deps.contains_key("unrelated"));
+    }
+
+    #[test]
+    fn prune_removes_stale_groundwork_skill_without_lock_history() {
+        let mut doc = parse_doc(
+            r#"[agents]
+claude-code = true
+
+[dependencies]
+next_issue = { gh = "pentaxis93/groundwork", path = "skills/next-issue" }
+external_dep = { gh = "org/repo", path = "y" }
+"#,
+        );
+
+        let previously_managed = HashSet::new();
+        let desired: HashSet<String> = ["begin"].iter().map(|s| s.to_string()).collect();
+
+        let deps = doc["dependencies"].as_table_mut().expect("deps table");
+        let pruned = prune_stale_managed_dependencies(deps, &desired, &previously_managed);
+
+        assert_eq!(pruned, 1);
+        assert!(!deps.contains_key("next_issue"));
+        assert!(deps.contains_key("external_dep"));
+    }
+
+    #[test]
+    fn prune_does_not_remove_groundwork_entries_outside_skills_path_without_lock() {
+        let mut doc = parse_doc(
+            r#"[agents]
+claude-code = true
+
+[dependencies]
+groundwork_meta = { gh = "pentaxis93/groundwork", path = "docs/guide" }
+"#,
+        );
+
+        let previously_managed = HashSet::new();
+        let desired: HashSet<String> = HashSet::new();
+
+        let deps = doc["dependencies"].as_table_mut().expect("deps table");
+        let pruned = prune_stale_managed_dependencies(deps, &desired, &previously_managed);
+
+        assert_eq!(pruned, 0);
+        assert!(deps.contains_key("groundwork_meta"));
     }
 
     #[test]
