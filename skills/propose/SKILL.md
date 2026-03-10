@@ -153,6 +153,34 @@ Closes #N
 [How to verify — derived from acceptance criteria if available]
 ```
 
+**Shell-safe transport (required):**
+- Build multiline Markdown body content in a file and pass it with
+  `--body-file <path>`.
+- Acceptable file creation patterns:
+  - direct write to a temporary file
+  - single-quoted heredoc redirected to a file (no interpolation)
+- Never pass multiline Markdown bodies inline with double quotes (for example:
+  ``gh pr create --body "...\`cmd\`..."``) because shells can evaluate
+  backticks as command substitution.
+
+Safe examples:
+
+```bash
+# Create
+cat > /tmp/pr-body.md <<'EOF'
+## Summary
+- ...
+EOF
+gh pr create --title "fix(propose): shell-safe PR body handling" --body-file /tmp/pr-body.md
+
+# Edit
+cat > /tmp/pr-body.md <<'EOF'
+## Summary
+- updated after review
+EOF
+gh pr edit <pr-number-or-url> --body-file /tmp/pr-body.md
+```
+
 **Flags:**
 - Do NOT use `--draft` by default. The operator invoked `propose` because the
   work is ready for review. If the operator explicitly says "draft" or "propose
@@ -184,6 +212,10 @@ Output:
   - Permissions error: stop and report.
   - Other: report. The branch is pushed; the operator can retry or create
     manually.
+- **PR body corruption from shell interpolation:** If generated content appears
+  corrupted or command output is injected, rebuild the body in a file and
+  repair using `gh pr edit --body-file <path>`. Do not retry with inline
+  double-quoted multiline `--body`.
 - **Issue fetch fails:** Continue without issue context. Derive PR title/body
   from commits alone. Warn that issue linkage is manual.
 
@@ -206,6 +238,11 @@ Output:
   is the first thing reviewers see — it must communicate the change's purpose.
 - `propose-as-land`: treating the PR as the end of the workflow. `propose` is
   the middle of the lifecycle. The report step suggests next actions explicitly.
+- `shell-interpolation-corruption`: passing Markdown via inline double-quoted
+  `--body` causes backtick command substitution or other shell interpolation.
+  Recognition: unexpected command output in PR text, shell errors from tokens in
+  the body, or missing literal Markdown. Remediation: regenerate body via file
+  and use `--body-file`; repair with `gh pr edit --body-file`.
 
 ---
 
