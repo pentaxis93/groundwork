@@ -231,7 +231,7 @@ Then `sk sync` installs skills into the agent's skill directory.
 
 sk installs SKILL.md files into each agent's native skill directory:
 - Claude Code: `.claude/skills/`
-- Codex: `.codex/skills/` or equivalent
+- Codex: `.agents/skills/`
 - Amp, OpenCode, Factory: their respective skill dirs
 
 A Superpowers user on Claude Code already has skills in `.claude/skills/`.

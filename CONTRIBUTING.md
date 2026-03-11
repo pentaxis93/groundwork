@@ -104,10 +104,10 @@ actually ships.
 
 ## Agent Workspace Policy
 
-- `.codex/` is agent-local runtime/workspace state and is intentionally gitignored.
-- Do not add or edit canonical project content under `.codex/`.
+- `.agents/`, `.claude/`, and `.codex/` are agent-local runtime/workspace state and are intentionally gitignored.
+- Do not add or edit canonical project content under these directories.
 - Canonical skill content belongs in tracked project paths (`skills/`) and the shipped-skill manifest at `skills/skills.toml`.
-- When a `.codex/**` path is accidentally tracked, remove it from git index (`git rm --cached <path>`) and move/preserve canonical content in tracked locations.
+- When an agent-local path is accidentally tracked, remove it from git index (`git rm --cached <path>`) and move/preserve canonical content in tracked locations.
 
 ## PR Process
 

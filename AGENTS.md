@@ -25,7 +25,7 @@ Dependencies are declared in `agents.toml`. Skills with `gh = "pentaxis93/ground
 ### Primary source vs installed copies
 
 - Primary source: `skills/<skill-name>/SKILL.md`
-- Installed copies: `.claude/skills/<skill-name>/SKILL.md`, `.codex/skills/<skill-name>/SKILL.md`
+- Installed copies: `.claude/skills/<skill-name>/SKILL.md`, `.agents/skills/<skill-name>/SKILL.md`
 - Installed copies are managed by `sk sync` — do not edit them directly.
 
 ## Local Issue Mirror
