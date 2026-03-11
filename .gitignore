@@ -1,5 +1,6 @@
-.claude/
 # Agent-local workspace; canonical skills are tracked under skills/ and manifests/.
+.agents/
+.claude/
 .codex/
 .groundwork/
 .issues/

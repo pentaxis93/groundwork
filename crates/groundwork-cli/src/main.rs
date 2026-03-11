@@ -15,8 +15,8 @@ const ARTIFACTS_DIR: &str = ".groundwork/artifacts";
 const LOCK_PATH: &str = ".groundwork/installed.lock.toml";
 const GROUNDWORK_REPO: &str = "pentaxis93/groundwork";
 const SKILLS_SUPPLY_FORK_URL: &str = "https://github.com/pentaxis93/skills-supply";
-const SKILLS_SUPPLY_FORK_REF: &str = "groundwork-v1";
-const SKILLS_SUPPLY_FORK_COMMIT: &str = "ec257c4057c32230478e5c1b86347177134e1469";
+const SKILLS_SUPPLY_FORK_REF: &str = "main";
+const SKILLS_SUPPLY_FORK_COMMIT: &str = "254dc8002caea8f063f368d6b1299f92b358a704";
 const GH_ISSUE_SYNC_REPO: &str = "mitsuhiko/gh-issue-sync";
 const GH_ISSUE_SYNC_RELEASE_TAG: &str = "v0.3.0";
 const SHIPPED_SKILLS_TOML: &str = include_str!("../../../skills/skills.toml");
@@ -2834,8 +2834,8 @@ No local changes
     #[test]
     fn trusted_commit_check_accepts_exact_match() {
         assert!(check_trusted_commit(
-            "ec257c4057c32230478e5c1b86347177134e1469",
-            "ec257c4057c32230478e5c1b86347177134e1469"
+            "254dc8002caea8f063f368d6b1299f92b358a704",
+            "254dc8002caea8f063f368d6b1299f92b358a704"
         )
         .is_ok());
     }
@@ -2844,7 +2844,7 @@ No local changes
     fn trusted_commit_check_rejects_mismatch() {
         let err = check_trusted_commit(
             "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
-            "ec257c4057c32230478e5c1b86347177134e1469",
+            "254dc8002caea8f063f368d6b1299f92b358a704",
         )
         .expect_err("must reject mismatch");
         assert!(err.to_string().contains("trusted commit mismatch"));
