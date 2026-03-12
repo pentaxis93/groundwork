@@ -86,9 +86,15 @@ Development for the full treatment.
 #### Phase 0: Opening
 
 Establish the working frame before selection. Follows the LBRP sequence:
-observe → frame → banish.
+orient → observe → frame → banish.
 
-##### 0a. Observe
+##### 0a. Orient
+
+`begin` opens individual work sessions; `using-groundwork` establishes the
+connected methodology those sessions operate within. If `using-groundwork` has
+not been loaded this session, load it now before proceeding.
+
+##### 0b. Observe
 
 Compact workspace snapshot. This is the only status check — do not repeat these
 commands in later phases.
@@ -101,7 +107,7 @@ Git: [clean/dirty] | Branch: [name] | Last: [commit-oneline]
 Implementation: `git status --short`, `git log --oneline -1`,
 `git branch --show-current`. Report in one block.
 
-##### 0b. Frame
+##### 0c. Frame
 
 Establish the session's purpose using the Four Touches:
 
@@ -127,10 +133,10 @@ Success: [verifiable outcome]
 Scope: [in] / [out]
 ```
 
-##### 0c. Banish
+##### 0d. Banish
 
-Evaluate workspace state (observed in 0a) against the frame (established in
-0b). Clear debris so selection starts clean.
+Evaluate workspace state (observed in 0b) against the frame (established in
+0c). Clear debris so selection starts clean.
 
 - **Clean workspace** → proceed.
 - **Changes relevant to frame** → keep and note.
@@ -145,7 +151,7 @@ Evaluate workspace state (observed in 0a) against the frame (established in
 #### Phase 1: Selection
 
 Determine what to work on. The path depends on invocation mode. Use
-observations from Phase 0a — do not re-run status checks.
+observations from Phase 0b — do not re-run status checks.
 
 **If issue number(s) provided:** fetch issue thread(s) via `gh issue view`,
 confirm they are open and unblocked, and skip to Phase 2.
@@ -188,7 +194,7 @@ Set up the workspace for the selected work.
 
 #### Phase 3: Declaration
 
-Declare the session's direction. The frame from Phase 0b feeds directly into
+Declare the session's direction. The frame from Phase 0c feeds directly into
 this — refine it with what you learned during selection and preparation.
 
 - **Starting direction**: what you intend to accomplish (a direction, not a
@@ -218,6 +224,9 @@ this — refine it with what you learned during selection and preparation.
 - `ceremony-without-substance`: executing Phase 0 mechanically without actually
   grounding in the observations — status block emitted but not read, frame
   written but not used to inform selection.
+- `methodology-skip`: starting session procedures without activating the
+  methodology context (`using-groundwork`) — skills fire in isolation instead
+  of as a connected system.
 - `skip-ceremony`: jumping straight to selection without observing workspace
   state or framing the goal — loses the deliberate transition into focused work.
 
@@ -230,5 +239,7 @@ this — refine it with what you learned during selection and preparation.
 - `issue-craft`: decomposition, issue boundaries, acceptance criteria contracts.
 - `ground`: validate assumptions before committing to an approach.
 - `bdd`: behavior-first test strategy for implementation increments.
+- `using-groundwork`: the methodology map — activates the connected skill
+  system that `begin` operates within. Loaded during orient (Phase 0a).
 - Opening ceremony pattern adapted from LBRP (`aiandi-dev-environment`) —
   internalized, no runtime dependency.
