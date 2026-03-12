@@ -49,11 +49,10 @@ now before proceeding.
 
 ```
 ◈ ORIENT
-Methodology: [loaded | already active]
+Methodology: loaded
 ```
 
-Implementation: invoke the `using-groundwork` skill via the Skill tool. If
-already active this session, skip and report "already active".
+Implementation: invoke the `using-groundwork` skill via the Skill tool.
 
 ##### 0b. Observe
 
