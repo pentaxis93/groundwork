@@ -5,8 +5,8 @@ description: >-
   initiation, or any moment requiring methodology orientation. Activates the
   full skill system as one connected methodology rather than isolated skills.
 metadata:
-  version: "3.0.0"
-  updated: "2026-03-07"
+  version: "3.1.0"
+  updated: "2026-03-12"
 ---
 
 # Using Groundwork
@@ -14,6 +14,13 @@ metadata:
 ## Overview
 
 Groundwork is one connected methodology, not a skill collection. Every skill closes a specific failure mode in the pipeline from problem framing to shipped change. This skill is the map that shows how they connect.
+
+## Operating Stance
+
+Skills are your default operating mode, not optional extras. When a skill's
+trigger matches the current work, invoke it. The default is activation, not
+restraint. The corruption mode to watch for is under-use — skipping skills
+whose triggers match — not over-use. The triggers themselves provide the scope.
 
 ## Entry Point
 
