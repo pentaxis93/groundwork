@@ -60,28 +60,18 @@ This reads `skills/skills.toml`, fetches skills from their upstream sources via 
 It also provisions `.groundwork/schemas/` with embedded artifact schemas and creates `.groundwork/artifacts/` for project artifacts.
 
 Prerequisites: Node.js (for `sk`), Git, npm, and `gh` CLI.
-`groundwork init` requires operational issue sync and will fail unless `gh-issue-sync status` reports a non-`never` `Last full pull`.
-`gh-issue-sync` is auto-installed from a pinned release asset with SHA-256 verification when a supported OS/arch asset is available.
-If issue sync touches GitHub Projects metadata, refresh GH scopes before first pull:
-`gh auth refresh -h github.com -s read:project`.
 
 ### Commands
 
 | Command | What it does | Flag |
 |---------|-------------|------|
-| `groundwork init` | Reads `skills/skills.toml`, populates `agents.toml`, fetches skills via `sk sync`, bootstraps issue mirror tooling, and requires a successful `gh-issue-sync` full pull (`Last full pull` must be non-`never`) before succeeding | `--dry-run` |
+| `groundwork init` | Reads `skills/skills.toml`, populates `agents.toml`, fetches skills via `sk sync`, provisions schemas, and writes the install lock | `--dry-run` |
 | `groundwork update` | Re-syncs to the current shipped-skill manifest — upserts new or changed skills, prunes removed ones, and reconciles embedded schemas (create/update only; extras preserved) | `--dry-run` |
 | `groundwork list` | Shows installed skills in shipped-manifest order, along with source repos and pinned refs from the lock file | |
-| `groundwork doctor` | Checks prerequisites (`sk`, `gh`, `gh-issue-sync`, `agents.toml`, shipped-skill manifest), plus `.groundwork/schemas/` completeness and drift, and reports status | |
+| `groundwork doctor` | Checks prerequisites (`sk`, `gh`, `agents.toml`, shipped-skill manifest), plus `.groundwork/schemas/` completeness and drift, and reports status | |
 
 Both `init` and `update` are idempotent. They reconcile the manifest against `agents.toml` and embedded schemas, writing only what changed. State is tracked in `.groundwork/installed.lock.toml`.
 If tool version capture fails, `init`/`update` abort instead of writing unsubstantiated lock provenance.
-
-Issue sync troubleshooting:
-- If `groundwork doctor` reports "local issue mirror has never completed a full pull", run:
-  `gh auth refresh -h github.com -s read:project`
-  `gh-issue-sync pull`
-  `gh-issue-sync status`
 
 ## Logo Assets
 

@@ -152,7 +152,7 @@ confirm they are open and unblocked, and skip to Phase 2.
 
 **If topic string provided:**
 
-1. Sync local issues: `gh-issue-sync pull`.
+1. List open issues: `gh issue list --state open`.
 2. Identify open issues related to the topic (title, labels, body content).
 3. Shortlist 3-5 matches, rank by relevance and impact.
 4. Select one issue (or a cohesive batch of 2-3).
@@ -160,7 +160,7 @@ confirm they are open and unblocked, and skip to Phase 2.
 
 **If no arguments:**
 
-1. Sync local issues: `gh-issue-sync pull`.
+1. List open issues: `gh issue list --state open`.
 2. Identify all ready (unblocked) candidate issues — an issue is ready when its
    body is agent-executable and every hard dependency is closed.
 3. Apply force filters first: a direct operator request or hard deadline wins
@@ -202,8 +202,7 @@ this — refine it with what you learned during selection and preparation.
 2. Update issue state and leave a concise progress comment.
 3. Record decisions, blockers, and the exact next step.
 4. Ensure any follow-up work is represented as issue(s).
-5. Sync all changes to remote: `gh-issue-sync push`.
-6. Sync workspace and close.
+5. Sync workspace and close.
 
 ## Corruption Modes
 

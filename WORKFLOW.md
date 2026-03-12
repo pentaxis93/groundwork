@@ -165,17 +165,6 @@ Epics with 4+ tasks include a dependency graph in two representations:
 - **Merging**: when two issues converge on the same deliverable, merge into one and close the duplicate with a cross-reference.
 - **Validation after mutation**: after adding, closing, splitting, or merging issues, verify the graph has no orphaned dependencies or cycles.
 
-### Local Issue Mirroring
-
-Issues are mirrored locally via `gh-issue-sync`. The `.issues/` directory is gitignored — it is a working surface, not a second source of truth. Sync at natural boundaries: pull before reading, push after writing.
-
-`groundwork init` enforces this operationally: it fails unless `gh-issue-sync status` reports a non-`never` `Last full pull`.
-
-If `gh-issue-sync pull` fails with missing project scope (`read:project`) or `groundwork doctor` reports that the mirror has never completed a full pull, recover with:
-- `gh auth refresh -h github.com -s read:project`
-- `gh-issue-sync pull`
-- `gh-issue-sync status`
-
 ## Skill Routing Table
 
 | Skill | Trigger |
