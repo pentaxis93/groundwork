@@ -24,75 +24,33 @@ that survives across sessions.
 For issue decomposition and boundary contracts, use `issue-craft`.
 For first-principles design decisions, use `ground`.
 
-## Invocation Modes
-
-The skill accepts three invocation patterns:
-
-- **No arguments** → full selection from the issue graph.
-- **Issue number(s)** (e.g., `#27` or `#5 #8`) → skip selection, proceed
-  directly to preparation.
-- **Topic string** (e.g., `"skill testing"`) → narrow candidates to
-  topic-related issues, then select.
-
-When issue numbers are provided, they may be batched: 2-3 cohesive issues can
-be addressed in a single session and packaged as one PR. This is a legitimate
-pattern when the issues share a concern boundary.
-
-## Key Terms
-
-Brief definitions for self-contained use. See WORKFLOW.md § Issue-Based
-Development for the full treatment.
-
-- **Issue graph**: the set of open issues and their dependency edges — the live
-  map of what remains and what blocks what.
-- **Unblocked**: an issue whose hard dependencies are all closed.
-- **Execution layer**: a set of issues that share no mutual dependencies and can
-  be worked in parallel once their shared ancestors are closed. Layer 0 has no
-  dependencies; layer 1 depends only on layer 0; and so on.
-- **Session-sized**: an issue that one agent can complete — from reading context
-  through passing verification — in a single focused session.
-- **Issue batch**: 2-3 cohesive issues addressed together when they share a
-  concern boundary and their combined scope is still session-sized.
-
-## Operating Principles
-
-- **Issue tracker is the source of truth.** Planning state lives in forge
-  issues, not local task trackers or agent memory. Sessions end; the graph
-  doesn't. Issue status and comments reflect actual implementation state —
-  inaccurate state is planning debt.
-- **Direction over prediction.** Capture starting direction at session open.
-  Goals sharpen through implementation — rigid upfront done conditions are
-  premature precision. The closing handoff matters more than the opening
-  prediction.
-- **One session, one increment.** Commit to one independently verifiable
-  increment. Fewer, sharper goals beat broad, vague activity — this keeps
-  work finishable and reviewable.
-- **Dependencies are hard blockers.** Do not start work whose dependencies are
-  still open — blocked work produces partial results that complicate the graph.
-- **Every session closes with a handoff.** Either finish the increment or
-  clearly frame unfinished state. End with an honest state update and a
-  concrete, actionable next step. The next session (same or different agent)
-  should be able to pick up without guessing.
-- **Next actions are executable.** Each next action names an artifact, a command,
-  and a done condition — not a vague intention.
-- **Prioritize by impact.** Rank by value delivered, time criticality, and
-  unblock leverage (how much downstream work this frees), weighed against
-  expected effort.
-
 ## Procedures
 
 ### session-open
 
 #### Phase 0: Opening
 
-Establish the working frame before selection. Follows the LBRP sequence:
-orient → observe → frame → banish.
+The opening ceremony equips the session with everything subsequent phases need:
+the methodology context that connects skills into a coherent system, awareness
+of the current workspace state, a directional frame that guides selection, and
+a clean starting surface. Each step builds on the previous — orient loads the
+methodology, observe reads the workspace, frame sets direction, banish clears
+the path.
+
+Follows the LBRP sequence: orient → observe → frame → banish.
 
 ##### 0a. Orient
 
-`begin` opens individual work sessions; `using-groundwork` establishes the
-connected methodology those sessions operate within. If `using-groundwork` has
-not been loaded this session, load it now before proceeding.
+The agent receives its operating methodology — the connected system that makes
+later skills work together rather than in isolation. `begin` opens individual
+work sessions; `using-groundwork` establishes the methodology those sessions
+operate within. If `using-groundwork` has not been loaded this session, load it
+now before proceeding.
+
+```
+◈ ORIENT
+Methodology: [loaded | already active]
+```
 
 ##### 0b. Observe
 
@@ -118,13 +76,13 @@ Establish the session's purpose using the Four Touches:
 | **In scope** | What boundaries contain this work? |
 | **Out of scope** | What nearby work is explicitly excluded? |
 
-**When issue number(s) provided:** derive all four from the issue body —
-purpose from the summary, success from acceptance criteria, scope from the
-issue boundary.
-
-**When topic or no arguments:** frame directionally — purpose is "advance the
-project," success is "one session-sized increment," scope sharpens after
-selection. Do not block here; a partial frame is expected.
+Frame depth varies by what is known at invocation. When issue number(s) are
+provided, derive all four touches from the issue body — purpose from the
+summary, success from acceptance criteria, scope from the issue boundary. This
+yields a full frame. When invoked with a topic or no arguments, frame
+directionally — purpose is "advance the project," success is "one session-sized
+increment," scope sharpens after selection. A partial frame is expected; do not
+block here.
 
 ```
 ◈ FRAME
@@ -150,11 +108,14 @@ Evaluate workspace state (observed in 0b) against the frame (established in
 
 #### Phase 1: Selection
 
-Determine what to work on. The path depends on invocation mode. Use
-observations from Phase 0b — do not re-run status checks.
+Determine what to work on. Use observations from Phase 0b — do not re-run
+status checks.
 
-**If issue number(s) provided:** fetch issue thread(s) via `gh issue view`,
-confirm they are open and unblocked, and skip to Phase 2.
+**If issue number(s) provided:** selection is already resolved. Fetch issue
+thread(s) via `gh issue view`, confirm they are open and unblocked, then
+proceed to Phase 2. When multiple issue numbers are given, they may be batched:
+2-3 cohesive issues can be addressed in a single session and packaged as one PR
+when they share a concern boundary.
 
 **If topic string provided:**
 
@@ -210,6 +171,47 @@ this — refine it with what you learned during selection and preparation.
 4. Ensure any follow-up work is represented as issue(s).
 5. Sync workspace and close.
 
+## Key Terms
+
+Brief definitions for self-contained use. See WORKFLOW.md § Issue-Based
+Development for the full treatment.
+
+- **Issue graph**: the set of open issues and their dependency edges — the live
+  map of what remains and what blocks what.
+- **Unblocked**: an issue whose hard dependencies are all closed.
+- **Execution layer**: a set of issues that share no mutual dependencies and can
+  be worked in parallel once their shared ancestors are closed. Layer 0 has no
+  dependencies; layer 1 depends only on layer 0; and so on.
+- **Session-sized**: an issue that one agent can complete — from reading context
+  through passing verification — in a single focused session.
+- **Issue batch**: 2-3 cohesive issues addressed together when they share a
+  concern boundary and their combined scope is still session-sized.
+
+## Operating Principles
+
+- **Issue tracker is the source of truth.** Planning state lives in forge
+  issues, not local task trackers or agent memory. Sessions end; the graph
+  doesn't. Issue status and comments reflect actual implementation state —
+  inaccurate state is planning debt.
+- **Direction over prediction.** Capture starting direction at session open.
+  Goals sharpen through implementation — rigid upfront done conditions are
+  premature precision. The closing handoff matters more than the opening
+  prediction.
+- **One session, one increment.** Commit to one independently verifiable
+  increment. Fewer, sharper goals beat broad, vague activity — this keeps
+  work finishable and reviewable.
+- **Dependencies are hard blockers.** Do not start work whose dependencies are
+  still open — blocked work produces partial results that complicate the graph.
+- **Every session closes with a handoff.** Either finish the increment or
+  clearly frame unfinished state. End with an honest state update and a
+  concrete, actionable next step. The next session (same or different agent)
+  should be able to pick up without guessing.
+- **Next actions are executable.** Each next action names an artifact, a command,
+  and a done condition — not a vague intention.
+- **Prioritize by impact.** Rank by value delivered, time criticality, and
+  unblock leverage (how much downstream work this frees), weighed against
+  expected effort.
+
 ## Corruption Modes
 
 - `recency-drift`: picking last-touched work instead of highest leverage.
@@ -217,18 +219,8 @@ this — refine it with what you learned during selection and preparation.
 - `blocker-bypass`: beginning blocked work anyway.
 - `state-lag`: issue tracker not reflecting real implementation state.
 - `open-loop-close`: ending session without a concrete next step.
-- `undefined-state`: using terms like "unblocked" or "session-sized" without
-  operational definitions — see Key Terms above.
 - `skip-preparation`: jumping from selection to implementation without setting
   up a feature branch — loses workspace isolation and makes `propose` harder.
-- `ceremony-without-substance`: executing Phase 0 mechanically without actually
-  grounding in the observations — status block emitted but not read, frame
-  written but not used to inform selection.
-- `methodology-skip`: starting session procedures without activating the
-  methodology context (`using-groundwork`) — skills fire in isolation instead
-  of as a connected system.
-- `skip-ceremony`: jumping straight to selection without observing workspace
-  state or framing the goal — loses the deliberate transition into focused work.
 
 ## Cross-References
 
