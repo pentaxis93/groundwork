@@ -161,12 +161,6 @@ Then close: `gh issue close <number> --reason completed`.
 
 If any comment or close operation fails, continue processing remaining issues, then report which operations failed.
 
-### 9a. Sync issue state to local mirror
-
-If no issues were provided or inferred, this step is optional and may be skipped.
-
-If `gh-issue-sync` is available on `PATH`, run `gh-issue-sync pull` to update the local issue mirror. If the tool is not installed or the sync fails, skip gracefully — a sync failure after successful merge is not catastrophic. Remote state is already correct; only the local mirror is stale.
-
 ### 10. Sync installed skill copies
 
 Check if the merge introduced changes under `skills/` by inspecting the diff of the merge commit (`git diff --name-only HEAD~1 HEAD | grep '^skills/'`).

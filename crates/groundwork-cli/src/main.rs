@@ -4,7 +4,6 @@ use clap::{Args, Parser, Subcommand};
 use serde::{Deserialize, Serialize};
 use std::collections::{BTreeSet, HashSet};
 use std::fs;
-use std::io::Read;
 use std::path::{Path, PathBuf};
 use std::process::{Command, Stdio};
 use toml_edit::{value, DocumentMut, InlineTable, Item, Table, Value};
@@ -17,8 +16,6 @@ const GROUNDWORK_REPO: &str = "pentaxis93/groundwork";
 const SKILLS_SUPPLY_FORK_URL: &str = "https://github.com/pentaxis93/skills-supply";
 const SKILLS_SUPPLY_FORK_REF: &str = "main";
 const SKILLS_SUPPLY_FORK_COMMIT: &str = "254dc8002caea8f063f368d6b1299f92b358a704";
-const GH_ISSUE_SYNC_REPO: &str = "mitsuhiko/gh-issue-sync";
-const GH_ISSUE_SYNC_RELEASE_TAG: &str = "v0.3.0";
 const SHIPPED_SKILLS_TOML: &str = include_str!("../../../skills/skills.toml");
 const EMBEDDED_SCHEMAS: [EmbeddedSchema; 8] = [
     EmbeddedSchema {
@@ -197,20 +194,12 @@ struct InstallLock {
     installer_version: String,
     installed_at: String,
     sk: LockSk,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    issue_sync: Option<LockIssueSync>,
     entries: Vec<LockEntry>,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
 struct LockSk {
     mode: SkMode,
-    version: String,
-}
-
-#[derive(Debug, Serialize, Deserialize)]
-struct LockIssueSync {
-    mode: IssueSyncMode,
     version: String,
 }
 
@@ -233,27 +222,11 @@ enum SkMode {
     Npx,
 }
 
-#[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize)]
-#[serde(rename_all = "kebab-case")]
-enum IssueSyncMode {
-    Binary,
-    GoInstall,
-}
-
 impl std::fmt::Display for SkMode {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             SkMode::Binary => write!(f, "binary"),
             SkMode::Npx => write!(f, "npx"),
-        }
-    }
-}
-
-impl std::fmt::Display for IssueSyncMode {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-            IssueSyncMode::Binary => write!(f, "binary"),
-            IssueSyncMode::GoInstall => write!(f, "go-install"),
         }
     }
 }
@@ -267,25 +240,10 @@ impl SkMode {
     }
 }
 
-impl IssueSyncMode {
-    fn mode_name(&self) -> &'static str {
-        match self {
-            IssueSyncMode::Binary => "binary",
-            IssueSyncMode::GoInstall => "go install",
-        }
-    }
-}
-
 #[derive(Debug)]
 struct SkRunner {
     mode: SkMode,
     binary_path: Option<PathBuf>,
-}
-
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
-struct IssueSyncReleaseAsset {
-    name: &'static str,
-    sha256: &'static str,
 }
 
 fn main() -> Result<()> {
@@ -367,8 +325,6 @@ fn run_install_in_directory(
     let sk_runner = ensure_sk_available()?;
     sk_runner.sync()?;
 
-    let issue_sync_info = bootstrap_issue_sync(base_path, is_init)?;
-
     apply_schema_sync(base_path, &schema_plan)?;
 
     let sk_version = capture_required_version("sk", sk_runner.version())?;
@@ -376,9 +332,6 @@ fn run_install_in_directory(
         base_path,
         sk_runner.mode,
         &sk_version,
-        issue_sync_info
-            .as_ref()
-            .map(|(mode, ver)| (*mode, ver.as_str())),
         reconcile.lock_entries,
     )?;
 
@@ -395,9 +348,6 @@ fn run_install_in_directory(
     );
     print_schema_sync_plan_summary(&schema_plan, false);
     println!("Installed with {} ({})", sk_runner.mode_name(), sk_version);
-    if let Some((mode, ref ver)) = issue_sync_info {
-        println!("Installed gh-issue-sync via {} ({})", mode.mode_name(), ver);
-    }
     print_manifest_summary(&manifest);
 
     Ok(result)
@@ -425,11 +375,6 @@ fn run_list() -> Result<()> {
     println!("- installer: {}", lock.installer_version);
     println!("- installed_at: {}", lock.installed_at);
     println!("- sk: {} ({})", lock.sk.mode.mode_name(), lock.sk.version);
-    if let Some(ref is) = lock.issue_sync {
-        println!("- gh-issue-sync: {} ({})", is.mode.mode_name(), is.version);
-    } else {
-        println!("- gh-issue-sync: not installed");
-    }
     println!("- entries: {}", lock.entries.len());
 
     let mut entries = lock.entries;
@@ -492,39 +437,11 @@ fn run_doctor() -> Result<()> {
         println!("ok: bootstrap prerequisites satisfied");
     }
 
-    let gh_available = if command_exists("gh") {
+    if command_exists("gh") {
         let ver = first_line_version(run_command_capture(&["gh", "--version"]));
         println!("ok: gh CLI available ({})", ver);
-        true
     } else {
-        println!("warn: gh CLI not found (prerequisite for gh-issue-sync)");
-        false
-    };
-
-    let issue_sync_available = if command_exists("gh-issue-sync") {
-        let ver = first_line_version(run_command_capture(&["gh-issue-sync", "--version"]));
-        println!("ok: gh-issue-sync available ({})", ver);
-        true
-    } else {
-        let (has_gh, supported_platform) = issue_sync_install_methods_available();
-        println!("warn: gh-issue-sync not found");
-        println!(
-            "info: auto-install capability: gh={} verified-platform={}",
-            has_gh, supported_platform
-        );
-        if !has_gh || !supported_platform {
-            println!(
-                "info: install manually from https://github.com/{}/releases/tag/{}",
-                GH_ISSUE_SYNC_REPO, GH_ISSUE_SYNC_RELEASE_TAG
-            );
-        } else {
-            println!("info: will auto-install on next init/update");
-        }
-        false
-    };
-
-    if gh_available && issue_sync_available {
-        print_issue_sync_doctor_status(&cwd);
+        println!("warn: gh CLI not found");
     }
 
     println!(
@@ -1453,197 +1370,6 @@ fn supports_skill_target_option(help: &str) -> bool {
         .any(|line| line.trim_start().starts_with("--skill-target"))
 }
 
-fn issue_sync_install_methods_available() -> (bool, bool) {
-    (
-        command_exists("gh"),
-        issue_sync_release_asset_for(std::env::consts::OS, std::env::consts::ARCH).is_some(),
-    )
-}
-
-fn ensure_issue_sync_available() -> Option<IssueSyncMode> {
-    if command_exists("gh-issue-sync") {
-        return Some(IssueSyncMode::Binary);
-    }
-
-    if !command_exists("gh") {
-        println!("warn: gh CLI not found (prerequisite for gh-issue-sync)");
-        return None;
-    }
-
-    if issue_sync_release_asset_for(std::env::consts::OS, std::env::consts::ARCH).is_none() {
-        println!(
-            "note: no verified gh-issue-sync asset is configured for platform {}-{}; install manually from https://github.com/{}/releases/tag/{}",
-            std::env::consts::OS,
-            std::env::consts::ARCH,
-            GH_ISSUE_SYNC_REPO,
-            GH_ISSUE_SYNC_RELEASE_TAG
-        );
-        return None;
-    }
-
-    println!(
-        "info: installing gh-issue-sync from verified release asset ({} {})...",
-        GH_ISSUE_SYNC_REPO, GH_ISSUE_SYNC_RELEASE_TAG
-    );
-    match install_issue_sync_verified_release() {
-        Ok(path) => {
-            println!("ok: installed gh-issue-sync to {}", path.display());
-            Some(IssueSyncMode::Binary)
-        }
-        Err(err) => {
-            println!("warn: verified gh-issue-sync auto-install failed: {}", err);
-            println!(
-                "note: install manually from https://github.com/{}/releases/tag/{}",
-                GH_ISSUE_SYNC_REPO, GH_ISSUE_SYNC_RELEASE_TAG
-            );
-            None
-        }
-    }
-}
-
-fn issue_sync_release_asset_for(
-    target_os: &str,
-    target_arch: &str,
-) -> Option<IssueSyncReleaseAsset> {
-    match (target_os, target_arch) {
-        ("linux", "x86_64") => Some(IssueSyncReleaseAsset {
-            name: "gh-issue-sync-linux-amd64",
-            sha256: "095749599f9d6c81d91765bd16b14d5c76215fd1d3ef6bccf5d005efb2d9b84e",
-        }),
-        ("linux", "aarch64") => Some(IssueSyncReleaseAsset {
-            name: "gh-issue-sync-linux-arm64",
-            sha256: "ca86c002640426b2282cc947a5b34da3e51c91e62423c3996085587110704785",
-        }),
-        ("macos", "aarch64") => Some(IssueSyncReleaseAsset {
-            name: "gh-issue-sync-darwin-arm64",
-            sha256: "928d8a9ca9d9a8588b72ef38f22f9e067f9619d12be6cf28a1bef41ff04713e7",
-        }),
-        ("windows", "x86_64") => Some(IssueSyncReleaseAsset {
-            name: "gh-issue-sync-windows-amd64.exe",
-            sha256: "f8b1f1a0a1bb53c8c378848ac1423f7ff7660c141134ce2ee4fcd62b008840ac",
-        }),
-        ("windows", "aarch64") => Some(IssueSyncReleaseAsset {
-            name: "gh-issue-sync-windows-arm64.exe",
-            sha256: "e6a4cb05c91f6e283ab2743cb3961c0ccd62d2fc85008019f8ca8c9674e92ba5",
-        }),
-        _ => None,
-    }
-}
-
-fn install_issue_sync_verified_release() -> Result<PathBuf> {
-    let asset = issue_sync_release_asset_for(std::env::consts::OS, std::env::consts::ARCH)
-        .ok_or_else(|| {
-            anyhow!(
-                "unsupported platform {}-{}",
-                std::env::consts::OS,
-                std::env::consts::ARCH
-            )
-        })?;
-
-    let temp_path = std::env::temp_dir().join(format!(
-        "{}-{}-{}",
-        asset.name,
-        std::process::id(),
-        Utc::now().timestamp_nanos_opt().unwrap_or_default()
-    ));
-
-    let download = Command::new("gh")
-        .args([
-            "release",
-            "download",
-            GH_ISSUE_SYNC_RELEASE_TAG,
-            "--repo",
-            GH_ISSUE_SYNC_REPO,
-            "--pattern",
-            asset.name,
-            "--output",
-        ])
-        .arg(&temp_path)
-        .stdout(Stdio::inherit())
-        .stderr(Stdio::inherit())
-        .status()
-        .context("failed to download verified gh-issue-sync release asset")?;
-    if !download.success() {
-        let _ = fs::remove_file(&temp_path);
-        bail!("`gh release download` did not succeed");
-    }
-
-    let digest = sha256_file_hex(&temp_path)?;
-    if !digest.eq_ignore_ascii_case(asset.sha256) {
-        let _ = fs::remove_file(&temp_path);
-        bail!(
-            "checksum mismatch for {}: expected {}, got {}",
-            asset.name,
-            asset.sha256,
-            digest
-        );
-    }
-
-    let install_dir = issue_sync_install_dir()?;
-    fs::create_dir_all(&install_dir)
-        .with_context(|| format!("failed to create install dir {}", install_dir.display()))?;
-    let binary_name = if cfg!(windows) {
-        "gh-issue-sync.exe"
-    } else {
-        "gh-issue-sync"
-    };
-    let target = install_dir.join(binary_name);
-    fs::copy(&temp_path, &target)
-        .with_context(|| format!("failed to install gh-issue-sync to {}", target.display()))?;
-    let _ = fs::remove_file(&temp_path);
-
-    #[cfg(unix)]
-    {
-        use std::os::unix::fs::PermissionsExt;
-        let mut perms = fs::metadata(&target)
-            .with_context(|| format!("failed to read {}", target.display()))?
-            .permissions();
-        perms.set_mode(0o755);
-        fs::set_permissions(&target, perms)
-            .with_context(|| format!("failed to set executable bit on {}", target.display()))?;
-    }
-
-    prepend_to_path(&install_dir);
-    Ok(target)
-}
-
-fn issue_sync_install_dir() -> Result<PathBuf> {
-    if cfg!(windows) {
-        let local =
-            std::env::var_os("LOCALAPPDATA").ok_or_else(|| anyhow!("LOCALAPPDATA is not set"))?;
-        return Ok(PathBuf::from(local).join("groundwork").join("bin"));
-    }
-
-    let home = std::env::var_os("HOME").ok_or_else(|| anyhow!("HOME is not set"))?;
-    Ok(PathBuf::from(home).join(".local").join("bin"))
-}
-
-fn prepend_to_path(dir: &Path) {
-    let mut paths = vec![dir.to_path_buf()];
-    if let Some(existing) = std::env::var_os("PATH") {
-        paths.extend(std::env::split_paths(&existing));
-    }
-    if let Ok(joined) = std::env::join_paths(paths) {
-        std::env::set_var("PATH", joined);
-    }
-}
-
-fn sha256_file_hex(path: &Path) -> Result<String> {
-    let mut file = fs::File::open(path)
-        .with_context(|| format!("failed to open {} for checksum", path.display()))?;
-    let mut buf = [0u8; 8192];
-    let mut bytes = Vec::new();
-    loop {
-        let n = file
-            .read(&mut buf)
-            .with_context(|| format!("failed to read {} for checksum", path.display()))?;
-        if n == 0 {
-            break;
-        }
-        bytes.extend_from_slice(&buf[..n]);
-    }
-    Ok(sha256_bytes_hex(&bytes))
-}
 
 fn sha256_bytes_hex(bytes: &[u8]) -> String {
     use sha2::{Digest, Sha256};
@@ -1663,230 +1389,6 @@ fn check_trusted_commit(actual: &str, expected: &str) -> Result<()> {
     );
 }
 
-fn bootstrap_issue_sync(
-    base_path: &Path,
-    is_init: bool,
-) -> Result<Option<(IssueSyncMode, String)>> {
-    let mode = match ensure_issue_sync_available() {
-        Some(mode) => mode,
-        None if is_init => {
-            bail!(
-                "gh-issue-sync is required for `groundwork init` to complete operational sync; install it and rerun init"
-            )
-        }
-        None => return Ok(None),
-    };
-
-    let version = capture_required_version(
-        "gh-issue-sync",
-        run_command_capture(&["gh-issue-sync", "--version"]),
-    )?;
-
-    let issues_dir = base_path.join(".issues");
-    let mut should_pull = false;
-    if !issues_dir.exists() {
-        let init_status = Command::new("gh-issue-sync")
-            .arg("init")
-            .current_dir(base_path)
-            .stdout(Stdio::null())
-            .stderr(Stdio::inherit())
-            .status();
-
-        if !init_status.map(|s| s.success()).unwrap_or(false) {
-            if is_init {
-                bail!("gh-issue-sync init failed during `groundwork init`");
-            }
-            println!("warn: gh-issue-sync init failed");
-            return Ok(Some((mode, version)));
-        }
-        should_pull = true;
-    }
-
-    if !should_pull
-        && issue_sync_status_is_never_pulled(&run_command_capture_ignore_status_in_dir(
-            &["gh-issue-sync", "status"],
-            base_path,
-        ))
-    {
-        should_pull = true;
-    }
-
-    if should_pull {
-        let pull_output = Command::new("gh-issue-sync")
-            .arg("pull")
-            .current_dir(base_path)
-            .output();
-
-        match pull_output {
-            Ok(output) if output.status.success() => {
-                let count = count_issue_markdown_files(&issues_dir);
-                println!("ok: synced {} issues to .issues/", count);
-            }
-            Ok(output) => {
-                let stderr = String::from_utf8_lossy(&output.stderr).trim().to_string();
-                if is_init {
-                    let mut detail = String::new();
-                    if !stderr.is_empty() {
-                        detail.push_str(first_line(&stderr));
-                    } else {
-                        detail.push_str("unknown error");
-                    }
-                    if let Some(hint) = issue_sync_pull_remediation_hint(&stderr) {
-                        detail.push_str(&format!("; {}", hint));
-                    }
-                    detail.push_str("; run `gh-issue-sync status` after remediation");
-                    bail!(
-                        "gh-issue-sync pull failed during `groundwork init`: {}",
-                        detail
-                    );
-                }
-                println!("warn: gh-issue-sync pull failed");
-                if !stderr.is_empty() {
-                    println!("info: {}", first_line(&stderr));
-                }
-                if let Some(hint) = issue_sync_pull_remediation_hint(&stderr) {
-                    println!("info: {}", hint);
-                }
-                println!("info: run `gh-issue-sync status` to verify mirror state");
-            }
-            Err(err) => {
-                if is_init {
-                    bail!(
-                        "gh-issue-sync pull failed during `groundwork init`: {}; run `gh-issue-sync status` after remediation",
-                        err
-                    );
-                }
-                println!("warn: gh-issue-sync pull failed");
-                println!("info: {}", err);
-                println!("info: run `gh-issue-sync status` to verify mirror state");
-            }
-        }
-    }
-
-    if is_init {
-        let output = Command::new("gh-issue-sync")
-            .arg("status")
-            .current_dir(base_path)
-            .output()
-            .context("failed to run `gh-issue-sync status` after pull")?;
-
-        if !output.status.success() {
-            let stderr = String::from_utf8_lossy(&output.stderr).trim().to_string();
-            let detail = if stderr.is_empty() {
-                "unknown error".to_string()
-            } else {
-                first_line(&stderr).to_string()
-            };
-            bail!(
-                "gh-issue-sync status failed during `groundwork init`: {}; run `gh auth refresh -h github.com -s read:project`, then `gh-issue-sync pull` and `gh-issue-sync status`",
-                detail
-            );
-        }
-
-        let status = String::from_utf8_lossy(&output.stdout);
-        if !issue_sync_status_has_completed_pull(&status) {
-            bail!(
-                "issue sync is not operational: `Last full pull` is missing or `never`; run `gh auth refresh -h github.com -s read:project`, then `gh-issue-sync pull` and `gh-issue-sync status`"
-            );
-        }
-    }
-
-    Ok(Some((mode, version)))
-}
-
-fn print_issue_sync_doctor_status(base_path: &Path) {
-    let output = Command::new("gh-issue-sync")
-        .arg("status")
-        .current_dir(base_path)
-        .output();
-
-    match output {
-        Ok(out) if out.status.success() => {
-            let stdout = String::from_utf8_lossy(&out.stdout);
-            if issue_sync_status_is_never_pulled(&stdout) {
-                println!("warn: local issue mirror has never completed a full pull");
-                println!("info: run `gh auth refresh -h github.com -s read:project`");
-                println!("info: then run `gh-issue-sync pull` and `gh-issue-sync status`");
-            }
-        }
-        Ok(out) => {
-            let stderr = String::from_utf8_lossy(&out.stderr);
-            println!("warn: unable to read issue mirror status");
-            if !stderr.trim().is_empty() {
-                println!("info: {}", first_line(stderr.trim()));
-            }
-            println!("info: run `gh-issue-sync status` manually for details");
-        }
-        Err(err) => {
-            println!("warn: unable to run `gh-issue-sync status`: {}", err);
-        }
-    }
-}
-
-fn run_command_capture_ignore_status_in_dir(args: &[&str], cwd: &Path) -> String {
-    let (program, rest) = match args.split_first() {
-        Some(pair) => pair,
-        None => return String::new(),
-    };
-    Command::new(program)
-        .args(rest)
-        .current_dir(cwd)
-        .output()
-        .map(|o| String::from_utf8_lossy(&o.stdout).trim().to_string())
-        .unwrap_or_default()
-}
-
-fn issue_sync_status_is_never_pulled(status: &str) -> bool {
-    status.lines().any(|line| {
-        let trimmed = line.trim();
-        if let Some(rest) = trimmed.strip_prefix("Last full pull:") {
-            return rest.trim().eq_ignore_ascii_case("never");
-        }
-        false
-    })
-}
-
-fn issue_sync_status_has_completed_pull(status: &str) -> bool {
-    status.lines().any(|line| {
-        let trimmed = line.trim();
-        if let Some(rest) = trimmed.strip_prefix("Last full pull:") {
-            let value = rest.trim();
-            return !value.is_empty() && !value.eq_ignore_ascii_case("never");
-        }
-        false
-    })
-}
-
-fn issue_sync_pull_remediation_hint(stderr: &str) -> Option<&'static str> {
-    let lower = stderr.to_ascii_lowercase();
-    if lower.contains("required scopes")
-        && (lower.contains("read:project") || lower.contains("project"))
-    {
-        return Some("refresh GH auth scopes: `gh auth refresh -h github.com -s read:project`");
-    }
-    if lower.contains("token") && lower.contains("invalid") {
-        return Some("re-authenticate GH CLI: `gh auth login -h github.com`");
-    }
-    if lower.contains("error connecting") || lower.contains("api.github.com") {
-        return Some("check connectivity and GitHub status, then retry `gh-issue-sync pull`");
-    }
-    None
-}
-
-fn count_issue_markdown_files(issues_dir: &Path) -> usize {
-    ["open", "closed"]
-        .iter()
-        .filter_map(|dir| issues_dir.join(dir).read_dir().ok())
-        .flat_map(|entries| entries.filter_map(|e| e.ok()))
-        .filter(|entry| {
-            entry
-                .path()
-                .extension()
-                .map(|ext| ext == "md")
-                .unwrap_or(false)
-        })
-        .count()
-}
 
 fn first_line(s: &str) -> &str {
     s.lines().next().unwrap_or(s)
@@ -1998,7 +1500,6 @@ fn write_lock(
     cwd: &Path,
     sk_mode: SkMode,
     sk_version: &str,
-    issue_sync_info: Option<(IssueSyncMode, &str)>,
     entries: Vec<LockEntry>,
 ) -> Result<()> {
     let lock = InstallLock {
@@ -2009,10 +1510,6 @@ fn write_lock(
             mode: sk_mode,
             version: sk_version.to_string(),
         },
-        issue_sync: issue_sync_info.map(|(mode, ver)| LockIssueSync {
-            mode,
-            version: ver.to_string(),
-        }),
         entries,
     };
 
@@ -2594,7 +2091,7 @@ groundwork_meta = { gh = "pentaxis93/groundwork", path = "docs/guide" }
     }
 
     #[test]
-    fn lock_round_trips_with_issue_sync() {
+    fn lock_round_trips() {
         let lock = InstallLock {
             version: 1,
             installer_version: "0.1.0".to_string(),
@@ -2603,90 +2100,13 @@ groundwork_meta = { gh = "pentaxis93/groundwork", path = "docs/guide" }
                 mode: SkMode::Binary,
                 version: "1.0.0".to_string(),
             },
-            issue_sync: Some(LockIssueSync {
-                mode: IssueSyncMode::Binary,
-                version: "0.3.0".to_string(),
-            }),
             entries: vec![],
         };
 
         let toml_str = toml::to_string_pretty(&lock).expect("serialize");
-        assert!(toml_str.contains("[issue_sync]"));
         let parsed: InstallLock = toml::from_str(&toml_str).expect("deserialize");
-        let is = parsed.issue_sync.expect("issue_sync present");
-        assert_eq!(is.mode, IssueSyncMode::Binary);
-        assert_eq!(is.version, "0.3.0");
-    }
-
-    #[test]
-    fn lock_round_trips_go_install_mode() {
-        let lock = InstallLock {
-            version: 1,
-            installer_version: "0.1.0".to_string(),
-            installed_at: "2026-01-01T00:00:00Z".to_string(),
-            sk: LockSk {
-                mode: SkMode::Npx,
-                version: "1.0.0".to_string(),
-            },
-            issue_sync: Some(LockIssueSync {
-                mode: IssueSyncMode::GoInstall,
-                version: "0.5.0".to_string(),
-            }),
-            entries: vec![],
-        };
-
-        let toml_str = toml::to_string_pretty(&lock).expect("serialize");
-        assert!(toml_str.contains("mode = \"go-install\""));
-        let parsed: InstallLock = toml::from_str(&toml_str).expect("deserialize");
-        assert_eq!(parsed.issue_sync.unwrap().mode, IssueSyncMode::GoInstall);
-    }
-
-    #[test]
-    fn lock_round_trips_without_issue_sync() {
-        let lock = InstallLock {
-            version: 1,
-            installer_version: "0.1.0".to_string(),
-            installed_at: "2026-01-01T00:00:00Z".to_string(),
-            sk: LockSk {
-                mode: SkMode::Npx,
-                version: "1.0.0".to_string(),
-            },
-            issue_sync: None,
-            entries: vec![],
-        };
-
-        let toml_str = toml::to_string_pretty(&lock).expect("serialize");
-        assert!(!toml_str.contains("issue_sync"));
-        assert!(toml_str.contains("mode = \"npx\""));
-        let parsed: InstallLock = toml::from_str(&toml_str).expect("deserialize");
-        assert!(parsed.issue_sync.is_none());
-        assert_eq!(parsed.sk.mode, SkMode::Npx);
-    }
-
-    #[test]
-    fn old_lock_without_issue_sync_deserializes() {
-        let old_toml = r#"
-version = 1
-installer_version = "0.1.0"
-installed_at = "2026-01-01T00:00:00Z"
-
-[sk]
-mode = "binary"
-version = "1.0.0"
-
-[[entries]]
-alias = "ground"
-origin = "local"
-source = "gh"
-repo = "pentaxis93/groundwork"
-path = "skills/ground"
-skill = "ground"
-"#;
-
-        let parsed: InstallLock = toml::from_str(old_toml).expect("deserialize old lock");
-        assert!(parsed.issue_sync.is_none());
         assert_eq!(parsed.sk.mode, SkMode::Binary);
-        assert_eq!(parsed.entries.len(), 1);
+        assert_eq!(parsed.sk.version, "1.0.0");
     }
 
     #[test]
@@ -2714,83 +2134,11 @@ Options:
         assert!(!supports_skill_target_option(help));
     }
 
-    #[test]
-    fn issue_sync_status_reports_never_when_line_says_never() {
-        let status = r#"
-Repository: pentaxis93/groundwork
-Last full pull: never
-
-No local changes
-"#;
-        assert!(issue_sync_status_is_never_pulled(status));
-    }
-
-    #[test]
-    fn issue_sync_status_not_never_when_timestamp_present() {
-        let status = r#"
-Repository: pentaxis93/groundwork
-Last full pull: 2026-03-06T12:34:56Z
-
-No local changes
-"#;
-        assert!(!issue_sync_status_is_never_pulled(status));
-    }
-
-    #[test]
-    fn strict_init_issue_sync_status_complete_when_timestamp_present() {
-        let status = r#"
-Repository: pentaxis93/groundwork
-Last full pull: 2026-03-06T12:34:56Z
-
-No local changes
-"#;
-        assert!(issue_sync_status_has_completed_pull(status));
-    }
-
-    #[test]
-    fn strict_init_issue_sync_status_incomplete_when_never() {
-        let status = r#"
-Repository: pentaxis93/groundwork
-Last full pull: never
-
-No local changes
-"#;
-        assert!(!issue_sync_status_has_completed_pull(status));
-    }
-
-    #[test]
-    fn strict_init_issue_sync_status_incomplete_when_missing_line() {
-        let status = r#"
-Repository: pentaxis93/groundwork
-No local changes
-"#;
-        assert!(!issue_sync_status_has_completed_pull(status));
-    }
-
-    #[test]
-    fn pull_error_hint_detects_missing_project_scope() {
-        let stderr = "gh: Your token has not been granted the required scopes to execute this query. The 'title' field requires one of the following scopes: ['read:project'].";
-        let hint = issue_sync_pull_remediation_hint(stderr).expect("scope hint");
-        assert!(hint.contains("gh auth refresh -h github.com -s read:project"));
-    }
-
-    #[test]
-    fn pull_error_hint_detects_invalid_token() {
-        let stderr = "The token in /home/user/.config/gh/hosts.yml is invalid.";
-        let hint = issue_sync_pull_remediation_hint(stderr).expect("auth hint");
-        assert!(hint.contains("gh auth login -h github.com"));
-    }
-
-    #[test]
-    fn pull_error_hint_none_for_unclassified_error() {
-        let stderr = "some unexpected output";
-        assert!(issue_sync_pull_remediation_hint(stderr).is_none());
-    }
 
     #[test]
     fn parse_version_line_uses_first_non_empty_trimmed_line() {
-        let parsed = parse_version_line("\n\n  gh-issue-sync 0.3.0\nbuild info");
-        assert_eq!(parsed.as_deref(), Some("gh-issue-sync 0.3.0"));
+        let parsed = parse_version_line("\n\n  sk 1.2.3\nbuild info");
+        assert_eq!(parsed.as_deref(), Some("sk 1.2.3"));
     }
 
     #[test]
@@ -2802,10 +2150,10 @@ No local changes
     #[test]
     fn strict_version_capture_surfaces_command_failures() {
         let err =
-            capture_required_version("gh-issue-sync", Err(anyhow!("boom"))).expect_err("must fail");
+            capture_required_version("sk", Err(anyhow!("boom"))).expect_err("must fail");
         assert!(err
             .to_string()
-            .contains("failed to capture gh-issue-sync version"));
+            .contains("failed to capture sk version"));
     }
 
     #[test]
@@ -2813,22 +2161,6 @@ No local changes
         let out =
             run_command_capture_raw(&["sh", "-c", "printf 'manifest-line\\n'"]).expect("capture");
         assert_eq!(out, "manifest-line\n");
-    }
-
-    #[test]
-    fn release_asset_maps_linux_amd64() {
-        let asset =
-            issue_sync_release_asset_for("linux", "x86_64").expect("linux amd64 should map");
-        assert_eq!(asset.name, "gh-issue-sync-linux-amd64");
-        assert_eq!(
-            asset.sha256,
-            "095749599f9d6c81d91765bd16b14d5c76215fd1d3ef6bccf5d005efb2d9b84e"
-        );
-    }
-
-    #[test]
-    fn release_asset_rejects_unsupported_target() {
-        assert!(issue_sync_release_asset_for("macos", "x86_64").is_none());
     }
 
     #[test]
