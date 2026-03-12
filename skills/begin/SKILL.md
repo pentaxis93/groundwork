@@ -52,6 +52,9 @@ now before proceeding.
 Methodology: [loaded | already active]
 ```
 
+Implementation: invoke the `using-groundwork` skill via the Skill tool. If
+already active this session, skip and report "already active".
+
 ##### 0b. Observe
 
 Compact workspace snapshot. This is the only status check — do not repeat these
