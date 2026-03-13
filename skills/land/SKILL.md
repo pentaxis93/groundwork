@@ -27,9 +27,8 @@ Use this skill when the user wants full delivery closure in one command.
 5. Discover PR number
 6. Merge via PR API and sync local state
 7. Remove the feature branch (local; remote usually handled by merge)
-8. Sync installed skill copies if the branch touched skill sources
-9. Close satisfied issue(s); comment progress on partial issue(s)
-10. Verify final state (including documentation coverage summary)
+8. Close satisfied issue(s); comment progress on partial issue(s)
+9. Verify final state (including documentation coverage summary)
 
 Do not stop after merge — stopping leaves branches dangling and issues unclosed. The full sequence is atomic: merge through close.
 
