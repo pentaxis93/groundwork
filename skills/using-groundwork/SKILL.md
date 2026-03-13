@@ -7,6 +7,12 @@ description: >-
 metadata:
   version: "3.1.0"
   updated: "2026-03-12"
+requires: []
+accepts: []
+produces: []
+may_produce: []
+trigger:
+  on_signal: "methodology-orientation"
 ---
 
 # Using Groundwork

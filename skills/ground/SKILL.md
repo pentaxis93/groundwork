@@ -11,6 +11,12 @@ description: >-
 metadata:
   version: "3.0.0"
   updated: "2026-03-08"
+requires: []
+accepts: ["research-record"]
+produces: []
+may_produce: []
+trigger:
+  on_signal: "frame-constraints"
 ---
 
 # Ground

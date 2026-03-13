@@ -11,6 +11,14 @@ metadata:
   version: "1.0.0"
   updated: "2026-03-08"
   origin: "Adapted from obra/superpowers (MIT). See LICENSE-UPSTREAM."
+requires: ["behavior-contract"]
+accepts: ["implementation-plan"]
+produces: ["test-evidence"]
+may_produce: []
+trigger:
+  all_of:
+    - on_artifact: "behavior-contract"
+    - on_signal: "implement"
 ---
 
 # Test-First

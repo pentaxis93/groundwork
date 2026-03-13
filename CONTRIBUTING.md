@@ -4,18 +4,7 @@ Audience: new contributors and agents starting development work on Groundwork.
 
 ## Prerequisites
 
-- **Rust** (edition 2021) — for building and testing the CLI
-- **Node.js** — required by [`sk`](https://github.com/nickarora/sk) for skill syncing
 - **gh CLI** — used for GitHub operations
-
-## Build and Test
-
-```bash
-cargo build -p groundwork-cli
-cargo test -p groundwork-cli
-```
-
-The binary is `groundwork`. After building, it is available at `target/debug/groundwork`.
 
 ## Adding a Skill
 
@@ -36,10 +25,9 @@ description: >-
 To add a new shipped skill maintained in this repository:
 
 1. Create `skills/<skill-name>/SKILL.md`
-2. Add the skill to `skills/skills.toml` in the position that makes its invocation relationship clear
-3. Add a `gh` dependency entry in `agents.toml`
-4. Add the skill to the skills table in `README.md` and the routing table in `WORKFLOW.md`
-5. If the skill participates in handoff contracts, update `docs/architecture/pipeline-contract.md`
+2. Add the skill declaration to `groundwork.toml` with requires/accepts/produces/may_produce/trigger
+3. Add the skill to the routing table in `WORKFLOW.md`
+4. If the skill participates in handoff contracts, update `docs/architecture/pipeline-contract.md`
 
 ## Upstream Attribution
 
@@ -87,51 +75,25 @@ A repo-tracked skill contribution must:
   standard above; `replaces` is not used)
 - include a co-located `LICENSE-UPSTREAM` file when the skill adapts upstream
   material, and reference it from `origin:` metadata
-- include a valid `groundwork:` frontmatter block when the skill participates
-  in runtime pipeline contracts; follow the shipped skill and schema
-  conventions already used in this repository
+- include runa interface fields (requires, accepts, produces, may_produce, trigger) in frontmatter when the skill participates in the methodology pipeline
 - use valid Markdown/plain text encoding and stable relative references so the
   skill can be installed and read without local-environment assumptions
 
 When a skill contribution changes the shipped Groundwork inventory or
 methodology, update the corresponding manifest and documentation surfaces in
-this repository (`skills/skills.toml`, `agents.toml`, README/WORKFLOW entries,
-pipeline docs, CHANGELOG) so the tracked project state stays accurate.
-
-Contributor tooling is not part of Groundwork's runtime skill inventory. Only
-add entries to `agents.toml` or `skills/skills.toml` for skills Groundwork
-actually ships.
-
-## Agent Workspace Policy
-
-- `.agents/`, `.claude/`, and `.codex/` are agent-local runtime/workspace state and are intentionally gitignored.
-- Do not add or edit canonical project content under these directories.
-- Canonical skill content belongs in tracked project paths (`skills/`) and the shipped-skill manifest at `skills/skills.toml`.
-- When an agent-local path is accidentally tracked, remove it from git index (`git rm --cached <path>`) and move/preserve canonical content in tracked locations.
+this repository (`groundwork.toml`, WORKFLOW entries, pipeline docs) so the
+tracked project state stays accurate.
 
 ## PR Process
 
 - Branch from `main`
-- Ensure `cargo test -p groundwork-cli` passes
 - Include a documentation review: check which docs need updating per the changes (see the `documentation` skill for the full procedure)
-- Add a CHANGELOG entry for user-visible changes (see CHANGELOG discipline
-  below)
-
-## CHANGELOG Discipline
-
-Only log user-visible changes. An entry belongs in CHANGELOG when an end user
-or adopting agent would notice the difference. Internal iteration — version
-bumps to individual skills, renames of internal concepts, add-then-remove
-cycles, policy doc rewrites — does not.
-
-The `[Unreleased]` section describes what ships, not what happened during
-development.
 
 ## Where to Look
 
 | Document | What it covers |
 |----------|---------------|
-| [ARCHITECTURE.md](ARCHITECTURE.md) | System structure, composition model, component overview |
 | [WORKFLOW.md](WORKFLOW.md) | Integration manual — pipeline stages, skill routing, handoff rules |
 | [docs/architecture/pipeline-contract.md](docs/architecture/pipeline-contract.md) | Formal handoff contracts and anti-divergence rules |
-| [README.md](README.md) | Project overview, install, design principles |
+| [README.md](README.md) | Project overview, design principles |
+| [groundwork.toml](groundwork.toml) | Methodology manifest — artifact types and skill declarations |

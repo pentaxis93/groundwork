@@ -4,6 +4,12 @@ description: Behaviour-driven development for writing and maintaining executable
 metadata:
   version: "2.0.0"
   updated: "2026-03-07"
+requires: []
+accepts: ["research-record"]
+produces: ["behavior-contract"]
+may_produce: []
+trigger:
+  on_signal: "define-behavior"
 ---
 
 # Behaviour-Driven Development

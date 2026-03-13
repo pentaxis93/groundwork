@@ -1,6 +1,14 @@
 # Groundwork
 
-A methodology library for AI coding agents. One connected pipeline from problem framing through shipped change to closed loop.
+A methodology plugin for AI coding agents. One connected pipeline from problem framing through shipped change to closed loop.
+
+Groundwork is the methodology layer in a three-layer stack:
+
+- **Daemon** — the orchestration surface (e.g., Claude Code, Codex CLI)
+- **Runtime** — [runa](https://github.com/pentaxis93/runa) monitors artifacts, evaluates triggers, enforces contracts
+- **Methodology** — groundwork defines *what* cognitive discipline agents follow; runa enforces *when* and *whether*
+
+Groundwork owns the skills, artifact schemas, and pipeline topology. It has no runtime, no CLI, no installer. It registers with runa through a single [manifest file](groundwork.toml).
 
 ## The Problem
 
@@ -30,9 +38,10 @@ There is one path, not a menu. Every piece of work flows through five stages:
 **5. Land** — `land` closes the loop: merge, push, delete branch, comment on issue, close issue. Closure records behavior coverage and remaining gaps. Do not stop after merge.
 
 For the full integration manual, see [WORKFLOW.md](WORKFLOW.md). For formal handoff contracts and anti-divergence rules, see [docs/architecture/pipeline-contract.md](docs/architecture/pipeline-contract.md).
-For the concise inventory and shipped order reference, see [`skills/skills.toml`](skills/skills.toml).
 
 ## Skills
+
+The [manifest](groundwork.toml) is the canonical inventory of all skills and their interface declarations.
 
 | Skill | Stage | What it prevents |
 |---|---|---|
@@ -49,46 +58,14 @@ For the concise inventory and shipped order reference, see [`skills/skills.toml`
 | `propose` | Delivery | Manual ad-hoc commit/push/PR between implementation and merge |
 | `land` | Completion | Branch rot, unclosed issues, incomplete delivery |
 | `using-groundwork` | Meta | Using skills in isolation instead of as a connected pipeline |
-
-## Install
-
-```bash
-groundwork init
-```
-
-This reads `skills/skills.toml`, fetches skills from their upstream sources via [`sk`](https://github.com/nickarora/sk), populates `agents.toml`, and syncs skills into your agent's skill directory.
-It also provisions `.groundwork/schemas/` with embedded artifact schemas and creates `.groundwork/artifacts/` for project artifacts.
-
-Prerequisites: Node.js (for `sk`), Git, npm, and `gh` CLI.
-
-### Commands
-
-| Command | What it does | Flag |
-|---------|-------------|------|
-| `groundwork init` | Reads `skills/skills.toml`, populates `agents.toml`, fetches skills via `sk sync`, provisions schemas, and writes the install lock | `--dry-run` |
-| `groundwork update` | Re-syncs to the current shipped-skill manifest — upserts new or changed skills, prunes removed ones, and reconciles embedded schemas (create/update only; extras preserved) | `--dry-run` |
-| `groundwork list` | Shows installed skills in shipped-manifest order, along with source repos and pinned refs from the lock file | |
-| `groundwork doctor` | Checks prerequisites (`sk`, `gh`, `agents.toml`, shipped-skill manifest), plus `.groundwork/schemas/` completeness and drift, and reports status | |
-
-Both `init` and `update` are idempotent. They reconcile the manifest against `agents.toml` and embedded schemas, writing only what changed. State is tracked in `.groundwork/installed.lock.toml`.
-If tool version capture fails, `init`/`update` abort instead of writing unsubstantiated lock provenance.
-
-## Logo Assets
-
-Logo sources and generation tooling are under [`assets/logo/`](assets/logo/).  
-Regenerate derived branding assets from repo root with:
-
-```bash
-python3 assets/logo/generate.py
-```
-
-See [`assets/logo/README.md`](assets/logo/README.md) for dependency setup and output details.
+| `third-force` | Cross-cutting | Routing around operational friction instead of resolving it |
 
 ## Project Layout
 
 ```
-skills/                     # Groundwork's tracked skills and shipped inventory
-  skills.toml               #   authoritative shipped-skill manifest
+groundwork.toml             # Methodology manifest — artifact types, skill declarations
+schemas/                    # JSON Schema contracts for artifact types
+skills/                     # Skill definitions (SKILL.md + references)
   using-groundwork/         #   methodology orientation
   ground/                   #   first-principles grounding
   research/                 #   external evidence gathering
@@ -96,24 +73,22 @@ skills/                     # Groundwork's tracked skills and shipped inventory
   plan/                     #   design convergence
   issue-craft/              #   issue lifecycle
   begin/                    #   work initiation
+  test-first/               #   RED-GREEN-REFACTOR execution
+  systematic-debugging/     #   root-cause investigation
+  third-force/              #   friction resolution
   documentation/            #   documentation review/update
+  verification-before-completion/ # completion gate
   propose/                  #   commit, push, PR creation
   land/                     #   closeout workflow
-
-crates/
-  groundwork-cli/           # Rust installer (groundwork init/update/list/doctor)
-
 docs/
-  architecture/             # Pipeline contract, integration rules
-  research/                 # Ecosystem analysis, design rationale
-
+  architecture/             # Pipeline contract, ADRs
+tests/
+  fixtures/artifacts/       # Valid/invalid artifact examples for schema testing
 WORKFLOW.md                 # Integration manual — the authoritative reference
-agents.toml                 # Skill system configuration (sk-compatible)
+CONTRIBUTING.md             # Contributor guide
 ```
 
 ## Design Commitments
-
-These commitments derive from the project's [foundational principles](docs/PRINCIPLES.md).
 
 **One pipeline, not a menu.** Skills are not independently selectable utilities. They form a single path with handoff contracts between stages. Skipping a stage means the next stage receives malformed input.
 
