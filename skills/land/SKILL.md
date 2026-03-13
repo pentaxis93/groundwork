@@ -101,7 +101,9 @@ acceptance criteria against the branch diff. Classify each issue as satisfied
 (all criteria met) or partial (some remain). If no acceptance criteria can be
 extracted from the issue body, classify as partial — an issue without explicit
 criteria may have unstated requirements. If an issue fetch fails, treat that
-issue as partial and log a warning. Store classifications for step 1e.
+issue as partial and log a warning. For no-issue landings, skip acceptance
+criteria evaluation — `verification-before-completion` still runs to confirm
+the work itself is complete. Store classifications for Phase 1e.
 
 #### 0c. Review
 
@@ -238,6 +240,7 @@ Report the final state including:
 - If `gh pr merge` fails: stop immediately, do not close issue. If the failure is transient (network), retry once. If structural (merge conflict, check failure), report and stop. Do not fall back to local merge — the whole point of using the API is to preserve PR merge metadata.
 - If branch deletion fails after successful merge: warn about the deletion failure and continue to issue close/comment steps. The code is safely on `main`; branch cleanup is not a prerequisite for issue closure.
 - If issue comment/close API fails for one issue: continue processing remaining issues, then report failed issue number(s) explicitly.
+- If acceptance criteria evaluation fails in Phase 0b (issue fetch error, criteria unparseable): the inline handling applies — treat the issue as partial, log a warning. Partial classification does not block the seal; it flows through to Phase 1e where the issue is left open with a progress comment.
 - **Documentation drift blocks the seal.** Drift discovered in Phase 0c must be fixed directly or tracked via issue before the seal can pass. Do not proceed with unresolved drift.
 - If no issue numbers are available: do not prompt for issue IDs during `land`; proceed with merge/sync/cleanup and report a no-issue landing.
 - If commit history evaluation is uncertain: default to preserve (`--no-ff`). Squashing is an optimization; when in doubt, keep the original history.
