@@ -1,10 +1,8 @@
-# CLAUDE.md
-
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
 ## What This Project Is
 
-Groundwork is a **pure methodology plugin** for AI coding agents — no runtime, no CLI, no build system. It defines cognitive discipline through skills, artifact schemas, and pipeline topology. It has no code to build, no tests to run, and no dependencies to install.
+Groundwork is a **pure methodology plugin** for AI coding agents. It defines cognitive discipline through skills, artifact schemas, and pipeline topology.
 
 It is part of a three-layer stack:
 - **Daemon** — orchestration surface (Claude Code, Codex CLI)
@@ -26,11 +24,13 @@ It is part of a three-layer stack:
 
 One path, not a menu. Every piece of work flows through five stages:
 
-1. **Frame constraints** (`ground`) — strips assumptions, builds from verified constraints. Re-fires on every new generative act, not just once.
+1. **Frame constraints** (`ground`, `research`) — strips assumptions, builds from verified constraints. `ground` re-fires on every new generative act, not just once. `research` gathers external evidence when decisions need substantiation.
 2. **Define behavior** (`bdd`) — Given/When/Then scenarios that thread through every subsequent stage.
 3. **Decompose** (`issue-craft`, `begin`, `plan`) — executable issues, session selection, decision-complete designs.
 4. **Execute and verify** (`test-first`, `systematic-debugging`, `verification-before-completion`, `propose`) — RED-GREEN-REFACTOR mapped to behavior scenarios, root-cause before fix, behavior-level evidence.
 5. **Land** (`land`) — merge, push, delete branch, close issue. Do not stop after merge.
+
+Cross-cutting: `third-force` (resolve operational friction structurally), `documentation` (threads through every stage), `using-groundwork` (methodology orientation).
 
 ## Modifying the Methodology
 
