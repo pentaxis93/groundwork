@@ -234,8 +234,10 @@ Development for the full treatment.
 
 - `propose`: the next lifecycle phase — commit, push, and PR creation after
   implementation.
-- `land`: the closing bookend — merge, cleanup, and issue closure after review.
-  `begin` opens the session lifecycle; `land` closes it.
+- `land`: the closing bookend — closing ceremony and mechanical merge after
+  review. `begin`'s opening ceremony (orient, observe, frame, banish) prepares
+  the agent for work; `land`'s closing ceremony (gather, verify, review, seal)
+  prepares the work for delivery. Parallel structure, inverse direction.
 - `issue-craft`: decomposition, issue boundaries, acceptance criteria contracts.
 - `ground`: validate assumptions before committing to an approach.
 - `bdd`: behavior-first test strategy for implementation increments.
