@@ -7,6 +7,12 @@ metadata:
   source: internal
   updated: "2026-03-07"
   workflow: 6-phase (Clarify → Decompose → Gather → Evaluate → Resolve → Synthesize)
+requires: []
+accepts: []
+produces: ["research-record"]
+may_produce: []
+trigger:
+  on_signal: "evidence-needed"
 ---
 
 # Research Skill

@@ -2,7 +2,7 @@
 
 This is the integration manual for operating Groundwork's skills as one connected pipeline from problem framing to shipped change.
 
-For the shortest inventory-and-order reference, read `skills/skills.toml`. This document is the narrative explanation of how those skills interact.
+For the canonical inventory and interface declarations, see `groundwork.toml`. This document is the narrative explanation of how those skills interact.
 
 ## Pipeline
 
@@ -184,8 +184,3 @@ Epics with 4+ tasks include a dependency graph in two representations:
 | `propose` | packaging changes for review: `propose`, `submit pr`, `create pr`, `open pr`, `send for review` |
 | `land` | merge-and-close completion events: `land`, `merge and close`, `ship it` |
 
-## Install
-
-```bash
-groundwork init
-```

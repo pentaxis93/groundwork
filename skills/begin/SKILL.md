@@ -4,6 +4,12 @@ description: >-
   Session work initiation: select issue(s), prepare workspace, declare
   direction. Opening bookend of the session lifecycle — `land` is the closing
   bookend. Trigger on: 'begin', 'begin work', 'start session', 'start issue'.
+requires: []
+accepts: []
+produces: []
+may_produce: []
+trigger:
+  on_signal: "session-start"
 ---
 
 # Begin — Work Selection & Initiation

@@ -4,6 +4,12 @@ description: >-
   Transfer problem understanding across context boundaries through well-formed
   issues. Use for creating, decomposing, refining, triaging, and closing issues
   in GitHub projects.
+requires: []
+accepts: ["behavior-contract", "implementation-plan"]
+produces: []
+may_produce: []
+trigger:
+  on_signal: "decompose-work"
 ---
 
 # Issue Craft

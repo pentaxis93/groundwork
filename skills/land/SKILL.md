@@ -5,6 +5,12 @@ description: >-
   branch, verify acceptance criteria, close satisfied issues, comment progress
   on partial issues. Use after review is complete.
   Trigger on: 'land', 'land this', 'merge and close', 'ship it'.
+requires: ["completion-evidence"]
+accepts: ["behavior-contract"]
+produces: ["completion-record"]
+may_produce: []
+trigger:
+  on_signal: "merge-ready"
 ---
 
 # Land — Merge, Sync, Cleanup, Close
@@ -161,21 +167,7 @@ Then close: `gh issue close <number> --reason completed`.
 
 If any comment or close operation fails, continue processing remaining issues, then report which operations failed.
 
-### 10. Sync installed skill copies
-
-Check if the merge introduced changes under `skills/` by inspecting the diff of the merge commit (`git diff --name-only HEAD~1 HEAD | grep '^skills/'`).
-
-**If no skill files changed:** skip, record "no skill changes."
-
-**If skill files changed:**
-
-1. Check if `sk` is on PATH (`command -v sk`).
-2. If not found: skip with a warning ("sk not on PATH; installed skill copies may be stale"), record "skipped (sk not found)."
-3. If found: run `sk sync --skill-target name --non-interactive`.
-   - On success: record "synced."
-   - On failure: warn but do not roll back the merge. Record "sync failed" with the error.
-
-### 11. Verify and report
+### 10. Verify and report
 
 Confirm success conditions:
 - Current branch is `main`
@@ -191,7 +183,6 @@ Report the final state including:
   - Issue-linked: satisfied (closed) and partial (open with remaining criteria)
   - No-issue: explicitly report "no issue linked"
 - Documentation coverage summary from step 3
-- Skill sync outcome: one of `synced`, `skipped (no skill changes)`, `skipped (sk not found)`, `sync failed`
 - Any warnings or failed operations from earlier steps
 
 ---
@@ -205,8 +196,6 @@ Report the final state including:
 - If no issue numbers are available: do not prompt for issue IDs during `land`; proceed with merge/sync/cleanup and report a no-issue landing.
 - If documentation drift scan encounters errors: report them in the coverage summary and proceed. Do not block the merge.
 - If commit history evaluation is uncertain: default to preserve (`--no-ff`). Squashing is an optimization; when in doubt, keep the original history.
-- If `sk sync` fails: report the failure but do not roll back — the code is safely on main, only installed copies are stale.
-- If `sk` is not on PATH: skip with a warning, not a failure.
 
 ---
 

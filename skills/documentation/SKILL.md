@@ -7,6 +7,12 @@ description: >-
   the audience test. Also use when documentation quality is degrading:
   stale references, verbose-but-unhelpful content, or docs written
   for no particular reader.
+requires: []
+accepts: ["behavior-contract", "implementation-plan"]
+produces: []
+may_produce: []
+trigger:
+  on_signal: "documentation-review"
 ---
 
 # Documentation

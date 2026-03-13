@@ -6,6 +6,12 @@ description: >-
   The middle phase of the session lifecycle between begin and land.
   Trigger on: 'propose', 'submit pr', 'create pr', 'open pr',
   'send for review', 'package this up'.
+requires: ["completion-evidence"]
+accepts: []
+produces: []
+may_produce: []
+trigger:
+  on_artifact: "completion-evidence"
 ---
 
 # Propose — Commit, Push, PR

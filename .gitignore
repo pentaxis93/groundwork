@@ -1,6 +1,5 @@
-# Agent-local workspace; canonical skills are tracked under skills/ and manifests/.
+# Agent workspace directories (daemon-local, not methodology content)
 .agents/
 .claude/
 .codex/
-.groundwork/
 assets/logo/dist/

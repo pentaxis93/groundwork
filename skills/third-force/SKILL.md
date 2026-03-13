@@ -14,6 +14,12 @@ description: >-
 metadata:
   version: "2.1.0"
   updated: "2026-03-08"
+requires: []
+accepts: []
+produces: []
+may_produce: []
+trigger:
+  on_signal: "friction-detected"
 ---
 
 # Third Force

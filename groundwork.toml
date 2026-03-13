@@ -1,0 +1,162 @@
+# Groundwork Methodology Manifest
+#
+# This is the single file runa reads to understand the groundwork methodology.
+# It declares all artifact types and skills with their interface edges.
+# Topology emerges from the graph of requires/produces relationships.
+
+[metadata]
+name = "groundwork"
+version = "0.1.0"
+
+# --- Artifact Types ---
+#
+# Each artifact type is a named category of work product with a JSON Schema contract.
+# runa validates instances against these schemas.
+
+[[artifact_types]]
+name = "behavior-contract"
+schema = "schemas/behavior-contract.schema.json"
+
+[[artifact_types]]
+name = "implementation-plan"
+schema = "schemas/implementation-plan.schema.json"
+
+[[artifact_types]]
+name = "research-record"
+schema = "schemas/research-record.schema.json"
+
+[[artifact_types]]
+name = "test-evidence"
+schema = "schemas/test-evidence.schema.json"
+
+[[artifact_types]]
+name = "completion-evidence"
+schema = "schemas/completion-evidence.schema.json"
+
+[[artifact_types]]
+name = "completion-record"
+schema = "schemas/completion-record.schema.json"
+
+# --- Skills ---
+#
+# Edge declarations:
+#   requires    — artifact must exist and validate before skill executes (hard dep)
+#   accepts     — artifact may be consumed if available (soft dep)
+#   produces    — artifact will exist and validate after skill executes
+#   may_produce — artifact might be produced; validated if present
+#   trigger     — condition that activates the skill
+#
+# Trigger primitives: on_artifact, on_change, on_signal, on_invalid
+# Composable with: all_of, any_of
+
+[[skills]]
+name = "using-groundwork"
+requires = []
+accepts = []
+produces = []
+may_produce = []
+trigger = { on_signal = "methodology-orientation" }
+
+[[skills]]
+name = "ground"
+requires = []
+accepts = ["research-record"]
+produces = []
+may_produce = []
+trigger = { on_signal = "frame-constraints" }
+
+[[skills]]
+name = "research"
+requires = []
+accepts = []
+produces = ["research-record"]
+may_produce = []
+trigger = { on_signal = "evidence-needed" }
+
+[[skills]]
+name = "bdd"
+requires = []
+accepts = ["research-record"]
+produces = ["behavior-contract"]
+may_produce = []
+trigger = { on_signal = "define-behavior" }
+
+[[skills]]
+name = "plan"
+requires = ["behavior-contract"]
+accepts = ["research-record"]
+produces = ["implementation-plan"]
+may_produce = []
+trigger = { on_artifact = "behavior-contract" }
+
+[[skills]]
+name = "issue-craft"
+requires = []
+accepts = ["behavior-contract", "implementation-plan"]
+produces = []
+may_produce = []
+trigger = { on_signal = "decompose-work" }
+
+[[skills]]
+name = "begin"
+requires = []
+accepts = []
+produces = []
+may_produce = []
+trigger = { on_signal = "session-start" }
+
+[[skills]]
+name = "test-first"
+requires = ["behavior-contract"]
+accepts = ["implementation-plan"]
+produces = ["test-evidence"]
+may_produce = []
+trigger = { all_of = [{ on_artifact = "behavior-contract" }, { on_signal = "implement" }] }
+
+[[skills]]
+name = "systematic-debugging"
+requires = []
+accepts = ["test-evidence"]
+produces = []
+may_produce = []
+trigger = { on_signal = "investigation-needed" }
+
+[[skills]]
+name = "third-force"
+requires = []
+accepts = []
+produces = []
+may_produce = []
+trigger = { on_signal = "friction-detected" }
+
+[[skills]]
+name = "documentation"
+requires = []
+accepts = ["behavior-contract", "implementation-plan"]
+produces = []
+may_produce = []
+trigger = { on_signal = "documentation-review" }
+
+[[skills]]
+name = "verification-before-completion"
+requires = ["test-evidence"]
+accepts = ["behavior-contract"]
+produces = ["completion-evidence"]
+may_produce = []
+trigger = { on_artifact = "test-evidence" }
+
+[[skills]]
+name = "propose"
+requires = ["completion-evidence"]
+accepts = []
+produces = []
+may_produce = []
+trigger = { on_artifact = "completion-evidence" }
+
+[[skills]]
+name = "land"
+requires = ["completion-evidence"]
+accepts = ["behavior-contract"]
+produces = ["completion-record"]
+may_produce = []
+trigger = { on_signal = "merge-ready" }

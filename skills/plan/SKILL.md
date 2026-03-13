@@ -11,6 +11,12 @@ metadata:
   version: "1.1.0"
   updated: "2026-03-08"
   origin: "Adapted from OpenAI Codex CLI (Apache-2.0). See LICENSE-UPSTREAM."
+requires: ["behavior-contract"]
+accepts: ["research-record"]
+produces: ["implementation-plan"]
+may_produce: []
+trigger:
+  on_artifact: "behavior-contract"
 ---
 
 # Plan

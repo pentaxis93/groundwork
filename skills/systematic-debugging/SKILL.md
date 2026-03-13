@@ -10,6 +10,12 @@ metadata:
   version: "1.0.0"
   updated: "2026-03-09"
   origin: "Adapted from obra/superpowers (MIT). See LICENSE-UPSTREAM."
+requires: []
+accepts: ["test-evidence"]
+produces: []
+may_produce: []
+trigger:
+  on_signal: "investigation-needed"
 ---
 
 # Systematic Debugging
