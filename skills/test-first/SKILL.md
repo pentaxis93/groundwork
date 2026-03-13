@@ -223,7 +223,7 @@ Execute the RED-GREEN-REFACTOR cycle for a behavior identified by `bdd`.
 
 Enter the RED-GREEN-REFACTOR cycle from a bug report.
 
-1. If the root cause is unclear, invoke `systematic-debugging` first — it owns
+1. If the root cause is unclear, invoke `systematic-debugging` via the Skill tool first — it owns
    root-cause analysis methodology.
 2. Write a failing test that reproduces the bug. The test name describes the
    corrected behavior, not the bug.

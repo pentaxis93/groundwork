@@ -95,7 +95,7 @@ available.
 Criteria: [all met | partial — list remaining]
 ```
 
-Implementation: invoke the `verification-before-completion` skill. For
+Implementation: invoke the `verification-before-completion` skill via the Skill tool. For
 issue-linked branches, fetch each target issue (`gh issue view`) and evaluate
 acceptance criteria against the branch diff. Classify each issue as satisfied
 (all criteria met) or partial (some remain). If no acceptance criteria can be
@@ -116,7 +116,7 @@ Docs: [clean | fixed: list | tracked: issue numbers]
 ```
 
 Implementation: invoke the `documentation` skill's documentation-review
-procedure. Check whether changed files affect areas with documentation artifacts
+procedure via the Skill tool. Check whether changed files affect areas with documentation artifacts
 (README, ARCHITECTURE, CONTRIBUTING, API docs). Fix drift directly and commit;
 file tracking issues for anything deeper. Record a coverage summary: each
 artifact checked, its status, and any action taken.
