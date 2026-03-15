@@ -116,8 +116,8 @@ Docs: [clean | fixed: list | tracked: issue numbers]
 ```
 
 Implementation: invoke the `documentation` skill's documentation-review
-procedure. Check whether changed files affect areas with documentation artifacts
-(README, ARCHITECTURE, CONTRIBUTING, API docs). Fix drift directly and commit;
+procedure via the Skill tool. Check whether changed files affect areas with documentation artifacts
+(README, ARCHITECTURE, API docs). Fix drift directly and commit;
 file tracking issues for anything deeper. Record a coverage summary: each
 artifact checked, its status, and any action taken.
 

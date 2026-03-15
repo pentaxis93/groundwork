@@ -114,7 +114,7 @@ may_produce = []
 trigger = { all_of = [{ on_artifact = "behavior-contract" }, { on_signal = "implement" }] }
 
 [[skills]]
-name = "systematic-debugging"
+name = "debug"
 requires = []
 accepts = ["test-evidence"]
 produces = []

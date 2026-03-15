@@ -237,7 +237,7 @@ than one you can only run.
 **Delete freely.** Obsolete behavior tests should be removed. Tests that
 describe behaviors nobody needs are noise, not safety.
 
-**Single pipeline.** BDD and TDD are complementary stages in one flow, not
+**Single topology.** BDD and TDD are complementary stages in one flow, not
 alternatives. BDD decides what to test; TDD executes the red-green-refactor
 cycle for each behavior.
 

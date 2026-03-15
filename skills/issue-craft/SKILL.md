@@ -20,8 +20,8 @@ access to your context, your codebase familiarity, or your unstated assumptions.
 Everything it needs must be in the issue.
 
 For concrete templates, see [references/templates.md](references/templates.md).
-For the issue state model and dependency graph format, see WORKFLOW.md §
-Issue-Based Development.
+For the issue state model and dependency graph format, see
+[`issue-model.md`](../../docs/architecture/issue-model.md).
 
 ## The Central Discipline
 
@@ -75,8 +75,8 @@ dependencies create false bottlenecks that serialize work unnecessarily.
 **Vertical slices with dependency graphs.** Decompose epics into independently
 shippable slices, not horizontal layers. Each slice delivers observable value.
 For epics with 4+ tasks, include a dependency graph showing execution layers
-(see WORKFLOW.md § Dependency Graph Format) so implementers can parallelize
-independent work.
+(see [`issue-model.md`](../../docs/architecture/issue-model.md) § Dependency
+Graph Format) so implementers can parallelize independent work.
 
 ### The issue as contract
 
@@ -110,7 +110,7 @@ issue bodies against template schemas.
 2. Split into vertical slices that are independently verifiable.
 3. Group by module boundary where it clarifies ownership.
 4. Build dependency graph (Mermaid `graph TD` + layered text summary —
-   see WORKFLOW.md § Dependency Graph Format).
+   see [`issue-model.md`](../../docs/architecture/issue-model.md) § Dependency Graph Format).
 5. Size-check each candidate: split if oversized, merge if trivial.
 6. Create task issues in topological order (lowest execution layer first).
 7. Create or update parent epic with task checklist and dependency graph.

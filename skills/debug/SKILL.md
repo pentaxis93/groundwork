@@ -1,9 +1,9 @@
 ---
-name: systematic-debugging
+name: debug
 description: >-
   Root-cause investigation discipline. Use when a test fails, behavior is
   unexpected, or any failure occurs — before proposing fixes. Enforces
-  structured investigation before fix attempts. Fires at any pipeline stage
+  structured investigation before fix attempts. Fires at any stage
   when failures appear. If you are about to fix something without understanding
   why it broke, this skill applies.
 metadata:
@@ -18,7 +18,7 @@ trigger:
   on_signal: "investigation-needed"
 ---
 
-# Systematic Debugging
+# Debug
 
 *Find root cause before fixing. Symptom fixes are failure.*
 
@@ -40,7 +40,7 @@ Investigate from evidence. No exceptions.
 
 ## Lifecycle Role
 
-This skill is a cross-cutting discipline in groundwork's pipeline, alongside
+This skill is a cross-cutting discipline in groundwork's topology, alongside
 `ground` (first-principles on creation) and `third-force` (structural
 resolution on friction). It fires at any stage when failures appear — not
 only during execution.
@@ -51,13 +51,13 @@ All three share the same cognitive shape:
 |---|---|---|
 | `ground` | Start from what exists | Stop. What is actually needed? |
 | `third-force` | Route around friction | Stop. What is the structural cause? |
-| `systematic-debugging` | Guess and fix | Stop. What is the root cause? |
+| `debug` | Guess and fix | Stop. What is the root cause? |
 
 Debugging is not a phase. Failures surface during grounding (constraint
 violation in existing system), planning (bug in code you are designing
 around), execution (test failure, integration failure), and landing
 (regression discovered during merge). The trigger is the failure, not the
-pipeline position.
+stage.
 
 **Handoff with test-first:** This skill owns investigation methodology.
 `test-first`'s fix-bug procedure owns the execution cycle — write failing

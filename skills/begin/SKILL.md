@@ -181,8 +181,8 @@ this — refine it with what you learned during selection and preparation.
 
 ## Key Terms
 
-Brief definitions for self-contained use. See WORKFLOW.md § Issue-Based
-Development for the full treatment.
+Brief definitions for self-contained use. See
+[`issue-model.md`](../../docs/architecture/issue-model.md) for the full treatment.
 
 - **Issue graph**: the set of open issues and their dependency edges — the live
   map of what remains and what blocks what.

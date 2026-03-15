@@ -129,7 +129,7 @@ mistakes.
 
 In interactive sessions, present the plan in the conversation for review.
 When producing a plan for handoff to another agent, write it to a file.
-(The pipeline contract will formalize artifact routing when implemented.)
+(The topology contract will formalize artifact routing when implemented.)
 
 ## Corruption Modes
 
