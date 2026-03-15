@@ -1,35 +1,8 @@
 # Groundwork Topology Contract (v0.3)
 
-This file defines the canonical integration contract for Groundwork's methodology topology. The authoritative source for skill interfaces is `groundwork.toml`; this document captures the semantic contracts that the manifest's structural edges enforce.
+The topology — stages, cross-cutting disciplines, skill routing, and entry rules — is defined in [README.md](../../README.md). This document specifies what must hold at each skill handoff for that topology to maintain coherence: what artifacts carry integration state, what each handoff requires, and what behaviors would break the system.
 
-## Coherence Rule
-
-Five stages form the forward flow. Cross-cutting disciplines fire at any stage. The `behavior-contract` from Stage 2 is the central integration thread — it flows through design, execution, verification, and landing.
-
-### Forward Flow
-
-| Stage | Skills | Artifact produced |
-|-------|--------|-------------------|
-| 1. Frame constraints | `ground` | — |
-| 2. Define behavior | `bdd` | `behavior-contract` |
-| 3. Decompose | `plan`, `issue-craft`, `begin` | `implementation-plan` |
-| 4. Execute and verify | `test-first`, `verification-before-completion`, `propose` | `test-evidence`, `completion-evidence` |
-| 5. Land | `land` | `completion-record` |
-
-### Cross-Cutting Disciplines
-
-These fire at any stage when their trigger condition appears, not at a fixed position:
-
-- **`ground`** re-fires on any new generative act (design, spec, architecture) — not step-one-once
-- **`research`** fires when a decision needs evidence outside the codebase; produces `research-record`
-- **`debug`** fires on failures; hands off to `test-first` (fix), `ground` (3-fix escalation), or `third-force` (environmental cause)
-- **`third-force`** fires on operational friction; resolves structurally or files an issue via `issue-craft`
-- **`documentation`** threads through every stage; drift blocks completion
-- **`using-groundwork`** provides methodology orientation at any point
-
-### Entry and Sequencing
-
-Enter where the work needs you. A bug with an existing issue enters at Execute. A new capability enters at Frame. The constraint is sequence — you can't land before executing — not completeness.
+The authoritative source for skill interfaces is `groundwork.toml`; this document captures the semantic contracts that the manifest's structural edges enforce.
 
 ## Artifact Flow
 
