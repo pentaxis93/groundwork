@@ -80,7 +80,7 @@ skills/                     # Skill definitions (SKILL.md + references)
   issue-craft/              #   issue lifecycle
   begin/                    #   work initiation
   test-first/               #   RED-GREEN-REFACTOR execution
-  debug/     #   root-cause investigation
+  debug/                    #   root-cause investigation
   third-force/              #   friction resolution
   documentation/            #   documentation review/update
   verification-before-completion/ # completion gate
