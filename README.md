@@ -35,15 +35,34 @@ These fire at any stage when their trigger condition appears, not at a fixed pos
 - **`documentation`** threads through every stage; drift blocks completion
 - **`using-groundwork`** provides methodology orientation at any point
 
-Handoff contracts between skills are defined in [`topology-contract.md`](docs/architecture/topology-contract.md). The full integration manual is [WORKFLOW.md](WORKFLOW.md).
+Handoff contracts between skills are defined in [`topology-contract.md`](docs/architecture/topology-contract.md). The issue persistence model is defined in [`issue-model.md`](docs/architecture/issue-model.md).
+
+### Skill Routing
+
+| Skill | Trigger |
+|-------|---------|
+| `using-groundwork` | session start, task initiation, or any moment requiring methodology orientation |
+| `ground` | before creating designs/specs/architectures/processes |
+| `research` | when reliable external evidence is needed for decisions |
+| `bdd` | when defining or refining behavior expectations |
+| `issue-craft` | creating/refining task/epic/bug/spike issues |
+| `begin` | initiating a work session: selecting work, preparing workspace, declaring direction |
+| `plan` | implementation needs design convergence — multiple approaches, unclear scope, or cross-cutting changes |
+| `test-first` | when implementing any feature or bugfix — RED → GREEN → REFACTOR |
+| `debug` | when a test fails or behavior is unexpected, before proposing any fix |
+| `third-force` | operational friction — missing tools, broken configs, stale conventions, undocumented requirements |
+| `documentation` | after code changes that may cause drift, at project initialization, when architectural decisions are made, or when docs fail the audience test |
+| `verification-before-completion` | before claiming work is complete, fixed, or passing — evidence first |
+| `propose` | packaging changes for review: `propose`, `submit pr`, `create pr`, `open pr`, `send for review` |
+| `land` | merge-and-close completion events: `land`, `merge and close`, `ship it` |
 
 ## Key Files
 
 | File | Purpose |
 |------|---------|
 | `groundwork.toml` | **Canonical manifest** — all artifact types and skill declarations with interface edges |
-| `WORKFLOW.md` | **Integration manual** — stages, skill routing, handoff rules |
 | `docs/architecture/topology-contract.md` | Formal handoff contracts and anti-divergence rules |
+| `docs/architecture/issue-model.md` | Issue state model, dependency graph format, graph maintenance |
 | `schemas/` | JSON Schema contracts for artifact types |
 | `skills/` | Skill definitions — each is a `SKILL.md` with YAML frontmatter |
 
@@ -68,10 +87,9 @@ skills/                     # Skill definitions (SKILL.md + references)
   propose/                  #   commit, push, PR creation
   land/                     #   closeout workflow
 docs/
-  architecture/             # Topology contract, ADRs
+  architecture/             # Topology contract, issue model, ADRs
 tests/
   fixtures/artifacts/       # Valid/invalid artifact examples for schema testing
-WORKFLOW.md                 # Integration manual — the authoritative reference
 ```
 
 ## License

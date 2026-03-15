@@ -103,7 +103,7 @@ Fail condition:
 
 ### `third-force -> documentation`
 Requirement:
-- structural fixes that change operational instructions are reflected in CLAUDE.md or WORKFLOW.md.
+- structural fixes that change operational instructions are reflected in CLAUDE.md or relevant documentation.
 
 Fail condition:
 - tool installed or config fixed without updating relevant documentation.

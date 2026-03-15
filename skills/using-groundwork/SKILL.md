@@ -34,7 +34,7 @@ Read the issue graph first. Whether starting a session, picking up work, or orie
 
 Why the issue graph matters: agent sessions are bounded — context windows end, sessions close, agents rotate. The issue graph is the persistence layer that survives those boundaries. It holds what remains to be done, what blocks what, and what state each piece of work is in. Working from the graph instead of from memory is what makes multi-session progress reliable.
 
-See [`WORKFLOW.md` § Issue-Based Development](https://github.com/pentaxis93/groundwork/blob/main/WORKFLOW.md#issue-based-development) for operational definitions and local issue mirroring.
+See [`issue-model.md`](https://github.com/pentaxis93/groundwork/blob/main/docs/architecture/issue-model.md) for the issue state model, dependency graph format, and graph maintenance rules.
 
 ## The Flow
 
@@ -52,7 +52,7 @@ Five stages, in dependency order. Each produces what the next consumes.
 
 The stages are in order but not all required for every piece of work. Enter the topology where the work needs you. A bug fix with an existing issue enters at Execute. A new capability enters at Frame. The constraint is sequence — you can't land before executing — not completeness.
 
-See [`WORKFLOW.md`](https://github.com/pentaxis93/groundwork/blob/main/WORKFLOW.md) for detailed skill descriptions and triggers.
+See [`README.md`](https://github.com/pentaxis93/groundwork/blob/main/README.md#skill-routing) for skill triggers.
 
 ## Integration Principles
 
