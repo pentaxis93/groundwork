@@ -1,8 +1,8 @@
-# Groundwork Pipeline Contract (v0.2)
+# Groundwork Topology Contract (v0.2)
 
-This file defines the canonical integration contract for Groundwork's methodology pipeline.
+This file defines the canonical integration contract for Groundwork's methodology topology.
 
-## One Pipeline Rule
+## Coherence Rule
 
 Groundwork has one coherent path:
 1. `ground` frames constraints.
@@ -103,7 +103,7 @@ Fail condition:
 
 ### `third-force -> documentation`
 Requirement:
-- structural fixes that change operational instructions are reflected in CLAUDE.md, CONTRIBUTING.md, or WORKFLOW.md.
+- structural fixes that change operational instructions are reflected in CLAUDE.md or WORKFLOW.md.
 
 Fail condition:
 - tool installed or config fixed without updating relevant documentation.

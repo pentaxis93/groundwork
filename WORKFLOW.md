@@ -1,12 +1,12 @@
 # Groundwork Workflow
 
-This is the integration manual for operating Groundwork's skills as one connected pipeline from problem framing to shipped change.
+This is the integration manual for operating Groundwork's skills as one connected topology from problem framing to shipped change.
 
 For the canonical inventory and interface declarations, see `groundwork.toml`. This document is the narrative explanation of how those skills interact.
 
-## Pipeline
+## Topology
 
-There is one path, not a menu. Every piece of work flows through five stages: frame constraints, define behavior, decompose, execute and verify, land. Skills from different sources slot into this sequence. Each step produces an artifact or state change that the next step consumes.
+Every piece of work flows through five stages: frame constraints, define behavior, decompose, execute and verify, land. Skills from different sources slot into this sequence. Each step produces an artifact or state change that the next step consumes.
 
 ### 1. Frame constraints
 
@@ -36,9 +36,9 @@ Use `test-first` to implement each plan step through RED-GREEN-REFACTOR. Each RE
 
 When the plan contains independent tasks, dispatch a fresh subagent per task to keep execution context clean — stale context from earlier tasks pollutes later ones. Match subagent model to task complexity: use cheaper/faster models for straightforward work, reserve the most capable model for subtle or cross-cutting changes.
 
-Use `systematic-debugging` when a test fails or behavior is unexpected. It finds root cause before proposing fixes — no symptom-patching. Although listed here because most debugging occurs during execution, it is a cross-cutting discipline that fires at any pipeline stage when failures appear.
+Use `systematic-debugging` when a test fails or behavior is unexpected. It finds root cause before proposing fixes — no symptom-patching. Although listed here because most debugging occurs during execution, it is a cross-cutting discipline that fires at any stage when failures appear.
 
-Code review is handled by CI/CD infrastructure, not a methodology skill. The pipeline requires review before landing but does not prescribe the mechanism.
+Code review is handled by CI/CD infrastructure, not a methodology skill. The methodology requires review before landing but does not prescribe the mechanism.
 
 Use `verification-before-completion` before claiming any work is complete. It requires running the actual verification command and confirming the output matches the claim. Completion evidence must be behavior-level — not just "tests pass" but explicit behavior coverage.
 
@@ -50,11 +50,11 @@ Invoke `land` to close the loop. It merges the feature branch to main, pushes, d
 
 Do not stop after merge. `land` means complete delivery: merged code, clean branches, closed issue.
 
-For the formal handoff contracts, anti-divergence rules, and compliance checklist, see [docs/architecture/pipeline-contract.md](docs/architecture/pipeline-contract.md).
+For the formal handoff contracts, anti-divergence rules, and compliance checklist, see [docs/architecture/topology-contract.md](docs/architecture/topology-contract.md).
 
 ## BDD Thread
 
-BDD is a cross-cutting integration mechanism, not a pipeline phase. It runs through specification, execution, and verification:
+BDD is a cross-cutting integration mechanism, not a phase. It runs through specification, execution, and verification:
 
 - **Specification**: define behavior in Given/When/Then terms.
 - **Execution**: `test-first` implements those behaviors via RED-GREEN-REFACTOR.
@@ -68,11 +68,11 @@ BDD is a cross-cutting integration mechanism, not a pipeline phase. It runs thro
 4. `bdd -> verification-before-completion`: completion claims require behavior-level evidence.
 5. `bdd -> land`: closure records behavior coverage status and remaining gaps, if any.
 
-For fail conditions and anti-divergence rules, see [docs/architecture/pipeline-contract.md](docs/architecture/pipeline-contract.md).
+For fail conditions and anti-divergence rules, see [docs/architecture/topology-contract.md](docs/architecture/topology-contract.md).
 
 ## Documentation Thread
 
-Documentation is a cross-cutting communication discipline, not a pipeline phase. It threads through every stage:
+Documentation is a cross-cutting communication discipline, not a phase. It threads through every stage:
 
 - **Frame constraints**: `ground`'s Orient identifies who this serves and what it must enable — that output defines the documentation audience. Capture grounded constraints in ARCHITECTURE.md. Record significant decisions as ADRs.
 - **Define behavior**: behavior contracts from `bdd` are the authoritative source for API documentation. Public behaviors should be reflected in user-facing docs, not only test files.
@@ -87,11 +87,11 @@ Documentation is a cross-cutting communication discipline, not a pipeline phase.
 2. `documentation -> verification-before-completion`: completion claims include documentation accuracy evidence.
 3. `documentation -> land`: landing records documentation coverage status.
 
-For fail conditions and anti-divergence rules, see [docs/architecture/pipeline-contract.md](docs/architecture/pipeline-contract.md).
+For fail conditions and anti-divergence rules, see [docs/architecture/topology-contract.md](docs/architecture/topology-contract.md).
 
 ## Root-Cause Investigation Thread
 
-Root-cause investigation is a cross-cutting discipline. It fires at any pipeline stage when a test fails, behavior is unexpected, or any failure occurs — before proposing fixes. See `systematic-debugging` for the full methodology.
+Root-cause investigation is a cross-cutting discipline. It fires at any stage when a test fails, behavior is unexpected, or any failure occurs — before proposing fixes. See `systematic-debugging` for the full methodology.
 
 ### Handoff Rules
 
@@ -99,18 +99,18 @@ Root-cause investigation is a cross-cutting discipline. It fires at any pipeline
 2. `systematic-debugging -> ground`: when the 3-fix escalation rule fires, invoke `ground` to re-examine architectural assumptions.
 3. `systematic-debugging -> third-force`: when investigation reveals the root cause is operational friction (missing tool, broken config, stale convention), hand off to `third-force`.
 
-For fail conditions and anti-divergence rules, see [docs/architecture/pipeline-contract.md](docs/architecture/pipeline-contract.md).
+For fail conditions and anti-divergence rules, see [docs/architecture/topology-contract.md](docs/architecture/topology-contract.md).
 
 ## Friction Resolution Thread
 
-Friction resolution is a cross-cutting discipline. It fires at any pipeline stage when the operational environment impedes progress. See `third-force` for the full methodology.
+Friction resolution is a cross-cutting discipline. It fires at any stage when the operational environment impedes progress. See `third-force` for the full methodology.
 
 ### Handoff Rules
 
-1. `third-force -> documentation`: structural fixes that change operational instructions are reflected in CLAUDE.md, CONTRIBUTING.md, or WORKFLOW.md.
+1. `third-force -> documentation`: structural fixes that change operational instructions are reflected in CLAUDE.md or WORKFLOW.md.
 2. `third-force -> issue-craft`: friction exceeding side-quest scope is filed as an issue, not deferred silently.
 
-For fail conditions and anti-divergence rules, see [docs/architecture/pipeline-contract.md](docs/architecture/pipeline-contract.md).
+For fail conditions and anti-divergence rules, see [docs/architecture/topology-contract.md](docs/architecture/topology-contract.md).
 
 ## Issue-Based Development
 

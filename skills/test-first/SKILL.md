@@ -45,7 +45,7 @@ Implement fresh from tests. No exceptions.
 
 ## Lifecycle Role
 
-This skill is the execution discipline in groundwork's pipeline. It sits
+This skill is the execution discipline in groundwork's topology. It sits
 between behavior identification and completion verification:
 
 1. `bdd` identifies what behaviors the system needs — sentence-named scenarios

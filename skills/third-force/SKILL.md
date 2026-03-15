@@ -30,7 +30,7 @@ When you hit operational friction — a missing tool, a broken config, a stale c
 
 The reconciling move is to stop, step outside the collision, and resolve the obstacle structurally. This is the third force — neither suppressing the task nor accepting the obstacle, but transforming the situation so the task resumes on cleared ground.
 
-This is a cross-cutting discipline, not a pipeline phase. It fires at any stage of work — framing, design, implementation, verification, landing — whenever the operational environment impedes progress.
+This is a cross-cutting discipline, not a phase. It fires at any stage of work — framing, design, implementation, verification, landing — whenever the operational environment impedes progress.
 
 ## The Reconciling Move
 
@@ -131,7 +131,7 @@ When filing an issue, still apply a **minimum viable workaround** for the curren
 
 **Gold-plating.** You used friction as an excuse to redesign adjacent systems. Recognition: your "side quest" has grown to include changes that are not required to resolve the original friction. The fix is unbounded — you are improving, not clearing. Apply scope guidance: if it exceeds side-quest scope, file an issue and return.
 
-**Fix-and-forget.** You resolved the friction but did not record the resolution. Recognition: you installed a tool or changed a config but did not update CLAUDE.md, CONTRIBUTING.md, or any documentation. The next agent will encounter the same friction of *not knowing* the fix exists.
+**Fix-and-forget.** You resolved the friction but did not record the resolution. Recognition: you installed a tool or changed a config but did not update CLAUDE.md or any documentation. The next agent will encounter the same friction of *not knowing* the fix exists.
 
 **Friction blindness.** You are not recognizing friction as friction. Recognition: you are consistently working around the same obstacle across multiple tasks, and it feels normal. If you find yourself doing the same manual step repeatedly, or if a fresh agent would be surprised by the step, it is friction.
 
@@ -144,4 +144,4 @@ When filing an issue, still apply a **minimum viable workaround** for the curren
 - `ground`: Step 2 of the move uses `ground`'s Orient to assess what the environment should enable. Full grounding is rarely needed for friction resolution, but the orient question is essential.
 - `documentation`: Structural fixes frequently involve documentation updates. The `documentation` skill's review mode applies when the fix involves creating or updating docs.
 - `issue-craft`: When friction exceeds side-quest scope, file an issue using `issue-craft`. The issue is the structural fix at the meta-level.
-- `using-groundwork`: `third-force` is an integration principle in `using-groundwork`, alongside "Ground re-fires" and "Research fires at any stage." It fires at any pipeline stage.
+- `using-groundwork`: `third-force` is an integration principle in `using-groundwork`, alongside "Ground re-fires" and "Research fires at any stage." It fires at any stage.

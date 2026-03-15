@@ -1,6 +1,6 @@
 # Groundwork
 
-A methodology plugin for AI coding agents. One connected pipeline from problem framing through shipped change to closed loop.
+A methodology plugin for AI coding agents. One connected topology from problem framing through shipped change to closed loop.
 
 Groundwork is the methodology layer in a three-layer stack:
 
@@ -8,7 +8,7 @@ Groundwork is the methodology layer in a three-layer stack:
 - **Runtime** — [runa](https://github.com/pentaxis93/runa) monitors artifacts, evaluates triggers, enforces contracts
 - **Methodology** — groundwork defines *what* cognitive discipline agents follow; runa enforces *when* and *whether*
 
-Groundwork owns the skills, artifact schemas, and pipeline topology. It has no runtime, no CLI, no installer. It registers with runa through a single [manifest file](groundwork.toml).
+Groundwork owns the skills, artifact schemas, and topology. It has no runtime, no CLI, no installer. It registers with runa through a single [manifest file](groundwork.toml).
 
 ## The Problem
 
@@ -23,9 +23,9 @@ AI agents fail in predictable ways between receiving a task and delivering worki
 
 These aren't random. They're structural failure modes of agents operating without cognitive discipline. Groundwork prevents each one with a specific skill at the point where the failure occurs.
 
-## The Pipeline
+## The Topology
 
-There is one path, not a menu. Every piece of work flows through five stages:
+Every piece of work flows through five stages:
 
 **1. Frame constraints** — `ground` establishes what the work must enable before any design begins. It strips inherited assumptions and builds from verified constraints. This fires on every new generative act, not just once at the start.
 
@@ -37,7 +37,7 @@ There is one path, not a menu. Every piece of work flows through five stages:
 
 **5. Land** — `land` closes the loop: merge, push, delete branch, comment on issue, close issue. Closure records behavior coverage and remaining gaps. Do not stop after merge.
 
-For the full integration manual, see [WORKFLOW.md](WORKFLOW.md). For formal handoff contracts and anti-divergence rules, see [docs/architecture/pipeline-contract.md](docs/architecture/pipeline-contract.md).
+For the full integration manual, see [WORKFLOW.md](WORKFLOW.md). For formal handoff contracts and anti-divergence rules, see [docs/architecture/topology-contract.md](docs/architecture/topology-contract.md).
 
 ## Skills
 
@@ -57,7 +57,7 @@ The [manifest](groundwork.toml) is the canonical inventory of all skills and the
 | `documentation` | Verification | Drifted docs, missing artifact updates |
 | `propose` | Delivery | Manual ad-hoc commit/push/PR between implementation and merge |
 | `land` | Completion | Branch rot, unclosed issues, incomplete delivery |
-| `using-groundwork` | Meta | Using skills in isolation instead of as a connected pipeline |
+| `using-groundwork` | Meta | Using skills in isolation instead of as a connected topology |
 | `third-force` | Cross-cutting | Routing around operational friction instead of resolving it |
 
 ## Project Layout
@@ -81,16 +81,17 @@ skills/                     # Skill definitions (SKILL.md + references)
   propose/                  #   commit, push, PR creation
   land/                     #   closeout workflow
 docs/
-  architecture/             # Pipeline contract, ADRs
+  architecture/             # Topology contract, ADRs
 tests/
   fixtures/artifacts/       # Valid/invalid artifact examples for schema testing
 WORKFLOW.md                 # Integration manual — the authoritative reference
-CONTRIBUTING.md             # Contributor guide
 ```
 
 ## Design Commitments
 
-**One pipeline, not a menu.** Skills are not independently selectable utilities. They form a single path with handoff contracts between stages. Skipping a stage means the next stage receives malformed input.
+Groundwork's design commitments derive from the bedrock principles at [`pentaxis93/commons`](https://github.com/pentaxis93/commons).
+
+**Connected topology.** Skills are not independently selectable utilities. They form a connected topology with handoff contracts between stages. Skipping a stage means the next stage receives malformed input.
 
 **BDD threads everything.** Behavior contracts defined in stage 2 thread through planning, execution, verification, and closure. Completion evidence is behavior-level, not "tests pass."
 
