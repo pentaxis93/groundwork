@@ -1,0 +1,16 @@
+{
+  "evidence": [
+    {
+      "scenario": "Successful login with valid credentials",
+      "result": "pass",
+      "command": "cargo test test_login_success",
+      "output-summary": "Test passed \u2014 returned 200 with valid JWT token"
+    },
+    {
+      "scenario": "Rejected login with invalid password",
+      "result": "fail",
+      "command": "cargo test test_login_invalid_password",
+      "output-summary": "Expected 401 status but received 500 \u2014 error handler not wired up"
+    }
+  ]
+}

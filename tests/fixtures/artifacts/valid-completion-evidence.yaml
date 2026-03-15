@@ -1,8 +1,0 @@
-behavior-coverage:
-  - behavior: "user can authenticate with valid credentials"
-    status: pass
-    evidence-artifact: test-evidence
-  - behavior: "expired token returns 401"
-    status: gap
-review-artifact: review-record
-documentation-artifact: documentation-review-record

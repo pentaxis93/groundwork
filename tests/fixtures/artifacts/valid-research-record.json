@@ -1,0 +1,17 @@
+{
+  "topic": "json-schema-draft-comparison",
+  "findings": [
+    "Draft 2020-12 supports dynamic references and vocabulary-based extensibility",
+    "Draft 07 is still widely supported but lacks prefixItems and $dynamicRef"
+  ],
+  "sources": [
+    {
+      "url": "https://json-schema.org/draft/2020-12/release-notes",
+      "title": "JSON Schema Draft 2020-12 Release Notes"
+    },
+    {
+      "url": "https://json-schema.org/understanding-json-schema/"
+    }
+  ],
+  "date": "2026-03-04"
+}

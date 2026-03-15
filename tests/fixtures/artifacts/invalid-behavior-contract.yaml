@@ -1,8 +1,0 @@
-title: User authentication behavior
-scenarios:
-  - name: Successful login with valid credentials
-    given: A registered user with valid credentials
-    when: The user submits their username and password
-metadata:
-  produced_by: specify-behavior
-  date: "2026-03-05"
