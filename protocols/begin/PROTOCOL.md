@@ -16,7 +16,7 @@ trigger:
 
 ## Overview
 
-Use this skill to start a work session: choose what to work on, prepare the
+Use this protocol to start a work session: choose what to work on, prepare the
 workspace, and declare the session's direction.
 
 `begin` is the opening bookend of the session lifecycle:
@@ -37,7 +37,7 @@ For first-principles design decisions, use `ground`.
 #### Phase 0: Opening
 
 The opening ceremony equips the session with everything subsequent phases need:
-the methodology context that connects skills into a coherent system, awareness
+the methodology context that connects protocols into a coherent system, awareness
 of the current workspace state, a directional frame that guides selection, and
 a clean starting surface. Each step builds on the previous — orient loads the
 methodology, observe reads the workspace, frame sets direction, banish clears
@@ -48,7 +48,7 @@ Follows the LBRP sequence: orient → observe → frame → banish.
 ##### 0a. Orient
 
 The agent receives its operating methodology — the connected system that makes
-later skills work together rather than in isolation. `begin` opens individual
+later protocols work together rather than in isolation. `begin` opens individual
 work sessions; `using-groundwork` establishes the methodology those sessions
 operate within. If `using-groundwork` has not been loaded this session, load it
 now before proceeding.
@@ -241,7 +241,7 @@ Brief definitions for self-contained use. See
 - `issue-craft`: decomposition, issue boundaries, acceptance criteria contracts.
 - `ground`: validate assumptions before committing to an approach.
 - `bdd`: behavior-first test strategy for implementation increments.
-- `using-groundwork`: the methodology map — activates the connected skill
+- `using-groundwork`: the methodology map — activates the connected protocol
   system that `begin` operates within. Loaded during orient (Phase 0a).
 - Opening ceremony pattern adapted from LBRP (`aiandi-dev-environment`) —
   internalized, no runtime dependency.

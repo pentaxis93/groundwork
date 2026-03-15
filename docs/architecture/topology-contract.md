@@ -1,8 +1,8 @@
 # Groundwork Topology Contract (v0.3)
 
-The topology — stages, cross-cutting disciplines, skill routing, and entry rules — is defined in [README.md](../../README.md). This document specifies what must hold at each skill handoff for that topology to maintain coherence: what artifacts carry integration state, what each handoff requires, and what behaviors would break the system.
+The topology — stages, cross-cutting disciplines, protocol routing, and entry rules — is defined in [README.md](../../README.md). This document specifies what must hold at each protocol handoff for that topology to maintain coherence: what artifacts carry integration state, what each handoff requires, and what behaviors would break the system.
 
-The authoritative source for skill interfaces is `groundwork.toml`; this document captures the semantic contracts that the manifest's structural edges enforce.
+The authoritative source for protocol interfaces is `groundwork.toml`; this document captures the semantic contracts that the manifest's structural edges enforce.
 
 ## Artifact Flow
 
@@ -18,9 +18,9 @@ behavior-contract → implementation-plan → test-evidence → completion-evide
 `research-record` is the cross-cutting artifact — produced by `research`, accepted (not required) by `ground`, `bdd`, and `plan`.
 
 Edge semantics from `groundwork.toml`:
-- **requires** — artifact must exist and validate before skill executes (hard dependency)
+- **requires** — artifact must exist and validate before protocol executes (hard dependency)
 - **accepts** — artifact may be consumed if available (soft dependency)
-- **produces** — artifact will exist and validate after skill executes
+- **produces** — artifact will exist and validate after protocol executes
 
 ## Handoff Contracts
 
@@ -52,7 +52,7 @@ Fail condition: `land` invoked on a branch with no PR, falling back to local mer
 
 ### Behavior-contract thread
 
-The `behavior-contract` produced by `bdd` is accepted or required by five downstream skills. These contracts ensure behavior traceability is not lost as work flows through the topology.
+The `behavior-contract` produced by `bdd` is accepted or required by five downstream protocols. These contracts ensure behavior traceability is not lost as work flows through the topology.
 
 #### `bdd -> issue-craft`
 Requirement: every executable work unit maps to one or more behavior statements.
@@ -69,7 +69,7 @@ Fail condition: merged work with no behavior coverage summary.
 ### Cross-cutting handoffs
 
 #### `research -> ground | bdd | plan`
-Requirement: when `research-record` exists, consuming skills incorporate its evidence rather than re-deriving or assuming.
+Requirement: when `research-record` exists, consuming protocols incorporate its evidence rather than re-deriving or assuming.
 Fail condition: a design or behavior decision contradicts available `research-record` without stated rationale.
 
 #### `documentation -> issue-craft`

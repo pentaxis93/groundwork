@@ -17,7 +17,7 @@ trigger:
 
 ## Overview
 
-Use this skill when the user wants full delivery closure in one command.
+Use this protocol when the user wants full delivery closure in one command.
 
 `land` operates in two phases:
 
@@ -95,7 +95,7 @@ available.
 Criteria: [all met | partial — list remaining]
 ```
 
-Implementation: invoke the `verification-before-completion` skill. For
+Implementation: invoke the `verification-before-completion` protocol. For
 issue-linked branches, fetch each target issue (`gh issue view`) and evaluate
 acceptance criteria against the branch diff. Classify each issue as satisfied
 (all criteria met) or partial (some remain). If no acceptance criteria can be
@@ -115,7 +115,7 @@ documentation drift blocks the seal.
 Docs: [clean | fixed: list | tracked: issue numbers]
 ```
 
-Implementation: invoke the `documentation` skill's documentation-review
+Implementation: invoke the `documentation` protocol's documentation-review
 procedure via the Skill tool. Check whether changed files affect areas with documentation artifacts
 (README, ARCHITECTURE, API docs). Fix drift directly and commit;
 file tracking issues for anything deeper. Record a coverage summary: each

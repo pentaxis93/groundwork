@@ -15,9 +15,9 @@ trigger:
   on_signal: "evidence-needed"
 ---
 
-# Research Skill
+# Research Protocol
 
-This file is the **how** — the deep methodology for structured, multi-source research. Any sk-compatible agent can load this skill to execute the workflow below.
+This file is the **how** — the deep methodology for structured, multi-source research. Any sk-compatible agent can load this protocol to execute the workflow below.
 
 ## Core Principles
 

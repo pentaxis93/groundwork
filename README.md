@@ -2,11 +2,19 @@
 
 A methodology plugin for AI coding agents. One connected topology from problem framing through shipped change to closed loop.
 
-Groundwork owns the skills, artifact schemas, and topology. It registers with [runa](https://github.com/pentaxis93/runa) through a single [manifest file](groundwork.toml) and has no runtime, no CLI, no installer.
+Groundwork owns the protocols, skills, artifact schemas, and topology. It registers with [runa](https://github.com/pentaxis93/runa) through a single [manifest file](groundwork.toml) and has no runtime, no CLI, no installer.
+
+## Protocols and Skills
+
+Groundwork has two types of cognitive guidance:
+
+- **Protocols** are declared in the manifest, managed by runa, with trigger/artifact contracts. They form the topology — each protocol has edges (requires/produces/accepts) that connect it to other protocols through artifact flow. Protocols live in `protocols/`, each with a `PROTOCOL.md`.
+
+- **Skills** are modular tools that agents load on demand. They provide methodology orientation and friction resolution but have no artifact contracts and are not part of the manifest topology. Skills live in `skills/`, each with a `SKILL.md`.
 
 ## Why Groundwork Exists
 
-Reliable engineering has a discipline: constraints get verified before design, behavior gets defined before code, completion gets proven before it's claimed, and changes land with merge, cleanup, and issue resolution. This discipline is what makes outcomes repeatable. Groundwork encodes it as a connected set of skills, giving AI agents the structure to produce verified, shipped work without the need for human course-correction — not through restrictions, but through a topology that makes the right sequence the natural one.
+Reliable engineering has a discipline: constraints get verified before design, behavior gets defined before code, completion gets proven before it's claimed, and changes land with merge, cleanup, and issue resolution. This discipline is what makes outcomes repeatable. Groundwork encodes it as a connected set of protocols, giving AI agents the structure to produce verified, shipped work without the need for human course-correction — not through restrictions, but through a topology that makes the right sequence the natural one.
 
 ## The Topology
 
@@ -14,8 +22,8 @@ Five stages form the forward flow. Cross-cutting disciplines fire at any stage, 
 
 ### Stages
 
-| Stage | Skills | Produces |
-|-------|--------|----------|
+| Stage | Protocols | Produces |
+|-------|-----------|----------|
 | **1. Frame constraints** | `ground` | Grounded constraints — what the work must enable |
 | **2. Define behavior** | `bdd` | `behavior-contract` — threads through all subsequent stages |
 | **3. Decompose** | `plan`, `issue-craft`, `begin` | Decision-complete design, executable issues, session scope |
@@ -35,13 +43,13 @@ These fire at any stage when their trigger condition appears, not at a fixed pos
 - **`documentation`** threads through every stage; drift blocks completion
 - **`using-groundwork`** provides methodology orientation at any point
 
-Handoff contracts between skills are defined in [`topology-contract.md`](docs/architecture/topology-contract.md). The issue persistence model is defined in [`issue-model.md`](docs/architecture/issue-model.md).
+Handoff contracts between protocols are defined in [`topology-contract.md`](docs/architecture/topology-contract.md). The issue persistence model is defined in [`issue-model.md`](docs/architecture/issue-model.md).
 
-### Skill Routing
+### Protocol & Skill Routing
 
-| Skill | Trigger |
-|-------|---------|
-| `using-groundwork` | session start, task initiation, or any moment requiring methodology orientation |
+| Protocol / Skill | Trigger |
+|------------------|---------|
+| `using-groundwork` (skill) | session start, task initiation, or any moment requiring methodology orientation |
 | `ground` | before creating designs/specs/architectures/processes |
 | `research` | when reliable external evidence is needed for decisions |
 | `bdd` | when defining or refining behavior expectations |
@@ -50,7 +58,7 @@ Handoff contracts between skills are defined in [`topology-contract.md`](docs/ar
 | `plan` | implementation needs design convergence — multiple approaches, unclear scope, or cross-cutting changes |
 | `test-first` | when implementing any feature or bugfix — RED → GREEN → REFACTOR |
 | `debug` | when a test fails or behavior is unexpected, before proposing any fix |
-| `third-force` | operational friction — missing tools, broken configs, stale conventions, undocumented requirements |
+| `third-force` (skill) | operational friction — missing tools, broken configs, stale conventions, undocumented requirements |
 | `documentation` | after code changes that may cause drift, at project initialization, when architectural decisions are made, or when docs fail the audience test |
 | `verification-before-completion` | before claiming work is complete, fixed, or passing — evidence first |
 | `propose` | packaging changes for review: `propose`, `submit pr`, `create pr`, `open pr`, `send for review` |
@@ -60,19 +68,19 @@ Handoff contracts between skills are defined in [`topology-contract.md`](docs/ar
 
 | File | Purpose |
 |------|---------|
-| `groundwork.toml` | **Canonical manifest** — all artifact types and skill declarations with interface edges |
+| `groundwork.toml` | **Canonical manifest** — all artifact types and protocol declarations with interface edges |
 | `docs/architecture/topology-contract.md` | Formal handoff contracts and anti-divergence rules |
 | `docs/architecture/issue-model.md` | Issue state model, dependency graph format, graph maintenance |
 | `schemas/` | JSON Schema contracts for artifact types |
-| `skills/` | Skill definitions — each is a `SKILL.md` with YAML frontmatter |
+| `protocols/` | Protocol definitions — each is a `PROTOCOL.md` with YAML frontmatter |
+| `skills/` | Skill definitions — modular tools agents load on demand (`SKILL.md`) |
 
 ## Project Layout
 
 ```
-groundwork.toml             # Methodology manifest — artifact types, skill declarations
+groundwork.toml             # Methodology manifest — artifact types, protocol declarations
 schemas/                    # JSON Schema contracts for artifact types
-skills/                     # Skill definitions (SKILL.md + references)
-  using-groundwork/         #   methodology orientation
+protocols/                  # Protocol definitions (PROTOCOL.md + references)
   ground/                   #   first-principles grounding
   research/                 #   external evidence gathering
   bdd/                      #   behavior contract definition
@@ -81,11 +89,13 @@ skills/                     # Skill definitions (SKILL.md + references)
   begin/                    #   work initiation
   test-first/               #   RED-GREEN-REFACTOR execution
   debug/                    #   root-cause investigation
-  third-force/              #   friction resolution
   documentation/            #   documentation review/update
   verification-before-completion/ # completion gate
   propose/                  #   commit, push, PR creation
   land/                     #   closeout workflow
+skills/                     # Skill definitions (SKILL.md)
+  using-groundwork/         #   methodology orientation
+  third-force/              #   friction resolution
 docs/
   architecture/             # Topology contract, issue model, ADRs
 tests/

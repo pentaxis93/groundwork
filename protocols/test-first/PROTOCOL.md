@@ -5,7 +5,7 @@ description: >-
   code. Enforces test-first development through RED-GREEN-REFACTOR with
   delete-and-start-over discipline. Fires when implementing BDD-identified
   behaviors, fixing bugs, refactoring, or any time production code is about
-  to be written. If you are about to write implementation code, this skill
+  to be written. If you are about to write implementation code, this protocol
   applies.
 metadata:
   version: "1.0.0"
@@ -45,7 +45,7 @@ Implement fresh from tests. No exceptions.
 
 ## Lifecycle Role
 
-This skill is the execution discipline in groundwork's topology. It sits
+This protocol is the execution discipline in groundwork's topology. It sits
 between behavior identification and completion verification:
 
 1. `bdd` identifies what behaviors the system needs — sentence-named scenarios
@@ -55,7 +55,7 @@ between behavior identification and completion verification:
 3. `verification-before-completion` gates the completion claim with
    behavior-level evidence.
 
-This skill owns per-test cycle evidence: each test was watched failing, then
+This protocol owns per-test cycle evidence: each test was watched failing, then
 passing. It does not own aggregate completion evidence — that belongs to
 `verification-before-completion`.
 
@@ -339,13 +339,14 @@ skip test-first are slower, not faster.
 
 ## Cross-References
 
-- `bdd`: identifies behaviors before this skill executes the cycle. Each RED
-  test corresponds to a named behavior scenario from `bdd`.
-- `verification-before-completion`: owns behavior-level completion evidence.
-  This skill owns per-test cycle evidence (watched it fail, watched it pass).
-- `debug`: owns root-cause analysis. This skill provides the
+- `bdd` protocol: identifies behaviors before this protocol executes the cycle.
+  Each RED test corresponds to a named behavior scenario from `bdd`.
+- `verification-before-completion` protocol: owns behavior-level completion
+  evidence. This protocol owns per-test cycle evidence (watched it fail,
+  watched it pass).
+- `debug` protocol: owns root-cause analysis. This protocol provides the
   entry point ("write a failing test reproducing the bug") but defers
   methodology to `debug` when root cause is unclear.
-- `documentation`: doc comments and type annotations are written alongside
-  code during GREEN and REFACTOR phases — they are implementation work,
-  not afterthought.
+- `documentation` protocol: doc comments and type annotations are written
+  alongside code during GREEN and REFACTOR phases — they are implementation
+  work, not afterthought.

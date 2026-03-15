@@ -5,7 +5,7 @@ description: >-
   unexpected, or any failure occurs — before proposing fixes. Enforces
   structured investigation before fix attempts. Fires at any stage
   when failures appear. If you are about to fix something without understanding
-  why it broke, this skill applies.
+  why it broke, this protocol applies.
 metadata:
   version: "1.0.0"
   updated: "2026-03-09"
@@ -40,7 +40,7 @@ Investigate from evidence. No exceptions.
 
 ## Lifecycle Role
 
-This skill is a cross-cutting discipline in groundwork's topology, alongside
+This protocol is a cross-cutting discipline in groundwork's topology, alongside
 `ground` (first-principles on creation) and `third-force` (structural
 resolution on friction). It fires at any stage when failures appear — not
 only during execution.
@@ -59,13 +59,13 @@ around), execution (test failure, integration failure), and landing
 (regression discovered during merge). The trigger is the failure, not the
 stage.
 
-**Handoff with test-first:** This skill owns investigation methodology.
+**Handoff with test-first:** This protocol owns investigation methodology.
 `test-first`'s fix-bug procedure owns the execution cycle — write failing
 test, implement fix, verify green. The boundary: once root cause is
-established, hand off to `test-first` fix-bug. This skill does not write
+established, hand off to `test-first` fix-bug. This protocol does not write
 tests or implement fixes.
 
-**Handoff with verification-before-completion:** This skill does not verify
+**Handoff with verification-before-completion:** This protocol does not verify
 fixes. Once a fix is implemented through `test-first`, `verification-before-
 completion` gates the completion claim.
 
@@ -75,7 +75,7 @@ Five steps. Always the same.
 
 0. **Stop.** You have hit a failure. Do not guess. Do not fix. Do not
    propose a solution. The instinct to "just try something" is the failure
-   mode this skill exists to catch. Every guess that happens to work teaches
+   mode this protocol exists to catch. Every guess that happens to work teaches
    you nothing and leaves the actual cause in place.
 
    Fix momentum carries agents past failures before investigation even
@@ -169,7 +169,7 @@ When this fires:
    via `issue-craft` — this exceeds debugging scope.
 
 This rule is the debugging equivalent of `ground`'s "infinite decomposition"
-corruption mode — it catches the failure of continuing to apply the skill's
+corruption mode — it catches the failure of continuing to apply the protocol's
 own method past the point where it is productive.
 
 ---
@@ -297,18 +297,18 @@ rationalizing, not investigating.
 
 ## Cross-References
 
-- `test-first`: owns the execution cycle for bug fixes. This skill
-  establishes root cause; `test-first` fix-bug writes the failing test and
-  implements the fix. The handoff: root cause established, hand off to
-  `test-first`.
-- `verification-before-completion`: owns fix verification. This skill does
-  not verify — it investigates.
-- `ground`: the 3-fix escalation rule invokes `ground` to re-examine
-  architectural assumptions. The investigation move shares `ground`'s
-  discipline of establishing truth before acting.
-- `third-force`: when investigation reveals the failure is caused by
+- `test-first` (protocol): owns the execution cycle for bug fixes. This
+  protocol establishes root cause; `test-first` fix-bug writes the failing
+  test and implements the fix. The handoff: root cause established, hand off
+  to `test-first`.
+- `verification-before-completion` (protocol): owns fix verification. This
+  protocol does not verify — it investigates.
+- `ground` (protocol): the 3-fix escalation rule invokes `ground` to
+  re-examine architectural assumptions. The investigation move shares
+  `ground`'s discipline of establishing truth before acting.
+- `third-force` (skill): when investigation reveals the failure is caused by
   operational friction (missing tool, broken config, stale convention), hand
   off to `third-force` — the root cause is environmental, not logical.
-- `bdd`: behavior contracts define what "unexpected" means. When behavior is
-  unexpected, check it against the behavior contract first — "unexpected" is
-  only meaningful relative to a defined expectation.
+- `bdd` (protocol): behavior contracts define what "unexpected" means. When
+  behavior is unexpected, check it against the behavior contract first —
+  "unexpected" is only meaningful relative to a defined expectation.

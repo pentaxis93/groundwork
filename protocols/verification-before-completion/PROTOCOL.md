@@ -5,7 +5,7 @@ description: >-
   committing, creating PRs, or moving to the next task. Requires running
   verification commands and confirming output before making any success
   claims. Evidence before assertions, always. If you are about to say
-  something is done, working, fixed, or passing, this skill applies.
+  something is done, working, fixed, or passing, this protocol applies.
 metadata:
   version: "1.0.0"
   updated: "2026-03-09"
@@ -49,7 +49,7 @@ Skip any step = the claim has no basis
 
 ## Lifecycle Role
 
-This skill owns **aggregate completion claims** — the moment before you say
+This protocol owns **aggregate completion claims** — the moment before you say
 "done." It fires after execution, before packaging work for review.
 
 It does not own per-test cycle evidence (that belongs to the test-first
@@ -164,11 +164,11 @@ the claim — the claim does not select the evidence.
 
 ## Cross-References
 
-- `test-first` owns per-test cycle evidence (each test watched failing, then
-  passing). This skill owns aggregate completion claims.
-- `documentation` review fires after code changes, before this skill's gate.
+- `test-first` protocol owns per-test cycle evidence (each test watched failing, then
+  passing). This protocol owns aggregate completion claims.
+- `documentation` protocol review fires after code changes, before this protocol's gate.
   Documentation accuracy is completion evidence.
-- `propose` consumes this skill's output — work must be verified before
+- `propose` protocol consumes this protocol's output — work must be verified before
   packaging for review.
 
 ## The Bottom Line
