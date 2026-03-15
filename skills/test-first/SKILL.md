@@ -223,7 +223,7 @@ Execute the RED-GREEN-REFACTOR cycle for a behavior identified by `bdd`.
 
 Enter the RED-GREEN-REFACTOR cycle from a bug report.
 
-1. If the root cause is unclear, invoke `systematic-debugging` first — it owns
+1. If the root cause is unclear, invoke `debug` first — it owns
    root-cause analysis methodology.
 2. Write a failing test that reproduces the bug. The test name describes the
    corrected behavior, not the bug.
@@ -343,9 +343,9 @@ skip test-first are slower, not faster.
   test corresponds to a named behavior scenario from `bdd`.
 - `verification-before-completion`: owns behavior-level completion evidence.
   This skill owns per-test cycle evidence (watched it fail, watched it pass).
-- `systematic-debugging`: owns root-cause analysis. This skill provides the
+- `debug`: owns root-cause analysis. This skill provides the
   entry point ("write a failing test reproducing the bug") but defers
-  methodology to `systematic-debugging` when root cause is unclear.
+  methodology to `debug` when root cause is unclear.
 - `documentation`: doc comments and type annotations are written alongside
   code during GREEN and REFACTOR phases — they are implementation work,
   not afterthought.

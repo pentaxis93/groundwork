@@ -68,7 +68,7 @@ These thread across the topology. They aren't phases — they're disciplines tha
 
 **Research fires at any stage.** `research` provides reliable external evidence when decisions depend on facts outside the codebase — framing, design, decomposition, and implementation can all require it.
 
-**Root cause before fixes.** When a test fails or behavior is unexpected, do not guess. Investigate root cause before proposing any fix. `systematic-debugging` provides the investigation methodology — a cross-cutting discipline that fires at any stage, not only during execution. Once root cause is established, `test-first` fix-bug owns the execution cycle. After 3 failed fix attempts, stop fixing and invoke `ground` via the Skill tool to question the architecture.
+**Root cause before fixes.** When a test fails or behavior is unexpected, do not guess. Investigate root cause before proposing any fix. `debug` provides the investigation methodology — a cross-cutting discipline that fires at any stage, not only during execution. Once root cause is established, `test-first` fix-bug owns the execution cycle. After 3 failed fix attempts, stop fixing and invoke `ground` via the Skill tool to question the architecture.
 
 **Introduce third force on friction.** Friction is a two-force collision: task momentum vs obstacle. Routing around is the collapsed triad — both forces lose. When operational friction appears — a missing tool, broken config, stale convention, undocumented requirement — stop and introduce the reconciling move: resolve it structurally before continuing. `third-force` provides the assessment methodology and scope guidance. Friction that exceeds side-quest scope becomes an issue via `issue-craft`. Unresolved friction compounds.
 

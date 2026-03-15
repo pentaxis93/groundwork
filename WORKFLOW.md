@@ -36,7 +36,7 @@ Use `test-first` to implement each plan step through RED-GREEN-REFACTOR. Each RE
 
 When the plan contains independent tasks, dispatch a fresh subagent per task to keep execution context clean — stale context from earlier tasks pollutes later ones. Match subagent model to task complexity: use cheaper/faster models for straightforward work, reserve the most capable model for subtle or cross-cutting changes.
 
-Use `systematic-debugging` when a test fails or behavior is unexpected. It finds root cause before proposing fixes — no symptom-patching. Although listed here because most debugging occurs during execution, it is a cross-cutting discipline that fires at any stage when failures appear.
+Use `debug` when a test fails or behavior is unexpected. It finds root cause before proposing fixes — no symptom-patching. Although listed here because most debugging occurs during execution, it is a cross-cutting discipline that fires at any stage when failures appear.
 
 Code review is handled by CI/CD infrastructure, not a methodology skill. The methodology requires review before landing but does not prescribe the mechanism.
 
@@ -91,13 +91,13 @@ For fail conditions and anti-divergence rules, see [docs/architecture/topology-c
 
 ## Root-Cause Investigation Thread
 
-Root-cause investigation is a cross-cutting discipline. It fires at any stage when a test fails, behavior is unexpected, or any failure occurs — before proposing fixes. See `systematic-debugging` for the full methodology.
+Root-cause investigation is a cross-cutting discipline. It fires at any stage when a test fails, behavior is unexpected, or any failure occurs — before proposing fixes. See `debug` for the full methodology.
 
 ### Handoff Rules
 
-1. `systematic-debugging -> test-first`: once root cause is established, hand off to `test-first` fix-bug to write a failing test and implement the fix.
-2. `systematic-debugging -> ground`: when the 3-fix escalation rule fires, invoke `ground` to re-examine architectural assumptions.
-3. `systematic-debugging -> third-force`: when investigation reveals the root cause is operational friction (missing tool, broken config, stale convention), hand off to `third-force`.
+1. `debug -> test-first`: once root cause is established, hand off to `test-first` fix-bug to write a failing test and implement the fix.
+2. `debug -> ground`: when the 3-fix escalation rule fires, invoke `ground` to re-examine architectural assumptions.
+3. `debug -> third-force`: when investigation reveals the root cause is operational friction (missing tool, broken config, stale convention), hand off to `third-force`.
 
 For fail conditions and anti-divergence rules, see [docs/architecture/topology-contract.md](docs/architecture/topology-contract.md).
 
@@ -177,7 +177,7 @@ Epics with 4+ tasks include a dependency graph in two representations:
 | `begin` | initiating a work session: selecting work, preparing workspace, declaring direction |
 | `plan` | implementation needs design convergence — multiple approaches, unclear scope, or cross-cutting changes |
 | `test-first` | when implementing any feature or bugfix — RED → GREEN → REFACTOR |
-| `systematic-debugging` | when a test fails or behavior is unexpected, before proposing any fix |
+| `debug` | when a test fails or behavior is unexpected, before proposing any fix |
 | `third-force` | operational friction — missing tools, broken configs, stale conventions, undocumented requirements |
 | `documentation` | after code changes that may cause drift, at project initialization, when architectural decisions are made, or when docs fail the audience test |
 | `verification-before-completion` | before claiming work is complete, fixed, or passing — evidence first |

@@ -87,14 +87,14 @@ Requirement:
 Fail condition:
 - `land` invoked on a branch with no PR, falling back to local merge and losing PR merge metadata.
 
-### `systematic-debugging -> test-first`
+### `debug -> test-first`
 Requirement:
 - root cause is established before a fix is attempted through `test-first` fix-bug. Investigation output identifies the specific cause and the transition point where valid data becomes invalid.
 
 Fail condition:
 - fix-bug entered without root-cause analysis when the cause was unclear — agent proposed a fix from symptoms alone.
 
-### `systematic-debugging -> ground`
+### `debug -> ground`
 Requirement:
 - the 3-fix escalation rule triggers architectural re-examination via `ground` when 3 fix attempts have failed. The debugging scope ends and the architectural scope begins.
 

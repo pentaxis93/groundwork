@@ -34,7 +34,7 @@ These fire at any stage when their trigger condition appears, not at a fixed pos
 
 - **`ground`** re-fires on any new generative act (design, spec, architecture) — not step-one-once
 - **`research`** fires when a decision needs evidence outside the codebase
-- **`systematic-debugging`** fires on failures; hands off to `test-first` (fix), `ground` (3-fix escalation), or `third-force` (environmental cause)
+- **`debug`** fires on failures; hands off to `test-first` (fix), `ground` (3-fix escalation), or `third-force` (environmental cause)
 - **`third-force`** fires on operational friction; resolves structurally or files an issue via `issue-craft`
 - **`documentation`** threads through every stage; drift blocks completion
 - **`using-groundwork`** provides methodology orientation at any point

@@ -33,7 +33,7 @@ Every piece of work flows through five stages:
 
 **3. Decompose** — `issue-craft` produces agent-executable issues with binary acceptance criteria from the behavior contract. `begin` selects session-sized work from the issue graph, prepares the workspace, and declares the session's direction. `plan` converges to a decision-complete implementation design. Approved designs become executable work through `issue-craft`. The issue graph is the project's working memory across sessions.
 
-**4. Execute and verify** — `test-first` implements behavior through RED-GREEN-REFACTOR — each RED test maps to a named scenario from stage 2. `systematic-debugging` finds root cause before proposing fixes. `verification-before-completion` gates completion with behavior-level evidence. `propose` packages verified changes into a PR with derived title/body and issue linkage.
+**4. Execute and verify** — `test-first` implements behavior through RED-GREEN-REFACTOR — each RED test maps to a named scenario from stage 2. `debug` finds root cause before proposing fixes. `verification-before-completion` gates completion with behavior-level evidence. `propose` packages verified changes into a PR with derived title/body and issue linkage.
 
 **5. Land** — `land` closes the loop: merge, push, delete branch, comment on issue, close issue. Closure records behavior coverage and remaining gaps. Do not stop after merge.
 
@@ -52,7 +52,7 @@ The [manifest](groundwork.toml) is the canonical inventory of all skills and the
 | `begin` | Decomposition | Recency drift, scope creep, blocker bypass |
 | `plan` | Decomposition | Unclear scope, design choices left to implementer |
 | `test-first` | Execution | Implementation-first regressions |
-| `systematic-debugging` | Cross-cutting | Thrashing and symptom-fixing |
+| `debug` | Cross-cutting | Thrashing and symptom-fixing |
 | `verification-before-completion` | Verification | False completion claims without evidence |
 | `documentation` | Verification | Drifted docs, missing artifact updates |
 | `propose` | Delivery | Manual ad-hoc commit/push/PR between implementation and merge |
@@ -74,7 +74,7 @@ skills/                     # Skill definitions (SKILL.md + references)
   issue-craft/              #   issue lifecycle
   begin/                    #   work initiation
   test-first/               #   RED-GREEN-REFACTOR execution
-  systematic-debugging/     #   root-cause investigation
+  debug/     #   root-cause investigation
   third-force/              #   friction resolution
   documentation/            #   documentation review/update
   verification-before-completion/ # completion gate
