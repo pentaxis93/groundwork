@@ -1,0 +1,10 @@
+{
+  "evidence": [
+    {
+      "scenario": "Successful login with valid credentials",
+      "result": "success",
+      "command": "cargo test test_login_success",
+      "output-summary": "Test passed \u2014 returned 200 with valid JWT token"
+    }
+  ]
+}

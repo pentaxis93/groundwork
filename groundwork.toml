@@ -4,9 +4,7 @@
 # It declares all artifact types and skills with their interface edges.
 # Topology emerges from the graph of requires/produces relationships.
 
-[metadata]
 name = "groundwork"
-version = "0.1.0"
 
 # --- Artifact Types ---
 #
@@ -55,7 +53,7 @@ requires = []
 accepts = []
 produces = []
 may_produce = []
-trigger = { on_signal = "methodology-orientation" }
+trigger = { type = "on_signal", name = "methodology-orientation" }
 
 [[skills]]
 name = "ground"
@@ -63,7 +61,7 @@ requires = []
 accepts = ["research-record"]
 produces = []
 may_produce = []
-trigger = { on_signal = "frame-constraints" }
+trigger = { type = "on_signal", name = "frame-constraints" }
 
 [[skills]]
 name = "research"
@@ -71,7 +69,7 @@ requires = []
 accepts = []
 produces = ["research-record"]
 may_produce = []
-trigger = { on_signal = "evidence-needed" }
+trigger = { type = "on_signal", name = "evidence-needed" }
 
 [[skills]]
 name = "bdd"
@@ -79,7 +77,7 @@ requires = []
 accepts = ["research-record"]
 produces = ["behavior-contract"]
 may_produce = []
-trigger = { on_signal = "define-behavior" }
+trigger = { type = "on_signal", name = "define-behavior" }
 
 [[skills]]
 name = "plan"
@@ -87,7 +85,7 @@ requires = ["behavior-contract"]
 accepts = ["research-record"]
 produces = ["implementation-plan"]
 may_produce = []
-trigger = { on_artifact = "behavior-contract" }
+trigger = { type = "on_artifact", name = "behavior-contract" }
 
 [[skills]]
 name = "issue-craft"
@@ -95,7 +93,7 @@ requires = []
 accepts = ["behavior-contract", "implementation-plan"]
 produces = []
 may_produce = []
-trigger = { on_signal = "decompose-work" }
+trigger = { type = "on_signal", name = "decompose-work" }
 
 [[skills]]
 name = "begin"
@@ -103,7 +101,7 @@ requires = []
 accepts = []
 produces = []
 may_produce = []
-trigger = { on_signal = "session-start" }
+trigger = { type = "on_signal", name = "session-start" }
 
 [[skills]]
 name = "test-first"
@@ -111,7 +109,7 @@ requires = ["behavior-contract"]
 accepts = ["implementation-plan"]
 produces = ["test-evidence"]
 may_produce = []
-trigger = { all_of = [{ on_artifact = "behavior-contract" }, { on_signal = "implement" }] }
+trigger = { type = "all_of", conditions = [{ type = "on_artifact", name = "behavior-contract" }, { type = "on_signal", name = "implement" }] }
 
 [[skills]]
 name = "debug"
@@ -119,7 +117,7 @@ requires = []
 accepts = ["test-evidence"]
 produces = []
 may_produce = []
-trigger = { on_signal = "investigation-needed" }
+trigger = { type = "on_signal", name = "investigation-needed" }
 
 [[skills]]
 name = "third-force"
@@ -127,7 +125,7 @@ requires = []
 accepts = []
 produces = []
 may_produce = []
-trigger = { on_signal = "friction-detected" }
+trigger = { type = "on_signal", name = "friction-detected" }
 
 [[skills]]
 name = "documentation"
@@ -135,7 +133,7 @@ requires = []
 accepts = ["behavior-contract", "implementation-plan"]
 produces = []
 may_produce = []
-trigger = { on_signal = "documentation-review" }
+trigger = { type = "on_signal", name = "documentation-review" }
 
 [[skills]]
 name = "verification-before-completion"
@@ -143,7 +141,7 @@ requires = ["test-evidence"]
 accepts = ["behavior-contract"]
 produces = ["completion-evidence"]
 may_produce = []
-trigger = { on_artifact = "test-evidence" }
+trigger = { type = "on_artifact", name = "test-evidence" }
 
 [[skills]]
 name = "propose"
@@ -151,7 +149,7 @@ requires = ["completion-evidence"]
 accepts = []
 produces = []
 may_produce = []
-trigger = { on_artifact = "completion-evidence" }
+trigger = { type = "on_artifact", name = "completion-evidence" }
 
 [[skills]]
 name = "land"
@@ -159,4 +157,4 @@ requires = ["completion-evidence"]
 accepts = ["behavior-contract"]
 produces = ["completion-record"]
 may_produce = []
-trigger = { on_signal = "merge-ready" }
+trigger = { type = "on_signal", name = "merge-ready" }

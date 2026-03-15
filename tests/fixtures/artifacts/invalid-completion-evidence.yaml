@@ -1,5 +1,0 @@
-behavior-coverage:
-  - behavior: "user can authenticate with valid credentials"
-    status: passed
-review-artifact: review-record
-documentation-artifact: documentation-review-record
