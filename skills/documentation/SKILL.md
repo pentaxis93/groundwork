@@ -32,7 +32,6 @@ as code evolves.
 | ARCHITECTURE.md | Contributors, agents understanding system structure | After grounding; significant structural changes |
 | ADR | Future decision-makers (human and AI) | When a significant decision is made (MADR 4.0 format) |
 | CHANGELOG.md | Users, operators, downstream consumers | Before landing user-visible changes (Keep a Changelog format) |
-| CONTRIBUTING.md | New contributors, agents starting dev work | Project init; workflow changes |
 | WORKFLOW.md | Contributors, agents executing project workflows | When workflow steps change; process additions or removals |
 | API reference | API consumers, agents calling functions | During implementation, alongside code |
 | Inline comments | Future maintainers, agents modifying code | At non-obvious decision points during implementation |
@@ -107,7 +106,6 @@ Fires after code changes, before `verification-before-completion`.
    - Inline doc comments — if function behavior changed
    - CHANGELOG — for any user-visible or API-visible change
    - ADRs — if the change implements or reverses a recorded decision
-   - CONTRIBUTING — if build/test/dev workflow changed
    - WORKFLOW.md — if workflow steps, sequencing, or process changed
 3. **Classify each mapped document:**
    - `accurate` — no update needed
