@@ -51,7 +51,7 @@ as code evolves.
   drift is invisible until a reader hits it. If the update requires deeper work,
   create a tracking issue — never leave drift untracked.
 - `source-of-truth-over-counts`: avoid hardcoded aggregate counts for dynamic
-  sets (skills, endpoints, flags, supported providers) — they drift silently and
+  sets (skills, protocols, endpoints, flags, supported providers) — they drift silently and
   mislead readers without any visible signal. Prefer referencing the
   authoritative object (manifest/config/schema) or generating the value.
 
@@ -195,7 +195,7 @@ When encountering existing documentation (e.g., onboarding to a project):
 - `bdd`: behavior contracts are the authoritative source for what the API does.
   Public behaviors should be reflected in user-facing docs, not only test files.
 - `issue-craft`: user-facing changes include documentation expectations in
-  acceptance criteria. This skill defines what that means: identify which
+  acceptance criteria. This protocol defines what that means: identify which
   artifacts need creation or update, and include those as criteria.
 - `test-first`: inline documentation (doc comments, type annotations) is
   written alongside code — doc comments are implementation work, not

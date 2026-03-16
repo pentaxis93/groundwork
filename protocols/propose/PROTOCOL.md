@@ -18,7 +18,7 @@ trigger:
 
 ## Overview
 
-Use this skill when implementation is complete and changes need to become a PR.
+Use this protocol when implementation is complete and changes need to become a PR.
 
 `propose` means:
 1. Resolve the working context (branch, changes, linked issues)
@@ -33,7 +33,7 @@ The session lifecycle is: `begin` (initiate session) → implement → `propose`
 transition from execution to review.
 
 Do not stop after creating the PR — the report step (step 6) is part of the
-skill. Invoking `propose` IS the operator's approval to execute the full
+protocol. Invoking `propose` IS the operator's approval to execute the full
 sequence.
 
 ---
@@ -87,7 +87,7 @@ If on `main` (or detached HEAD):
 
 ### 3. Analyze changes and commit
 
-This step is the skill's core analytical value: understanding changes well
+This step is the protocol's core analytical value: understanding changes well
 enough to produce meaningful commit structure, not just staging everything at
 once.
 
@@ -250,7 +250,7 @@ Output:
 
 ---
 
-## Related Skills
+## Related Protocols
 
 - `begin` for work initiation — select issue(s), prepare workspace, declare direction (the preceding phase)
 - `land` for merge, cleanup, and issue closure (the following phase)

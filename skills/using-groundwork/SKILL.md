@@ -3,7 +3,7 @@ name: using-groundwork
 description: >-
   Use when working in a groundwork-equipped project, at session start, task
   initiation, or any moment requiring methodology orientation. Activates the
-  full skill system as one connected methodology rather than isolated skills.
+  full protocol system as one connected methodology rather than isolated protocols.
 metadata:
   version: "3.1.0"
   updated: "2026-03-12"
@@ -19,13 +19,13 @@ trigger:
 
 ## Overview
 
-Groundwork is one connected methodology, not a skill collection. Every skill closes a specific failure mode in the topology from problem framing to shipped change. This skill is the map that shows how they connect.
+Groundwork is one connected methodology, not a protocol collection. Every protocol closes a specific failure mode in the topology from problem framing to shipped change. This skill is the map that shows how they connect.
 
 ## Operating Stance
 
-Skills are your default operating mode, not optional extras. When a skill's
+Protocols are your default operating mode, not optional extras. When a protocol's
 trigger matches the current work, invoke it. The default is activation, not
-restraint. The corruption mode to watch for is under-use — skipping skills
+restraint. The corruption mode to watch for is under-use — skipping protocols
 whose triggers match — not over-use. The triggers themselves provide the scope.
 
 ## Entry Point
@@ -52,7 +52,7 @@ Five stages, in dependency order. Each produces what the next consumes.
 
 The stages are in order but not all required for every piece of work. Enter the topology where the work needs you. A bug fix with an existing issue enters at Execute. A new capability enters at Frame. The constraint is sequence — you can't land before executing — not completeness.
 
-See [`README.md`](https://github.com/pentaxis93/groundwork/blob/main/README.md#skill-routing) for skill triggers.
+See [`README.md`](https://github.com/pentaxis93/groundwork/blob/main/README.md#skill-and-protocol-routing) for protocol triggers.
 
 ## Integration Principles
 
@@ -76,7 +76,7 @@ For the formal handoff contracts, fail conditions, and anti-divergence rules, se
 
 ## Corruption Modes
 
-**Methodology as gates.** Recognition: you're checking off skills in order regardless of whether the work needs them, refusing to use a later-stage skill because you haven't completed an earlier stage that doesn't apply, or invoking a skill because its name matches a keyword in the conversation rather than because the topology calls for it. The Flow is a connected path with entry points, not a checklist where every box must be ticked.
+**Methodology as gates.** Recognition: you're checking off protocols in order regardless of whether the work needs them, refusing to use a later-stage protocol because you haven't completed an earlier stage that doesn't apply, or invoking a protocol because its name matches a keyword in the conversation rather than because the topology calls for it. The Flow is a connected path with entry points, not a checklist where every box must be ticked.
 
 **Behavior traceability loss.** Recognition: your tests pass but you can't name which behavior scenario each test verifies, or your completion claim says "all tests pass" without mapping results to named behaviors. Treating `bdd` as a one-time preface rather than a contract that threads through execution.
 

@@ -5,7 +5,7 @@
 
 ## Context
 
-Repository artifacts accumulate internal development history — skill
+Repository artifacts accumulate internal development history — protocol
 genealogies, rename chains, version-bump logs, add-then-remove cycles — in
 places where the reader needs current state, not transition narrative. Agents
 document transitions by default because transitions are what they just did.
@@ -14,20 +14,20 @@ is complete.
 
 Four specific surfaces carry this pattern:
 
-1. **Skill `origin:` fields** mix attribution (legally required for adapted
+1. **Frontmatter `origin:` fields** mix attribution (legally required for adapted
    upstream work) with development narrative (what the predecessor did wrong,
    what v3.0 broadened). Attribution must stay; narrative clutters frontmatter
-   that agents parse on every skill load.
+   that agents parse on every protocol load.
 
-2. **Skill `replaces:` fields** reference predecessor skills — some upstream
+2. **Frontmatter `replaces:` fields** reference predecessors — some upstream
    (obra/superpowers), some internal (clean-slate). For upstream predecessors,
    attribution is already handled by `origin:` + `LICENSE-UPSTREAM`. For
    internal predecessors that were never released, there is no reader who
    benefits from knowing the old name.
 
-3. **CHANGELOG `[Unreleased]`** sections accumulate internal iteration: version
-   bumps, renames, add-then-remove entries. Users encountering the first
-   release need to know what ships, not what happened along the way.
+3. **CHANGELOG `[Unreleased]`** sections accumulate internal iteration:
+   version bumps, renames, add-then-remove entries. Users encountering the
+   first release need to know what ships, not what happened along the way.
 
 4. **ADR bodies** continue to read as active policy after being superseded.
    A superseded note at the top helps, but without a convention the pattern
@@ -49,19 +49,19 @@ the transition itself.
 
 Two rules based on whether upstream work is involved:
 
-- **Upstream-adapted skills:** Terse attribution pointer — upstream project,
+- **Upstream-adapted protocols:** Terse attribution pointer — upstream project,
   license, and a reference to `LICENSE-UPSTREAM`. No narrative about what was
   preserved, adapted, or restructured (that detail, including the pinned
   commit hash, lives in LICENSE-UPSTREAM).
   Format: `"Adapted from <project> (<license>). See LICENSE-UPSTREAM."`
 
-- **Internal-only skills:** No `origin:` field. Internal genealogy (skill A
-  replaced skill B) is development history, not attribution. It belongs in
+- **Internal-only protocols:** No `origin:` field. Internal genealogy (protocol A
+  replaced protocol B) is development history, not attribution. It belongs in
   git log and issue threads.
 
 ### replaces: field
 
-Remove from all skills. The field conflates attribution (handled by `origin:`
+Remove from all protocols. The field conflates attribution (handled by `origin:`
 + `LICENSE-UPSTREAM`) with development narrative (handled by git log). It
 appears in no schema, no tooling, and no reader workflow.
 
@@ -69,7 +69,7 @@ appears in no schema, no tooling, and no reader workflow.
 
 Only log user-visible changes. An entry belongs in CHANGELOG when an end user
 or adopting agent would notice the difference. Internal iteration — version
-bumps to individual skills, renames of internal concepts, add-then-remove
+bumps to individual protocols, renames of internal concepts, add-then-remove
 cycles, policy doc rewrites — does not.
 
 When releasing, the `[Unreleased]` section describes what ships, not what
@@ -89,9 +89,9 @@ When an ADR is superseded:
 The superseded note is the reader's signal. If they need current policy, follow
 the pointer. If they need the historical rationale, read the body.
 
-### Skill versions
+### Versions
 
-Keep the `version:` field in frontmatter (current state). No per-skill
+Keep the `version:` field in frontmatter (current state). No per-protocol
 changelog. Version changes are reflected in the project CHANGELOG only when
 they represent user-visible changes.
 
@@ -100,7 +100,7 @@ they represent user-visible changes.
 ### Good
 
 - Agents and contributors have a clear rule for what goes where
-- Skill frontmatter stays terse and machine-parseable
+- Frontmatter stays terse and machine-parseable
 - CHANGELOG stays useful across releases
 - ADR lifecycle has a documented convention
 
@@ -111,7 +111,7 @@ they represent user-visible changes.
 
 ### Bad
 
-- Narrative context about *why* a skill evolved a certain way is less
+- Narrative context about *why* a protocol evolved a certain way is less
   discoverable (buried in git log rather than visible in frontmatter)
 - Contributors must exercise judgment about "user-visible" for CHANGELOG
   entries — the boundary is not a bright line

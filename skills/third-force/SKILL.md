@@ -96,7 +96,7 @@ A tool is present but not working correctly or at reduced capability.
 A workflow step requires knowledge or action that is not part of any documented process.
 
 ***Recognition:*** You are about to perform a step that you know from prior context but that a fresh agent would not know, or you are about to skip a step because you do not know whether it applies.
-***Fix:*** Document the process step. Update the relevant skill or file an issue.
+***Fix:*** Document the process step. Update the relevant protocol or file an issue.
 
 ---
 
@@ -142,6 +142,6 @@ When filing an issue, still apply a **minimum viable workaround** for the curren
 ## Cross-References
 
 - `ground`: Step 2 of the move uses `ground`'s Orient to assess what the environment should enable. Full grounding is rarely needed for friction resolution, but the orient question is essential.
-- `documentation`: Structural fixes frequently involve documentation updates. The `documentation` skill's review mode applies when the fix involves creating or updating docs.
+- `documentation`: Structural fixes frequently involve documentation updates. The `documentation` protocol's review mode applies when the fix involves creating or updating docs.
 - `issue-craft`: When friction exceeds side-quest scope, file an issue using `issue-craft`. The issue is the structural fix at the meta-level.
 - `using-groundwork`: `third-force` is an integration principle in `using-groundwork`, alongside "Ground re-fires" and "Research fires at any stage." It fires at any stage.
