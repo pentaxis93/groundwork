@@ -1,7 +1,7 @@
 # Groundwork Methodology Manifest
 #
 # This is the single file runa reads to understand the groundwork methodology.
-# It declares all artifact types and skills with their interface edges.
+# It declares all artifact types and protocols with their interface edges.
 # Topology emerges from the graph of requires/produces relationships.
 
 name = "groundwork"
@@ -35,51 +35,28 @@ schema = "schemas/completion-evidence.schema.json"
 name = "completion-record"
 schema = "schemas/completion-record.schema.json"
 
-# --- Skills ---
+# --- Protocols ---
 #
 # Edge declarations:
-#   requires    — artifact must exist and validate before skill executes (hard dep)
+#   requires    — artifact must exist and validate before protocol executes (hard dep)
 #   accepts     — artifact may be consumed if available (soft dep)
-#   produces    — artifact will exist and validate after skill executes
+#   produces    — artifact will exist and validate after protocol executes
 #   may_produce — artifact might be produced; validated if present
-#   trigger     — condition that activates the skill
+#   trigger     — condition that activates the protocol
 #
 # Trigger primitives: on_artifact, on_change, on_signal, on_invalid
 # Composable with: all_of, any_of
 
-[[skills]]
-name = "using-groundwork"
-requires = []
-accepts = []
-produces = []
-may_produce = []
-trigger = { type = "on_signal", name = "methodology-orientation" }
-
-[[skills]]
-name = "ground"
-requires = []
-accepts = ["research-record"]
-produces = []
-may_produce = []
-trigger = { type = "on_signal", name = "frame-constraints" }
-
-[[skills]]
-name = "research"
-requires = []
-accepts = []
-produces = ["research-record"]
-may_produce = []
-trigger = { type = "on_signal", name = "evidence-needed" }
-
-[[skills]]
-name = "bdd"
+# Placeholder until Issue #160 creates protocols/specify content.
+[[protocols]]
+name = "specify"
 requires = []
 accepts = ["research-record"]
 produces = ["behavior-contract"]
 may_produce = []
 trigger = { type = "on_signal", name = "define-behavior" }
 
-[[skills]]
+[[protocols]]
 name = "plan"
 requires = ["behavior-contract"]
 accepts = ["research-record"]
@@ -87,15 +64,15 @@ produces = ["implementation-plan"]
 may_produce = []
 trigger = { type = "on_artifact", name = "behavior-contract" }
 
-[[skills]]
-name = "issue-craft"
+[[protocols]]
+name = "decompose"
 requires = []
 accepts = ["behavior-contract", "implementation-plan"]
 produces = []
 may_produce = []
 trigger = { type = "on_signal", name = "decompose-work" }
 
-[[skills]]
+[[protocols]]
 name = "begin"
 requires = []
 accepts = []
@@ -103,47 +80,32 @@ produces = []
 may_produce = []
 trigger = { type = "on_signal", name = "session-start" }
 
-[[skills]]
-name = "test-first"
+[[protocols]]
+name = "test"
 requires = ["behavior-contract"]
 accepts = ["implementation-plan"]
 produces = ["test-evidence"]
 may_produce = []
 trigger = { type = "all_of", conditions = [{ type = "on_artifact", name = "behavior-contract" }, { type = "on_signal", name = "implement" }] }
 
-[[skills]]
-name = "debug"
-requires = []
-accepts = ["test-evidence"]
-produces = []
-may_produce = []
-trigger = { type = "on_signal", name = "investigation-needed" }
-
-[[skills]]
-name = "third-force"
-requires = []
-accepts = []
-produces = []
-may_produce = []
-trigger = { type = "on_signal", name = "friction-detected" }
-
-[[skills]]
-name = "documentation"
+# Placeholder until Issue #161 creates protocols/document content.
+[[protocols]]
+name = "document"
 requires = []
 accepts = ["behavior-contract", "implementation-plan"]
 produces = []
 may_produce = []
 trigger = { type = "on_signal", name = "documentation-review" }
 
-[[skills]]
-name = "verification-before-completion"
+[[protocols]]
+name = "verify"
 requires = ["test-evidence"]
 accepts = ["behavior-contract"]
 produces = ["completion-evidence"]
 may_produce = []
 trigger = { type = "on_artifact", name = "test-evidence" }
 
-[[skills]]
+[[protocols]]
 name = "propose"
 requires = ["completion-evidence"]
 accepts = []
@@ -151,10 +113,19 @@ produces = []
 may_produce = []
 trigger = { type = "on_artifact", name = "completion-evidence" }
 
-[[skills]]
+[[protocols]]
 name = "land"
 requires = ["completion-evidence"]
 accepts = ["behavior-contract"]
 produces = ["completion-record"]
 may_produce = []
 trigger = { type = "on_signal", name = "merge-ready" }
+
+# Placeholder until Issue #162 creates protocols/survey and defines its final interface.
+[[protocols]]
+name = "survey"
+requires = []
+accepts = []
+produces = []
+may_produce = []
+trigger = { type = "on_signal", name = "survey" }

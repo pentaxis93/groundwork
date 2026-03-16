@@ -1,0 +1,38 @@
+This skill is adapted from the plan mode implementation in OpenAI's Codex CLI
+(https://github.com/openai/codex), licensed under the Apache License 2.0
+reproduced below.
+
+The following elements are derived from the original:
+- The three-phase planning structure (ground in environment, resolve intent,
+  converge implementation)
+- The "decision-complete" concept and terminology
+- The "two kinds of unknowns" framework (discoverable facts vs. preferences/
+  tradeoffs) with its category taxonomy
+- The read-only constraint with its enumeration of allowed vs. disallowed
+  actions during planning
+- One near-verbatim sentence regarding "doing the work" vs. "planning the
+  work"
+
+The following elements are original to this adaptation:
+- Corruption Modes framework (six named failure modes)
+- Named constraint identifiers
+- The write-plan output template
+- Phase motivations and rationale
+- Skill cross-references and pipeline integration
+- Adaptation from human-interactive UI to autonomous agent execution
+
+---
+
+Copyright 2025 OpenAI
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
