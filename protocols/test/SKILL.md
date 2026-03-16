@@ -1,5 +1,5 @@
 ---
-name: test-first
+name: test
 description: >-
   Use when implementing any feature or bugfix, before writing implementation
   code. Enforces test-first development through RED-GREEN-REFACTOR with

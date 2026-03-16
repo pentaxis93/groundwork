@@ -1,5 +1,5 @@
 ---
-name: verification-before-completion
+name: verify
 description: >-
   Use when about to claim work is complete, fixed, or passing. Use before
   committing, creating PRs, or moving to the next task. Requires running

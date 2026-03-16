@@ -1,5 +1,5 @@
 ---
-name: issue-craft
+name: decompose
 description: >-
   Transfer problem understanding across context boundaries through well-formed
   issues. Use for creating, decomposing, refining, triaging, and closing issues

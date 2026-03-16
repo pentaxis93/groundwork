@@ -1,5 +1,5 @@
 ---
-name: using-groundwork
+name: orient
 description: >-
   Use when working in a groundwork-equipped project, at session start, task
   initiation, or any moment requiring methodology orientation. Activates the

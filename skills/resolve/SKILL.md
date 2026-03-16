@@ -1,5 +1,5 @@
 ---
-name: third-force
+name: resolve
 description: >-
   Friction-resolution through the reconciling force. Use when encountering
   operational friction — a missing tool, broken config, stale convention,
