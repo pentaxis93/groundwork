@@ -51,7 +51,7 @@ as code evolves.
   drift is invisible until a reader hits it. If the update requires deeper work,
   create a tracking issue — never leave drift untracked.
 - `source-of-truth-over-counts`: avoid hardcoded aggregate counts for dynamic
-  sets (skills, endpoints, flags, supported providers) — they drift silently and
+  sets (skills, protocols, endpoints, flags, supported providers) — they drift silently and
   mislead readers without any visible signal. Prefer referencing the
   authoritative object (manifest/config/schema) or generating the value.
 

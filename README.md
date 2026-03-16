@@ -2,15 +2,15 @@
 
 A methodology plugin for AI coding agents. One connected topology from problem framing through shipped change to closed loop.
 
-Groundwork owns the protocols, skills, artifact schemas, and topology. It registers with [runa](https://github.com/pentaxis93/runa) through a single [manifest file](groundwork.toml) and has no runtime, no CLI, no installer.
+Groundwork owns the skills, protocols, artifact schemas, and topology. It registers with [runa](https://github.com/pentaxis93/runa) through a single [manifest file](groundwork.toml) and has no runtime, no CLI, no installer.
 
-## Protocols and Skills
+## Skills and Protocols
 
 Groundwork has two types of cognitive guidance:
 
-- **Protocols** are declared in the manifest, managed by runa, with trigger/artifact contracts. They form the topology — each protocol has edges (requires/produces/accepts) that connect it to other protocols through artifact flow. Protocols live in `protocols/`, each with a `PROTOCOL.md`.
-
 - **Skills** are modular tools that agents load on demand. They provide methodology orientation and friction resolution but have no artifact contracts and are not part of the manifest topology. Skills live in `skills/`, each with a `SKILL.md`.
+
+- **Protocols** are declared in the manifest, managed by runa, with trigger/artifact contracts. They form the topology — each protocol has edges (requires/produces/accepts) that connect it to other protocols through artifact flow. Protocols live in `protocols/`, each with a `PROTOCOL.md`.
 
 ## Why Groundwork Exists
 
@@ -45,11 +45,12 @@ These fire at any stage when their trigger condition appears, not at a fixed pos
 
 Handoff contracts between protocols are defined in [`topology-contract.md`](docs/architecture/topology-contract.md). The issue persistence model is defined in [`issue-model.md`](docs/architecture/issue-model.md).
 
-### Protocol & Skill Routing
+### Skill and Protocol Routing
 
-| Protocol / Skill | Trigger |
+| Skill / Protocol | Trigger |
 |------------------|---------|
 | `using-groundwork` (skill) | session start, task initiation, or any moment requiring methodology orientation |
+| `third-force` (skill) | operational friction — missing tools, broken configs, stale conventions, undocumented requirements |
 | `ground` | before creating designs/specs/architectures/processes |
 | `research` | when reliable external evidence is needed for decisions |
 | `bdd` | when defining or refining behavior expectations |
@@ -58,7 +59,6 @@ Handoff contracts between protocols are defined in [`topology-contract.md`](docs
 | `plan` | implementation needs design convergence — multiple approaches, unclear scope, or cross-cutting changes |
 | `test-first` | when implementing any feature or bugfix — RED → GREEN → REFACTOR |
 | `debug` | when a test fails or behavior is unexpected, before proposing any fix |
-| `third-force` (skill) | operational friction — missing tools, broken configs, stale conventions, undocumented requirements |
 | `documentation` | after code changes that may cause drift, at project initialization, when architectural decisions are made, or when docs fail the audience test |
 | `verification-before-completion` | before claiming work is complete, fixed, or passing — evidence first |
 | `propose` | packaging changes for review: `propose`, `submit pr`, `create pr`, `open pr`, `send for review` |
@@ -72,14 +72,17 @@ Handoff contracts between protocols are defined in [`topology-contract.md`](docs
 | `docs/architecture/topology-contract.md` | Formal handoff contracts and anti-divergence rules |
 | `docs/architecture/issue-model.md` | Issue state model, dependency graph format, graph maintenance |
 | `schemas/` | JSON Schema contracts for artifact types |
-| `protocols/` | Protocol definitions — each is a `PROTOCOL.md` with YAML frontmatter |
 | `skills/` | Skill definitions — modular tools agents load on demand (`SKILL.md`) |
+| `protocols/` | Protocol definitions — each is a `PROTOCOL.md` with YAML frontmatter |
 
 ## Project Layout
 
 ```
 groundwork.toml             # Methodology manifest — artifact types, protocol declarations
 schemas/                    # JSON Schema contracts for artifact types
+skills/                     # Skill definitions (SKILL.md)
+  using-groundwork/         #   methodology orientation
+  third-force/              #   friction resolution
 protocols/                  # Protocol definitions (PROTOCOL.md + references)
   ground/                   #   first-principles grounding
   research/                 #   external evidence gathering
@@ -93,9 +96,6 @@ protocols/                  # Protocol definitions (PROTOCOL.md + references)
   verification-before-completion/ # completion gate
   propose/                  #   commit, push, PR creation
   land/                     #   closeout workflow
-skills/                     # Skill definitions (SKILL.md)
-  using-groundwork/         #   methodology orientation
-  third-force/              #   friction resolution
 docs/
   architecture/             # Topology contract, issue model, ADRs
 tests/

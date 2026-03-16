@@ -52,7 +52,7 @@ Five stages, in dependency order. Each produces what the next consumes.
 
 The stages are in order but not all required for every piece of work. Enter the topology where the work needs you. A bug fix with an existing issue enters at Execute. A new capability enters at Frame. The constraint is sequence — you can't land before executing — not completeness.
 
-See [`README.md`](https://github.com/pentaxis93/groundwork/blob/main/README.md#protocol--skill-routing) for protocol triggers.
+See [`README.md`](https://github.com/pentaxis93/groundwork/blob/main/README.md#skill-and-protocol-routing) for protocol triggers.
 
 ## Integration Principles
 

@@ -164,11 +164,11 @@ the claim — the claim does not select the evidence.
 
 ## Cross-References
 
-- `test-first` protocol owns per-test cycle evidence (each test watched failing, then
+- `test-first` owns per-test cycle evidence (each test watched failing, then
   passing). This protocol owns aggregate completion claims.
-- `documentation` protocol review fires after code changes, before this protocol's gate.
+- `documentation` review fires after code changes, before this protocol's gate.
   Documentation accuracy is completion evidence.
-- `propose` protocol consumes this protocol's output — work must be verified before
+- `propose` consumes this protocol's output — work must be verified before
   packaging for review.
 
 ## The Bottom Line

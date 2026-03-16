@@ -297,18 +297,18 @@ rationalizing, not investigating.
 
 ## Cross-References
 
-- `test-first` (protocol): owns the execution cycle for bug fixes. This
-  protocol establishes root cause; `test-first` fix-bug writes the failing
-  test and implements the fix. The handoff: root cause established, hand off
-  to `test-first`.
-- `verification-before-completion` (protocol): owns fix verification. This
-  protocol does not verify — it investigates.
-- `ground` (protocol): the 3-fix escalation rule invokes `ground` to
-  re-examine architectural assumptions. The investigation move shares
-  `ground`'s discipline of establishing truth before acting.
-- `third-force` (skill): when investigation reveals the failure is caused by
+- `test-first`: owns the execution cycle for bug fixes. This protocol
+  establishes root cause; `test-first` fix-bug writes the failing test and
+  implements the fix. The handoff: root cause established, hand off to
+  `test-first`.
+- `verification-before-completion`: owns fix verification. This protocol does
+  not verify — it investigates.
+- `ground`: the 3-fix escalation rule invokes `ground` to re-examine
+  architectural assumptions. The investigation move shares `ground`'s
+  discipline of establishing truth before acting.
+- `third-force`: when investigation reveals the failure is caused by
   operational friction (missing tool, broken config, stale convention), hand
   off to `third-force` — the root cause is environmental, not logical.
-- `bdd` (protocol): behavior contracts define what "unexpected" means. When
-  behavior is unexpected, check it against the behavior contract first —
-  "unexpected" is only meaningful relative to a defined expectation.
+- `bdd`: behavior contracts define what "unexpected" means. When behavior is
+  unexpected, check it against the behavior contract first — "unexpected" is
+  only meaningful relative to a defined expectation.

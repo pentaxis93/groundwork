@@ -339,14 +339,13 @@ skip test-first are slower, not faster.
 
 ## Cross-References
 
-- `bdd` protocol: identifies behaviors before this protocol executes the cycle.
-  Each RED test corresponds to a named behavior scenario from `bdd`.
-- `verification-before-completion` protocol: owns behavior-level completion
-  evidence. This protocol owns per-test cycle evidence (watched it fail,
-  watched it pass).
-- `debug` protocol: owns root-cause analysis. This protocol provides the
+- `bdd`: identifies behaviors before this protocol executes the cycle. Each RED
+  test corresponds to a named behavior scenario from `bdd`.
+- `verification-before-completion`: owns behavior-level completion evidence.
+  This protocol owns per-test cycle evidence (watched it fail, watched it pass).
+- `debug`: owns root-cause analysis. This protocol provides the
   entry point ("write a failing test reproducing the bug") but defers
   methodology to `debug` when root cause is unclear.
-- `documentation` protocol: doc comments and type annotations are written
-  alongside code during GREEN and REFACTOR phases — they are implementation
-  work, not afterthought.
+- `documentation`: doc comments and type annotations are written alongside
+  code during GREEN and REFACTOR phases — they are implementation work,
+  not afterthought.
