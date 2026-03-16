@@ -7,7 +7,7 @@ description: >-
   Trigger on: 'land', 'land this', 'merge and close', 'ship it'.
 requires: ["completion-evidence"]
 accepts: ["behavior-contract"]
-produces: ["completion-record"]
+produces: []
 may_produce: []
 trigger:
   on_signal: "merge-ready"

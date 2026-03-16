@@ -31,10 +31,6 @@ schema = "schemas/test-evidence.schema.json"
 name = "completion-evidence"
 schema = "schemas/completion-evidence.schema.json"
 
-[[artifact_types]]
-name = "completion-record"
-schema = "schemas/completion-record.schema.json"
-
 # --- Protocols ---
 #
 # Edge declarations:
@@ -139,6 +135,6 @@ trigger = { type = "on_artifact", name = "completion-evidence" }
 name = "land"
 requires = ["completion-evidence"]
 accepts = ["behavior-contract"]
-produces = ["completion-record"]
+produces = []
 may_produce = []
 trigger = { type = "on_signal", name = "merge-ready" }
