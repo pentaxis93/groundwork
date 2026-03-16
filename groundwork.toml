@@ -47,15 +47,6 @@ schema = "schemas/completion-record.schema.json"
 # Trigger primitives: on_artifact, on_change, on_signal, on_invalid
 # Composable with: all_of, any_of
 
-# Placeholder until Issue #160 creates protocols/specify content.
-[[protocols]]
-name = "specify"
-requires = []
-accepts = ["research-record"]
-produces = ["behavior-contract"]
-may_produce = []
-trigger = { type = "on_signal", name = "define-behavior" }
-
 [[protocols]]
 name = "plan"
 requires = ["behavior-contract"]
@@ -88,15 +79,6 @@ produces = ["test-evidence"]
 may_produce = []
 trigger = { type = "all_of", conditions = [{ type = "on_artifact", name = "behavior-contract" }, { type = "on_signal", name = "implement" }] }
 
-# Placeholder until Issue #161 creates protocols/document content.
-[[protocols]]
-name = "document"
-requires = []
-accepts = ["behavior-contract", "implementation-plan"]
-produces = []
-may_produce = []
-trigger = { type = "on_signal", name = "documentation-review" }
-
 [[protocols]]
 name = "verify"
 requires = ["test-evidence"]
@@ -120,12 +102,3 @@ accepts = ["behavior-contract"]
 produces = ["completion-record"]
 may_produce = []
 trigger = { type = "on_signal", name = "merge-ready" }
-
-# Placeholder until Issue #162 creates protocols/survey and defines its final interface.
-[[protocols]]
-name = "survey"
-requires = []
-accepts = []
-produces = []
-may_produce = []
-trigger = { type = "on_signal", name = "survey" }
