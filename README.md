@@ -4,6 +4,8 @@ A methodology plugin for AI coding agents. One connected topology from problem f
 
 Groundwork owns the skills, artifact schemas, and topology. It registers with [runa](https://github.com/pentaxis93/runa) through a single [manifest file](groundwork.toml) and has no runtime, no CLI, no installer.
 
+Tracked methodology content lives in the repository (`groundwork.toml`, `protocols/`, `skills/`, `schemas/`, `docs/`). Local agent install directories such as `.agents/` and `.claude/` are daemon-local workspace state, not source-of-truth content, and should not be used to determine whether the repo itself is stale.
+
 ## Why Groundwork Exists
 
 Reliable engineering has a discipline: constraints get verified before design, behavior gets defined before code, completion gets proven before it's claimed, and changes land with merge, cleanup, and issue resolution. This discipline is what makes outcomes repeatable. Groundwork encodes it as a connected set of skills, giving AI agents the structure to produce verified, shipped work without the need for human course-correction — not through restrictions, but through a topology that makes the right sequence the natural one.
