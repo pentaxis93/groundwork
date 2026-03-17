@@ -1,5 +1,2 @@
-# Agent workspace directories (daemon-local, not methodology content)
-.agents/
-.claude/
 .codex/
 assets/logo/dist/
