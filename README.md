@@ -22,7 +22,7 @@ Five stages form the forward flow. Cross-cutting skills fire at any stage, creat
 | **4. Execute and verify** | `test`, `document`, `verify`, `propose` | Test evidence, documentation record, completion evidence, open PR |
 | **5. Land** | `land` | Completion record — merge, cleanup, coverage status, issue closure |
 
-Enter where the work needs you. A bug with an existing issue enters at Execute. A new capability enters at Frame. The constraint is sequence — you can't land before executing — not completeness.
+Enter where the work needs you. A bug with an existing issue enters at Execute and verify. A new capability enters at Survey and select work. The constraint is sequence — you can't land before executing — not completeness.
 
 ### Cross-cutting skills
 
