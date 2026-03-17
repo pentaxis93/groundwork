@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Deterministic lint checks for issue bodies used by issue-craft."""
+"""Deterministic lint checks for issue bodies used by decompose."""
 
 from __future__ import annotations
 

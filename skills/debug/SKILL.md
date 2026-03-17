@@ -41,16 +41,16 @@ Investigate from evidence. No exceptions.
 ## Lifecycle Role
 
 This skill is a cross-cutting discipline in groundwork's topology, alongside
-`ground` (first-principles on creation) and `third-force` (structural
-resolution on friction). It fires at any stage when failures appear — not
-only during execution.
+`ground` (first-principles on creation) and `resolve` (structural resolution on
+friction). It fires at any stage when failures appear — not only during
+execution.
 
 All three share the same cognitive shape:
 
 | Discipline | Default Impulse | Interrupt |
 |---|---|---|
 | `ground` | Start from what exists | Stop. What is actually needed? |
-| `third-force` | Route around friction | Stop. What is the structural cause? |
+| `resolve` | Route around friction | Stop. What is the structural cause? |
 | `debug` | Guess and fix | Stop. What is the root cause? |
 
 Debugging is not a phase. Failures surface during grounding (constraint
@@ -59,15 +59,14 @@ around), execution (test failure, integration failure), and landing
 (regression discovered during merge). The trigger is the failure, not the
 stage.
 
-**Handoff with test-first:** This skill owns investigation methodology.
-`test-first`'s fix-bug procedure owns the execution cycle — write failing
-test, implement fix, verify green. The boundary: once root cause is
-established, hand off to `test-first` fix-bug. This skill does not write
+**Handoff with `test`:** This skill owns investigation methodology.
+`test`'s fix-bug procedure owns the execution cycle — write failing test,
+implement fix, verify green. The boundary: once root cause is established,
+hand off to `test` fix-bug. This skill does not write
 tests or implement fixes.
 
-**Handoff with verification-before-completion:** This skill does not verify
-fixes. Once a fix is implemented through `test-first`, `verification-before-
-completion` gates the completion claim.
+**Handoff with `verify`:** This skill does not verify fixes. Once a fix is
+implemented through `test`, `verify` gates the completion claim.
 
 ## The Investigation Move
 
@@ -137,7 +136,7 @@ Five steps. Always the same.
    - State it clearly: "The root cause is X because evidence Y shows Z."
    - Make the smallest possible change to test the hypothesis.
    - One variable at a time. Do not fix multiple things at once.
-   - If the hypothesis is confirmed: hand off to `test-first` fix-bug.
+   - If the hypothesis is confirmed: hand off to `test` fix-bug.
    - If the hypothesis is wrong: form a new hypothesis from the evidence.
      Do not stack fixes on top of a failed hypothesis.
 
@@ -166,7 +165,7 @@ When this fires:
 3. **If the architecture is sound**, the investigation was incomplete — return
    to Step 0 with the new evidence from your three attempts.
 4. **If the architecture is unsound**, the fix is architectural. File an issue
-   via `issue-craft` — this exceeds debugging scope.
+   via `decompose` — this exceeds debugging scope.
 
 This rule is the debugging equivalent of `ground`'s "infinite decomposition"
 corruption mode — it catches the failure of continuing to apply the skill's
@@ -297,18 +296,18 @@ rationalizing, not investigating.
 
 ## Cross-References
 
-- `test-first`: owns the execution cycle for bug fixes. This skill
-  establishes root cause; `test-first` fix-bug writes the failing test and
+- `test`: owns the execution cycle for bug fixes. This skill
+  establishes root cause; `test` fix-bug writes the failing test and
   implements the fix. The handoff: root cause established, hand off to
-  `test-first`.
-- `verification-before-completion`: owns fix verification. This skill does
+  `test`.
+- `verify`: owns fix verification. This skill does
   not verify — it investigates.
 - `ground`: the 3-fix escalation rule invokes `ground` to re-examine
   architectural assumptions. The investigation move shares `ground`'s
   discipline of establishing truth before acting.
-- `third-force`: when investigation reveals the failure is caused by
+- `resolve`: when investigation reveals the failure is caused by
   operational friction (missing tool, broken config, stale convention), hand
-  off to `third-force` — the root cause is environmental, not logical.
-- `bdd`: behavior contracts define what "unexpected" means. When behavior is
+  off to `resolve` — the root cause is environmental, not logical.
+- `specify`: behavior contracts define what "unexpected" means. When behavior is
   unexpected, check it against the behavior contract first — "unexpected" is
   only meaningful relative to a defined expectation.

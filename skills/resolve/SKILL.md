@@ -22,7 +22,7 @@ trigger:
   on_signal: "friction-detected"
 ---
 
-# Third Force
+# Resolve
 
 *When two forces collide, introduce the third.*
 
@@ -143,5 +143,5 @@ When filing an issue, still apply a **minimum viable workaround** for the curren
 
 - `ground`: Step 2 of the move uses `ground`'s Orient to assess what the environment should enable. Full grounding is rarely needed for friction resolution, but the orient question is essential.
 - `documentation`: Structural fixes frequently involve documentation updates. The `documentation` skill's review mode applies when the fix involves creating or updating docs.
-- `issue-craft`: When friction exceeds side-quest scope, file an issue using `issue-craft`. The issue is the structural fix at the meta-level.
-- `using-groundwork`: `third-force` is an integration principle in `using-groundwork`, alongside "Ground re-fires" and "Research fires at any stage." It fires at any stage.
+- `decompose`: When friction exceeds side-quest scope, file an issue using `decompose`. The issue is the structural fix at the meta-level.
+- `orient`: `resolve` is an integration principle in `orient`, alongside "Ground re-fires" and "Research fires at any stage." It fires at any stage.
