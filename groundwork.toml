@@ -24,6 +24,10 @@ name = "research-record"
 schema = "schemas/research-record.schema.json"
 
 [[artifact_types]]
+name = "assessment"
+schema = "schemas/assessment.schema.json"
+
+[[artifact_types]]
 name = "test-evidence"
 schema = "schemas/test-evidence.schema.json"
 
@@ -56,9 +60,17 @@ may_produce = []
 trigger = { type = "on_artifact", name = "behavior-contract" }
 
 [[protocols]]
+name = "survey"
+requires = []
+accepts = ["research-record"]
+produces = ["assessment"]
+may_produce = []
+trigger = { type = "on_signal", name = "survey" }
+
+[[protocols]]
 name = "decompose"
 requires = []
-accepts = ["behavior-contract", "implementation-plan"]
+accepts = ["assessment", "behavior-contract", "implementation-plan"]
 produces = []
 may_produce = []
 trigger = { type = "on_signal", name = "decompose-work" }
