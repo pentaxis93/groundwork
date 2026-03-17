@@ -18,7 +18,7 @@ trigger:
   on_artifact: "test-evidence"
 ---
 
-# Verification Before Completion
+# Verify
 
 Evidence before claims, always.
 
@@ -52,7 +52,7 @@ Skip any step = the claim has no basis
 This skill owns **aggregate completion claims** — the moment before you say
 "done." It fires after execution, before packaging work for review.
 
-It does not own per-test cycle evidence (that belongs to the test-first
+It does not own per-test cycle evidence (that belongs to the `test`
 discipline — each test watched failing, then passing). It owns the final
 gate: all tests pass, all requirements met, the build succeeds, the work is
 actually complete.
@@ -164,7 +164,7 @@ the claim — the claim does not select the evidence.
 
 ## Cross-References
 
-- `test-first` owns per-test cycle evidence (each test watched failing, then
+- `test` owns per-test cycle evidence (each test watched failing, then
   passing). This skill owns aggregate completion claims.
 - `documentation` review fires after code changes, before this skill's gate.
   Documentation accuracy is completion evidence.

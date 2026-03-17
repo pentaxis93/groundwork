@@ -200,7 +200,7 @@ A well-bounded task has:
 ## Cross-References
 
 - `begin`: session-level prioritization and execution discipline.
-- `bdd`: behavior framing and test naming discipline.
+- `specify`: behavior framing and test naming discipline.
 - `plan`: design convergence before implementation.
 - `land`: merge-and-close completion events.
 - `documentation`: documentation updates as acceptance criteria for user-facing

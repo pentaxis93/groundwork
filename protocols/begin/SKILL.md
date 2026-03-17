@@ -27,7 +27,7 @@ Plan from the issue graph, not from memory. Agent sessions end and context
 windows close, but the issue graph persists — it is the only working memory
 that survives across sessions.
 
-For issue decomposition and boundary contracts, use `issue-craft`.
+For issue decomposition and boundary contracts, use `decompose`.
 For first-principles design decisions, use `ground`.
 
 ## Procedures
@@ -49,16 +49,16 @@ Follows the LBRP sequence: orient → observe → frame → banish.
 
 The agent receives its operating methodology — the connected system that makes
 later skills work together rather than in isolation. `begin` opens individual
-work sessions; `using-groundwork` establishes the methodology those sessions
-operate within. If `using-groundwork` has not been loaded this session, load it
-now before proceeding.
+work sessions; `orient` establishes the methodology those sessions operate
+within. If `orient` has not been loaded this session, load it now before
+proceeding.
 
 ```
 ◈ ORIENT
 Methodology: loaded
 ```
 
-Implementation: invoke the `using-groundwork` skill via the Skill tool.
+Implementation: invoke the `orient` skill via the Skill tool.
 
 ##### 0b. Observe
 
@@ -238,10 +238,10 @@ Brief definitions for self-contained use. See
   review. `begin`'s opening ceremony (orient, observe, frame, banish) prepares
   the agent for work; `land`'s closing ceremony (gather, verify, review, seal)
   prepares the work for delivery. Parallel structure, inverse direction.
-- `issue-craft`: decomposition, issue boundaries, acceptance criteria contracts.
+- `decompose`: decomposition, issue boundaries, acceptance criteria contracts.
 - `ground`: validate assumptions before committing to an approach.
-- `bdd`: behavior-first test strategy for implementation increments.
-- `using-groundwork`: the methodology map — activates the connected skill
+- `specify`: behavior-first contract definition for implementation increments.
+- `orient`: the methodology map — activates the connected skill
   system that `begin` operates within. Loaded during orient (Phase 0a).
 - Opening ceremony pattern adapted from LBRP (`aiandi-dev-environment`) —
   internalized, no runtime dependency.

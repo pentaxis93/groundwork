@@ -95,14 +95,14 @@ available.
 Criteria: [all met | partial — list remaining]
 ```
 
-Implementation: invoke the `verification-before-completion` skill. For
+Implementation: invoke the `verify` skill. For
 issue-linked branches, fetch each target issue (`gh issue view`) and evaluate
 acceptance criteria against the branch diff. Classify each issue as satisfied
 (all criteria met) or partial (some remain). If no acceptance criteria can be
 extracted from the issue body, classify as partial — an issue without explicit
 criteria may have unstated requirements. If an issue fetch fails, treat that
 issue as partial and log a warning. For no-issue landings, skip acceptance
-criteria evaluation — `verification-before-completion` still runs to confirm
+criteria evaluation — `verify` still runs to confirm
 the work itself is complete. Store classifications for Phase 1e.
 
 #### 0c. Review
@@ -254,8 +254,8 @@ Report the final state including:
   prepares the agent for work; `land`'s closing ceremony (gather, verify, review,
   seal) prepares the work for delivery. Parallel structure, inverse direction.
 - `propose` for the preceding phase: commit, push, and PR creation
-- `verification-before-completion`: invoked during Phase 0b to evaluate
+- `verify`: invoked during Phase 0b to evaluate
   acceptance criteria and verify completion evidence before merge
 - `documentation`: invoked during Phase 0c for documentation-review — confirms
   documentation reflects the changes being landed
-- `issue-craft` for issue lifecycle patterns and tracking issues from doc review
+- `decompose` for issue lifecycle patterns and tracking issues from doc review

@@ -27,9 +27,9 @@ implementer — every approach, interface, data flow, edge case, and test
 strategy is resolved.
 
 For first-principles constraint framing, use `ground`.
-For behavior contracts, use `bdd`.
+For behavior contracts, use `specify`.
 For executable work-unit decomposition after design convergence, use
-`issue-craft`.
+`decompose`.
 
 ## Goal
 
@@ -152,9 +152,9 @@ When producing a plan for handoff to another agent, write it to a file.
 
 - `ground`: first-principles constraint framing — runs before plan when
   the problem space itself is unclear.
-- `bdd`: behavior contract — provides the behavior statements the plan
+- `specify`: behavior contract — provides the behavior statements the plan
   must implement.
 - `begin`: work initiation — selects which issue to plan for and prepares the session.
-- `issue-craft`: executable work-unit decomposition and issue quality —
+- `decompose`: executable work-unit decomposition and issue quality —
   turns a decision-complete design into agent-executable issues with
   binary acceptance criteria.

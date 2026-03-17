@@ -2,8 +2,8 @@
 name: test
 description: >-
   Use when implementing any feature or bugfix, before writing implementation
-  code. Enforces test-first development through RED-GREEN-REFACTOR with
-  delete-and-start-over discipline. Fires when implementing BDD-identified
+  code. Enforces test-driven development through RED-GREEN-REFACTOR with
+  delete-and-start-over discipline. Fires when implementing behavior-contract-defined
   behaviors, fixing bugs, refactoring, or any time production code is about
   to be written. If you are about to write implementation code, this skill
   applies.
@@ -21,7 +21,7 @@ trigger:
     - on_signal: "implement"
 ---
 
-# Test-First
+# Test
 
 Write the test first. Watch it fail. Write minimal code to pass.
 
@@ -48,16 +48,16 @@ Implement fresh from tests. No exceptions.
 This skill is the execution discipline in groundwork's topology. It sits
 between behavior identification and completion verification:
 
-1. `bdd` identifies what behaviors the system needs — sentence-named scenarios
+1. `specify` identifies what behaviors the system needs — sentence-named scenarios
    in Given/When/Then form.
-2. **`test-first` executes** those behaviors through RED-GREEN-REFACTOR. Each
-   RED test corresponds to a named behavior scenario from `bdd`.
-3. `verification-before-completion` gates the completion claim with
+2. **`test` executes** those behaviors through RED-GREEN-REFACTOR. Each RED
+   test corresponds to a named behavior scenario from `specify`.
+3. `verify` gates the completion claim with
    behavior-level evidence.
 
 This skill owns per-test cycle evidence: each test was watched failing, then
 passing. It does not own aggregate completion evidence — that belongs to
-`verification-before-completion`.
+`verify`.
 
 ## Discipline
 
@@ -86,7 +86,7 @@ behavior during refactor.
 **Delete-and-start-over.** If you wrote implementation code before the test:
 delete the code and start with a failing test. No keeping it as reference. No
 adapting it. The sunk cost is already gone. The choice is between code you can
-trust (test-first) and code you cannot (implementation-first).
+trust (test-driven) and code you cannot (implementation-first).
 
 ## Red-Green-Refactor
 
@@ -209,9 +209,9 @@ Next failing test for the next behavior.
 
 ### implement-behavior
 
-Execute the RED-GREEN-REFACTOR cycle for a behavior identified by `bdd`.
+Execute the RED-GREEN-REFACTOR cycle for a behavior identified by `specify`.
 
-1. Take the next behavior scenario from `bdd`'s priority ranking.
+1. Take the next behavior scenario from `specify`'s priority ranking.
 2. Write a failing test whose name is the behavior statement.
 3. **Verify RED** — run the test, confirm it fails for the right reason.
 4. Write minimal code to pass.
@@ -242,7 +242,7 @@ When you realize you wrote implementation code before a test:
 4. Implement from the test.
 
 This feels wasteful. It is not. The time spent writing code-first is already
-gone. The choice now is between trusted code (test-first) and untrusted code
+gone. The choice now is between trusted code (test-driven) and untrusted code
 (implementation-first with tests bolted on). Trusted code is faster in the
 long run.
 
@@ -261,13 +261,13 @@ untrusted code.
 | "Keep as reference, write tests first" | You will adapt it. That is testing-after. Delete means delete. |
 | "Need to explore first" | Fine. Throw away exploration, start with a test. |
 | "Test hard = skip TDD" | Listen to the test. Hard to test means hard to use. |
-| "TDD will slow me down" | Test-first is faster than debugging. |
+| "TDD will slow me down" | Test-driven execution is faster than debugging. |
 | "Manual test is faster" | Manual testing does not prove edge cases. You will re-test every change. |
 | "Existing code has no tests" | You are improving it. Add tests for existing code. |
 
 ## Red Flags — Stop and Start Over
 
-Any of these means: delete code, start over with test-first.
+Any of these means: delete code, start over with the `test` discipline.
 
 - Code written before test
 - Test written after implementation
@@ -314,34 +314,36 @@ what the failing test requires.
 *Recognition:* Your GREEN implementation does more than the test asks for. You
 added parameters, configuration, or error handling that no test requires.
 
-**BDD bypass.** Starting RED tests without identified behavior scenarios.
+**Behavior-contract bypass.** Starting RED tests without identified behavior
+scenarios.
 *Recognition:* You are writing tests from implementation convenience —
 "test this function" — rather than from behavior contract — "this behavior
-should exist." The handoff from `bdd` was skipped.
+should exist." The handoff from `specify` was skipped.
 
 ## Principles
 
 **Order matters.** Tests written after code pass immediately. Passing
 immediately proves nothing — you might test the wrong thing, test
-implementation instead of behavior, or miss edge cases. Test-first forces you
+implementation instead of behavior, or miss edge cases. Testing from the first
+cycle forces you
 to see the test fail, proving it actually tests something.
 
 **Delete is faster than debug.** Sunk cost fallacy says keep the code you
-wrote. Reality says rewriting with test-first is faster than debugging
+wrote. Reality says rewriting from tests is faster than debugging
 untested code later.
 
 **Hard to test means hard to use.** When testing is difficult, the test is
 telling you the design needs work. Listen to the test.
 
-**Test-first IS pragmatic.** It finds bugs before commit, prevents
+**Test-driven execution is pragmatic.** It finds bugs before commit, prevents
 regressions, documents behavior, and enables safe refactoring. Shortcuts that
-skip test-first are slower, not faster.
+skip the `test` discipline are slower, not faster.
 
 ## Cross-References
 
-- `bdd`: identifies behaviors before this skill executes the cycle. Each RED
-  test corresponds to a named behavior scenario from `bdd`.
-- `verification-before-completion`: owns behavior-level completion evidence.
+- `specify`: identifies behaviors before this skill executes the cycle. Each
+  RED test corresponds to a named behavior scenario from `specify`.
+- `verify`: owns behavior-level completion evidence.
   This skill owns per-test cycle evidence (watched it fail, watched it pass).
 - `debug`: owns root-cause analysis. This skill provides the
   entry point ("write a failing test reproducing the bug") but defers

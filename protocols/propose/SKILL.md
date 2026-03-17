@@ -254,5 +254,5 @@ Output:
 
 - `begin` for work initiation — select issue(s), prepare workspace, declare direction (the preceding phase)
 - `land` for merge, cleanup, and issue closure (the following phase)
-- `verification-before-completion` — should fire before `propose`
+- `verify` — should fire before `propose`
 - `documentation` for documentation review before proposing
