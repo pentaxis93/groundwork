@@ -28,7 +28,7 @@ windows close, but the issue graph persists — it is the only working memory
 that survives across sessions.
 
 For issue decomposition and boundary contracts, use `decompose`.
-For first-principles design decisions, use `ground`.
+For first-principles design decisions, use `reckon`.
 
 ## Procedures
 
@@ -239,7 +239,7 @@ Brief definitions for self-contained use. See
   the agent for work; `land`'s closing ceremony (gather, verify, review, seal)
   prepares the work for delivery. Parallel structure, inverse direction.
 - `decompose`: decomposition, issue boundaries, acceptance criteria contracts.
-- `ground`: validate assumptions before committing to an approach.
+- `reckon`: validate assumptions before committing to an approach.
 - `specify`: behavior-first contract definition for implementation increments.
 - `orient`: the methodology map — activates the connected skill
   system that `begin` operates within. Loaded during orient (Phase 0a).

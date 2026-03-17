@@ -106,7 +106,7 @@ When encountering existing documentation:
 
 - `orient`: provides the always-on documentation writing discipline that
   identifies audience, artifact choice, and depth before review time.
-- `ground`: grounded constraints define what architecture docs or ADRs must
+- `reckon`: grounded constraints define what architecture docs or ADRs must
   enable before they are reviewed as accurate.
 - `specify`: behavior contracts are the authoritative source for what public
   behavior must be reflected in documentation.

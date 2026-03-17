@@ -26,7 +26,7 @@ modifying code. A decision-complete plan leaves no design choices to the
 implementer — every approach, interface, data flow, edge case, and test
 strategy is resolved.
 
-For first-principles constraint framing, use `ground`.
+For first-principles constraint framing, use `reckon`.
 For behavior contracts, use `specify`.
 For executable work-unit decomposition after design convergence, use
 `decompose`.
@@ -150,7 +150,7 @@ When producing a plan for handoff to another agent, write it to a file.
 
 ## Cross-References
 
-- `ground`: first-principles constraint framing — runs before plan when
+- `reckon`: first-principles constraint framing — runs before plan when
   the problem space itself is unclear.
 - `specify`: behavior contract — provides the behavior statements the plan
   must implement.
