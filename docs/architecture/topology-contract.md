@@ -81,8 +81,8 @@ Requirement: user-facing changes include documentation updates as explicit accep
 Fail condition: issue for a user-facing change has no documentation criterion.
 
 #### `document -> verify`
-Requirement: completion claims include documentation accuracy evidence.
-Fail condition: work claimed complete without documentation review; drifted docs remain untracked.
+Requirement: when the change affects documented behavior or user-facing surfaces, completion claims include documentation accuracy evidence via `documentation-record`.
+Fail condition: work with documentation impact claimed complete without documentation review; drifted docs remain untracked.
 
 #### `document -> land`
 Requirement: landing records documentation coverage status: which docs were updated, which were verified accurate, which were flagged with tracking issues.
