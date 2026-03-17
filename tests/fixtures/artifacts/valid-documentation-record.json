@@ -1,0 +1,12 @@
+{
+  "updated-docs": [
+    "README.md",
+    "docs/architecture/topology-contract.md"
+  ],
+  "verified-accurate-docs": [
+    "docs/architecture/issue-model.md"
+  ],
+  "tracking-issues": [
+    "#172"
+  ]
+}

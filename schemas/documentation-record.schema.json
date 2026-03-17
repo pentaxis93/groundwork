@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/pentaxis93/groundwork/main/schemas/documentation-record.schema.json",
+  "title": "Documentation Record",
+  "description": "Validates the content of a documentation-record artifact. Records which docs were updated, which were verified accurate, and which were deferred to tracking issues.",
+  "type": "object",
+  "required": ["updated-docs", "verified-accurate-docs", "tracking-issues"],
+  "additionalProperties": false,
+  "properties": {
+    "updated-docs": {
+      "type": "array",
+      "description": "Documentation artifacts updated in the same change set.",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "verified-accurate-docs": {
+      "type": "array",
+      "description": "Documentation artifacts reviewed and confirmed accurate without edits.",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "tracking-issues": {
+      "type": "array",
+      "description": "Issue references created for deeper documentation follow-up.",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    }
+  }
+}
