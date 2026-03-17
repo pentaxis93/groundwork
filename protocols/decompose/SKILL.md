@@ -5,11 +5,13 @@ description: >-
   issues. Use for creating, decomposing, refining, triaging, and closing issues
   in GitHub projects.
 requires: []
-accepts: ["behavior-contract", "implementation-plan"]
+accepts: ["assessment", "behavior-contract", "implementation-plan"]
 produces: []
 may_produce: []
 trigger:
-  on_signal: "decompose-work"
+  any_of:
+    - on_artifact: "assessment"
+    - on_signal: "decompose-work"
 ---
 
 # Issue Craft

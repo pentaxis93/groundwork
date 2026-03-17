@@ -73,7 +73,7 @@ requires = []
 accepts = ["assessment", "behavior-contract", "implementation-plan"]
 produces = []
 may_produce = []
-trigger = { type = "on_signal", name = "decompose-work" }
+trigger = { type = "any_of", conditions = [{ type = "on_artifact", name = "assessment" }, { type = "on_signal", name = "decompose-work" }] }
 
 [[protocols]]
 name = "begin"
