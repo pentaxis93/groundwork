@@ -28,6 +28,10 @@ name = "assessment"
 schema = "schemas/assessment.schema.json"
 
 [[artifact_types]]
+name = "documentation-record"
+schema = "schemas/documentation-record.schema.json"
+
+[[artifact_types]]
 name = "test-evidence"
 schema = "schemas/test-evidence.schema.json"
 
@@ -84,12 +88,28 @@ may_produce = []
 trigger = { type = "on_signal", name = "session-start" }
 
 [[protocols]]
+name = "specify"
+requires = []
+accepts = ["research-record"]
+produces = ["behavior-contract"]
+may_produce = []
+trigger = { type = "on_signal", name = "define-behavior" }
+
+[[protocols]]
 name = "test"
 requires = ["behavior-contract"]
 accepts = ["implementation-plan"]
 produces = ["test-evidence"]
 may_produce = []
 trigger = { type = "all_of", conditions = [{ type = "on_artifact", name = "behavior-contract" }, { type = "on_signal", name = "implement" }] }
+
+[[protocols]]
+name = "document"
+requires = []
+accepts = ["behavior-contract", "implementation-plan"]
+produces = ["documentation-record"]
+may_produce = []
+trigger = { type = "on_signal", name = "documentation-review" }
 
 [[protocols]]
 name = "verify"
