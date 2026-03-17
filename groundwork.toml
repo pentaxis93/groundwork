@@ -114,7 +114,7 @@ trigger = { type = "on_signal", name = "documentation-review" }
 [[protocols]]
 name = "verify"
 requires = ["test-evidence"]
-accepts = ["behavior-contract"]
+accepts = ["behavior-contract", "documentation-record"]
 produces = ["completion-evidence"]
 may_produce = []
 trigger = { type = "on_artifact", name = "test-evidence" }
@@ -130,7 +130,7 @@ trigger = { type = "on_artifact", name = "completion-evidence" }
 [[protocols]]
 name = "land"
 requires = ["completion-evidence"]
-accepts = ["behavior-contract"]
+accepts = ["behavior-contract", "documentation-record"]
 produces = ["completion-record"]
 may_produce = []
 trigger = { type = "on_signal", name = "merge-ready" }
