@@ -43,7 +43,7 @@ See [`issue-model.md`](https://github.com/pentaxis93/groundwork/blob/main/docs/a
 
 Five stages, in dependency order. Each produces what the next consumes.
 
-1. **Frame constraints.** `ground` establishes what the work must enable — verified constraints, not inherited assumptions.
+1. **Frame constraints.** `reckon` establishes what the work must enable — verified constraints and principled reasoning, not inherited assumptions.
 
 2. **Define behavior.** `specify` defines the behavior contract in Given/When/Then scenarios. This contract threads through every subsequent stage.
 
@@ -67,11 +67,11 @@ These thread across the topology. They aren't phases — they're disciplines tha
 
 **Documentation obligation.** User-facing changes carry documentation obligations: acceptance criteria include doc updates, completion claims include doc accuracy evidence, and landing records documentation coverage status. User-visible changes require a CHANGELOG entry.
 
-**Ground re-fires.** `ground` is not step-one-once. New generative work mid-session requires re-grounding. The trigger is creation, not sequence position.
+**Reckon re-fires.** `reckon` is not step-one-once. New generative work mid-session requires reckoning anew. The trigger is creation, not sequence position.
 
 **Research fires at any stage.** `research` provides reliable external evidence when decisions depend on facts outside the codebase — framing, design, decomposition, and implementation can all require it.
 
-**Root cause before fixes.** When a test fails or behavior is unexpected, do not guess. Investigate root cause before proposing any fix. `debug` provides the investigation methodology — a cross-cutting discipline that fires at any stage, not only during execution. Once root cause is established, `test` fix-bug owns the execution cycle. After 3 failed fix attempts, stop fixing and invoke `ground` via the Skill tool to question the architecture.
+**Root cause before fixes.** When a test fails or behavior is unexpected, do not guess. Investigate root cause before proposing any fix. `debug` provides the investigation methodology — a cross-cutting discipline that fires at any stage, not only during execution. Once root cause is established, `test` fix-bug owns the execution cycle. After 3 failed fix attempts, stop fixing and invoke `reckon` via the Skill tool to question the architecture.
 
 **Introduce third force on friction.** Friction is a two-force collision: task momentum vs obstacle. Routing around is the collapsed triad — both forces lose. When operational friction appears — a missing tool, broken config, stale convention, undocumented requirement — stop and introduce the reconciling move: resolve it structurally before continuing. `resolve` provides the assessment methodology and scope guidance. Friction that exceeds side-quest scope becomes an issue via `decompose`. Unresolved friction compounds.
 
@@ -149,7 +149,7 @@ Audience profiles:
 ### write-artifact
 
 1. Run `audience-identify`.
-2. Use `ground` if the artifact requires design decisions such as
+2. Use `reckon` if the artifact requires design decisions such as
    ARCHITECTURE docs or ADRs.
 3. Write for the identified audience at the appropriate depth.
 4. Apply `minimum-viable-detail`; cut any section the reader does not need at
@@ -166,7 +166,7 @@ Audience profiles:
 
 ## Documentation Cross-References
 
-- `ground`: identify what the document must enable before writing architecture
+- `reckon`: identify what the document must enable before writing architecture
   docs or ADRs.
 - `specify`: behavior contracts define what public behaviors documentation must
   explain.

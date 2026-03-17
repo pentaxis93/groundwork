@@ -72,7 +72,7 @@ Fail condition: merged work with no behavior coverage summary.
 
 ### Cross-cutting handoffs
 
-#### `research -> ground | specify | plan`
+#### `research -> reckon | specify | plan`
 Requirement: when `research-record` exists, consuming skills and protocols incorporate its evidence rather than re-deriving or assuming.
 Fail condition: a design or behavior decision contradicts available `research-record` without stated rationale.
 
@@ -92,8 +92,8 @@ Fail condition: user-visible change landed without CHANGELOG entry or documentat
 Requirement: root cause is established before a fix is attempted through `test`. Investigation output identifies the specific cause and the transition point where valid data becomes invalid.
 Fail condition: fix-bug entered without root-cause analysis when the cause was unclear — agent proposed a fix from symptoms alone.
 
-#### `debug -> ground`
-Requirement: the 3-fix escalation rule triggers architectural re-examination via `ground` when 3 fix attempts have failed. The debugging scope ends and the architectural scope begins.
+#### `debug -> reckon`
+Requirement: the 3-fix escalation rule triggers architectural re-examination via `reckon` when 3 fix attempts have failed. The debugging scope ends and the architectural scope begins.
 Fail condition: fourth fix attempt without questioning the architecture — agent continued to apply fixes past the point where the methodology indicated an architectural problem.
 
 #### `resolve -> document`

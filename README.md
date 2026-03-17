@@ -29,9 +29,9 @@ Enter where the work needs you. A bug with an existing issue enters at Execute a
 These fire at any stage when their trigger condition appears, not at a fixed position:
 
 - **`orient`** provides methodology orientation and carries the documentation discipline the agent should keep active at all times
-- **`ground`** re-fires on any new generative act (design, spec, architecture) — not step-one-once
+- **`reckon`** re-fires on any new generative act (design, spec, architecture) — not step-one-once
 - **`research`** fires when a decision needs evidence outside the codebase
-- **`debug`** fires on failures; hands off to `test` (fix), `ground` (3-fix escalation), or `resolve` (environmental cause)
+- **`debug`** fires on failures; hands off to `test` (fix), `reckon` (3-fix escalation), or `resolve` (environmental cause)
 - **`resolve`** fires on operational friction; resolves structurally or files an issue via `decompose`
 - **`contract`** carries the behavior contract through implementation and verification so execution does not drift from specified behavior
 
@@ -57,7 +57,7 @@ Handoff contracts between protocols and skills are defined in [`topology-contrac
 | Skill | Trigger |
 |-------|---------|
 | `orient` | session start, task initiation, or any moment requiring methodology orientation |
-| `ground` | before creating designs/specs/architectures/processes |
+| `reckon` | before creating designs/specs/architectures/processes |
 | `research` | when reliable external evidence is needed for decisions |
 | `debug` | when a test fails or behavior is unexpected, before proposing any fix |
 | `resolve` | operational friction — missing tools, broken configs, stale conventions, undocumented requirements |
@@ -92,7 +92,7 @@ protocols/                  # Runa-managed topology stages (SKILL.md + reference
   land/                     #   closeout workflow
 skills/                     # Agent-managed cognitive tools (SKILL.md + references)
   orient/                   #   methodology orientation
-  ground/                   #   first-principles grounding
+  reckon/                   #   first-principles reckoning
   research/                 #   external evidence gathering
   debug/                    #   root-cause investigation
   resolve/                  #   friction resolution

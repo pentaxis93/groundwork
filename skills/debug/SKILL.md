@@ -41,7 +41,7 @@ Investigate from evidence. No exceptions.
 ## Lifecycle Role
 
 This skill is a cross-cutting discipline in groundwork's topology, alongside
-`ground` (first-principles on creation) and `resolve` (structural resolution on
+`reckon` (first-principles reasoning on creation) and `resolve` (structural resolution on
 friction). It fires at any stage when failures appear — not only during
 execution.
 
@@ -49,7 +49,7 @@ All three share the same cognitive shape:
 
 | Discipline | Default Impulse | Interrupt |
 |---|---|---|
-| `ground` | Start from what exists | Stop. What is actually needed? |
+| `reckon` | Start from what exists | Stop. What is actually needed? |
 | `resolve` | Route around friction | Stop. What is the structural cause? |
 | `debug` | Guess and fix | Stop. What is the root cause? |
 
@@ -159,7 +159,7 @@ problem. The pattern:
 When this fires:
 
 1. **Stop.** Do not attempt fix #4.
-2. **Invoke `ground`.** Re-examine the architectural assumptions. Is this
+2. **Invoke `reckon`.** Re-examine the architectural assumptions. Is this
    pattern fundamentally sound? Is the design carrying inherited complexity?
    Should the architecture change rather than another patch?
 3. **If the architecture is sound**, the investigation was incomplete — return
@@ -167,7 +167,7 @@ When this fires:
 4. **If the architecture is unsound**, the fix is architectural. File an issue
    via `decompose` — this exceeds debugging scope.
 
-This rule is the debugging equivalent of `ground`'s "infinite decomposition"
+This rule is the debugging equivalent of `reckon`'s "infinite decomposition"
 corruption mode — it catches the failure of continuing to apply the skill's
 own method past the point where it is productive.
 
@@ -283,7 +283,7 @@ and which are fixes. The codebase is in an unknown state.
 converging on a hypothesis. Recognition: you have extensive notes on what the
 code does but no specific hypothesis about what is wrong. Investigation
 serves hypothesis formation — if investigation is not converging, change
-angle or add instrumentation. This is the debugging equivalent of `ground`'s
+angle or add instrumentation. This is the debugging equivalent of `reckon`'s
 "infinite decomposition."
 
 **Process as theater.** Going through investigation motions without
@@ -302,8 +302,8 @@ rationalizing, not investigating.
   `test`.
 - `verify`: owns fix verification. This skill does
   not verify — it investigates.
-- `ground`: the 3-fix escalation rule invokes `ground` to re-examine
-  architectural assumptions. The investigation move shares `ground`'s
+- `reckon`: the 3-fix escalation rule invokes `reckon` to re-examine
+  architectural assumptions. The investigation move shares `reckon`'s
   discipline of establishing truth before acting.
 - `resolve`: when investigation reveals the failure is caused by
   operational friction (missing tool, broken config, stale convention), hand

@@ -51,8 +51,8 @@ completion of every step at maximum depth.
 
 ## Companion Skills
 
-- `ground` identifies what the territory must enable and separates that from
-  what currently exists.
+- `reckon` identifies what the territory must enable, separates that from
+  what currently exists, and governs reasoning from verified constraints.
 - `research` gathers evidence when the repo, system, or local docs cannot
   resolve a material unknown.
 
@@ -159,7 +159,7 @@ missing, not what should happen next.
 
 ### separate-normative-needs
 
-Use `ground` to derive what the territory must enable, for whom, and under what
+Use `reckon` to derive what the territory must enable, for whom, and under what
 constraints. Compare that against the descriptive state.
 
 This is the hinge of the protocol. Survey fails if descriptive truth ("this is
@@ -242,8 +242,8 @@ rejection, or judgment.
 
 ## Cross-References
 
-- `ground`: first-principles constraint verification for deriving normative
-  need.
+- `reckon`: first-principles constraint verification and principled reasoning
+  for deriving normative need.
 - `research`: evidence gathering when local inspection is insufficient.
 - `decompose`: consumes `assessment` and turns the selected work into executable
   issues.

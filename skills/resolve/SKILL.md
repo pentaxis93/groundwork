@@ -42,9 +42,9 @@ Five steps. The side quest.
 
 1. **Step outside.** You are not debugging a bug — you are encountering an obstacle in the operational environment. Step outside both forces to see the collision clearly. Name the friction: what specifically is impeding progress? What category does it fall into? (See Recognition Patterns below.)
 
-2. **Ground.** Apply `ground`'s Orient: what should the operational environment enable here? What is the simplest structural state that would make this friction not exist — not just for you, but for every future agent? This is the grounded fix target. Do not design a workaround; design the absence of the obstacle. Your workaround instinct is diagnostic data — it shows you exactly what the environment *should* provide but does not. Use that insight to design the structural fix.
+2. **Ground.** Apply `reckon`'s Orient: what should the operational environment enable here? What is the simplest structural state that would make this friction not exist — not just for you, but for every future agent? This is the grounded fix target. Do not design a workaround; design the absence of the obstacle. Your workaround instinct is diagnostic data — it shows you exactly what the environment *should* provide but does not. Use that insight to design the structural fix.
 
-   This is a focused application of `ground`'s Orient. The full six-step grounding move is rarely needed for friction resolution — most friction has an obvious structural cause. But the orient question is essential: "What should the environment enable?" prevents designing a clever workaround when a simple structural fix is what is needed.
+   This is a focused application of `reckon`'s Orient. The full six-step reckoning move is rarely needed for friction resolution — most friction has an obvious structural cause. But the orient question is essential: "What should the environment enable?" prevents designing a clever workaround when a simple structural fix is what is needed.
 
 3. **Resolve.** Resolve the friction permanently. This is a bounded interruption to the original task, not a replacement for it. Execute the fix: install the tool, update the config, add the instruction, fix the convention, update the documentation. Verify the fix works before returning — run the tool, test the config, confirm the instruction is loadable. If the fix exceeds side-quest scope (see Scope Guidance below), file an issue and apply the minimum viable workaround — but the issue is mandatory.
 
@@ -141,7 +141,7 @@ When filing an issue, still apply a **minimum viable workaround** for the curren
 
 ## Cross-References
 
-- `ground`: Step 2 of the move uses `ground`'s Orient to assess what the environment should enable. Full grounding is rarely needed for friction resolution, but the orient question is essential.
+- `reckon`: Step 2 of the move uses `reckon`'s Orient to assess what the environment should enable. Full reckoning is rarely needed for friction resolution, but the orient question is essential.
 - `documentation`: Structural fixes frequently involve documentation updates. The `documentation` skill's review mode applies when the fix involves creating or updating docs.
 - `decompose`: When friction exceeds side-quest scope, file an issue using `decompose`. The issue is the structural fix at the meta-level.
-- `orient`: `resolve` is an integration principle in `orient`, alongside "Ground re-fires" and "Research fires at any stage." It fires at any stage.
+- `orient`: `resolve` is an integration principle in `orient`, alongside "Reckon re-fires" and "Research fires at any stage." It fires at any stage.
