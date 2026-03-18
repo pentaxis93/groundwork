@@ -35,7 +35,7 @@ These fire at any stage when their trigger condition appears, not at a fixed pos
 - **`resolve`** fires on operational friction; resolves structurally or files an issue via `decompose`
 - **`contract`** carries the behavior contract through implementation and verification so execution does not drift from specified behavior
 
-Handoff contracts between protocols and skills are defined in [`topology-contract.md`](docs/architecture/topology-contract.md). The issue persistence model is defined in [`issue-model.md`](docs/architecture/issue-model.md).
+The connecting structure — artifacts, manifest edges, schemas, and protocol topology — is defined in [`connecting-structure.md`](docs/architecture/connecting-structure.md). The issue persistence model is defined in [`issue-model.md`](docs/architecture/issue-model.md).
 
 ### Protocol Routing
 
@@ -68,7 +68,7 @@ Handoff contracts between protocols and skills are defined in [`topology-contrac
 | File | Purpose |
 |------|---------|
 | `groundwork.toml` | **Canonical manifest** — all artifact types and protocol declarations with interface edges |
-| `docs/architecture/topology-contract.md` | Formal handoff contracts and anti-divergence rules |
+| `docs/architecture/connecting-structure.md` | Connecting structure design — artifacts, manifest edges, schemas, protocol topology |
 | `docs/architecture/issue-model.md` | Issue state model, dependency graph format, graph maintenance |
 | `schemas/` | JSON Schema contracts for artifact types |
 | `protocols/` | Protocol definitions — runa-managed stages declared in the manifest |

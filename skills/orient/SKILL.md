@@ -75,7 +75,7 @@ These thread across the topology. They aren't phases — they're disciplines tha
 
 **Introduce third force on friction.** Friction is a two-force collision: task momentum vs obstacle. Routing around is the collapsed triad — both forces lose. When operational friction appears — a missing tool, broken config, stale convention, undocumented requirement — stop and introduce the reconciling move: resolve it structurally before continuing. `resolve` provides the assessment methodology and scope guidance. Friction that exceeds side-quest scope becomes an issue via `decompose`. Unresolved friction compounds.
 
-For the formal handoff contracts, fail conditions, and anti-divergence rules, see [`topology-contract.md`](https://github.com/pentaxis93/groundwork/blob/main/docs/architecture/topology-contract.md).
+For the connecting structure — artifacts, manifest edges, schemas, and protocol topology — see [`connecting-structure.md`](https://github.com/pentaxis93/groundwork/blob/main/docs/architecture/connecting-structure.md).
 
 ## Corruption Modes
 
