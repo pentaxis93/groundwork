@@ -1,7 +1,7 @@
 {
   "updated-docs": [
     "README.md",
-    "docs/architecture/topology-contract.md"
+    "docs/architecture/connecting-structure.md"
   ],
   "verified-accurate-docs": [
     "docs/architecture/issue-model.md"
