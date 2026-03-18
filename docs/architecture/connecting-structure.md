@@ -756,33 +756,6 @@ traceability purposes.
 ### behavior-contract
 
 **Consumers:** plan, test, verify, document (via accepts).
-**What consumers need:** behavioral scenarios tied to acceptance criteria,
-scoped to the work unit.
-
-The existing schema had genuine cognitive structure (title, GWT scenarios).
-The traceability thread adds a criterion reference to each scenario.
-The existing metadata block (produced_by, date) is removed — runa already
-knows the producing protocol and tracks timestamps.
-
-| Field | Type | Required | Purpose |
-|-------|------|----------|---------|
-| work_unit | string (issue ref) | yes | Common envelope — threads to work unit |
-| title | string | yes | Human-readable title for the contract |
-| scenarios | array of scenario | yes (min 1) | Behavioral scenarios in GWT form |
-
-**scenario:**
-
-| Field | Type | Required | Purpose |
-|-------|------|----------|---------|
-| name | string | yes | Human-readable scenario name |
-| criterion | string | yes | Which acceptance criterion this refines |
-| given | string | yes | Initial context or state |
-| when | string | yes | Action or event |
-| then | string | yes | Expected outcome |
-
-### behavior-contract
-
-**Consumers:** plan, test, verify, document (via accepts).
 **What consumers need:** behavioral scenarios that trace to acceptance
 criteria, structured as executable Given/When/Then.
 
