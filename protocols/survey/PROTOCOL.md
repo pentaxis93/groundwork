@@ -10,19 +10,19 @@ description: >-
 metadata:
   version: "1.0.0"
   updated: "2026-03-17"
-requires: []
+requires: ["request"]
 accepts: ["research-record"]
-produces: ["assessment"]
+produces: ["requirements"]
 may_produce: []
 trigger:
-  on_signal: "survey"
+  on_artifact: "request"
 ---
 
 # Survey
 
 Survey is the entry point for the autonomous groundwork pipeline. It is the one
 protocol the agent chooses to invoke for itself. The agent pulls the starter
-cord; once `assessment` exists, runa manages the downstream cascade.
+cord; once `requirements` exists, runa manages the downstream cascade.
 
 Survey exists because "what needs doing here?" is the most dangerous judgment
 an unsupervised agent makes. This is where anchoring, pattern-matching, and
@@ -32,7 +32,7 @@ situation assessment from inherited momentum.
 
 ## Goal
 
-Produce an `assessment` artifact that gives `decompose` a grounded body of
+Produce a `requirements` artifact that gives `decompose` a grounded body of
 work: the territory examined, the actual exigence within it, the reasoning for
 its priority, and the alternatives that were considered and rejected.
 
@@ -56,9 +56,9 @@ completion of every step at maximum depth.
 - `research` gathers evidence when the repo, system, or local docs cannot
   resolve a material unknown.
 
-## Assessment Structure
+## Requirements Structure
 
-The `assessment` artifact must make the cognitive work legible. Each field
+The `requirements` artifact must make the cognitive work legible. Each field
 exists for two reasons: it forces specific thinking, and it blocks a specific
 failure mode.
 
@@ -197,19 +197,19 @@ priority. State why it wins now and what remains outside the boundary.
 The output here is not "a list of interesting problems." It is a bounded
 judgment about what should move forward first.
 
-### write-assessment
+### write-requirements
 
-Write the `assessment` artifact using the required fields. The artifact is
+Write the `requirements` artifact using the required fields. The artifact is
 valid only if it preserves the inquiry that produced it. If the writing hides
 the reasoning, the survey has not been transmitted.
 
 ## Invocation Pattern
 
-Survey is agent-initiated by signal. The agent decides when a context must be
-surveyed instead of inheriting direction from the issue graph, current code
-shape, or local familiarity. This is the only protocol where the agent makes
-that startup judgment for itself. Once `assessment` is produced, runa resumes
-control through the managed protocol cascade.
+Survey triggers on a `request` artifact — an external input that enters the
+system as a change request, question, bug report, or feature idea. This is the
+entry point to the managed pipeline. Once `requirements` is produced, runa
+manages the downstream cascade through decompose and the execution-phase
+protocols.
 
 ## Corruption Modes
 
@@ -245,7 +245,7 @@ rejection, or judgment.
 - `reckon`: first-principles constraint verification and principled reasoning
   for deriving normative need.
 - `research`: evidence gathering when local inspection is insufficient.
-- `decompose`: consumes `assessment` and turns the selected work into executable
+- `decompose`: consumes `requirements` and turns the selected work into executable
   issues.
 - `begin`: starts a session once the issue graph reflects the work chosen
   through survey.

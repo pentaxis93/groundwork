@@ -10,8 +10,8 @@ metadata:
   version: "1.0.0"
   updated: "2026-03-09"
   origin: "Adapted from obra/superpowers (MIT). See LICENSE-UPSTREAM."
-requires: ["test-evidence"]
-accepts: ["behavior-contract"]
+requires: ["behavior-contract", "test-evidence", "issue"]
+accepts: []
 produces: ["completion-evidence"]
 may_produce: []
 trigger:
@@ -52,7 +52,7 @@ Skip any step = the claim has no basis
 This skill owns **aggregate completion claims** — the moment before you say
 "done." It fires after execution, before packaging work for review.
 
-It does not own per-test cycle evidence (that belongs to the `test`
+It does not own per-test cycle evidence (that belongs to the `implement`
 discipline — each test watched failing, then passing). It owns the final
 gate: all tests pass, all requirements met, the build succeeds, the work is
 actually complete.
@@ -164,11 +164,11 @@ the claim — the claim does not select the evidence.
 
 ## Cross-References
 
-- `test` owns per-test cycle evidence (each test watched failing, then
+- `implement` owns per-test cycle evidence (each test watched failing, then
   passing). This skill owns aggregate completion claims.
-- `documentation` review fires after code changes, before this skill's gate.
+- `document` review fires after code changes, before this skill's gate.
   Documentation accuracy is completion evidence.
-- `propose` consumes this skill's output — work must be verified before
+- `submit` consumes this skill's output — work must be verified before
   packaging for review.
 
 ## The Bottom Line

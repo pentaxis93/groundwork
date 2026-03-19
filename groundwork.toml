@@ -1,15 +1,27 @@
 # Groundwork Methodology Manifest
 #
-# This is the single file runa reads to understand the groundwork methodology.
-# It declares all artifact types and protocols with their interface edges.
+# runa reads this file to understand the groundwork methodology.
 # Topology emerges from the graph of requires/produces relationships.
 
 name = "groundwork"
 
 # --- Artifact Types ---
-#
-# Each artifact type is a named category of work product with a JSON Schema contract.
-# runa validates instances against these schemas.
+
+[[artifact_types]]
+name = "request"
+schema = "schemas/request.schema.json"
+
+[[artifact_types]]
+name = "requirements"
+schema = "schemas/requirements.schema.json"
+
+[[artifact_types]]
+name = "issue"
+schema = "schemas/issue.schema.json"
+
+[[artifact_types]]
+name = "claim"
+schema = "schemas/claim.schema.json"
 
 [[artifact_types]]
 name = "behavior-contract"
@@ -20,18 +32,6 @@ name = "implementation-plan"
 schema = "schemas/implementation-plan.schema.json"
 
 [[artifact_types]]
-name = "research-record"
-schema = "schemas/research-record.schema.json"
-
-[[artifact_types]]
-name = "assessment"
-schema = "schemas/assessment.schema.json"
-
-[[artifact_types]]
-name = "documentation-record"
-schema = "schemas/documentation-record.schema.json"
-
-[[artifact_types]]
 name = "test-evidence"
 schema = "schemas/test-evidence.schema.json"
 
@@ -40,20 +40,58 @@ name = "completion-evidence"
 schema = "schemas/completion-evidence.schema.json"
 
 [[artifact_types]]
+name = "documentation-record"
+schema = "schemas/documentation-record.schema.json"
+
+[[artifact_types]]
+name = "patch"
+schema = "schemas/patch.schema.json"
+
+[[artifact_types]]
 name = "completion-record"
 schema = "schemas/completion-record.schema.json"
 
+[[artifact_types]]
+name = "research-record"
+schema = "schemas/research-record.schema.json"
+
 # --- Protocols ---
 #
-# Edge declarations:
-#   requires    — artifact must exist and validate before protocol executes (hard dep)
-#   accepts     — artifact may be consumed if available (soft dep)
-#   produces    — artifact will exist and validate after protocol executes
-#   may_produce — artifact might be produced; validated if present
-#   trigger     — condition that activates the protocol
-#
-# Trigger primitives: on_artifact, on_change, on_signal, on_invalid
-# Composable with: all_of, any_of
+# Planning phase: survey → decompose
+# Execution phase: begin → specify → plan → implement → verify
+#                  → document → submit → land
+
+[[protocols]]
+name = "survey"
+requires = ["request"]
+accepts = ["research-record"]
+produces = ["requirements"]
+may_produce = []
+trigger = { type = "on_artifact", name = "request" }
+
+[[protocols]]
+name = "decompose"
+requires = ["requirements"]
+accepts = ["research-record"]
+produces = ["issue"]
+may_produce = []
+trigger = { type = "on_artifact", name = "requirements" }
+
+[[protocols]]
+name = "begin"
+requires = ["issue"]
+accepts = []
+produces = ["claim"]
+may_produce = []
+trigger = { type = "on_artifact", name = "issue" }
+
+[[protocols]]
+name = "specify"
+requires = ["claim", "issue"]
+accepts = ["research-record"]
+produces = ["behavior-contract"]
+may_produce = []
+trigger = { type = "on_artifact", name = "claim" }
 
 [[protocols]]
 name = "plan"
@@ -64,73 +102,41 @@ may_produce = []
 trigger = { type = "on_artifact", name = "behavior-contract" }
 
 [[protocols]]
-name = "survey"
-requires = []
-accepts = ["research-record"]
-produces = ["assessment"]
-may_produce = []
-trigger = { type = "on_signal", name = "survey" }
-
-[[protocols]]
-name = "decompose"
-requires = []
-accepts = ["assessment", "behavior-contract", "implementation-plan"]
-produces = []
-may_produce = []
-trigger = { type = "any_of", conditions = [{ type = "on_artifact", name = "assessment" }, { type = "on_signal", name = "decompose-work" }] }
-
-[[protocols]]
-name = "begin"
-requires = []
+name = "implement"
+requires = ["behavior-contract", "implementation-plan"]
 accepts = []
-produces = []
-may_produce = []
-trigger = { type = "on_signal", name = "session-start" }
-
-[[protocols]]
-name = "specify"
-requires = []
-accepts = ["research-record"]
-produces = ["behavior-contract"]
-may_produce = []
-trigger = { type = "on_signal", name = "define-behavior" }
-
-[[protocols]]
-name = "test"
-requires = ["behavior-contract"]
-accepts = ["implementation-plan"]
 produces = ["test-evidence"]
 may_produce = []
-trigger = { type = "all_of", conditions = [{ type = "on_artifact", name = "behavior-contract" }, { type = "on_signal", name = "implement" }] }
-
-[[protocols]]
-name = "document"
-requires = []
-accepts = ["behavior-contract", "implementation-plan"]
-produces = ["documentation-record"]
-may_produce = []
-trigger = { type = "on_signal", name = "documentation-review" }
+trigger = { type = "on_artifact", name = "implementation-plan" }
 
 [[protocols]]
 name = "verify"
-requires = ["test-evidence"]
-accepts = ["behavior-contract", "documentation-record"]
+requires = ["behavior-contract", "test-evidence", "issue"]
+accepts = []
 produces = ["completion-evidence"]
 may_produce = []
 trigger = { type = "on_artifact", name = "test-evidence" }
 
 [[protocols]]
-name = "propose"
+name = "document"
 requires = ["completion-evidence"]
-accepts = []
-produces = []
+accepts = ["behavior-contract", "implementation-plan"]
+produces = ["documentation-record"]
 may_produce = []
 trigger = { type = "on_artifact", name = "completion-evidence" }
 
 [[protocols]]
+name = "submit"
+requires = ["completion-evidence", "documentation-record"]
+accepts = []
+produces = ["patch"]
+may_produce = []
+trigger = { type = "on_artifact", name = "documentation-record" }
+
+[[protocols]]
 name = "land"
-requires = ["completion-evidence"]
-accepts = ["behavior-contract", "documentation-record"]
+requires = ["patch"]
+accepts = ["completion-evidence", "behavior-contract", "documentation-record", "issue"]
 produces = ["completion-record"]
 may_produce = []
-trigger = { type = "on_signal", name = "merge-ready" }
+trigger = { type = "on_artifact", name = "patch" }

@@ -1,16 +1,16 @@
 ---
 name: document
 description: >-
-  Use when project documentation needs review or update after code changes,
-  before verification, or when existing docs need classification for drift,
-  missing coverage, or obsolescence. This is the focused documentation review
-  protocol that records documentation coverage and tracking outcomes.
-requires: []
+  Use after verification to review and update project documentation before
+  submission, or when existing docs need classification for drift, missing
+  coverage, or obsolescence. This is the focused documentation review protocol
+  that records documentation coverage and tracking outcomes.
+requires: ["completion-evidence"]
 accepts: ["behavior-contract", "implementation-plan"]
 produces: ["documentation-record"]
 may_produce: []
 trigger:
-  on_signal: "documentation-review"
+  on_artifact: "completion-evidence"
 ---
 
 # Document
@@ -40,7 +40,7 @@ Ensure documentation remains accurate and tracked as code evolves.
 
 ### documentation-review
 
-Fires after code changes, before `verify`.
+Fires after verification, before `submit`.
 
 1. **Identify changed files.** Diff working tree or commit against base branch.
 2. **Map changes to documentation.** For each changed file:
@@ -113,8 +113,7 @@ When encountering existing documentation:
 - `decompose`: user-facing changes include documentation expectations in issue
   acceptance criteria; create tracking issues here when review finds deeper
   follow-up work.
-- `test`: inline documentation changes alongside implementation; review checks
+- `implement`: inline documentation changes alongside implementation; review checks
   whether those claims still match behavior.
-- `verify`: documentation accuracy is completion evidence; this protocol runs
-  before verification.
+- `verify`: this protocol runs after verification; its output feeds `submit`.
 - `land`: CHANGELOG coverage and documentation status are recorded at landing.

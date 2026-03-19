@@ -1,5 +1,5 @@
 ---
-name: test
+name: implement
 description: >-
   Use when implementing any feature or bugfix, before writing implementation
   code. Enforces test-driven development through RED-GREEN-REFACTOR with
@@ -11,17 +11,15 @@ metadata:
   version: "1.0.0"
   updated: "2026-03-08"
   origin: "Adapted from obra/superpowers (MIT). See LICENSE-UPSTREAM."
-requires: ["behavior-contract"]
-accepts: ["implementation-plan"]
+requires: ["behavior-contract", "implementation-plan"]
+accepts: []
 produces: ["test-evidence"]
 may_produce: []
 trigger:
-  all_of:
-    - on_artifact: "behavior-contract"
-    - on_signal: "implement"
+  on_artifact: "implementation-plan"
 ---
 
-# Test
+# Implement
 
 Write the test first. Watch it fail. Write minimal code to pass.
 
@@ -50,7 +48,7 @@ between behavior identification and completion verification:
 
 1. `specify` identifies what behaviors the system needs — sentence-named scenarios
    in Given/When/Then form.
-2. **`test` executes** those behaviors through RED-GREEN-REFACTOR. Each RED
+2. **`implement` executes** those behaviors through RED-GREEN-REFACTOR. Each RED
    test corresponds to a named behavior scenario from `specify`.
 3. `verify` gates the completion claim with
    behavior-level evidence.
@@ -267,7 +265,7 @@ untrusted code.
 
 ## Red Flags — Stop and Start Over
 
-Any of these means: delete code, start over with the `test` discipline.
+Any of these means: delete code, start over with the `implement` discipline.
 
 - Code written before test
 - Test written after implementation
@@ -337,7 +335,7 @@ telling you the design needs work. Listen to the test.
 
 **Test-driven execution is pragmatic.** It finds bugs before commit, prevents
 regressions, documents behavior, and enables safe refactoring. Shortcuts that
-skip the `test` discipline are slower, not faster.
+skip the `implement` discipline are slower, not faster.
 
 ## Cross-References
 
@@ -348,6 +346,6 @@ skip the `test` discipline are slower, not faster.
 - `debug`: owns root-cause analysis. This skill provides the
   entry point ("write a failing test reproducing the bug") but defers
   methodology to `debug` when root cause is unclear.
-- `documentation`: doc comments and type annotations are written alongside
+- `document`: doc comments and type annotations are written alongside
   code during GREEN and REFACTOR phases — they are implementation work,
   not afterthought.

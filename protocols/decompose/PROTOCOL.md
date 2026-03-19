@@ -4,14 +4,12 @@ description: >-
   Transfer problem understanding across context boundaries through well-formed
   issues. Use for creating, decomposing, refining, triaging, and closing issues
   in GitHub projects.
-requires: []
-accepts: ["assessment", "behavior-contract", "implementation-plan"]
-produces: []
+requires: ["requirements"]
+accepts: ["research-record"]
+produces: ["issue"]
 may_produce: []
 trigger:
-  any_of:
-    - on_artifact: "assessment"
-    - on_signal: "decompose-work"
+  on_artifact: "requirements"
 ---
 
 # Issue Craft
@@ -203,5 +201,5 @@ A well-bounded task has:
 - `specify`: behavior framing and test naming discipline.
 - `plan`: design convergence before implementation.
 - `land`: merge-and-close completion events.
-- `documentation`: documentation updates as acceptance criteria for user-facing
+- `document`: documentation updates as acceptance criteria for user-facing
   changes.

@@ -16,10 +16,10 @@ Five stages form the forward flow. Cross-cutting skills fire at any stage, creat
 
 | Stage | Protocols | Produces |
 |-------|-----------|----------|
-| **1. Survey and select work** | `survey`, `decompose`, `begin` | Assessment, executable issues, session scope |
+| **1. Survey and select work** | `survey`, `decompose`, `begin` | Requirements, executable issues, session scope |
 | **2. Define behavior** | `specify` | `behavior-contract` — threads through all subsequent stages |
 | **3. Design** | `plan` | Decision-complete design |
-| **4. Execute and verify** | `test`, `document`, `verify`, `propose` | Test evidence, documentation record, completion evidence, open PR |
+| **4. Execute and verify** | `implement`, `verify`, `document`, `submit` | Test evidence, completion evidence, documentation record, patch |
 | **5. Land** | `land` | Completion record — merge, cleanup, coverage status, issue closure |
 
 Enter where the work needs you. A bug with an existing issue enters at Execute and verify. A new capability enters at Survey and select work. The constraint is sequence — you can't land before executing — not completeness.
@@ -31,7 +31,7 @@ These fire at any stage when their trigger condition appears, not at a fixed pos
 - **`orient`** provides methodology orientation and carries the documentation discipline the agent should keep active at all times
 - **`reckon`** re-fires on any new generative act (design, spec, architecture) — not step-one-once
 - **`research`** fires when a decision needs evidence outside the codebase
-- **`debug`** fires on failures; hands off to `test` (fix), `reckon` (3-fix escalation), or `resolve` (environmental cause)
+- **`debug`** fires on failures; hands off to `implement` (fix), `reckon` (3-fix escalation), or `resolve` (environmental cause)
 - **`resolve`** fires on operational friction; resolves structurally or files an issue via `decompose`
 - **`contract`** carries the behavior contract through implementation and verification so execution does not drift from specified behavior
 
@@ -46,10 +46,10 @@ The connecting structure — artifacts, manifest edges, schemas, and protocol to
 | `begin` | initiating a work session: selecting work, preparing workspace, declaring direction |
 | `specify` | when defining or refining behavior expectations |
 | `plan` | implementation needs design convergence — multiple approaches, unclear scope, or cross-cutting changes |
-| `test` | when implementing any feature or bugfix — RED → GREEN → REFACTOR |
-| `document` | after code changes that may cause drift, before verification, or when docs need classification |
+| `implement` | when implementing any feature or bugfix — RED → GREEN → REFACTOR |
 | `verify` | before claiming work is complete, fixed, or passing — evidence first |
-| `propose` | packaging changes for review: `propose`, `submit pr`, `create pr`, `open pr`, `send for review` |
+| `document` | after verification, before submission — documentation review and coverage |
+| `submit` | packaging changes for review: `submit`, `submit pr`, `create pr`, `open pr`, `send for review` |
 | `land` | merge-and-close completion events: `land`, `merge and close`, `ship it` |
 
 ### Skill Routing
@@ -71,7 +71,7 @@ The connecting structure — artifacts, manifest edges, schemas, and protocol to
 | `docs/architecture/connecting-structure.md` | Connecting structure design — artifacts, manifest edges, schemas, protocol topology |
 | `docs/architecture/issue-model.md` | Issue state model, dependency graph format, graph maintenance |
 | `schemas/` | JSON Schema contracts for artifact types |
-| `protocols/` | Protocol definitions — runa-managed stages declared in the manifest |
+| `protocols/` | Protocol definitions — runa-managed stages declared in the manifest, each a `PROTOCOL.md` with YAML frontmatter |
 | `skills/` | Skill definitions — agent-managed cognitive tools, each a `SKILL.md` with YAML frontmatter |
 
 ## Project Layout
@@ -79,16 +79,16 @@ The connecting structure — artifacts, manifest edges, schemas, and protocol to
 ```
 groundwork.toml             # Methodology manifest — artifact types, protocol declarations
 schemas/                    # JSON Schema contracts for artifact types
-protocols/                  # Runa-managed topology stages (SKILL.md + references)
+protocols/                  # Runa-managed topology stages (PROTOCOL.md + references)
   survey/                   #   territory assessment
   decompose/                #   issue lifecycle
   begin/                    #   work initiation
   specify/                  #   behavior contract definition
   plan/                     #   design convergence
-  test/                     #   RED-GREEN-REFACTOR execution
-  document/                 #   documentation review/update
+  implement/                #   RED-GREEN-REFACTOR execution
   verify/                   #   completion gate
-  propose/                  #   commit, push, PR creation
+  document/                 #   documentation review/update
+  submit/                   #   commit, push, PR creation
   land/                     #   closeout workflow
 skills/                     # Agent-managed cognitive tools (SKILL.md + references)
   orient/                   #   methodology orientation

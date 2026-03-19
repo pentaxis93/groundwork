@@ -4,12 +4,12 @@ description: >-
   Session work initiation: select issue(s), prepare workspace, declare
   direction. Opening bookend of the session lifecycle — `land` is the closing
   bookend. Trigger on: 'begin', 'begin work', 'start session', 'start issue'.
-requires: []
+requires: ["issue"]
 accepts: []
-produces: []
+produces: ["claim"]
 may_produce: []
 trigger:
-  on_signal: "session-start"
+  on_artifact: "issue"
 ---
 
 # Begin — Work Selection & Initiation
@@ -20,7 +20,7 @@ Use this skill to start a work session: choose what to work on, prepare the
 workspace, and declare the session's direction.
 
 `begin` is the opening bookend of the session lifecycle:
-`begin` (select + prepare) → implement → `propose` (package for review) →
+`begin` (select + prepare) → implement → `submit` (package for review) →
 review → `land` (merge and close).
 
 Plan from the issue graph, not from memory. Agent sessions end and context
@@ -228,11 +228,11 @@ Brief definitions for self-contained use. See
 - `state-lag`: issue tracker not reflecting real implementation state.
 - `open-loop-close`: ending session without a concrete next step.
 - `skip-preparation`: jumping from selection to implementation without setting
-  up a feature branch — loses workspace isolation and makes `propose` harder.
+  up a feature branch — loses workspace isolation and makes `submit` harder.
 
 ## Cross-References
 
-- `propose`: the next lifecycle phase — commit, push, and PR creation after
+- `submit`: the next lifecycle phase — commit, push, and PR creation after
   implementation.
 - `land`: the closing bookend — closing ceremony and mechanical merge after
   review. `begin`'s opening ceremony (orient, observe, frame, banish) prepares

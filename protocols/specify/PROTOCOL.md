@@ -4,12 +4,12 @@ description: Protocol for writing and maintaining executable behavior specificat
 metadata:
   version: "2.1.0"
   updated: "2026-03-17"
-requires: []
+requires: ["claim", "issue"]
 accepts: ["research-record"]
 produces: ["behavior-contract"]
 may_produce: []
 trigger:
-  on_signal: "define-behavior"
+  on_artifact: "claim"
 ---
 
 # Specify
@@ -168,5 +168,5 @@ describe behaviors nobody needs are noise, not safety.
 
 - `begin`: session-level prioritization and execution sequencing.
 - `decompose`: acceptance-criteria rigor, issue decomposition, and behavior traceability.
-- `test`: executes RED-GREEN-REFACTOR for specified behaviors.
+- `implement`: executes RED-GREEN-REFACTOR for specified behaviors.
 - `verify`: requires fresh evidence for behavior-level completion claims.

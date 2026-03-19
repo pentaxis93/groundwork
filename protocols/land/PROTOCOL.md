@@ -5,12 +5,12 @@ description: >-
   documentation before mechanical merge. Merge to main, sync, delete feature
   branch, close satisfied issues, comment progress on partial issues.
   Trigger on: 'land', 'land this', 'merge and close', 'ship it'.
-requires: ["completion-evidence"]
-accepts: ["behavior-contract"]
+requires: ["patch"]
+accepts: ["completion-evidence", "behavior-contract", "documentation-record", "issue"]
 produces: ["completion-record"]
 may_produce: []
 trigger:
-  on_signal: "merge-ready"
+  on_artifact: "patch"
 ---
 
 # Land — Close, Verify, Merge
@@ -115,7 +115,7 @@ documentation drift blocks the seal.
 Docs: [clean | fixed: list | tracked: issue numbers]
 ```
 
-Implementation: invoke the `documentation` skill's documentation-review
+Implementation: invoke the `document` protocol's documentation-review
 procedure via the Skill tool. Check whether changed files affect areas with documentation artifacts
 (README, ARCHITECTURE, API docs). Fix drift directly and commit;
 file tracking issues for anything deeper. Record a coverage summary: each
@@ -253,9 +253,9 @@ Report the final state including:
   implementation. `begin`'s opening ceremony (orient, observe, frame, banish)
   prepares the agent for work; `land`'s closing ceremony (gather, verify, review,
   seal) prepares the work for delivery. Parallel structure, inverse direction.
-- `propose` for the preceding phase: commit, push, and PR creation
+- `submit` for the preceding phase: commit, push, and PR creation
 - `verify`: invoked during Phase 0b to evaluate
   acceptance criteria and verify completion evidence before merge
-- `documentation`: invoked during Phase 0c for documentation-review — confirms
+- `document`: invoked during Phase 0c for documentation-review — confirms
   documentation reflects the changes being landed
 - `decompose` for issue lifecycle patterns and tracking issues from doc review
