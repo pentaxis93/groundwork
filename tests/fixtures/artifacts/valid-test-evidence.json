@@ -1,16 +1,17 @@
 {
+  "work_unit": "issue-178.test-fixtures",
   "evidence": [
     {
-      "scenario": "Successful login with valid credentials",
+      "scenario": "reject-missing-required-field",
       "result": "pass",
-      "command": "cargo test test_login_success",
-      "output-summary": "Test passed \u2014 returned 200 with valid JWT token"
+      "command": "pytest tests/test_ingestion.py::test_reject_missing_field -v",
+      "output_summary": "1 passed in 0.12s — POST with missing 'id' returned 400"
     },
     {
-      "scenario": "Rejected login with invalid password",
+      "scenario": "pass-valid-record",
       "result": "fail",
-      "command": "cargo test test_login_invalid_password",
-      "output-summary": "Expected 401 status but received 500 \u2014 error handler not wired up"
+      "command": "pytest tests/test_ingestion.py::test_valid_record_passthrough -v",
+      "output_summary": "1 failed in 0.08s — record reached pipeline but was mutated by validation middleware"
     }
   ]
 }

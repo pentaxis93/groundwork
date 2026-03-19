@@ -1,10 +1,11 @@
 {
+  "work_unit": "issue-178.test-fixtures",
   "evidence": [
     {
-      "scenario": "Successful login with valid credentials",
+      "scenario": "reject-missing-required-field",
       "result": "success",
-      "command": "cargo test test_login_success",
-      "output-summary": "Test passed \u2014 returned 200 with valid JWT token"
+      "command": "pytest tests/test_ingestion.py::test_reject_missing_field -v",
+      "output_summary": "1 passed in 0.12s"
     }
   ]
 }

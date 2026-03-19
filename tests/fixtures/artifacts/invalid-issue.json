@@ -1,0 +1,5 @@
+{
+  "title": "Validate record schema before ingestion",
+  "description": "Add a schema validation step at the ingestion entry point",
+  "acceptance_criteria": "Records missing required fields are rejected"
+}

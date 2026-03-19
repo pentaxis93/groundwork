@@ -1,15 +1,20 @@
 {
-  "behavior-coverage": [
+  "work_unit": "issue-178.test-fixtures",
+  "criterion_coverage": [
     {
-      "behavior": "user can authenticate with valid credentials",
-      "status": "pass",
-      "evidence-artifact": "test-evidence"
+      "criterion": "Records missing required fields are rejected with a 400 status",
+      "status": "covered",
+      "scenarios": ["reject-missing-required-field"]
     },
     {
-      "behavior": "expired token returns 401",
-      "status": "gap"
+      "criterion": "Rejected records are logged with a reason code",
+      "status": "uncovered"
+    },
+    {
+      "criterion": "Valid records pass through unchanged",
+      "status": "partial",
+      "scenarios": ["pass-valid-record"],
+      "failures": ["pass-valid-record"]
     }
-  ],
-  "review-artifact": "review-record",
-  "documentation-artifact": "documentation-review-record"
+  ]
 }

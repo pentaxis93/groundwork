@@ -1,21 +1,20 @@
 {
-  "title": "User authentication behavior",
+  "work_unit": "issue-178.test-fixtures",
+  "title": "Schema validation at ingestion entry point",
   "scenarios": [
     {
-      "name": "Successful login with valid credentials",
-      "given": "A registered user with valid credentials",
-      "when": "The user submits their username and password",
-      "then": "The system authenticates the user and returns a session token"
+      "name": "reject-missing-required-field",
+      "criterion": "Records missing required fields are rejected with a 400 status",
+      "given": "A record missing the 'id' field is submitted",
+      "when": "The ingestion endpoint receives the record",
+      "then": "The endpoint returns 400 with a validation error"
     },
     {
-      "name": "Rejected login with invalid password",
-      "given": "A registered user with valid username",
-      "when": "The user submits an incorrect password",
-      "then": "The system rejects the login and returns an authentication error"
+      "name": "pass-valid-record",
+      "criterion": "Valid records pass through unchanged",
+      "given": "A record with all required fields and valid types",
+      "when": "The ingestion endpoint receives the record",
+      "then": "The record is forwarded to the processing pipeline unchanged"
     }
-  ],
-  "metadata": {
-    "produced_by": "specify-behavior",
-    "date": "2026-03-05"
-  }
+  ]
 }
