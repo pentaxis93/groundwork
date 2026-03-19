@@ -2,9 +2,9 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://raw.githubusercontent.com/pentaxis93/groundwork/main/schemas/research-record.schema.json",
   "title": "Research Record",
-  "description": "Validates the content of a research-record artifact. Naming convention: research-record-{topic-slug}.yaml where topic-slug matches the topic field.",
+  "description": "Validates the content of a research-record artifact. Cross-cutting research scoped by topic, not by work unit. Naming convention: research-record-{topic-slug}.yaml where topic-slug matches the topic field.",
   "type": "object",
-  "required": ["topic", "findings", "sources", "date"],
+  "required": ["topic", "findings", "sources"],
   "additionalProperties": false,
   "properties": {
     "topic": {
@@ -27,11 +27,6 @@
       "items": {
         "$ref": "#/$defs/source"
       }
-    },
-    "date": {
-      "type": "string",
-      "description": "Date of research in YYYY-MM-DD format.",
-      "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
     }
   },
   "$defs": {

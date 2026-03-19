@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/pentaxis93/groundwork/main/schemas/patch.schema.json",
+  "title": "Patch",
+  "description": "Validates the content of a patch artifact. The artifact representation of a submitted PR — where the change is and what it contains.",
+  "type": "object",
+  "required": ["work_unit", "pr_reference", "branch", "commit"],
+  "additionalProperties": false,
+  "properties": {
+    "work_unit": {
+      "type": "string",
+      "description": "Common envelope — threads to work unit.",
+      "minLength": 1
+    },
+    "pr_reference": {
+      "type": "string",
+      "description": "PR URL or identifier.",
+      "minLength": 1
+    },
+    "branch": {
+      "type": "string",
+      "description": "Feature branch name.",
+      "minLength": 1
+    },
+    "commit": {
+      "type": "string",
+      "description": "Head commit SHA at submission time.",
+      "minLength": 1
+    }
+  }
+}

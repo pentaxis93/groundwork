@@ -4,9 +4,14 @@
   "title": "Test Evidence",
   "description": "Validates the content of a test-evidence artifact. Records test results against behavior-contract scenarios.",
   "type": "object",
-  "required": ["evidence"],
+  "required": ["work_unit", "evidence"],
   "additionalProperties": false,
   "properties": {
+    "work_unit": {
+      "type": "string",
+      "description": "Common envelope — threads to work unit.",
+      "minLength": 1
+    },
     "evidence": {
       "type": "array",
       "description": "Test result entries, each referencing a behavior-contract scenario.",
@@ -20,7 +25,7 @@
     "evidence-entry": {
       "type": "object",
       "description": "A single test result for a scenario.",
-      "required": ["scenario", "result", "command", "output-summary"],
+      "required": ["scenario", "result", "command", "output_summary"],
       "additionalProperties": false,
       "properties": {
         "scenario": {
@@ -38,9 +43,9 @@
           "description": "The command that was executed.",
           "minLength": 1
         },
-        "output-summary": {
+        "output_summary": {
           "type": "string",
-          "description": "Summary of the command output.",
+          "description": "Summary of the command output — proof the test ran.",
           "minLength": 1
         }
       }

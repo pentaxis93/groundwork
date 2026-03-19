@@ -1,0 +1,52 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/pentaxis93/groundwork/main/schemas/requirements.schema.json",
+  "title": "Requirements",
+  "description": "Validates the content of a requirements artifact. A software requirements specification structured to support decomposition into issue-sized work units.",
+  "type": "object",
+  "required": ["scope", "functional_requirements"],
+  "additionalProperties": false,
+  "properties": {
+    "scope": {
+      "type": "string",
+      "description": "Purpose and boundaries of the work.",
+      "minLength": 1
+    },
+    "functional_requirements": {
+      "type": "array",
+      "description": "What the system should do — discrete items.",
+      "minItems": 1,
+      "items": {
+        "type": "string"
+      }
+    },
+    "non_functional_requirements": {
+      "type": "array",
+      "description": "Performance, security, etc.",
+      "items": {
+        "type": "string"
+      }
+    },
+    "constraints": {
+      "type": "array",
+      "description": "Technical and business boundaries.",
+      "items": {
+        "type": "string"
+      }
+    },
+    "assumptions": {
+      "type": "array",
+      "description": "What is taken as given.",
+      "items": {
+        "type": "string"
+      }
+    },
+    "dependencies": {
+      "type": "array",
+      "description": "External dependencies affecting decomposition.",
+      "items": {
+        "type": "string"
+      }
+    }
+  }
+}

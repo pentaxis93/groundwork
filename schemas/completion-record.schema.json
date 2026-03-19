@@ -2,31 +2,36 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://raw.githubusercontent.com/pentaxis93/groundwork/main/schemas/completion-record.schema.json",
   "title": "Completion Record",
-  "description": "Validates the content of a completion-record artifact. Summarizes the final state of issue completion including coverage, gaps, and merge reference.",
+  "description": "Validates the content of a completion-record artifact. The terminal artifact — captures the final state of a work unit for archival.",
   "type": "object",
-  "required": ["behavior-coverage-summary", "gaps", "merge-reference", "closure-confirmation"],
+  "required": ["work_unit", "criterion_summary", "gaps", "merge_reference", "documentation_status"],
   "additionalProperties": false,
   "properties": {
-    "behavior-coverage-summary": {
+    "work_unit": {
       "type": "string",
-      "description": "Summary of how behavior coverage was achieved.",
+      "description": "Common envelope — threads to work unit.",
+      "minLength": 1
+    },
+    "criterion_summary": {
+      "type": "string",
+      "description": "How acceptance criteria were met.",
       "minLength": 1
     },
     "gaps": {
       "type": "array",
-      "description": "Known gaps or limitations. May be empty if none exist.",
+      "description": "Known gaps or deferred work. Empty if none.",
       "items": {
         "type": "string"
       }
     },
-    "merge-reference": {
+    "merge_reference": {
       "type": "string",
-      "description": "Reference to the merge commit or pull request.",
+      "description": "Merge commit SHA or PR URL.",
       "minLength": 1
     },
-    "closure-confirmation": {
+    "documentation_status": {
       "type": "string",
-      "description": "Confirmation statement that the issue is ready for closure.",
+      "description": "Summary of documentation coverage.",
       "minLength": 1
     }
   }

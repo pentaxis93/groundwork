@@ -2,64 +2,55 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://raw.githubusercontent.com/pentaxis93/groundwork/main/schemas/completion-evidence.schema.json",
   "title": "Completion Evidence",
-  "description": "Validates the content of a completion-evidence artifact. Aggregates per-behavior coverage status and references review and documentation artifacts. Note: field names 'review-artifact' and 'documentation-artifact' are intentional deviations from the original spec's 'review-status'/'documentation-status' — these fields are artifact references, not status values.",
+  "description": "Validates the content of a completion-evidence artifact. Reports coverage at the acceptance-criterion level by joining issue criteria, behavior-contract scenarios, and test results.",
   "type": "object",
-  "required": ["behavior-coverage", "review-artifact", "documentation-artifact"],
+  "required": ["work_unit", "criterion_coverage"],
   "additionalProperties": false,
   "properties": {
-    "behavior-coverage": {
+    "work_unit": {
+      "type": "string",
+      "description": "Common envelope — threads to work unit.",
+      "minLength": 1
+    },
+    "criterion_coverage": {
       "type": "array",
-      "description": "Per-behavior coverage status entries.",
+      "description": "Per-criterion coverage status.",
       "minItems": 1,
       "items": {
-        "$ref": "#/$defs/behavior-entry"
+        "$ref": "#/$defs/coverage-entry"
       }
-    },
-    "review-artifact": {
-      "type": "string",
-      "description": "Artifact name referencing the review record.",
-      "pattern": "^[a-z][a-z0-9]*([-.][a-z0-9]+)*$"
-    },
-    "documentation-artifact": {
-      "type": "string",
-      "description": "Artifact name referencing the documentation review record.",
-      "pattern": "^[a-z][a-z0-9]*([-.][a-z0-9]+)*$"
     }
   },
   "$defs": {
-    "behavior-entry": {
+    "coverage-entry": {
       "type": "object",
-      "description": "Coverage status for a single behavior.",
-      "required": ["behavior", "status"],
+      "description": "Coverage status for a single acceptance criterion.",
+      "required": ["criterion", "status"],
       "additionalProperties": false,
-      "allOf": [
-        {
-          "if": {
-            "properties": {
-              "status": {
-                "enum": ["pass", "fail"]
-              }
-            }
-          },
-          "then": {
-            "required": ["evidence-artifact"]
-          }
-        }
-      ],
       "properties": {
-        "behavior": {
+        "criterion": {
           "type": "string",
-          "description": "Description of the behavior being tracked."
+          "description": "Acceptance criterion from the issue.",
+          "minLength": 1
         },
         "status": {
           "type": "string",
-          "description": "Coverage status: pass (tested), fail (tested, failing), or gap (not tested).",
-          "enum": ["pass", "fail", "gap"]
+          "description": "Coverage status.",
+          "enum": ["covered", "partial", "uncovered"]
         },
-        "evidence-artifact": {
-          "type": "string",
-          "description": "Artifact name referencing test evidence. Optional because gaps have no evidence.",
-          "pattern": "^[a-z][a-z0-9]*([-.][a-z0-9]+)*$"
+        "scenarios": {
+          "type": "array",
+          "description": "Scenario names that cover this criterion.",
+          "items": {
+            "type": "string"
+          }
+        },
+        "failures": {
+          "type": "array",
+          "description": "Scenario names that failed for this criterion.",
+          "items": {
+            "type": "string"
+          }
         }
       }
     }
