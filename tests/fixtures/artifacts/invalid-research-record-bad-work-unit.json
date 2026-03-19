@@ -1,0 +1,13 @@
+{
+  "topic": "json-schema-validation",
+  "work_unit": "ISSUE 184!!",
+  "findings": [
+    "Draft 2020-12 supports dynamic references"
+  ],
+  "sources": [
+    {
+      "url": "https://json-schema.org/draft/2020-12/release-notes",
+      "title": "JSON Schema Draft 2020-12 Release Notes"
+    }
+  ]
+}
