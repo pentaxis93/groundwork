@@ -115,7 +115,7 @@ documentation drift blocks the seal.
 Docs: [clean | fixed: list | tracked: issue numbers]
 ```
 
-Implementation: invoke the `documentation` skill's documentation-review
+Implementation: invoke the `document` protocol's documentation-review
 procedure via the Skill tool. Check whether changed files affect areas with documentation artifacts
 (README, ARCHITECTURE, API docs). Fix drift directly and commit;
 file tracking issues for anything deeper. Record a coverage summary: each
@@ -256,6 +256,6 @@ Report the final state including:
 - `submit` for the preceding phase: commit, push, and PR creation
 - `verify`: invoked during Phase 0b to evaluate
   acceptance criteria and verify completion evidence before merge
-- `documentation`: invoked during Phase 0c for documentation-review — confirms
+- `document`: invoked during Phase 0c for documentation-review — confirms
   documentation reflects the changes being landed
 - `decompose` for issue lifecycle patterns and tracking issues from doc review

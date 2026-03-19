@@ -201,5 +201,5 @@ A well-bounded task has:
 - `specify`: behavior framing and test naming discipline.
 - `plan`: design convergence before implementation.
 - `land`: merge-and-close completion events.
-- `documentation`: documentation updates as acceptance criteria for user-facing
+- `document`: documentation updates as acceptance criteria for user-facing
   changes.

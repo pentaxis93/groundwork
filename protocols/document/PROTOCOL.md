@@ -1,10 +1,10 @@
 ---
 name: document
 description: >-
-  Use when project documentation needs review or update after code changes,
-  before verification, or when existing docs need classification for drift,
-  missing coverage, or obsolescence. This is the focused documentation review
-  protocol that records documentation coverage and tracking outcomes.
+  Use after verification to review and update project documentation before
+  submission, or when existing docs need classification for drift, missing
+  coverage, or obsolescence. This is the focused documentation review protocol
+  that records documentation coverage and tracking outcomes.
 requires: ["completion-evidence"]
 accepts: ["behavior-contract", "implementation-plan"]
 produces: ["documentation-record"]
@@ -40,7 +40,7 @@ Ensure documentation remains accurate and tracked as code evolves.
 
 ### documentation-review
 
-Fires after code changes, before `verify`.
+Fires after verification, before `submit`.
 
 1. **Identify changed files.** Diff working tree or commit against base branch.
 2. **Map changes to documentation.** For each changed file:

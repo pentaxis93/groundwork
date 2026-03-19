@@ -346,6 +346,6 @@ skip the `implement` discipline are slower, not faster.
 - `debug`: owns root-cause analysis. This skill provides the
   entry point ("write a failing test reproducing the bug") but defers
   methodology to `debug` when root cause is unclear.
-- `documentation`: doc comments and type annotations are written alongside
+- `document`: doc comments and type annotations are written alongside
   code during GREEN and REFACTOR phases — they are implementation work,
   not afterthought.

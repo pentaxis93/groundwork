@@ -42,7 +42,7 @@ sequence.
 
 - Uncommitted changes OR unpushed commits on a feature branch must exist. If
   the working tree is clean and no unpushed commits exist, there is nothing to
-  propose — report and stop.
+  submit — report and stop.
 - If the current feature branch already has an open PR, report the PR URL and
   stop. The PR already exists; the operator likely wants `land`, not `submit`.
 - `gh` CLI must be authenticated and the remote accessible.
@@ -187,7 +187,7 @@ gh pr edit <pr-number-or-url> --body-file /tmp/pr-body.md
 
 **Flags:**
 - Do NOT use `--draft` by default. The operator invoked `submit` because the
-  work is ready for review. If the operator explicitly says "draft" or "propose
+  work is ready for review. If the operator explicitly says "draft" or "submit
   as draft," use `--draft`.
 
 ### 6. Report
@@ -255,4 +255,4 @@ Output:
 - `begin` for work initiation — select issue(s), prepare workspace, declare direction (the preceding phase)
 - `land` for merge, cleanup, and issue closure (the following phase)
 - `verify` — should fire before `submit`
-- `documentation` for documentation review before proposing
+- `document` for documentation review before submission

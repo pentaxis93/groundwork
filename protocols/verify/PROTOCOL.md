@@ -166,7 +166,7 @@ the claim — the claim does not select the evidence.
 
 - `implement` owns per-test cycle evidence (each test watched failing, then
   passing). This skill owns aggregate completion claims.
-- `documentation` review fires after code changes, before this skill's gate.
+- `document` review fires after code changes, before this skill's gate.
   Documentation accuracy is completion evidence.
 - `submit` consumes this skill's output — work must be verified before
   packaging for review.
