@@ -115,6 +115,5 @@ When encountering existing documentation:
   follow-up work.
 - `implement`: inline documentation changes alongside implementation; review checks
   whether those claims still match behavior.
-- `verify`: documentation accuracy is completion evidence; this protocol runs
-  before verification.
+- `verify`: this protocol runs after verification; its output feeds `submit`.
 - `land`: CHANGELOG coverage and documentation status are recorded at landing.
