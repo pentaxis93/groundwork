@@ -151,8 +151,9 @@ manifest doesn't express this scoping. Runa computes it from artifact
 content.
 
 Planning-phase artifacts (request, requirements, issue) predate work-unit
-identity and are not partitioned this way. Research-record is always scoped by topic; optionally
-scoped by work unit when research is specific to an issue.
+identity and are not partitioned this way. Research-record is always
+scoped by topic; optionally scoped by work unit when research is
+specific to an issue.
 
 ## Consolidated Manifest
 
@@ -416,13 +417,20 @@ The schema is the full artifact structure on disk — what runa validates
 and tracks. The tool interface is the schema minus what runa can infer
 from the active execution context.
 
-**work_unit** is the one field runa can always infer. Runa activated
-this protocol for a specific work unit. The MCP server auto-populates
-work_unit from the execution context. The agent never supplies it.
+**work_unit** is the one field runa can always infer for protocol-
+produced artifacts. Runa activated this protocol for a specific work
+unit. The MCP server auto-populates work_unit from the execution
+context. The agent never supplies it.
+
+Skill-produced artifacts are the exception. Research-record is produced
+by the research skill, not by a protocol — no execution context exists
+for runa to infer from. When the agent produces a work-unit-scoped
+research-record, it supplies work_unit directly. When it produces
+cross-cutting research, it omits the field.
 
 Everything else in the schemas is the agent's cognitive output — runa
 cannot know it, the agent must supply it. The schemas work as tool
-interfaces with that one subtraction.
+interfaces with that one subtraction for protocol-produced artifacts.
 
 ### The liberation insight at the interface level
 

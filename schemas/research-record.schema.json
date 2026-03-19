@@ -12,6 +12,11 @@
       "description": "Kebab-case slug identifying the research topic.",
       "pattern": "^[a-z][a-z0-9]*(-[a-z0-9]+)*$"
     },
+    "work_unit": {
+      "type": "string",
+      "description": "Optional work-unit reference. When present, scopes this research to a specific issue. When absent, research is cross-cutting.",
+      "pattern": "^[a-z][a-z0-9]*([-.][a-z0-9]+)*$"
+    },
     "findings": {
       "type": "array",
       "description": "Key findings from the research.",
@@ -19,11 +24,6 @@
       "items": {
         "type": "string"
       }
-    },
-    "work_unit": {
-      "type": "string",
-      "description": "Optional work-unit reference. When present, scopes this research to a specific issue. When absent, research is cross-cutting.",
-      "pattern": "^[a-z][a-z0-9]*([-.][a-z0-9]+)*$"
     },
     "sources": {
       "type": "array",
