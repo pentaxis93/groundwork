@@ -2,38 +2,84 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://raw.githubusercontent.com/pentaxis93/groundwork/main/schemas/implementation-plan.schema.json",
   "title": "Implementation Plan",
-  "description": "Validates the content of an implementation-plan artifact. Matches the plan skill's write-plan output structure. Allows additional properties so different skills can extend the base structure.",
+  "description": "Validates the content of an implementation-plan artifact. Bridges behavior (from specify) to code (in implement) with design decisions and scenario-to-step mappings.",
   "type": "object",
-  "required": ["title", "summary", "key-changes", "test-strategy", "assumptions"],
+  "required": ["work_unit", "summary", "design_decisions", "affected_files", "behavior_mapping"],
+  "additionalProperties": false,
   "properties": {
-    "title": {
+    "work_unit": {
       "type": "string",
-      "description": "Human-readable title for the implementation plan.",
-      "minLength": 1
+      "description": "Common envelope — threads to work unit.",
+      "pattern": "^[a-z][a-z0-9]*([-.][a-z0-9]+)*$"
     },
     "summary": {
       "type": "string",
-      "description": "Brief summary of what the plan accomplishes.",
+      "description": "What the plan accomplishes.",
       "minLength": 1
     },
-    "key-changes": {
+    "design_decisions": {
       "type": "array",
-      "description": "List of key changes the plan introduces.",
+      "description": "Decisions with rationale.",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/decision"
+      }
+    },
+    "affected_files": {
+      "type": "array",
+      "description": "Files or modules that get changed.",
       "minItems": 1,
       "items": {
         "type": "string"
       }
     },
-    "test-strategy": {
-      "type": "string",
-      "description": "How the implementation will be tested.",
-      "minLength": 1
-    },
-    "assumptions": {
+    "behavior_mapping": {
       "type": "array",
-      "description": "Assumptions the plan depends on.",
+      "description": "How scenarios map to implementation steps.",
+      "minItems": 1,
       "items": {
-        "type": "string"
+        "$ref": "#/$defs/mapping"
+      }
+    }
+  },
+  "$defs": {
+    "decision": {
+      "type": "object",
+      "description": "A design decision with rationale.",
+      "required": ["decision", "rationale"],
+      "additionalProperties": false,
+      "properties": {
+        "decision": {
+          "type": "string",
+          "description": "What was decided.",
+          "minLength": 1
+        },
+        "rationale": {
+          "type": "string",
+          "description": "Why — traces to constraints or principles.",
+          "minLength": 1
+        }
+      }
+    },
+    "mapping": {
+      "type": "object",
+      "description": "Mapping from a behavior-contract scenario to implementation steps.",
+      "required": ["scenario", "steps"],
+      "additionalProperties": false,
+      "properties": {
+        "scenario": {
+          "type": "string",
+          "description": "Scenario name from behavior-contract.",
+          "minLength": 1
+        },
+        "steps": {
+          "type": "array",
+          "description": "Implementation steps for this scenario.",
+          "minItems": 1,
+          "items": {
+            "type": "string"
+          }
+        }
       }
     }
   }

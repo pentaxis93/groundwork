@@ -1,7 +1,0 @@
-{
-  "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://raw.githubusercontent.com/pentaxis93/groundwork/main/schemas/assessment.schema.json",
-  "title": "Assessment",
-  "description": "Stub schema - full design deferred to topology design session. Validates the output of the survey protocol: situation assessment, identified exigence, and rejected alternatives.",
-  "type": "object"
-}
