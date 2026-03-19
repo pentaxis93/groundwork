@@ -1,9 +1,16 @@
 {
-  "title": "Add user authentication endpoint",
-  "summary": "Implement a POST /auth/login endpoint that validates credentials and returns JWT tokens.",
-  "key-changes": [
-    "Add login route handler in src/routes/auth.rs",
-    "Create JWT token generation utility"
+  "work_unit": "issue-178.test-fixtures",
+  "summary": "Add a JSON Schema validation middleware to the ingestion endpoint",
+  "affected_files": [
+    "src/ingestion/handler.py"
   ],
-  "test-strategy": "Unit tests for token generation and password validation."
+  "behavior_mapping": [
+    {
+      "scenario": "reject-missing-required-field",
+      "steps": [
+        "Extract record from request body",
+        "Run JSON Schema validation"
+      ]
+    }
+  ]
 }

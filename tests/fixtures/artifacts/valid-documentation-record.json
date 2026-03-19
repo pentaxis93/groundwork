@@ -1,12 +1,11 @@
 {
-  "updated-docs": [
-    "README.md",
-    "docs/architecture/connecting-structure.md"
+  "work_unit": "issue-178.test-fixtures",
+  "updated_docs": [
+    "docs/ingestion-api.md"
   ],
-  "verified-accurate-docs": [
-    "docs/architecture/issue-model.md"
+  "verified_accurate_docs": [
+    "docs/architecture.md",
+    "README.md"
   ],
-  "tracking-issues": [
-    "#172"
-  ]
+  "tracking_issues": []
 }
