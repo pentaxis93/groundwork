@@ -136,6 +136,8 @@ request → requirements → issue → claim → behavior-contract
 ```
 
 Cross-cutting: research-record feeds in via accepts edges where needed.
+Research-record may optionally be scoped to a work unit when the research
+is specific to an issue.
 
 ## Work-Unit-Scoped Evaluation
 
@@ -149,8 +151,9 @@ manifest doesn't express this scoping. Runa computes it from artifact
 content.
 
 Planning-phase artifacts (request, requirements, issue) predate work-unit
-identity and are not partitioned this way. Research-record is scoped by
-topic, not by work unit.
+identity and are not partitioned this way. Research-record is always
+scoped by topic; optionally scoped by work unit when research is
+specific to an issue.
 
 ## Consolidated Manifest
 
@@ -360,7 +363,10 @@ exist until all earlier dependencies in the chain are satisfied.
 graph.** No protocol produces it. The research skill (agent-managed)
 produces it. Four protocols accept it as contextual enrichment. Runa
 validates research-records against the schema when they appear but
-never orchestrates their production. This is the two-population
+never orchestrates their production. Research-record may carry
+`work_unit` when the research is specific to an issue; when it does,
+runa can scope it to the relevant work unit's context. When `work_unit`
+is absent, the research is cross-cutting. This is the two-population
 principle in action: skills produce artifacts that runa validates
 but doesn't trigger on.
 
@@ -411,13 +417,20 @@ The schema is the full artifact structure on disk — what runa validates
 and tracks. The tool interface is the schema minus what runa can infer
 from the active execution context.
 
-**work_unit** is the one field runa can always infer. Runa activated
-this protocol for a specific work unit. The MCP server auto-populates
-work_unit from the execution context. The agent never supplies it.
+**work_unit** is the one field runa can always infer for protocol-
+produced artifacts. Runa activated this protocol for a specific work
+unit. The MCP server auto-populates work_unit from the execution
+context. The agent never supplies it.
+
+Skill-produced artifacts are the exception. Research-record is produced
+by the research skill, not by a protocol — no execution context exists
+for runa to infer from. When the agent produces a work-unit-scoped
+research-record, it supplies work_unit directly. When it produces
+cross-cutting research, it omits the field.
 
 Everything else in the schemas is the agent's cognitive output — runa
 cannot know it, the agent must supply it. The schemas work as tool
-interfaces with that one subtraction.
+interfaces with that one subtraction for protocol-produced artifacts.
 
 ### The liberation insight at the interface level
 
@@ -926,11 +939,15 @@ The record distills the conclusion.
 **Consumers:** specify (accepts), plan (accepts), survey (accepts),
 decompose (accepts).
 **What consumers need:** research findings and their sources, scoped
-by topic. Cross-cutting — may serve multiple work units.
+by topic. May serve multiple work units when cross-cutting, or be
+scoped to a specific issue via the optional `work_unit` field.
 
-Research-record does not carry `work_unit`. It is scoped by topic, not
-by work unit. It belongs to neither the planning nor execution phase
-exclusively — it enriches both.
+Research-record is always scoped by topic. It optionally carries
+`work_unit` when the research is specific to an issue — for example,
+researching a particular library for a particular implementation task.
+When `work_unit` is absent, the research is cross-cutting and available
+to any protocol that accepts it. It belongs to neither the planning nor
+execution phase exclusively — it enriches both.
 
 The existing `date` field is eliminated by the metadata elimination
 principle. Runa tracks timestamps from filesystem state.
@@ -938,6 +955,7 @@ principle. Runa tracks timestamps from filesystem state.
 | Field | Type | Required | Purpose |
 |-------|------|----------|---------|
 | topic | string | yes | What was researched (kebab-case slug) |
+| work_unit | string | no | Optional issue reference — scopes research to a work unit |
 | findings | array of strings | yes (min 1) | Key findings |
 | sources | array of source | yes (min 1) | Sources consulted |
 

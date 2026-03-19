@@ -1,0 +1,14 @@
+{
+  "topic": "json-schema-validation",
+  "work_unit": "issue-184.research-record-work-unit",
+  "findings": [
+    "Draft 2020-12 supports dynamic references and prefixItems for tuple validation",
+    "The jsonschema Python library supports Draft 2020-12 as of version 4.18"
+  ],
+  "sources": [
+    {
+      "url": "https://json-schema.org/draft/2020-12/release-notes",
+      "title": "JSON Schema Draft 2020-12 Release Notes"
+    }
+  ]
+}
