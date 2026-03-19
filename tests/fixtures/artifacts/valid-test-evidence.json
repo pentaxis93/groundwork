@@ -9,9 +9,9 @@
     },
     {
       "scenario": "pass-valid-record",
-      "result": "pass",
+      "result": "fail",
       "command": "pytest tests/test_ingestion.py::test_valid_record_passthrough -v",
-      "output_summary": "1 passed in 0.08s — valid record forwarded to pipeline"
+      "output_summary": "1 failed in 0.08s — record reached pipeline but was mutated by validation middleware"
     }
   ]
 }

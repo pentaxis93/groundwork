@@ -8,13 +8,13 @@
     },
     {
       "criterion": "Rejected records are logged with a reason code",
-      "status": "covered",
-      "scenarios": ["reject-missing-required-field"]
+      "status": "uncovered"
     },
     {
       "criterion": "Valid records pass through unchanged",
-      "status": "covered",
-      "scenarios": ["pass-valid-record"]
+      "status": "partial",
+      "scenarios": ["pass-valid-record"],
+      "failures": ["pass-valid-record"]
     }
   ]
 }
