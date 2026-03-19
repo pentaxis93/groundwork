@@ -1,26 +1,26 @@
 ---
-name: propose
+name: submit
 description: >-
   Package working changes into a PR: ensure feature branch, analyze and commit
   changes, push, create PR with derived title/body linked to issue(s).
   The middle phase of the session lifecycle between begin and land.
-  Trigger on: 'propose', 'submit pr', 'create pr', 'open pr',
+  Trigger on: 'submit', 'submit pr', 'create pr', 'open pr',
   'send for review', 'package this up'.
-requires: ["completion-evidence"]
+requires: ["completion-evidence", "documentation-record"]
 accepts: []
-produces: []
+produces: ["patch"]
 may_produce: []
 trigger:
-  on_artifact: "completion-evidence"
+  on_artifact: "documentation-record"
 ---
 
-# Propose — Commit, Push, PR
+# Submit — Commit, Push, PR
 
 ## Overview
 
 Use this skill when implementation is complete and changes need to become a PR.
 
-`propose` means:
+`submit` means:
 1. Resolve the working context (branch, changes, linked issues)
 2. Ensure a feature branch exists (guard rail if on `main`)
 3. Analyze changes and produce well-formed commits
@@ -28,12 +28,12 @@ Use this skill when implementation is complete and changes need to become a PR.
 5. Create a PR with derived title/body and issue linkage
 6. Report the result and suggest next steps
 
-The session lifecycle is: `begin` (initiate session) → implement → `propose`
-(package for review) → review → `land` (merge and close). `propose` is the
+The session lifecycle is: `begin` (initiate session) → implement → `submit`
+(package for review) → review → `land` (merge and close). `submit` is the
 transition from execution to review.
 
 Do not stop after creating the PR — the report step (step 6) is part of the
-skill. Invoking `propose` IS the operator's approval to execute the full
+skill. Invoking `submit` IS the operator's approval to execute the full
 sequence.
 
 ---
@@ -44,7 +44,7 @@ sequence.
   the working tree is clean and no unpushed commits exist, there is nothing to
   propose — report and stop.
 - If the current feature branch already has an open PR, report the PR URL and
-  stop. The PR already exists; the operator likely wants `land`, not `propose`.
+  stop. The PR already exists; the operator likely wants `land`, not `submit`.
 - `gh` CLI must be authenticated and the remote accessible.
 
 ---
@@ -186,7 +186,7 @@ gh pr edit <pr-number-or-url> --body-file /tmp/pr-body.md
 ```
 
 **Flags:**
-- Do NOT use `--draft` by default. The operator invoked `propose` because the
+- Do NOT use `--draft` by default. The operator invoked `submit` because the
   work is ready for review. If the operator explicitly says "draft" or "propose
   as draft," use `--draft`.
 
@@ -227,10 +227,10 @@ Output:
 
 ## Corruption Modes
 
-- `premature-propose`: invoking before verification. Recognition: tests not
-  run, WIP markers in code (TODO, FIXME, incomplete stubs). `propose` is not a
+- `premature-submit`: invoking before verification. Recognition: tests not
+  run, WIP markers in code (TODO, FIXME, incomplete stubs). `submit` is not a
   verification gate, but it should warn on obvious signs of incomplete work.
-- `empty-propose`: nothing to propose. Recognition: clean tree, no unpushed
+- `empty-submit`: nothing to submit. Recognition: clean tree, no unpushed
   commits. Report and stop.
 - `split-avoidance`: dumping all changes into one commit to skip analysis.
   Recognition: single commit touching many unrelated files with a vague
@@ -240,7 +240,7 @@ Output:
   numbers from branch names automatically.
 - `title-shrug`: uninformative PR title ("Update files", "Changes"). The title
   is the first thing reviewers see — it must communicate the change's purpose.
-- `propose-as-land`: treating the PR as the end of the workflow. `propose` is
+- `submit-as-land`: treating the PR as the end of the workflow. `submit` is
   the middle of the lifecycle. The report step suggests next actions explicitly.
 - `shell-interpolation-corruption`: passing Markdown via inline double-quoted
   `--body` causes backtick command substitution or other shell interpolation.
@@ -254,5 +254,5 @@ Output:
 
 - `begin` for work initiation — select issue(s), prepare workspace, declare direction (the preceding phase)
 - `land` for merge, cleanup, and issue closure (the following phase)
-- `verify` — should fire before `propose`
+- `verify` — should fire before `submit`
 - `documentation` for documentation review before proposing

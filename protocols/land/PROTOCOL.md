@@ -5,12 +5,12 @@ description: >-
   documentation before mechanical merge. Merge to main, sync, delete feature
   branch, close satisfied issues, comment progress on partial issues.
   Trigger on: 'land', 'land this', 'merge and close', 'ship it'.
-requires: ["completion-evidence"]
-accepts: ["behavior-contract"]
+requires: ["patch"]
+accepts: ["completion-evidence", "behavior-contract", "documentation-record", "issue"]
 produces: ["completion-record"]
 may_produce: []
 trigger:
-  on_signal: "merge-ready"
+  on_artifact: "patch"
 ---
 
 # Land — Close, Verify, Merge
@@ -253,7 +253,7 @@ Report the final state including:
   implementation. `begin`'s opening ceremony (orient, observe, frame, banish)
   prepares the agent for work; `land`'s closing ceremony (gather, verify, review,
   seal) prepares the work for delivery. Parallel structure, inverse direction.
-- `propose` for the preceding phase: commit, push, and PR creation
+- `submit` for the preceding phase: commit, push, and PR creation
 - `verify`: invoked during Phase 0b to evaluate
   acceptance criteria and verify completion evidence before merge
 - `documentation`: invoked during Phase 0c for documentation-review — confirms

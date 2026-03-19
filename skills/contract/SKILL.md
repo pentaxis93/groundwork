@@ -101,13 +101,13 @@ to delete them because "they might catch something."
 
 ## Principles
 
-**Single pipeline.** Specification and `test` execution are complementary
+**Single pipeline.** Specification and `implement` execution are complementary
 stages in one flow, not alternatives. Specification decides what to prove.
 Execution proves it. Verification reports the resulting behavior coverage.
 
 ## Cross-References
 
 - `specify`: produces the behavior contract this skill carries forward.
-- `test`: executes RED-GREEN-REFACTOR for the named behaviors.
+- `implement`: executes RED-GREEN-REFACTOR for the named behaviors.
 - `verify`: requires behavior-level evidence before completion claims.
 - `land`: records shipped behavior coverage and explicit gaps.

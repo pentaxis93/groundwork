@@ -49,7 +49,7 @@ Five stages, in dependency order. Each produces what the next consumes.
 
 3. **Decompose.** Converge to a decision-complete design (`plan`), break the design into agent-executable issues (`decompose`), and initiate the work session (`begin`).
 
-4. **Execute and verify.** Implement through RED-GREEN-REFACTOR (`test`), review documentation accuracy with `document`, verify behavior-level evidence before claiming done (`verify`), and package verified changes into a PR (`propose`). When a plan contains independent tasks, dispatch fresh subagents for each to keep execution context clean — stale context from earlier tasks pollutes later ones. Match subagent model to task complexity: use cheaper/faster models for straightforward work, reserve the most capable model for subtle or cross-cutting changes.
+4. **Execute and verify.** Implement through RED-GREEN-REFACTOR (`implement`), review documentation accuracy with `document`, verify behavior-level evidence before claiming done (`verify`), and package verified changes into a PR (`submit`). When a plan contains independent tasks, dispatch fresh subagents for each to keep execution context clean — stale context from earlier tasks pollutes later ones. Match subagent model to task complexity: use cheaper/faster models for straightforward work, reserve the most capable model for subtle or cross-cutting changes.
 
 5. **Land.** `land` closes the loop: merge, cleanup, behavior coverage record, documentation coverage status, and issue closure.
 
@@ -71,7 +71,7 @@ These thread across the topology. They aren't phases — they're disciplines tha
 
 **Research fires at any stage.** `research` provides reliable external evidence when decisions depend on facts outside the codebase — framing, design, decomposition, and implementation can all require it.
 
-**Root cause before fixes.** When a test fails or behavior is unexpected, do not guess. Investigate root cause before proposing any fix. `debug` provides the investigation methodology — a cross-cutting discipline that fires at any stage, not only during execution. Once root cause is established, `test` fix-bug owns the execution cycle. After 3 failed fix attempts, stop fixing and invoke `reckon` via the Skill tool to question the architecture.
+**Root cause before fixes.** When a test fails or behavior is unexpected, do not guess. Investigate root cause before proposing any fix. `debug` provides the investigation methodology — a cross-cutting discipline that fires at any stage, not only during execution. Once root cause is established, `implement` fix-bug owns the execution cycle. After 3 failed fix attempts, stop fixing and invoke `reckon` via the Skill tool to question the architecture.
 
 **Introduce third force on friction.** Friction is a two-force collision: task momentum vs obstacle. Routing around is the collapsed triad — both forces lose. When operational friction appears — a missing tool, broken config, stale convention, undocumented requirement — stop and introduce the reconciling move: resolve it structurally before continuing. `resolve` provides the assessment methodology and scope guidance. Friction that exceeds side-quest scope becomes an issue via `decompose`. Unresolved friction compounds.
 
@@ -172,7 +172,7 @@ Audience profiles:
   explain.
 - `decompose`: user-facing changes include documentation expectations in issue
   acceptance criteria.
-- `test`: inline comments and type-level documentation are written alongside
+- `implement`: inline comments and type-level documentation are written alongside
   implementation.
 - `document`: review documentation accuracy after code changes and before
   `verify`.

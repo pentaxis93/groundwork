@@ -59,14 +59,14 @@ around), execution (test failure, integration failure), and landing
 (regression discovered during merge). The trigger is the failure, not the
 stage.
 
-**Handoff with `test`:** This skill owns investigation methodology.
-`test`'s fix-bug procedure owns the execution cycle — write failing test,
+**Handoff with `implement`:** This skill owns investigation methodology.
+`implement`'s fix-bug procedure owns the execution cycle — write failing test,
 implement fix, verify green. The boundary: once root cause is established,
-hand off to `test` fix-bug. This skill does not write
+hand off to `implement` fix-bug. This skill does not write
 tests or implement fixes.
 
 **Handoff with `verify`:** This skill does not verify fixes. Once a fix is
-implemented through `test`, `verify` gates the completion claim.
+implemented through `implement`, `verify` gates the completion claim.
 
 ## The Investigation Move
 
@@ -136,7 +136,7 @@ Five steps. Always the same.
    - State it clearly: "The root cause is X because evidence Y shows Z."
    - Make the smallest possible change to test the hypothesis.
    - One variable at a time. Do not fix multiple things at once.
-   - If the hypothesis is confirmed: hand off to `test` fix-bug.
+   - If the hypothesis is confirmed: hand off to `implement` fix-bug.
    - If the hypothesis is wrong: form a new hypothesis from the evidence.
      Do not stack fixes on top of a failed hypothesis.
 
@@ -296,10 +296,10 @@ rationalizing, not investigating.
 
 ## Cross-References
 
-- `test`: owns the execution cycle for bug fixes. This skill
-  establishes root cause; `test` fix-bug writes the failing test and
+- `implement`: owns the execution cycle for bug fixes. This skill
+  establishes root cause; `implement` fix-bug writes the failing test and
   implements the fix. The handoff: root cause established, hand off to
-  `test`.
+  `implement`.
 - `verify`: owns fix verification. This skill does
   not verify — it investigates.
 - `reckon`: the 3-fix escalation rule invokes `reckon` to re-examine

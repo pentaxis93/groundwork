@@ -10,12 +10,12 @@ description: >-
 metadata:
   version: "1.0.0"
   updated: "2026-03-17"
-requires: []
+requires: ["request"]
 accepts: ["research-record"]
-produces: ["assessment"]
+produces: ["requirements"]
 may_produce: []
 trigger:
-  on_signal: "survey"
+  on_artifact: "request"
 ---
 
 # Survey
