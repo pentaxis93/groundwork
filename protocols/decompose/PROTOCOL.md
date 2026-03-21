@@ -22,6 +22,8 @@ Everything it needs must be in the issue.
 For concrete templates, see [references/templates.md](references/templates.md).
 For the issue state model and dependency graph format, see
 [`issue-model.md`](../../docs/architecture/issue-model.md).
+For first-principles constraint verification before framing issues, use
+`reckon`.
 
 ## The Central Discipline
 
@@ -92,13 +94,17 @@ the earlier discussion" to understand, it is incomplete.
 
 ### create-issue
 
-1. Classify issue type (`task`, `epic`, `bug`, `spike`).
-2. Write summary: what needs to exist and why. Not how.
-3. Define scope with concrete files or modules.
-4. Write acceptance criteria as observable outcomes — functional behavior,
+1. Reckon constraints. Before framing the issue, establish what is
+   actually needed — verified constraints, not inherited assumptions.
+   If the issue originated from an existing solution or implementation
+   detail, separate the need from the approach.
+2. Classify issue type (`task`, `epic`, `bug`, `spike`).
+3. Write summary: what needs to exist and why. Not how.
+4. Define scope with concrete files or modules.
+5. Write acceptance criteria as observable outcomes — functional behavior,
    testing expectations, documentation updates where applicable.
-5. Identify dependencies by searching existing issues. Link with `#N`.
-6. Assemble using template from `references/templates.md`. Title format:
+6. Identify dependencies by searching existing issues. Link with `#N`.
+7. Assemble using template from `references/templates.md`. Title format:
    `<type>(<scope>): <what>`.
 
 A structural linter is available at `scripts/issue_lint.py` for validating
@@ -106,14 +112,17 @@ issue bodies against template schemas.
 
 ### decompose-epic
 
-1. Extract deliverables — artifacts that must exist when done.
-2. Split into vertical slices that are independently verifiable.
-3. Group by module boundary where it clarifies ownership.
-4. Build dependency graph (Mermaid `graph TD` + layered text summary —
+1. Reckon the epic's constraints. Verify what the epic must deliver
+   against actual need — not against the requirements document's
+   framing or the existing system's structure.
+2. Extract deliverables — artifacts that must exist when done.
+3. Split into vertical slices that are independently verifiable.
+4. Group by module boundary where it clarifies ownership.
+5. Build dependency graph (Mermaid `graph TD` + layered text summary —
    see [`issue-model.md`](../../docs/architecture/issue-model.md) § Dependency Graph Format).
-5. Size-check each candidate: split if oversized, merge if trivial.
-6. Create task issues in topological order (lowest execution layer first).
-7. Create or update parent epic with task checklist and dependency graph.
+6. Size-check each candidate: split if oversized, merge if trivial.
+7. Create task issues in topological order (lowest execution layer first).
+8. Create or update parent epic with task checklist and dependency graph.
 
 ### define-task-boundary
 
@@ -203,3 +212,5 @@ A well-bounded task has:
 - `land`: merge-and-close completion events.
 - `document`: documentation updates as acceptance criteria for user-facing
   changes.
+- `reckon`: first-principles constraint verification before issue framing
+  and epic decomposition.
