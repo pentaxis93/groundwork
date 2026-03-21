@@ -137,10 +137,13 @@ A well-bounded task has:
 
 ### refine-issue
 
-1. Diagnose: vague summary, missing scope, untestable criteria, implicit
+1. Reckon the issue's framing. Before editing, verify that the problem
+   statement reflects actual need — not an inherited solution dressed as
+   a requirement.
+2. Diagnose: vague summary, missing scope, untestable criteria, implicit
    dependencies, oversized scope, or prescription leaking into criteria.
-2. Apply targeted fixes only where weak. Keep already-strong sections unchanged.
-3. Re-verify the central discipline — does any criterion or scope statement
+3. Apply targeted fixes only where weak. Keep already-strong sections unchanged.
+4. Re-verify the central discipline — does any criterion or scope statement
    prescribe an implementation approach?
 
 ### triage-issues
@@ -206,11 +209,11 @@ A well-bounded task has:
 
 ## Cross-References
 
+- `reckon`: first-principles constraint verification before issue framing
+  and epic decomposition.
 - `begin`: session-level prioritization and execution discipline.
 - `specify`: behavior framing and test naming discipline.
 - `plan`: design convergence before implementation.
 - `land`: merge-and-close completion events.
 - `document`: documentation updates as acceptance criteria for user-facing
   changes.
-- `reckon`: first-principles constraint verification before issue framing
-  and epic decomposition.
