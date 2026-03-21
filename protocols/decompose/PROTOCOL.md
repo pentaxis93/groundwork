@@ -209,8 +209,8 @@ A well-bounded task has:
 
 ## Cross-References
 
-- `reckon`: first-principles constraint verification before issue framing
-  and epic decomposition.
+- `reckon`: first-principles constraint verification before issue framing,
+  refinement, and epic decomposition.
 - `begin`: session-level prioritization and execution discipline.
 - `specify`: behavior framing and test naming discipline.
 - `plan`: design convergence before implementation.
