@@ -9,51 +9,39 @@ name = "groundwork"
 
 [[artifact_types]]
 name = "request"
-schema = "schemas/request.schema.json"
 
 [[artifact_types]]
 name = "requirements"
-schema = "schemas/requirements.schema.json"
 
 [[artifact_types]]
 name = "issue"
-schema = "schemas/issue.schema.json"
 
 [[artifact_types]]
 name = "claim"
-schema = "schemas/claim.schema.json"
 
 [[artifact_types]]
 name = "behavior-contract"
-schema = "schemas/behavior-contract.schema.json"
 
 [[artifact_types]]
 name = "implementation-plan"
-schema = "schemas/implementation-plan.schema.json"
 
 [[artifact_types]]
 name = "test-evidence"
-schema = "schemas/test-evidence.schema.json"
 
 [[artifact_types]]
 name = "completion-evidence"
-schema = "schemas/completion-evidence.schema.json"
 
 [[artifact_types]]
 name = "documentation-record"
-schema = "schemas/documentation-record.schema.json"
 
 [[artifact_types]]
 name = "patch"
-schema = "schemas/patch.schema.json"
 
 [[artifact_types]]
 name = "completion-record"
-schema = "schemas/completion-record.schema.json"
 
 [[artifact_types]]
 name = "research-record"
-schema = "schemas/research-record.schema.json"
 
 # --- Protocols ---
 #
