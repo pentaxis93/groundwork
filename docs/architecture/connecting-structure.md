@@ -230,6 +230,7 @@ trigger = { type = "on_artifact", name = "requirements" }
 
 [[protocols]]
 name = "begin"
+scoped = true
 requires = ["issue"]
 accepts = []
 produces = ["claim"]
@@ -238,6 +239,7 @@ trigger = { type = "on_artifact", name = "issue" }
 
 [[protocols]]
 name = "specify"
+scoped = true
 requires = ["claim", "issue"]
 accepts = ["research-record"]
 produces = ["behavior-contract"]
@@ -246,6 +248,7 @@ trigger = { type = "on_artifact", name = "claim" }
 
 [[protocols]]
 name = "plan"
+scoped = true
 requires = ["behavior-contract"]
 accepts = ["research-record"]
 produces = ["implementation-plan"]
@@ -254,6 +257,7 @@ trigger = { type = "on_artifact", name = "behavior-contract" }
 
 [[protocols]]
 name = "implement"
+scoped = true
 requires = ["behavior-contract", "implementation-plan"]
 accepts = []
 produces = ["test-evidence"]
@@ -262,6 +266,7 @@ trigger = { type = "on_artifact", name = "implementation-plan" }
 
 [[protocols]]
 name = "verify"
+scoped = true
 requires = ["behavior-contract", "test-evidence", "issue"]
 accepts = []
 produces = ["completion-evidence"]
@@ -270,6 +275,7 @@ trigger = { type = "on_artifact", name = "test-evidence" }
 
 [[protocols]]
 name = "document"
+scoped = true
 requires = ["completion-evidence"]
 accepts = ["behavior-contract", "implementation-plan"]
 produces = ["documentation-record"]
@@ -278,6 +284,7 @@ trigger = { type = "on_artifact", name = "completion-evidence" }
 
 [[protocols]]
 name = "submit"
+scoped = true
 requires = ["completion-evidence", "documentation-record"]
 accepts = []
 produces = ["patch"]
@@ -286,6 +293,7 @@ trigger = { type = "on_artifact", name = "documentation-record" }
 
 [[protocols]]
 name = "land"
+scoped = true
 requires = ["patch"]
 accepts = ["completion-evidence", "behavior-contract", "documentation-record", "issue"]
 produces = ["completion-record"]
