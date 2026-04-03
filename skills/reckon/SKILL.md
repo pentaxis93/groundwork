@@ -11,8 +11,8 @@ description: >-
   earning its chain (momentum). Dead reckoning: advance from an established
   fix using trusted constants.
 metadata:
-  version: "4.0.0"
-  updated: "2026-03-17"
+  version: "4.1.0"
+  updated: "2026-04-03"
 requires: []
 accepts: ["research-record"]
 produces: []
@@ -53,6 +53,8 @@ Six steps. Always the same.
 **The descriptive/normative distinction.** There are two kinds of truth relevant to reckoning. *Descriptive truth* is what currently exists — the code, the configuration, the running system, the current cost structure. *Normative truth* is what's actually needed — the requirements, the capabilities, the outcomes that matter. For design, ground in normative truth. For cost or structure analysis, ground in material truth — what things are actually made of, what they actually cost, what each component contributes. Material truth is normative in the sense that it is the verified reality against which the current price or structure should be evaluated, not a description of the current state. In both cases, descriptive truth is evidence, useful for gap analysis or baseline comparison, but never the starting point. Confusing these — treating what currently exists as the definition of what should exist — is the most common reckoning failure.
 
 **Chain of inference.** The dynamic face's discipline is the chain. Every conclusion traces back through intermediate inferences to verified ground or navigational principle. The chain breaks in three ways: an inference follows from the previous inference without tracing to ground (chain drift), an inference follows from analogy rather than principle (pattern projection), or a principle is cited but does not actually govern the inference (principle as decoration). When the chain breaks, stop and re-derive from the last verified link.
+
+**Chain completion.** A chain that is valid at every link can still be incomplete. The chain breaks when a link fails to trace to ground. The chain terminates prematurely when the conclusion is reached but not verified against its full consequence surface. Premature termination feels like completion — the chain was honest, every link traced back, the conclusion follows from ground and principle. But a conclusion that holds on one consequence path may fail on another. The completion test: before closing any chain — before endorsing, rejecting, or resolving — ask "What else does this conclusion affect?" and trace those paths. The chain is finished when the conclusion has been evaluated against every behavior it touches, not just the behavior that prompted the inquiry.
 
 **Reckoning is the opposite of analogy.** Analogy copies solutions and their embedded assumptions. Reckoning derives solutions from constraints and discovers which assumptions were load-bearing. The static face catches inherited assumptions; the dynamic face catches analogical reasoning from correct ground. Both are necessary because agents ground correctly and then reason by analogy — the grounding was correct, the reasoning from the ground was unprincipled.
 
@@ -282,6 +284,10 @@ Active excavation establishes ground. Navigational principles govern what you bu
 ### Dynamic-face corruptions
 
 **Grounded-then-analogical.** The static face fired correctly — assumptions stripped, constraints verified, ground established. Then reconstruction defaulted to pattern-matching: the most available solution shape filled the space left by stripped assumptions. The grounding was correct; the reasoning from the ground was unprincipled. This is the corruption that created reckon: correct position, analogical momentum.
+
+**Plan as precedent.** A plan, a prior classification, or an earlier decision in the same session becomes inherited frame for subsequent decisions. The plan was an artifact from a prior context — it encoded assumptions that were reasonable at planning time. When new evidence arrives (a reviewer's finding, a test failure, a concrete defect), the plan's assumptions must be re-evaluated against the evidence, not cited as authority. Recognition: you are defending a decision by pointing to the plan, the approved scope, or a prior round's classification rather than reckoning the current finding from ground. "The plan excluded this" is not a constraint — it is a planning assumption that may not survive contact with new evidence. This corruption compounds over long sessions: early decisions accumulate authority through repetition, and each subsequent decision pattern-matches against the accumulated context rather than reckoning fresh. The corrective is the same as for any inherited frame: evaluate the current finding against the actual constraints, not against prior decisions about similar findings.
+
+**Premature termination.** The chain reached a valid conclusion and stopped. Every link traced to ground or principle. But the conclusion had consequences the chain didn't evaluate. The reckoning felt complete because the chain was honest — no drift, no analogy, no decoration. But validity is not completeness. Recognition: you closed the chain after evaluating the consequence that prompted the inquiry without asking "what else does this conclusion touch?" The missed consequence is typically in a different dimension than the one you evaluated — a different command, a different consumer, a different failure mode, a different phase of execution. The corrective: before closing any chain, enumerate the consequence surface. If the conclusion affects behaviors beyond the one that prompted the inquiry, trace those paths before declaring the chain finished.
 
 **Principle as decoration.** A navigational principle is cited but does not actually govern the inference. "By parsimony, we should..." followed by a design whose complexity is not justified by the principle invoked. The principle appears in the reasoning but did not constrain it. Recognition: remove the principle citation and the reasoning does not change.
 
