@@ -6,8 +6,48 @@ It encodes opinions about how software should be built into protocols, skills,
 and artifact schemas that a runa instance orchestrates. It is not a runtime, a
 CLI, or a framework — it is a methodology definition.
 
+Groundwork serves teams that use AI coding agents for software delivery. It
+connects the stages from problem framing through shipped change so that agent
+work traces from requirement to merged code, completion claims require evidence,
+and progress survives session boundaries.
+
 For what methodology plugins are and how runa executes them, see runa's
 [core concepts](https://github.com/pentaxis93/runa#core-concepts).
+
+## The Shape of the Methodology
+
+Work moves through two phases connected by the issue artifact.
+
+**Planning** takes an external request and produces issue-sized work units.
+Survey examines what actually needs doing; decompose breaks that into issues
+with acceptance criteria and dependency edges.
+
+**Execution** takes one issue and carries it through to a merged increment:
+begin claims the issue and opens the session → specify writes the behavior
+contract as Given/When/Then scenarios → plan converges on a decision-complete
+design → implement executes through RED-GREEN-REFACTOR → verify gates
+completion with evidence → document ensures accuracy → submit packages the
+change → land merges and closes the loop.
+
+Each protocol produces an artifact that the next protocol requires.
+→ [`docs/architecture/connecting-structure.md`](docs/architecture/connecting-structure.md)
+
+Six skills operate across the topology:
+
+- **orient** — the methodology map that connects protocols and skills
+- **reckon** — first-principles reasoning when creating or analyzing
+- **debug** — root cause investigation when failures appear
+- **resolve** — structural friction resolution when obstacles impede
+- **research** — external evidence gathering when facts are missing
+- **contract** — behavior traceability through execution
+
+Not every piece of work needs every stage. A bug with an existing issue enters
+at execution. A new capability enters at planning. The constraint is sequence,
+not completeness.
+→ [`skills/orient/SKILL.md`](skills/orient/SKILL.md)
+
+For how runa orchestrates this topology at runtime, see the
+[interface contract](https://github.com/pentaxis93/runa/blob/main/docs/interface-contract.md).
 
 ## What Groundwork Believes
 
@@ -70,41 +110,6 @@ missing tool, broken configuration, stale convention — gets resolved
 structurally before work continues. Friction that exceeds side-quest scope
 becomes an issue.
 → [`skills/resolve/SKILL.md`](skills/resolve/SKILL.md)
-
-## The Shape of the Methodology
-
-Work moves through two phases connected by the issue artifact.
-
-**Planning** takes an external request and produces issue-sized work units.
-Survey examines what actually needs doing; decompose breaks that into issues
-with acceptance criteria and dependency edges.
-
-**Execution** takes one issue and carries it through to a merged increment:
-begin claims the issue and opens the session → specify writes the behavior
-contract as Given/When/Then scenarios → plan converges on a decision-complete
-design → implement executes through RED-GREEN-REFACTOR → verify gates
-completion with evidence → document ensures accuracy → submit packages the
-change → land merges and closes the loop.
-
-Each protocol produces an artifact that the next protocol requires.
-→ [`docs/architecture/connecting-structure.md`](docs/architecture/connecting-structure.md)
-
-Six skills operate across the topology:
-
-- **orient** — the methodology map that connects protocols and skills
-- **reckon** — first-principles reasoning when creating or analyzing
-- **debug** — root cause investigation when failures appear
-- **resolve** — structural friction resolution when obstacles impede
-- **research** — external evidence gathering when facts are missing
-- **contract** — behavior traceability through execution
-
-Not every piece of work needs every stage. A bug with an existing issue enters
-at execution. A new capability enters at planning. The constraint is sequence,
-not completeness.
-→ [`skills/orient/SKILL.md`](skills/orient/SKILL.md)
-
-For how runa orchestrates this topology at runtime, see the
-[interface contract](https://github.com/pentaxis93/runa/blob/main/docs/interface-contract.md).
 
 ## What the Repo Contains
 
