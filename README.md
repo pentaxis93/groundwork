@@ -32,8 +32,7 @@ define interfaces and decisions, not scripts to follow.
 **Behavior is the thread.** The behavior contract written during specify traces
 through every subsequent stage. Plans link design decisions to behavior
 scenarios. Tests verify named scenarios. Verification cites behavior-level
-evidence. Landing records what coverage shipped. Every test traces to a named
-behavior scenario.
+evidence. Landing records what coverage shipped.
 → [`protocols/specify/PROTOCOL.md`](protocols/specify/PROTOCOL.md),
 [`skills/contract/SKILL.md`](skills/contract/SKILL.md)
 
