@@ -16,22 +16,15 @@ Each traces to the file where it lives.
 
 ### How work is understood
 
-**Descriptive is not normative.** What currently exists is evidence, not
-constraint. What is actually needed is the starting point for design. Treating
-the existing system as the definition of correctness is the most common framing
-failure.
-→ [`skills/reckon/SKILL.md`](skills/reckon/SKILL.md)
-
 **The issue graph is working memory.** Agent sessions end, context windows
 close, agents rotate. The issue graph is the persistence layer that survives
-those boundaries — the only working memory reliable across sessions. Work from
-the graph, not from memory.
+those boundaries. Multi-session progress depends on the graph, not on agent
+memory.
 → [`docs/architecture/issue-model.md`](docs/architecture/issue-model.md)
 
 **Sovereignty.** Every handoff passes outcomes — what must be true — never
 implementation steps. Issues define acceptance criteria, not procedure. Plans
-define interfaces and decisions, not scripts to follow. The implementer solves
-the problem; the author defines the problem.
+define interfaces and decisions, not scripts to follow.
 → [`protocols/decompose/PROTOCOL.md`](protocols/decompose/PROTOCOL.md)
 
 ### How work is executed
@@ -39,21 +32,20 @@ the problem; the author defines the problem.
 **Behavior is the thread.** The behavior contract written during specify traces
 through every subsequent stage. Plans link design decisions to behavior
 scenarios. Tests verify named scenarios. Verification cites behavior-level
-evidence. Landing records what coverage shipped. If you cannot name which
-behavior a test verifies, traceability is lost.
+evidence. Landing records what coverage shipped. Every test traces to a named
+behavior scenario.
 → [`protocols/specify/PROTOCOL.md`](protocols/specify/PROTOCOL.md),
 [`skills/contract/SKILL.md`](skills/contract/SKILL.md)
 
 **Evidence before assertion.** No completion claims without fresh verification
 evidence. No fixes without root cause investigation. No implementation plans
-without grounded constraints. Confidence is not evidence.
+without grounded constraints.
 → [`protocols/verify/PROTOCOL.md`](protocols/verify/PROTOCOL.md),
 [`skills/debug/SKILL.md`](skills/debug/SKILL.md)
 
 **Test-driven execution.** No production code without a failing test first.
-Watch the test fail; confirm it fails for the right reason. Write the minimum
-code to pass. Code written before its test gets deleted and restarted — not
-kept as reference.
+Each test fails first, and for the right reason. Only the minimum code to pass
+gets written. Code written before its test gets deleted and restarted.
 → [`protocols/implement/PROTOCOL.md`](protocols/implement/PROTOCOL.md)
 
 **Code is ground truth.** When documentation and code disagree, code behavior
@@ -63,28 +55,21 @@ the code.
 
 **Documentation obligation.** User-facing changes carry documentation
 requirements. Documentation ships in the same PR as the code that caused it.
-Drifted documentation compounds — each instance trains readers to distrust all
-documentation.
+Drifted documentation compounds.
 → [`protocols/document/PROTOCOL.md`](protocols/document/PROTOCOL.md),
 [`skills/orient/SKILL.md`](skills/orient/SKILL.md)
 
 ### How obstacles are handled
 
-**Root cause before fixes.** When a test fails or behavior is unexpected,
-investigate before proposing any fix. After three failed fix attempts, stop
-fixing and question the architecture.
+**Root cause before fixes.** No fix without an established root cause. After
+three failed fix attempts, the architecture is under question, not the
+symptoms.
 → [`skills/debug/SKILL.md`](skills/debug/SKILL.md)
 
-**Friction is structural.** Workarounds compound debt. When operational friction
-appears — a missing tool, broken configuration, stale convention — resolve it
-structurally before continuing. If the fix exceeds side-quest scope, file an
-issue. Do not route around it.
-→ [`skills/resolve/SKILL.md`](skills/resolve/SKILL.md)
-
-**The third force.** When task momentum collides with an obstacle, neither
-suppress the task nor accept the obstacle. Introduce the reconciling move that
-transforms the situation — the force that makes both sides yield something
-useful.
+**Friction is structural.** Workarounds compound debt. Operational friction — a
+missing tool, broken configuration, stale convention — gets resolved
+structurally before work continues. Friction that exceeds side-quest scope
+becomes an issue.
 → [`skills/resolve/SKILL.md`](skills/resolve/SKILL.md)
 
 ## The Shape of the Methodology
@@ -102,8 +87,7 @@ design → implement executes through RED-GREEN-REFACTOR → verify gates
 completion with evidence → document ensures accuracy → submit packages the
 change → land merges and closes the loop.
 
-Each protocol produces an artifact that the next protocol requires. The
-artifact chain is the methodology's state — there is no second channel.
+Each protocol produces an artifact that the next protocol requires.
 → [`docs/architecture/connecting-structure.md`](docs/architecture/connecting-structure.md)
 
 Six skills operate across the topology:
@@ -116,8 +100,8 @@ Six skills operate across the topology:
 - **contract** — behavior traceability through execution
 
 Not every piece of work needs every stage. A bug with an existing issue enters
-at execution. A new capability enters at planning. The constraint is sequence —
-you cannot land before executing — not completeness.
+at execution. A new capability enters at planning. The constraint is sequence,
+not completeness.
 → [`skills/orient/SKILL.md`](skills/orient/SKILL.md)
 
 For how runa orchestrates this topology at runtime, see the
