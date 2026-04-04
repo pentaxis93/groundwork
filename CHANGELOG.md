@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Changed
+
+- Rewrote README to convey groundwork's methodology beliefs rather than runa plugin mechanism, with each claim traced to its source file and runtime concepts linked to runa's documentation.
+
 ### Fixed
 
 - Removed redundant `schema` fields from `groundwork.toml` artifact type declarations so `runa init --methodology groundwork.toml` can derive schema paths by convention and parse the manifest successfully.
