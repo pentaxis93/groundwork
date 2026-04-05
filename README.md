@@ -115,7 +115,7 @@ becomes an issue.
 
 | Path | Contains |
 |------|----------|
-| [`groundwork.toml`](groundwork.toml) | Manifest: artifact types, protocol topology, trigger conditions |
+| [`manifest.toml`](manifest.toml) | Manifest: artifact types, protocol topology, trigger conditions |
 | [`protocols/`](protocols/) | 10 protocol definitions — one per stage |
 | [`skills/`](skills/) | 6 skills — orientation and cross-cutting disciplines |
 | [`schemas/`](schemas/) | JSON Schema contracts for each artifact type |
