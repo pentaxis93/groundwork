@@ -15,7 +15,7 @@ protocols, skills, and artifact schemas that a runa instance orchestrates.
 
 ### Protocol topology
 
-- `groundwork.toml` declares 12 artifact types and 10 protocols with their
+- `manifest.toml` declares 12 artifact types and 10 protocols with their
   dependency edges (`requires`, `accepts`, `produces`, `may_produce`), trigger
   conditions, and scoping. This is the single file runa reads to understand
   the methodology.
@@ -72,7 +72,7 @@ protocols, skills, and artifact schemas that a runa instance orchestrates.
 ### Artifact schemas
 
 - Twelve JSON Schemas (draft 2020-12), one per artifact type declared in
-  `groundwork.toml`.
+  `manifest.toml`.
 - Planning-phase artifacts carry no `work_unit` field: **request** (external
   input), **requirements** (scope, constraints, priorities),
   **issue** (work unit with acceptance criteria and dependencies).

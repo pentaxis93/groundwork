@@ -157,7 +157,7 @@ specific to an issue.
 
 ## Consolidated Manifest
 
-This is the target `groundwork.toml` derived from all decisions in this
+This is the target `manifest.toml` derived from all decisions in this
 document.
 
 ```toml
