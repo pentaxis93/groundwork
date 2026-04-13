@@ -9,7 +9,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ## [0.1.0] — 2026-04-04
 
 First release. Groundwork is a methodology plugin for
-[runa](https://github.com/pentaxis93/runa) that encodes opinions about how
+[runa](https://github.com/tesserine/runa) that encodes opinions about how
 software should be built — from problem framing through shipped change — into
 protocols, skills, and artifact schemas that a runa instance orchestrates.
 
