@@ -345,7 +345,7 @@ trigger = { type = "on_artifact", name = "patch" }
 | documentation-record | document |
 | patch | submit |
 | completion-record | land |
-| research-record | research skill (agent-managed) |
+| research-record | research skill |
 
 **Every type consumed.** All artifact types have at least one consumer
 except completion-record, which is the terminal archival artifact.
@@ -356,7 +356,7 @@ for all ten protocols: the trigger is always the artifact that cannot
 exist until all earlier dependencies in the chain are satisfied.
 
 **Research-record is the sole skill-produced artifact in the protocol
-graph.** The research skill (harness-managed) cognitively produces it.
+graph.** The research skill cognitively produces it.
 Four protocols — survey, decompose, specify, plan — declare
 `may_produce = ["research-record"]`, so runa-mcp exposes a tool for
 writing a validated research-record during those protocols' sessions.
@@ -411,9 +411,9 @@ about skills, does not know about the harness, and does not participate
 in agent cognition.
 
 **Groundwork.** The methodology content itself: protocols (runa-managed,
-declared in the manifest), skills (harness-managed, not declared in
-the manifest), schemas (what runa validates against), and the manifest
-that wires the topology. This repository.
+declared in the manifest), skills (not declared in the manifest),
+schemas (what runa validates against), and the manifest that wires
+the topology. This repository.
 
 The important boundary for the rest of this document: **skills and
 runa are disjoint worlds** — runa never sees a skill, and a skill has
@@ -446,14 +446,12 @@ type, with the artifact's schema as the tool's input schema. The
 distinction is semantic: `produces` is the protocol's capstone,
 `may_produce` is the protocol's sanctioned side-emission surface.
 
-### Default pattern: `accepts ⊇ may_produce`
+### Default pattern: accepts and may_produce move together
 
 When a skill-produced artifact is intended to flow into subsequent
 protocols' context (i.e., later protocols `accepts` it), the default
-manifest pattern is:
-
-> Every protocol that `accepts` the artifact also declares it in
-> `may_produce`.
+manifest pattern is mirrored declarations: a protocol either carries
+the artifact in both `accepts` and `may_produce`, or in neither.
 
 This yields a verifiable correspondence between two manifest fields
 — a future reader can check it mechanically rather than reckoning
@@ -468,7 +466,7 @@ downstream protocol that accepts it.
 
 ### Non-default configurations
 
-The `accepts ⊇ may_produce` rule is not universal. Two exceptions
+The mirrored-declarations default is not universal. Two exceptions
 are possible:
 
 - **Protocol-internal skill outputs.** A skill output that should
@@ -501,6 +499,10 @@ persisted through runa:
    convention for what it should carry.)
 
 ## Agent Interface
+
+*This section is pending revision in #221 to reflect the may_produce
+bridge mechanism described above. Some statements below may not yet
+match the new model.*
 
 Two interfaces connect the agent to the artifact system. Both are
 owned by runa. The agent touches neither directly.
