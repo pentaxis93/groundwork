@@ -217,7 +217,7 @@ name = "survey"
 requires = ["request"]
 accepts = ["research-record"]
 produces = ["requirements"]
-may_produce = []
+may_produce = ["research-record"]
 trigger = { type = "on_artifact", name = "request" }
 
 [[protocols]]
@@ -225,7 +225,7 @@ name = "decompose"
 requires = ["requirements"]
 accepts = ["research-record"]
 produces = ["issue"]
-may_produce = []
+may_produce = ["research-record"]
 trigger = { type = "on_artifact", name = "requirements" }
 
 [[protocols]]
@@ -243,7 +243,7 @@ scoped = true
 requires = ["claim", "issue"]
 accepts = ["research-record"]
 produces = ["behavior-contract"]
-may_produce = []
+may_produce = ["research-record"]
 trigger = { type = "on_artifact", name = "claim" }
 
 [[protocols]]
@@ -252,7 +252,7 @@ scoped = true
 requires = ["behavior-contract"]
 accepts = ["research-record"]
 produces = ["implementation-plan"]
-may_produce = []
+may_produce = ["research-record"]
 trigger = { type = "on_artifact", name = "behavior-contract" }
 
 [[protocols]]
@@ -345,7 +345,7 @@ trigger = { type = "on_artifact", name = "patch" }
 | documentation-record | document |
 | patch | submit |
 | completion-record | land |
-| research-record | research skill (agent-managed) |
+| research-record | research skill (via `may_produce`; see below) |
 
 **Every type consumed.** All artifact types have at least one consumer
 except completion-record, which is the terminal archival artifact.
@@ -356,10 +356,12 @@ for all ten protocols: the trigger is always the artifact that cannot
 exist until all earlier dependencies in the chain are satisfied.
 
 **Research-record is the sole skill-produced artifact in the protocol
-graph.** No protocol produces it. The research skill (agent-managed)
-produces it. Four protocols accept it as contextual enrichment. Runa
-validates research-records against the schema when they appear but
-never orchestrates their production. Research-record may carry
+graph.** No protocol declares it in `produces`, because no protocol's
+completion depends on a research-record existing. Four protocols
+declare it in `may_produce` so that, when an agent's research skill
+emits one mid-session, runa exposes a tool to validate and persist it.
+See "Runtime Layers" and "Skill-Produced Artifacts and the `may_produce`
+Bridge" below for the full mechanism. Research-record may carry
 `work_unit` when the research is specific to an issue; when it does,
 runa can scope it to the relevant work unit's context. When `work_unit`
 is absent, the research is cross-cutting. This is the two-population
@@ -375,6 +377,124 @@ protocols (begin, specify, verify). These are the central artifacts
 of the execution phase — the behavioral spec and the acceptance
 criteria it traces to.
 
+## Runtime Layers
+
+Groundwork is methodology content, not a runtime. A working agent
+session runs across four distinct layers, each with a narrow
+responsibility.
+
+**agentd.** Session lifecycle: starting and supervising the agent
+process, preparing the environment, injecting identity. Opaque to
+methodology content — agentd knows only that a given profile uses
+methodology X, not what that methodology contains.
+
+**Harness** (claude code, codex, and similar). Runs the agent loop,
+mediates tool calls, and — critically for this document —
+**loads and invokes skills**. Skills live at the harness layer
+operationally: they are markdown files the harness reads into the
+agent's context on activation, and the harness is what decides, based
+on the agent's judgment and the harness's own activation rules, when
+to invoke them. Runa does not see skills; they are not part of runa's
+contract.
+
+**Runa.** The cognitive runtime. Its interface to groundwork is three
+primitives only: artifact types, protocol declarations, and trigger
+conditions. Runa orchestrates protocols, validates artifacts against
+their schemas, and injects context when a protocol activates. It
+derives all workflow state from artifacts on disk. Runa does not know
+about skills, does not know about the harness, and does not participate
+in agent cognition.
+
+**Groundwork.** The methodology content itself: protocols (runa-managed,
+declared in the manifest), skills (not declared in the manifest),
+schemas (what runa validates against), and the manifest that wires
+the topology. This repository.
+
+The important boundary for the rest of this document: **skills and
+runa are disjoint worlds** — runa never sees a skill, and a skill has
+no direct channel to runa. Anything a skill produces that needs to
+enter runa's validated artifact store must cross through an active
+protocol session. The next section describes the specific mechanism.
+
+## Skill-Produced Artifacts and the `may_produce` Bridge
+
+A skill can be loaded by the harness only during an agent session,
+which always runs under some active runa protocol. The harness
+invokes the skill, the agent does the skill's cognitive work, and the
+skill may cognitively produce an artifact-shaped output — a
+research-record in the concrete case. For that output to enter runa's
+validated artifact store, the active protocol must declare the
+artifact type in its `may_produce` field. Runa's interface contract
+then guarantees that each declared output artifact is exposed as an
+MCP tool during the protocol session.
+
+This is the bridge:
+
+- `produces`: the artifact a protocol's completion depends on. Runa
+  requires it before the protocol ends; the session's MCP server
+  exposes a tool for it.
+- `may_produce`: an artifact a protocol may optionally emit during
+  execution, typically by a skill invoked inside the session. Runa
+  does not require it; the session's MCP server exposes a tool for it.
+
+At the interface level, the two fields are symmetric: one tool per
+declared output artifact, named after the type, with the artifact's
+schema as the tool's input schema. The distinction is semantic:
+`produces` is the protocol's capstone, `may_produce` is the
+protocol's sanctioned side-emission surface. (See
+[runa's interface contract](https://github.com/tesserine/runa/blob/main/docs/interface-contract.md)
+for the derivation rules runa's MCP server applies to artifact
+schemas when generating tool input schemas.)
+
+### `accepts` and `may_produce` as independent declarations
+
+`accepts` and `may_produce` are two independent declarations that
+answer two different questions:
+
+- `accepts` answers: "if a valid instance of this artifact exists when
+  I activate, inject it into my context."
+- `may_produce` answers: "during my session, the agent may need to
+  produce a fresh instance of this — expose an MCP tool for it."
+
+For any protocol/artifact pair, the two decisions are made separately.
+All four combinations are legitimate:
+
+- **Neither.** The protocol neither reads the artifact on activation
+  nor writes a fresh instance during its session.
+- **`accepts` only.** The protocol reads an existing instance as
+  context but does not produce new instances — a read-only consumer.
+- **`may_produce` only.** The protocol writes a fresh instance during
+  its session but does not read prior instances into its activation
+  context — a protocol-internal emission.
+- **Both.** The protocol reads prior instances and may also emit
+  fresh ones.
+
+Each protocol/artifact pair is a separate judgment by the methodology
+author. There is no mirroring rule between the two fields; a future
+reader verifies the wiring by checking each declaration against the
+protocol's actual needs, not against the other field.
+
+In the current manifest, research-record falls into the "both" case
+for survey, decompose, specify, and plan, and into "neither" for the
+other six.
+
+### Authoring a new skill-produced artifact
+
+For a methodology author wiring a new skill whose output should be
+persisted through runa:
+
+1. Declare the artifact type in `[[artifact_types]]` and define its
+   schema in `schemas/`.
+2. For each protocol, judge separately whether prior instances of the
+   artifact should enrich its activation context. Add the artifact to
+   that protocol's `accepts` if yes.
+3. For each protocol, judge separately whether the agent could
+   plausibly need to produce a fresh instance of the artifact during
+   that protocol's session. Add the artifact to that protocol's
+   `may_produce` if yes. This decision is independent of step 2.
+4. The skill itself does not need to declare anything for runa's
+   sake — runa does not read skill frontmatter.
+
 ## Agent Interface
 
 Two interfaces connect the agent to the artifact system. Both are
@@ -382,61 +502,93 @@ owned by runa. The agent touches neither directly.
 
 ### Input: Context injection as prompt
 
-Runa constructs a prompt with all context pre-integrated. The skill
+Runa constructs a prompt with all context pre-integrated. The agent
 reads natural language, not JSON. The behavior-contract, implementation-
 plan, research-records are already woven into the context window.
-The skill doesn't parse artifacts or know about schemas.
+The agent doesn't parse artifacts or know about schemas.
 
-### Output: MCP tool for artifact production
+### Output: MCP tools for artifact production
 
-An MCP server exposes a tool the agent calls to deliver work products.
-Instead of constructing JSON and placing files, the agent calls:
+Runa's MCP server exposes one MCP tool per declared output artifact
+for the active protocol — the union of `produces` and `may_produce`,
+subject to runa's tool-generation rules. Each tool is derived from
+the artifact type:
+
+- **Name:** the artifact type name (e.g., `behavior-contract`,
+  `research-record`).
+- **Description:** runa's MCP server supplies a default description
+  naming the artifact type.
+- **Input schema:** the artifact's JSON Schema with `work_unit`
+  removed from `properties` and `required`, plus a required
+  `instance_id` string that names the artifact file.
+
+Not every artifact type is eligible for tool exposure — see
+[runa's interface contract](https://github.com/tesserine/runa/blob/main/docs/interface-contract.md)
+for the eligibility rules and how unscoped sessions interact with
+`work_unit`-bearing schemas.
+
+The agent calls one of these tools by its type name. Concretely, an
+agent inside a specify session producing a behavior-contract calls:
 
 ```
-produce("behavior-contract", {
+behavior-contract({
+  instance_id: "issue-221",
   title: "User authentication",
   scenarios: [
-    { name: "valid login", criterion: "users can log in",
-      given: "...", when: "...", then: "..." }
+    { name: "valid login",
+      criterion: "users can log in",
+      given: "a registered account",
+      when: "credentials are submitted",
+      then: "a session is established" }
   ]
 })
 ```
 
-The MCP server validates against the schema, writes to the workspace,
-and reports success or failure.
+The MCP server validates the payload, writes the artifact to the
+workspace under the chosen `instance_id`, and records it in runa's
+store. The agent never constructs filenames, writes to disk, or
+supplies `work_unit` for scoped artifacts.
 
 ### Schema vs tool interface
 
-The schema and the MCP tool interface are related but not identical.
+The artifact schema and the MCP tool input schema are related but
+not identical. The artifact schema is the full structure on disk —
+what runa validates and tracks. The tool input schema is that schema
+with one subtraction and one addition:
 
-The schema is the full artifact structure on disk — what runa validates
-and tracks. The tool interface is the schema minus what runa can infer
-from the active execution context.
+- **Server-supplied — `work_unit`.** Stripped from the tool's input
+  schema. When the artifact schema mentions `work_unit`, runa's MCP
+  server supplies it from the session context. The agent never
+  supplies it.
+- **Agent-supplied — `instance_id`.** Added to the tool's input
+  schema as a required string. Names the artifact instance; becomes
+  the filename `{type_name}/{instance_id}.json`. Not part of the
+  artifact's on-disk content.
 
-**work_unit** is the one field runa can always infer for protocol-
-produced artifacts. Runa activated this protocol for a specific work
-unit. The MCP server auto-populates work_unit from the execution
-context. The agent never supplies it.
-
-Skill-produced artifacts are the exception. Research-record is produced
-by the research skill, not by a protocol — no execution context exists
-for runa to infer from. When the agent produces a work-unit-scoped
-research-record, it supplies work_unit directly. When it produces
-cross-cutting research, it omits the field.
-
-Everything else in the schemas is the agent's cognitive output — runa
-cannot know it, the agent must supply it. The schemas work as tool
-interfaces with that one subtraction for protocol-produced artifacts.
+Everything else is cognitive output: the agent supplies it and runa
+validates it. The same mechanism applies to skill-produced artifacts
+— they reach runa's validated store through the active protocol's
+`may_produce` (see *Skill-Produced Artifacts and the `may_produce`
+Bridge* above). For a research-record produced during a scoped
+protocol session, runa's MCP server supplies `work_unit` the same
+way. Because `research-record.work_unit` is optional in the schema,
+the artifact also writes cleanly from an unscoped session.
 
 ### The liberation insight at the interface level
 
 The agent never touches the artifact system. Runa owns both input
 (context injection) and output (MCP validation and placement). The
-skill is liberated from infrastructure — free to do its cognitive
-work without fighting JSON Schema internals, file placement conventions,
-or state management.
+agent is liberated from infrastructure — free to do its cognitive
+work without fighting JSON Schema internals, file placement
+conventions, or state management.
 
 ## The MCP Server as Methodology Interface
+
+*The subsections below extend the interface pattern above. The
+inference of `work_unit` from execution context is today's behavior
+(see "Schema vs tool interface"). The simplifications it enables —
+`deliver(content)`, structured queries, cross-reference validation,
+progressive authoring — are design directions, not current behavior.*
 
 The MCP server is not just an artifact I/O layer. It is the agent's
 entire interface to the methodology. The agent doesn't know about runa,

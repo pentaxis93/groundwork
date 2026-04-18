@@ -54,7 +54,7 @@ name = "survey"
 requires = ["request"]
 accepts = ["research-record"]
 produces = ["requirements"]
-may_produce = []
+may_produce = ["research-record"]
 trigger = { type = "on_artifact", name = "request" }
 
 [[protocols]]
@@ -62,7 +62,7 @@ name = "decompose"
 requires = ["requirements"]
 accepts = ["research-record"]
 produces = ["issue"]
-may_produce = []
+may_produce = ["research-record"]
 trigger = { type = "on_artifact", name = "requirements" }
 
 [[protocols]]
@@ -80,7 +80,7 @@ scoped = true
 requires = ["claim", "issue"]
 accepts = ["research-record"]
 produces = ["behavior-contract"]
-may_produce = []
+may_produce = ["research-record"]
 trigger = { type = "on_artifact", name = "claim" }
 
 [[protocols]]
@@ -89,7 +89,7 @@ scoped = true
 requires = ["behavior-contract"]
 accepts = ["research-record"]
 produces = ["implementation-plan"]
-may_produce = []
+may_produce = ["research-record"]
 trigger = { type = "on_artifact", name = "behavior-contract" }
 
 [[protocols]]
