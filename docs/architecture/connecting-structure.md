@@ -500,70 +500,102 @@ persisted through runa:
 
 ## Agent Interface
 
-*This section is pending revision in #221 to reflect the may_produce
-bridge mechanism described above. Some statements below may not yet
-match the new model.*
-
 Two interfaces connect the agent to the artifact system. Both are
 owned by runa. The agent touches neither directly.
 
 ### Input: Context injection as prompt
 
-Runa constructs a prompt with all context pre-integrated. The skill
+Runa constructs a prompt with all context pre-integrated. The agent
 reads natural language, not JSON. The behavior-contract, implementation-
 plan, research-records are already woven into the context window.
-The skill doesn't parse artifacts or know about schemas.
+The agent doesn't parse artifacts or know about schemas.
 
-### Output: MCP tool for artifact production
+### Output: MCP tools for artifact production
 
-An MCP server exposes a tool the agent calls to deliver work products.
-Instead of constructing JSON and placing files, the agent calls:
+Runa-mcp exposes one MCP tool per declared output artifact for the
+active protocol — the union of `produces` and viable `may_produce`.
+Each tool is derived mechanically from the artifact type:
+
+- **Name:** the artifact type name (e.g., `behavior-contract`,
+  `research-record`).
+- **Description:** auto-generated as
+  `"Validate and write a {type_name} artifact to the workspace"`.
+- **Input schema:** the artifact's JSON Schema with `work_unit`
+  removed from `properties` and `required`, plus a required
+  `instance_id` string that names the artifact file.
+
+Two classes of artifact type are filtered out during tool generation:
+those with non-object root schemas, and those using composition
+keywords (`allOf`, `anyOf`, `oneOf`, `$ref`). A `may_produce` type is
+also filtered when the session has no `work_unit` and the schema
+requires one; a required `produces` type in the same situation causes
+the session to refuse to start rather than silently omit the tool.
+
+The agent calls one of these tools by its type name. Concretely, an
+agent inside a specify session producing a behavior-contract calls:
 
 ```
-produce("behavior-contract", {
+behavior-contract({
+  instance_id: "issue-221",
   title: "User authentication",
   scenarios: [
-    { name: "valid login", criterion: "users can log in",
-      given: "...", when: "...", then: "..." }
+    { name: "valid login",
+      criterion: "users can log in",
+      given: "a registered account",
+      when: "credentials are submitted",
+      then: "a session is established" }
   ]
 })
 ```
 
-The MCP server validates against the schema, writes to the workspace,
-and reports success or failure.
+The server validates `instance_id` against path-safety rules, injects
+`work_unit` from the session context if the artifact schema mentions
+it, validates the full payload against the original schema, writes
+`{type_name}/{instance_id}.json` into the workspace, and records the
+artifact in runa's store. The agent never constructs filenames,
+writes to disk, or supplies `work_unit` for scoped artifacts.
 
 ### Schema vs tool interface
 
-The schema and the MCP tool interface are related but not identical.
+The artifact schema and the MCP tool input schema are related but
+not identical. The artifact schema is the full structure on disk —
+what runa validates and tracks. The tool input schema is that schema
+with one subtraction and one addition:
 
-The schema is the full artifact structure on disk — what runa validates
-and tracks. The tool interface is the schema minus what runa can infer
-from the active execution context.
+- **Server-supplied — `work_unit`.** Stripped from the tool's input
+  schema. When the artifact schema mentions `work_unit`, runa-mcp
+  injects the session's work unit before validation. The agent never
+  supplies it.
+- **Agent-supplied — `instance_id`.** Added to the tool's input
+  schema as a required string. Names the artifact instance; becomes
+  the filename `{type_name}/{instance_id}.json`. Not part of the
+  artifact's on-disk content.
 
-**work_unit** is the one field runa can always infer for protocol-
-produced artifacts. Runa activated this protocol for a specific work
-unit. The MCP server auto-populates work_unit from the execution
-context. The agent never supplies it.
-
-Skill-produced artifacts are the exception. Research-record is produced
-by the research skill, not by a protocol — no execution context exists
-for runa to infer from. When the agent produces a work-unit-scoped
-research-record, it supplies work_unit directly. When it produces
-cross-cutting research, it omits the field.
-
-Everything else in the schemas is the agent's cognitive output — runa
-cannot know it, the agent must supply it. The schemas work as tool
-interfaces with that one subtraction for protocol-produced artifacts.
+Everything else is cognitive output: the agent supplies it and runa
+validates it. The same mechanism applies to skill-produced artifacts
+— they reach runa's validated store through the active protocol's
+`may_produce` (see *Skill-Produced Artifacts and the `may_produce`
+Bridge* above). For a research-record produced during a scoped
+protocol session the server injects `work_unit` the same way; because
+`research-record.work_unit` is optional in the schema, an unscoped
+session can still expose the tool and the agent simply omits the
+field.
 
 ### The liberation insight at the interface level
 
 The agent never touches the artifact system. Runa owns both input
 (context injection) and output (MCP validation and placement). The
-skill is liberated from infrastructure — free to do its cognitive
-work without fighting JSON Schema internals, file placement conventions,
-or state management.
+agent is liberated from infrastructure — free to do its cognitive
+work without fighting JSON Schema internals, file placement
+conventions, or state management.
 
 ## The MCP Server as Methodology Interface
+
+*The subsections below extrapolate where the MCP server could go —
+progressive authoring, pre-populated scaffolds, structured queries,
+richer inference from execution context. They are not current
+`runa-mcp` behavior; they are design directions taken from the
+interface pattern above.*
 
 The MCP server is not just an artifact I/O layer. It is the agent's
 entire interface to the methodology. The agent doesn't know about runa,
