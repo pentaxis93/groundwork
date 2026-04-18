@@ -345,7 +345,7 @@ trigger = { type = "on_artifact", name = "patch" }
 | documentation-record | document |
 | patch | submit |
 | completion-record | land |
-| research-record | research skill |
+| research-record | research skill (via `may_produce`; see below) |
 
 **Every type consumed.** All artifact types have at least one consumer
 except completion-record, which is the terminal archival artifact.
