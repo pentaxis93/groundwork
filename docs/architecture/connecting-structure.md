@@ -504,8 +504,7 @@ persisted through runa:
    `may_produce` if yes. This decision is independent of step 2.
 4. The skill itself does not need to declare anything for runa's
    sake — runa does not read skill frontmatter. (Skill frontmatter
-   serves the harness and methodology authors; see the skill-authoring
-   convention for what it should carry.)
+   serves the harness and methodology authors, not runa.)
 
 ## Agent Interface
 
