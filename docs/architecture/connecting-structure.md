@@ -356,18 +356,11 @@ for all ten protocols: the trigger is always the artifact that cannot
 exist until all earlier dependencies in the chain are satisfied.
 
 **Research-record is the sole skill-produced artifact in the protocol
-graph.** The research skill cognitively produces it. For each of
-survey, decompose, specify, and plan, two independent decisions
-happen to land the same way: the protocol `accepts` a research-record
-(so any existing instance is injected as context on activation), and
-the protocol declares `may_produce = ["research-record"]` (so the
-session's MCP server exposes a tool to write a fresh instance). These
-are separate per-protocol judgments, not the application of a mirroring
-rule. No protocol declares research-record in `produces`, because no
-protocol's completion depends on a research-record existing — the
-single-producer-at-the-`produces`-level property is preserved, and
-the skill-to-runa bridge operates at the `may_produce` level. See
-"Runtime Layers" and "Skill-Produced Artifacts and the `may_produce`
+graph.** No protocol declares it in `produces`, because no protocol's
+completion depends on a research-record existing. Four protocols
+declare it in `may_produce` so that, when an agent's research skill
+emits one mid-session, runa exposes a tool to validate and persist it.
+See "Runtime Layers" and "Skill-Produced Artifacts and the `may_produce`
 Bridge" below for the full mechanism. Research-record may carry
 `work_unit` when the research is specific to an issue; when it does,
 runa can scope it to the relevant work unit's context. When `work_unit`
@@ -481,12 +474,9 @@ author. There is no mirroring rule between the two fields; a future
 reader verifies the wiring by checking each declaration against the
 protocol's actual needs, not against the other field.
 
-In this manifest, research-record happens to fall into the "both" case
-for survey, decompose, specify, and plan — by per-protocol judgment
-about each one. Each of those protocols plausibly benefits from prior
-research as context and plausibly has reason to emit fresh research
-during its session. The other six protocols land differently by their
-own judgments: the artifact is neither accepted nor produced there.
+In the current manifest, research-record falls into the "both" case
+for survey, decompose, specify, and plan, and into "neither" for the
+other six.
 
 ### Authoring a new skill-produced artifact
 
@@ -503,8 +493,7 @@ persisted through runa:
    that protocol's session. Add the artifact to that protocol's
    `may_produce` if yes. This decision is independent of step 2.
 4. The skill itself does not need to declare anything for runa's
-   sake — runa does not read skill frontmatter. (Skill frontmatter
-   serves the harness and methodology authors, not runa.)
+   sake — runa does not read skill frontmatter.
 
 ## Agent Interface
 
@@ -595,11 +584,11 @@ conventions, or state management.
 
 ## The MCP Server as Methodology Interface
 
-*The subsections below extrapolate where the MCP server could go —
-progressive authoring, pre-populated scaffolds, structured queries,
-richer inference from execution context. They are not current
-behavior of runa's MCP server; they are design directions taken from
-the interface pattern above.*
+*The subsections below extend the interface pattern above. The
+inference of `work_unit` from execution context is today's behavior
+(see "Schema vs tool interface"). The simplifications it enables —
+`deliver(content)`, structured queries, cross-reference validation,
+progressive authoring — are design directions, not current behavior.*
 
 The MCP server is not just an artifact I/O layer. It is the agent's
 entire interface to the methodology. The agent doesn't know about runa,
