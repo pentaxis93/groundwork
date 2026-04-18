@@ -1,11 +1,11 @@
 ---
 name: verify
 description: >-
-  Use when about to claim work is complete, fixed, or passing. Use before
-  committing, creating PRs, or moving to the next task. Requires running
-  verification commands and confirming output before making any success
-  claims. Evidence before assertions, always. If you are about to say
-  something is done, working, fixed, or passing, this skill applies.
+  Activates on a `test-evidence` artifact and produces the
+  `completion-evidence` artifact — the aggregate behavior-coverage status
+  that gates downstream `document` and `submit`. The protocol's substantive
+  work is verifying that each acceptance criterion is actually met by fresh
+  evidence before any completion claim is made.
 metadata:
   version: "1.0.0"
   updated: "2026-03-09"
@@ -49,11 +49,12 @@ Skip any step = the claim has no basis
 
 ## Lifecycle Role
 
-This skill owns **aggregate completion claims** — the moment before you say
-"done." It fires after execution, before packaging work for review.
+This protocol owns **aggregate completion claims** — the moment before
+saying "done." It activates after `implement`, before `document` and
+`submit` package the work for review.
 
 It does not own per-test cycle evidence (that belongs to the `implement`
-discipline — each test watched failing, then passing). It owns the final
+protocol — each test watched failing, then passing). It owns the final
 gate: all tests pass, all requirements met, the build succeeds, the work is
 actually complete.
 
@@ -165,10 +166,10 @@ the claim — the claim does not select the evidence.
 ## Cross-References
 
 - `implement` owns per-test cycle evidence (each test watched failing, then
-  passing). This skill owns aggregate completion claims.
-- `document` review fires after code changes, before this skill's gate.
-  Documentation accuracy is completion evidence.
-- `submit` consumes this skill's output — work must be verified before
+  passing). This protocol owns aggregate completion claims.
+- `document` activates on the `completion-evidence` this protocol produces
+  and reviews documentation before packaging.
+- `submit` consumes this protocol's output — work must be verified before
   packaging for review.
 
 ## The Bottom Line

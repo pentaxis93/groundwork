@@ -20,9 +20,11 @@ trigger:
 
 # Survey
 
-Survey is the entry point for the autonomous groundwork pipeline. It is the one
-protocol the agent chooses to invoke for itself. The agent pulls the starter
-cord; once `requirements` exists, runa manages the downstream cascade.
+The `survey` protocol activates on a `request` artifact and produces the
+`requirements` artifact — the declaration of what needs doing for `decompose`
+to turn into issue-sized work units. The `request` artifact is the starter
+cord that sets the groundwork pipeline in motion; once `requirements` exists,
+runa carries the cascade downstream.
 
 Survey exists because "what needs doing here?" is the most dangerous judgment
 an unsupervised agent makes. This is where anchoring, pattern-matching, and
@@ -199,17 +201,14 @@ judgment about what should move forward first.
 
 ### write-requirements
 
-Write the `requirements` artifact using the required fields. The artifact is
-valid only if it preserves the inquiry that produced it. If the writing hides
-the reasoning, the survey has not been transmitted.
+Deliver the `requirements` artifact through the session's MCP tool named
+`requirements`. The agent supplies `instance_id` and the cognitive content —
+the surveyed territory, descriptive state, normative needs, chosen exigence,
+and the reasoning that produced them. The MCP server validates the payload
+against the artifact schema and writes it to the artifact store.
 
-## Invocation Pattern
-
-Survey triggers on a `request` artifact — an external input that enters the
-system as a change request, question, bug report, or feature idea. This is the
-entry point to the managed pipeline. Once `requirements` is produced, runa
-manages the downstream cascade through decompose and the execution-phase
-protocols.
+The artifact is valid only if it preserves the inquiry that produced it. If
+the writing hides the reasoning, the survey has not been transmitted.
 
 ## Corruption Modes
 

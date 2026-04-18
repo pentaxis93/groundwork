@@ -21,6 +21,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   describe the MCP-tool-per-declared-output-artifact mechanism at
   interface level, citing runa's interface contract for the
   internal filtering rules rather than restating them.
+- Nine PROTOCOL.md files reframed as runa-native protocols:
+  entrypoint language describes trigger-artifact activation;
+  artifact-producing protocols deliver outputs through the session's
+  MCP tool; self-description consistently uses "protocol" rather
+  than "skill" for runa-managed work. Closes #214, #216, #217, #219
+  and part of #213.
+- Forge interaction (gh CLI, git workflow, PR and forge-issue
+  management) extracted from protocol bodies. Protocols that
+  previously embedded forge mechanics (submit, land, decompose)
+  now delegate to the `forge` skill (#228). Closes #215, #218 and
+  part of #213.
 
 ## [0.1.0] — 2026-04-04
 

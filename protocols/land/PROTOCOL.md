@@ -1,10 +1,12 @@
 ---
 name: land
 description: >-
-  One-word closeout: land this branch. Closing ceremony verifies completion and
-  documentation before mechanical merge. Merge to main, sync, delete feature
-  branch, close satisfied issues, comment progress on partial issues.
-  Trigger on: 'land', 'land this', 'merge and close', 'ship it'.
+  Activates on a `patch` artifact and produces the `completion-record`
+  artifact — the terminal archival record of the work unit, carrying
+  criterion coverage summary, gaps, merge reference, and documentation
+  status. The protocol's substantive work is confirming the packaged change
+  is ready to land, obtaining the merge reference via the `forge` skill,
+  and delivering the `completion-record`.
 requires: ["patch"]
 accepts: ["completion-evidence", "behavior-contract", "documentation-record", "issue"]
 produces: ["completion-record"]
@@ -13,39 +15,27 @@ trigger:
   on_artifact: "patch"
 ---
 
-# Land — Close, Verify, Merge
+# Land
 
 ## Overview
 
-Use this skill when the user wants full delivery closure in one command.
+The `land` protocol activates on a `patch` artifact and produces the
+`completion-record` artifact — the terminal archival record of the work
+unit. By the time land activates, the full execution chain has already
+delivered its artifacts: `patch`, `completion-evidence`,
+`documentation-record`, `behavior-contract`, and `issue` are all in
+injected context.
 
-`land` operates in two phases:
+Land operates in two phases:
 
-- **Phase 0: Closing** — a ceremony that prepares the work for delivery. Four
-  steps mirror `begin`'s opening ceremony in reverse: gather context, verify
+- **Phase 0: Closing** — a ceremony that prepares the work for delivery.
+  Four steps mirror `begin`'s opening in reverse: gather context, verify
   acceptance, review documentation, seal the gate.
-- **Phase 1: Mechanical** — the merge-and-close sequence, gated by Phase 0.
+- **Phase 1: Mechanical** — the forge-delegated merge and the
+  `completion-record` delivery, gated by Phase 0.
 
-Phase 0 (gather, verify, review, seal) is to `land` what Phase 0 (orient,
-observe, frame, banish) is to `begin`. The opening ceremony prepares the agent
-for work; the closing ceremony prepares the work for delivery.
-
-Do not stop after merge — stopping leaves branches dangling and issues unclosed. The full sequence is atomic: ceremony through close.
-
-Do not ask for confirmation before landing. Invoking `land` IS the user's approval to execute the entire workflow.
-
----
-
-## Preconditions
-
-- Working tree must be clean before starting.
-- Current branch must not be `main`.
-- Issue numbers are optional:
-  - Prefer explicit user-provided issue number(s).
-  - Else infer from branch name using one of:
-    - `issue-<number>/<slug>` (single issue)
-    - `issues-<number>-<number>-.../<slug>` (multi-issue, unbounded)
-  - If no issue numbers are available, continue with the no-issue closeout path.
+Phase 0 prepares the work for delivery; `begin`'s opening prepares the
+agent for work. Parallel structure, inverse direction.
 
 ---
 
@@ -53,89 +43,52 @@ Do not ask for confirmation before landing. Invoking `land` IS the user's approv
 
 ### Phase 0: Closing
 
-The closing ceremony equips the landing with everything the mechanical phase
-needs: context about what was built and why, verification that acceptance
-criteria are met, confirmation that documentation reflects reality, and a gate
-that blocks merge until readiness is confirmed. Each step builds on the
-previous — gather loads context, verify checks acceptance, review checks
-documentation, seal confirms the gate.
+The closing ceremony equips the landing with everything the mechanical
+phase needs: context about what was built, verification that acceptance
+criteria are met, confirmation that documentation reflects reality, and a
+gate that blocks the mechanical merge until readiness is confirmed.
 
 Follows the closing sequence: gather → verify → review → seal.
 
 #### 0a. Gather
 
-Collect the full context of the work being landed.
-
-```
-◈ GATHER
-Branch: [name] | Issues: [numbers or none]
-Diff: [file count] files, [insertions]+/[deletions]-
-Commits: [count] ([oneline summaries])
-CHANGELOG: [present | missing — needs entry | not needed]
-```
-
-Implementation:
-- Confirm the current branch is not `main` and the working tree is clean. Record the feature branch name.
-- Extract issue numbers from the branch name:
-  - `issue-42/fix-login` → issue 42
-  - `issues-5-8/license-cleanup` → issues 5 and 8
-  - If neither the user nor the branch name provides issue numbers, mark the landing as no-issue.
-- Summarize the branch diff: `git diff origin/main...HEAD --stat`.
-- Summarize the commit log: `git log origin/main..HEAD --oneline`.
-- Check whether `CHANGELOG.md` appears in the branch diff (`git diff origin/main...HEAD --name-only`). The changelog is how users discover what changed between versions. Evaluate whether the branch changes are significant enough to warrant an entry. New features, behavior changes, bug fixes, and breaking changes generally belong in the changelog. Internal refactoring, typo fixes, and CI tweaks generally don't. If the changes look user-visible but no entry exists, flag it to the user before proceeding.
+Read the injected `patch` to recover the packaging context —
+`pr_reference`, `branch`, `commit`. In forge-targeting contexts, the
+`forge` skill can inspect branch state, diff, and commit history when the
+ceremony needs detail beyond what the `patch` carries.
 
 #### 0b. Verify
 
-Evaluate whether the branch changes satisfy acceptance criteria and all
-verification checks pass. This step runs pre-merge while the branch diff is
-available.
+Read the injected `completion-evidence`. Classify each acceptance criterion
+as `satisfied` (all covering scenarios pass) or `partial` (gap or failing
+scenario remains). The artifact already carries criterion-level coverage;
+no re-verification is needed here — that is `verify`'s work, upstream.
 
-```
-◈ VERIFY
-Criteria: [all met | partial — list remaining]
-```
-
-Implementation: invoke the `verify` skill. For
-issue-linked branches, fetch each target issue (`gh issue view`) and evaluate
-acceptance criteria against the branch diff. Classify each issue as satisfied
-(all criteria met) or partial (some remain). If no acceptance criteria can be
-extracted from the issue body, classify as partial — an issue without explicit
-criteria may have unstated requirements. If an issue fetch fails, treat that
-issue as partial and log a warning. For no-issue landings, skip acceptance
-criteria evaluation — `verify` still runs to confirm
-the work itself is complete. Store classifications for Phase 1e.
+If `completion-evidence` shows failures or uncovered criteria, the seal
+will block the mechanical phase until the upstream evidence is corrected.
 
 #### 0c. Review
 
-Confirm documentation reflects the changes being landed. This is mandatory —
-documentation drift blocks the seal.
+Read the injected `documentation-record`. Confirm coverage is present and
+drift is either fixed or tracked — the `updated_docs`,
+`verified_accurate_docs`, and `tracking_issues` fields tell the story. If
+a user-visible change lacks a CHANGELOG entry, flag before proceeding;
+the seal blocks on this.
 
-```
-◈ REVIEW
-Docs: [clean | fixed: list | tracked: issue numbers]
-```
-
-Implementation: invoke the `document` protocol's documentation-review
-procedure via the Skill tool. Check whether changed files affect areas with documentation artifacts
-(README, ARCHITECTURE, API docs). Fix drift directly and commit;
-file tracking issues for anything deeper. Record a coverage summary: each
-artifact checked, its status, and any action taken.
+Documentation review itself is `document`'s work, upstream. This step
+reads the record, does not re-run the review.
 
 #### 0d. Seal
 
-Gate check before mechanical merge. All three conditions must hold:
+Gate check before the mechanical phase. All three conditions must hold:
 
-1. Verification passed or all issues classified (Phase 0b complete)
-2. Documentation reviewed — drift fixed or tracked (Phase 0c complete)
-3. CHANGELOG entry present if changes are user-visible (Phase 0a flagged)
+1. Verification showed no failing scenarios and no uncovered criteria.
+2. Documentation record shows drift fixed or tracked.
+3. CHANGELOG entry present if the change is user-visible.
 
-```
-◈ SEAL
-[PASSED — proceed to Phase 1 | BLOCKED — list failures]
-```
-
-If the seal fails, fix the blocking issue(s) and re-evaluate. Do not proceed to
-Phase 1 until the seal passes.
+If the seal fails, the `completion-record` cannot be delivered. Report
+the blocking condition; the upstream protocol that produced the offending
+artifact must correct it before `land` can proceed.
 
 ### Phase 1: Mechanical
 
@@ -143,119 +96,74 @@ Gated by Phase 0. Do not enter this phase until the seal passes.
 
 #### 1a. Evaluate commit history for squash
 
-Examine the branch's commit history to decide whether to squash on merge. Use `git log origin/main..HEAD` variants to inspect commit subjects and touched files.
+Examine the branch's commit history to decide whether to squash on merge.
+Apply the cognitive framework, not mechanical rules:
 
-**Decision framework** (apply judgment, not mechanical rules):
+- **Squash when** the history is iterative refinement — a feature commit
+  followed by fix-ups that revise the same change: majority of commits are
+  fixes of the initial change, commits touch the same files, all share the
+  same scope/component.
+- **Preserve when** commits represent distinct work units — single-commit
+  branches, different components/scopes, multi-step features where each
+  step is meaningful independently.
 
-- **Squash when** the history is iterative refinement — a feature commit followed by fix-ups that revise the same change: majority of commits are fixes of the initial change, commits touch the same files, all share the same scope/component.
-- **Preserve when** commits represent distinct work units — single-commit branches, different components/scopes, multi-step features where each step is meaningful independently.
+Record the squash decision. If squashing, also draft a consolidated commit
+message using the conventional-commit prefix/scope from the initial
+commit.
 
-**When squashing**, draft a consolidated commit message: use the conventional-commit prefix/scope from the initial commit, summarize the consolidated change, don't enumerate squashed commits.
+#### 1b. Obtain the merge reference
 
-Record the squash decision. If squashing, also record the drafted commit message.
+In forge-targeting contexts, invoke the `forge` skill to:
 
-#### 1b. Discover PR number
+- Look up the PR for the feature branch.
+- Execute the merge through the forge's PR API (applying the squash
+  decision from step 1a).
+- Delete the feature branch.
+- Close or comment on the related forge issues — satisfied issues close;
+  partial issues get a progress comment listing remaining criteria.
 
-Look up the open PR for the feature branch (`gh pr list --head <branch> --state open`). This must happen before merge because `gh pr merge` requires the PR number. If no PR is found, fall back to local merge (step 1c fallback).
+The skill returns `merge_reference` (merge commit SHA or PR URL) and
+owns the gh/git cognitive method. The protocol-level contract is that a
+value for `merge_reference` exists after this step; without it, the
+`completion-record` cannot be delivered.
 
-#### 1c. Merge via PR API
+#### 1c. Deliver the `completion-record`
 
-Merge through GitHub's PR API so the PR is recorded as "merged," not just "closed." This is the primary merge path.
-
-1. Run `gh pr merge <number>` with the appropriate strategy flag: `--squash` if squashing (with `--subject` and `--body` for the drafted commit message), `--merge` if preserving history.
-2. Include `--delete-branch` to let GitHub clean up the remote branch.
-3. After the API merge completes, sync local state: `git checkout main`, `git pull --ff-only origin main`.
-4. Record the merge commit SHA from the local main HEAD for use in issue comments.
-
-**Why not local merge:** A local `git merge` + `git push` lands the code on main but bypasses GitHub's PR merge tracking. GitHub sees the PR's commits already on main and auto-closes the PR as "closed" rather than "merged" when the branch is deleted. This loses PR merge metadata and breaks PR history.
-
-##### 1c fallback: local merge (no PR exists)
-
-This path is only for branches that never had a PR — not a fallback for when `gh pr merge` fails. If the API merge fails, the failure policy applies (stop, don't retry locally).
-
-If no PR was found in step 1b, merge locally:
-
-1. Fetch and fast-forward `main` to match origin (`git fetch origin --prune`, `git checkout main`, `git pull --ff-only origin main`).
-2. Merge the feature branch. If squashing: `git merge --squash`, then `git commit` with the drafted message. If preserving: `git merge --no-ff`.
-3. Push `main` to origin.
-4. Record the merge commit SHA.
-
-#### 1d. Delete feature branch
-
-Delete any remaining branch references:
-- Remote: skip if `--delete-branch` was used in step 1c. Otherwise, `git push origin --delete <branch>` (tolerate failure if already gone).
-- Local: `git branch -D <branch>`. The `-D` flag (force delete) is required because squash merges don't record merge parentage, so `-d` refuses even though the content is safely on `main`.
-- Prune stale remote-tracking references: `git fetch origin --prune`.
-
-#### 1e. Comment and close issue(s) (issue-linked branches only)
-
-If no issues were provided or inferred, skip this step.
-
-Apply the classifications from Phase 0b.
-
-**For satisfied issues**, post a close comment and close the issue:
-
-> Implemented and merged in PR #`<number>` (commit `<sha>`). Closing as complete.
->
-> *(If no PR was found, omit the PR reference.)*
-
-Then close: `gh issue close <number> --reason completed`.
-
-**For partial issues**, post a progress comment but leave the issue open:
-
-> Progress from PR #`<number>` (commit `<sha>`):
->
-> **Delivered:**
-> - criterion 1
-> - criterion 2
->
-> **Remaining:**
-> - criterion 3
-
-If any comment or close operation fails, continue processing remaining issues, then report which operations failed.
-
-#### 1f. Verify and report
-
-Confirm success conditions:
-- Current branch is `main`
-- Working tree is clean
-- Feature branch absent on origin
-- PR state is `MERGED` (not just `CLOSED`)
-- For issue-linked landings: every satisfied issue state is `CLOSED`
-- For issue-linked landings: every partial issue has a progress comment listing remaining criteria
-- Documentation coverage summary reported
-
-Report the final state including:
-- Issue disposition:
-  - Issue-linked: satisfied (closed) and partial (open with remaining criteria)
-  - No-issue: explicitly report "no issue linked"
-- Documentation coverage summary from Phase 0c
-- Any warnings or failed operations from earlier steps
+Deliver the `completion-record` artifact through the session's MCP tool
+named `completion-record`. Runa supplies `work_unit` from execution
+context; the agent supplies `instance_id` and the cognitive content —
+`criterion_summary` (how the acceptance criteria were met), `gaps`
+(known gaps or deferred work, empty if none), `merge_reference` from
+step 1b, and `documentation_status` (summary of documentation coverage).
+The MCP server validates the payload against the artifact schema and
+writes it to the artifact store.
 
 ---
 
 ## Failure Policy
 
-- **Seal failure blocks Phase 1.** If the seal (Phase 0d) fails, fix the blocking issue(s) and re-enter the ceremony from the failed step. Do not proceed to mechanical merge until the seal passes.
-- If `gh pr merge` fails: stop immediately, do not close issue. If the failure is transient (network), retry once. If structural (merge conflict, check failure), report and stop. Do not fall back to local merge — the whole point of using the API is to preserve PR merge metadata.
-- If branch deletion fails after successful merge: warn about the deletion failure and continue to issue close/comment steps. The code is safely on `main`; branch cleanup is not a prerequisite for issue closure.
-- If issue comment/close API fails for one issue: continue processing remaining issues, then report failed issue number(s) explicitly.
-- If acceptance criteria evaluation fails in Phase 0b (issue fetch error, criteria unparseable): the inline handling applies — treat the issue as partial, log a warning. Partial classification does not block the seal; it flows through to Phase 1e where the issue is left open with a progress comment.
-- **Documentation drift blocks the seal.** Drift discovered in Phase 0c must be fixed directly or tracked via issue before the seal can pass. Do not proceed with unresolved drift.
-- If no issue numbers are available: do not prompt for issue IDs during `land`; proceed with merge/sync/cleanup and report a no-issue landing.
-- If commit history evaluation is uncertain: default to preserve (`--no-ff`). Squashing is an optimization; when in doubt, keep the original history.
+- **Seal failure blocks Phase 1.** If the seal (Phase 0d) fails, the
+  blocking condition must be corrected upstream. Do not proceed to the
+  mechanical phase.
+- **No merge reference available.** If the `forge` skill cannot produce
+  `merge_reference`, the `completion-record` cannot be delivered. Stop
+  and report.
+- **Documentation drift blocks the seal.** Drift discovered in Phase 0c
+  must be fixed or tracked before the seal can pass. Unresolved drift
+  blocks delivery.
 
 ---
 
 ## Cross-References
 
-- `begin`: the opening bookend — opening ceremony and session initiation before
-  implementation. `begin`'s opening ceremony (orient, observe, frame, banish)
-  prepares the agent for work; `land`'s closing ceremony (gather, verify, review,
-  seal) prepares the work for delivery. Parallel structure, inverse direction.
-- `submit` for the preceding phase: commit, push, and PR creation
-- `verify`: invoked during Phase 0b to evaluate
-  acceptance criteria and verify completion evidence before merge
-- `document`: invoked during Phase 0c for documentation-review — confirms
-  documentation reflects the changes being landed
-- `decompose` for issue lifecycle patterns and tracking issues from doc review
+- `submit`: the preceding protocol; `patch` is the trigger artifact this
+  protocol activates on.
+- `begin`: the opening bookend of the session lifecycle.
+- `verify`: produces the `completion-evidence` this protocol reads from
+  injected context for Phase 0b.
+- `document`: produces the `documentation-record` this protocol reads
+  from injected context for Phase 0c.
+- `decompose`: produces the `issue` artifact that thread-roots every
+  work unit this protocol finalizes.
+- `forge`: the skill that owns gh/git cognitive methods — invoked from
+  Phase 1b to produce the merge reference.

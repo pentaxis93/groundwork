@@ -1,9 +1,10 @@
 ---
 name: decompose
 description: >-
-  Transfer problem understanding across context boundaries through well-formed
-  issues. Use for creating, decomposing, refining, triaging, and closing issues
-  in GitHub projects.
+  Transfer problem understanding across context boundaries. Produces `issue`
+  artifacts — well-formed work units with scope, acceptance criteria, and
+  dependencies — that `begin` can claim and downstream execution protocols
+  thread through their work-unit chain.
 requires: ["requirements"]
 accepts: ["research-record"]
 produces: ["issue"]
@@ -155,21 +156,6 @@ A well-bounded task has:
 5. Flag stale issues (no progress for 14+ days) for review. Resolution:
    resume, split, or close as wont-fix with rationale.
 
-### close-issue
-
-1. Verify all acceptance criteria against implementation.
-2. Check scope deviations — split unintended extra work into new issues.
-3. Update parent epic checklist.
-4. Close with commit/PR reference (`Closes #N`).
-
-## Triggers
-
-- creating or refining issues
-- decomposing large goals into executable work
-- triaging or prioritizing a backlog
-- closing completed work
-- planning milestones or releases
-
 ## Corruption Modes
 
 - `implicit-how`: implementation prescription leaks into scope or criteria.
@@ -214,6 +200,6 @@ A well-bounded task has:
 - `begin`: session-level prioritization and execution discipline.
 - `specify`: behavior framing and test naming discipline.
 - `plan`: design convergence before implementation.
-- `land`: merge-and-close completion events.
+- `land`: the terminal protocol that records completion and closes the loop.
 - `document`: documentation updates as acceptance criteria for user-facing
   changes.

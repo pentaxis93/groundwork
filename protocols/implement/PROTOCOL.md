@@ -1,12 +1,11 @@
 ---
 name: implement
 description: >-
-  Use when implementing any feature or bugfix, before writing implementation
-  code. Enforces test-driven development through RED-GREEN-REFACTOR with
-  delete-and-start-over discipline. Fires when implementing behavior-contract-defined
-  behaviors, fixing bugs, refactoring, or any time production code is about
-  to be written. If you are about to write implementation code, this skill
-  applies.
+  Activates on an `implementation-plan` artifact and produces the
+  `test-evidence` artifact — per-scenario RED-GREEN-REFACTOR cycle results
+  mapped to behavior-contract scenarios. The protocol's substantive work is
+  executing TDD with delete-and-start-over discipline when the cycle is
+  violated.
 metadata:
   version: "1.0.0"
   updated: "2026-03-08"
@@ -43,7 +42,7 @@ Implement fresh from tests. No exceptions.
 
 ## Lifecycle Role
 
-This skill is the execution discipline in groundwork's topology. It sits
+This protocol is the execution discipline in groundwork's topology. It sits
 between behavior identification and completion verification:
 
 1. `specify` identifies what behaviors the system needs — sentence-named scenarios
@@ -53,9 +52,9 @@ between behavior identification and completion verification:
 3. `verify` gates the completion claim with
    behavior-level evidence.
 
-This skill owns per-test cycle evidence: each test was watched failing, then
-passing. It does not own aggregate completion evidence — that belongs to
-`verify`.
+This protocol owns per-test cycle evidence: each test was watched failing,
+then passing. It does not own aggregate completion evidence — that belongs
+to `verify`.
 
 ## Discipline
 
@@ -221,7 +220,7 @@ Execute the RED-GREEN-REFACTOR cycle for a behavior identified by `specify`.
 
 Enter the RED-GREEN-REFACTOR cycle from a bug report.
 
-1. If the root cause is unclear, invoke `debug` first — it owns
+1. If the root cause is unclear, invoke the `debug` skill first — it owns
    root-cause analysis methodology.
 2. Write a failing test that reproduces the bug. The test name describes the
    corrected behavior, not the bug.
@@ -339,13 +338,13 @@ skip the `implement` discipline are slower, not faster.
 
 ## Cross-References
 
-- `specify`: identifies behaviors before this skill executes the cycle. Each
-  RED test corresponds to a named behavior scenario from `specify`.
-- `verify`: owns behavior-level completion evidence.
-  This skill owns per-test cycle evidence (watched it fail, watched it pass).
-- `debug`: owns root-cause analysis. This skill provides the
-  entry point ("write a failing test reproducing the bug") but defers
-  methodology to `debug` when root cause is unclear.
+- `specify`: identifies behaviors before this protocol executes the cycle.
+  Each RED test corresponds to a named behavior scenario from `specify`.
+- `verify`: owns behavior-level completion evidence. This protocol owns
+  per-test cycle evidence (watched it fail, watched it pass).
+- `debug`: the root-cause analysis skill. This protocol provides the entry
+  point ("write a failing test reproducing the bug") but defers methodology
+  to `debug` when root cause is unclear.
 - `document`: doc comments and type annotations are written alongside
   code during GREEN and REFACTOR phases — they are implementation work,
   not afterthought.

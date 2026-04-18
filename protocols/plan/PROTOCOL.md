@@ -127,9 +127,12 @@ dangerous.
 Omit repeated repo facts and edge cases that cannot cause implementation
 mistakes.
 
-In interactive sessions, present the plan in the conversation for review.
-When producing a plan for handoff to another agent, write it to a file.
-(The topology contract will formalize artifact routing when implemented.)
+Deliver the `implementation-plan` artifact through the session's MCP tool
+named `implementation-plan`. Runa supplies `work_unit` from execution context;
+the agent supplies `instance_id` and the cognitive content — summary, design
+decisions, affected files, and the behavior mapping from scenarios to
+implementation steps. The MCP server validates the payload against the
+artifact schema and writes it to the artifact store.
 
 ## Corruption Modes
 
