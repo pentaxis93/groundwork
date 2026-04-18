@@ -6,6 +6,22 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Changed
+
+- Four planning/specification protocols (survey, decompose, specify,
+  plan) now declare `may_produce = ["research-record"]` in
+  `manifest.toml`. With this wiring, an agent inside any of these
+  protocol sessions can persist a fresh research-record through runa
+  rather than producing it as a loose skill artifact.
+- Canonical reference (`docs/architecture/connecting-structure.md`)
+  gains Runtime Layers and Skill-Produced Artifacts sections that
+  document the four-layer agentd/harness/runa/groundwork model and
+  the `may_produce` bridge from skill output into runa's validated
+  artifact store. The Agent Interface section is rewritten to
+  describe the MCP-tool-per-declared-output-artifact mechanism at
+  interface level, citing runa's interface contract for the
+  internal filtering rules rather than restating them.
+
 ## [0.1.0] — 2026-04-04
 
 First release. Groundwork is a methodology plugin for

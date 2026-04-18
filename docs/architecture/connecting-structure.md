@@ -360,8 +360,8 @@ graph.** The research skill cognitively produces it. For each of
 survey, decompose, specify, and plan, two independent decisions
 happen to land the same way: the protocol `accepts` a research-record
 (so any existing instance is injected as context on activation), and
-the protocol declares `may_produce = ["research-record"]` (so runa-mcp
-exposes a tool to write a fresh instance during the session). These
+the protocol declares `may_produce = ["research-record"]` (so the
+session's MCP server exposes a tool to write a fresh instance). These
 are separate per-protocol judgments, not the application of a mirroring
 rule. No protocol declares research-record in `produces`, because no
 protocol's completion depends on a research-record existing — the
@@ -430,23 +430,28 @@ which always runs under some active runa protocol. The harness
 invokes the skill, the agent does the skill's cognitive work, and the
 skill may cognitively produce an artifact-shaped output — a
 research-record in the concrete case. For that output to enter runa's
-validated artifact store, runa-mcp must expose a tool that writes it,
-and runa-mcp will only expose such a tool when the active protocol
-declares the artifact type in its `may_produce` field.
+validated artifact store, the active protocol must declare the
+artifact type in its `may_produce` field. Runa's interface contract
+then guarantees that each declared output artifact is exposed as an
+MCP tool during the protocol session.
 
 This is the bridge:
 
 - `produces`: the artifact a protocol's completion depends on. Runa
-  requires it before the protocol ends; runa-mcp exposes a tool for it.
+  requires it before the protocol ends; the session's MCP server
+  exposes a tool for it.
 - `may_produce`: an artifact a protocol may optionally emit during
   execution, typically by a skill invoked inside the session. Runa
-  does not require it; runa-mcp exposes a tool for it.
+  does not require it; the session's MCP server exposes a tool for it.
 
-From runa-mcp's perspective the two fields are symmetric for tool
-generation — one tool per declared output artifact, named after the
-type, with the artifact's schema as the tool's input schema. The
-distinction is semantic: `produces` is the protocol's capstone,
-`may_produce` is the protocol's sanctioned side-emission surface.
+At the interface level, the two fields are symmetric: one tool per
+declared output artifact, named after the type, with the artifact's
+schema as the tool's input schema. The distinction is semantic:
+`produces` is the protocol's capstone, `may_produce` is the
+protocol's sanctioned side-emission surface. (See
+[runa's interface contract](https://github.com/tesserine/runa/blob/main/docs/interface-contract.md)
+for the derivation rules runa's MCP server applies to artifact
+schemas when generating tool input schemas.)
 
 ### `accepts` and `may_produce` as independent declarations
 
@@ -456,7 +461,7 @@ answer two different questions:
 - `accepts` answers: "if a valid instance of this artifact exists when
   I activate, inject it into my context."
 - `may_produce` answers: "during my session, the agent may need to
-  produce a fresh instance of this — expose a runa-mcp tool for it."
+  produce a fresh instance of this — expose an MCP tool for it."
 
 For any protocol/artifact pair, the two decisions are made separately.
 All four combinations are legitimate:
@@ -516,24 +521,23 @@ The agent doesn't parse artifacts or know about schemas.
 
 ### Output: MCP tools for artifact production
 
-Runa-mcp exposes one MCP tool per declared output artifact for the
-active protocol — the union of `produces` and viable `may_produce`.
-Each tool is derived mechanically from the artifact type:
+Runa's MCP server exposes one MCP tool per declared output artifact
+for the active protocol — the union of `produces` and `may_produce`,
+subject to runa's tool-generation rules. Each tool is derived from
+the artifact type:
 
 - **Name:** the artifact type name (e.g., `behavior-contract`,
   `research-record`).
-- **Description:** auto-generated as
-  `"Validate and write a {type_name} artifact to the workspace"`.
+- **Description:** runa's MCP server supplies a default description
+  naming the artifact type.
 - **Input schema:** the artifact's JSON Schema with `work_unit`
   removed from `properties` and `required`, plus a required
   `instance_id` string that names the artifact file.
 
-Two classes of artifact type are filtered out during tool generation:
-those with non-object root schemas, and those using composition
-keywords (`allOf`, `anyOf`, `oneOf`, `$ref`). A `may_produce` type is
-also filtered when the session has no `work_unit` and the schema
-requires one; a required `produces` type in the same situation causes
-the session to refuse to start rather than silently omit the tool.
+Not every artifact type is eligible for tool exposure — see
+[runa's interface contract](https://github.com/tesserine/runa/blob/main/docs/interface-contract.md)
+for the eligibility rules and how unscoped sessions interact with
+`work_unit`-bearing schemas.
 
 The agent calls one of these tools by its type name. Concretely, an
 agent inside a specify session producing a behavior-contract calls:
@@ -552,12 +556,10 @@ behavior-contract({
 })
 ```
 
-The server validates `instance_id` against path-safety rules, injects
-`work_unit` from the session context if the artifact schema mentions
-it, validates the full payload against the original schema, writes
-`{type_name}/{instance_id}.json` into the workspace, and records the
-artifact in runa's store. The agent never constructs filenames,
-writes to disk, or supplies `work_unit` for scoped artifacts.
+The MCP server validates the payload, writes the artifact to the
+workspace under the chosen `instance_id`, and records it in runa's
+store. The agent never constructs filenames, writes to disk, or
+supplies `work_unit` for scoped artifacts.
 
 ### Schema vs tool interface
 
@@ -567,8 +569,8 @@ what runa validates and tracks. The tool input schema is that schema
 with one subtraction and one addition:
 
 - **Server-supplied — `work_unit`.** Stripped from the tool's input
-  schema. When the artifact schema mentions `work_unit`, runa-mcp
-  injects the session's work unit before validation. The agent never
+  schema. When the artifact schema mentions `work_unit`, runa's MCP
+  server supplies it from the session context. The agent never
   supplies it.
 - **Agent-supplied — `instance_id`.** Added to the tool's input
   schema as a required string. Names the artifact instance; becomes
@@ -580,10 +582,9 @@ validates it. The same mechanism applies to skill-produced artifacts
 — they reach runa's validated store through the active protocol's
 `may_produce` (see *Skill-Produced Artifacts and the `may_produce`
 Bridge* above). For a research-record produced during a scoped
-protocol session the server injects `work_unit` the same way; because
-`research-record.work_unit` is optional in the schema, an unscoped
-session can still expose the tool and the agent simply omits the
-field.
+protocol session, runa's MCP server supplies `work_unit` the same
+way. Because `research-record.work_unit` is optional in the schema,
+the artifact also writes cleanly from an unscoped session.
 
 ### The liberation insight at the interface level
 
@@ -598,8 +599,8 @@ conventions, or state management.
 *The subsections below extrapolate where the MCP server could go —
 progressive authoring, pre-populated scaffolds, structured queries,
 richer inference from execution context. They are not current
-`runa-mcp` behavior; they are design directions taken from the
-interface pattern above.*
+behavior of runa's MCP server; they are design directions taken from
+the interface pattern above.*
 
 The MCP server is not just an artifact I/O layer. It is the agent's
 entire interface to the methodology. The agent doesn't know about runa,
