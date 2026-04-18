@@ -356,12 +356,14 @@ for all ten protocols: the trigger is always the artifact that cannot
 exist until all earlier dependencies in the chain are satisfied.
 
 **Research-record is the sole skill-produced artifact in the protocol
-graph.** The research skill cognitively produces it.
-Four protocols — survey, decompose, specify, plan — declare
-`may_produce = ["research-record"]`, so runa-mcp exposes a tool for
-writing a validated research-record during those protocols' sessions.
-Those same four protocols also `accepts` it as contextual enrichment.
-No protocol declares research-record in `produces`, because no
+graph.** The research skill cognitively produces it. For each of
+survey, decompose, specify, and plan, two independent decisions
+happen to land the same way: the protocol `accepts` a research-record
+(so any existing instance is injected as context on activation), and
+the protocol declares `may_produce = ["research-record"]` (so runa-mcp
+exposes a tool to write a fresh instance during the session). These
+are separate per-protocol judgments, not the application of a mirroring
+rule. No protocol declares research-record in `produces`, because no
 protocol's completion depends on a research-record existing — the
 single-producer-at-the-`produces`-level property is preserved, and
 the skill-to-runa bridge operates at the `may_produce` level. See
@@ -446,41 +448,40 @@ type, with the artifact's schema as the tool's input schema. The
 distinction is semantic: `produces` is the protocol's capstone,
 `may_produce` is the protocol's sanctioned side-emission surface.
 
-### Default pattern: accepts and may_produce move together
+### `accepts` and `may_produce` as independent declarations
 
-When a skill-produced artifact is intended to flow into subsequent
-protocols' context (i.e., later protocols `accepts` it), the default
-manifest pattern is mirrored declarations: a protocol either carries
-the artifact in both `accepts` and `may_produce`, or in neither.
+`accepts` and `may_produce` are two independent declarations that
+answer two different questions:
 
-This yields a verifiable correspondence between two manifest fields
-— a future reader can check it mechanically rather than reckoning
-protocol-by-protocol whether a skill should be reachable.
+- `accepts` answers: "if a valid instance of this artifact exists when
+  I activate, inject it into my context."
+- `may_produce` answers: "during my session, the agent may need to
+  produce a fresh instance of this — expose a runa-mcp tool for it."
 
-The concrete application in this manifest: `research-record` is
-accepted by `survey`, `decompose`, `specify`, and `plan`, and those
-same four protocols declare it in `may_produce`. An agent invoking
-the research skill during any of those protocols can deliver a
-validated research-record, and that record is available to every
-downstream protocol that accepts it.
+For any protocol/artifact pair, the two decisions are made separately.
+All four combinations are legitimate:
 
-### Non-default configurations
+- **Neither.** The protocol neither reads the artifact on activation
+  nor writes a fresh instance during its session.
+- **`accepts` only.** The protocol reads an existing instance as
+  context but does not produce new instances — a read-only consumer.
+- **`may_produce` only.** The protocol writes a fresh instance during
+  its session but does not read prior instances into its activation
+  context — a protocol-internal emission.
+- **Both.** The protocol reads prior instances and may also emit
+  fresh ones.
 
-The mirrored-declarations default is not universal. Two exceptions
-are possible:
+Each protocol/artifact pair is a separate judgment by the methodology
+author. There is no mirroring rule between the two fields; a future
+reader verifies the wiring by checking each declaration against the
+protocol's actual needs, not against the other field.
 
-- **Protocol-internal skill outputs.** A skill output that should
-  not flow downstream may appear in `may_produce` without appearing
-  in any protocol's `accepts`. Runa validates it, but no later
-  protocol receives it as injected context.
-- **Read-only consumers.** A protocol that `accepts` an artifact but
-  should not produce new instances of it (because the artifact is
-  structurally upstream or produced only by specific protocols) may
-  legitimately omit it from `may_produce`.
-
-The default pattern applies when a skill's output is a cross-cutting
-enrichment of the protocol topology. Deviations should be justified
-explicitly where they occur.
+In this manifest, research-record happens to fall into the "both" case
+for survey, decompose, specify, and plan — by per-protocol judgment
+about each one. Each of those protocols plausibly benefits from prior
+research as context and plausibly has reason to emit fresh research
+during its session. The other six protocols land differently by their
+own judgments: the artifact is neither accepted nor produced there.
 
 ### Authoring a new skill-produced artifact
 
@@ -489,10 +490,13 @@ persisted through runa:
 
 1. Declare the artifact type in `[[artifact_types]]` and define its
    schema in `schemas/`.
-2. Decide which protocols the skill's output should enrich. List the
-   artifact in each of those protocols' `accepts`.
-3. By default, mirror that set into each of those protocols'
-   `may_produce`. Deviate only with justification.
+2. For each protocol, judge separately whether prior instances of the
+   artifact should enrich its activation context. Add the artifact to
+   that protocol's `accepts` if yes.
+3. For each protocol, judge separately whether the agent could
+   plausibly need to produce a fresh instance of the artifact during
+   that protocol's session. Add the artifact to that protocol's
+   `may_produce` if yes. This decision is independent of step 2.
 4. The skill itself does not need to declare anything for runa's
    sake — runa does not read skill frontmatter. (Skill frontmatter
    serves the harness and methodology authors; see the skill-authoring
