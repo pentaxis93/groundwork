@@ -217,7 +217,7 @@ name = "survey"
 requires = ["request"]
 accepts = ["research-record"]
 produces = ["requirements"]
-may_produce = []
+may_produce = ["research-record"]
 trigger = { type = "on_artifact", name = "request" }
 
 [[protocols]]
@@ -225,7 +225,7 @@ name = "decompose"
 requires = ["requirements"]
 accepts = ["research-record"]
 produces = ["issue"]
-may_produce = []
+may_produce = ["research-record"]
 trigger = { type = "on_artifact", name = "requirements" }
 
 [[protocols]]
@@ -243,7 +243,7 @@ scoped = true
 requires = ["claim", "issue"]
 accepts = ["research-record"]
 produces = ["behavior-contract"]
-may_produce = []
+may_produce = ["research-record"]
 trigger = { type = "on_artifact", name = "claim" }
 
 [[protocols]]
@@ -252,7 +252,7 @@ scoped = true
 requires = ["behavior-contract"]
 accepts = ["research-record"]
 produces = ["implementation-plan"]
-may_produce = []
+may_produce = ["research-record"]
 trigger = { type = "on_artifact", name = "behavior-contract" }
 
 [[protocols]]
@@ -356,10 +356,17 @@ for all ten protocols: the trigger is always the artifact that cannot
 exist until all earlier dependencies in the chain are satisfied.
 
 **Research-record is the sole skill-produced artifact in the protocol
-graph.** No protocol produces it. The research skill (agent-managed)
-produces it. Four protocols accept it as contextual enrichment. Runa
-validates research-records against the schema when they appear but
-never orchestrates their production. Research-record may carry
+graph.** The research skill (harness-managed) cognitively produces it.
+Four protocols — survey, decompose, specify, plan — declare
+`may_produce = ["research-record"]`, so runa-mcp exposes a tool for
+writing a validated research-record during those protocols' sessions.
+Those same four protocols also `accepts` it as contextual enrichment.
+No protocol declares research-record in `produces`, because no
+protocol's completion depends on a research-record existing — the
+single-producer-at-the-`produces`-level property is preserved, and
+the skill-to-runa bridge operates at the `may_produce` level. See
+"Runtime Layers" and "Skill-Produced Artifacts and the `may_produce`
+Bridge" below for the full mechanism. Research-record may carry
 `work_unit` when the research is specific to an issue; when it does,
 runa can scope it to the relevant work unit's context. When `work_unit`
 is absent, the research is cross-cutting. This is the two-population
@@ -374,6 +381,124 @@ protocols (plan, implement, verify). issue is required by three
 protocols (begin, specify, verify). These are the central artifacts
 of the execution phase — the behavioral spec and the acceptance
 criteria it traces to.
+
+## Runtime Layers
+
+Groundwork is methodology content, not a runtime. A working agent
+session runs across four distinct layers, each with a narrow
+responsibility.
+
+**agentd.** Session lifecycle: starting and supervising the agent
+process, preparing the environment, injecting identity. Opaque to
+methodology content — agentd knows only that a given profile uses
+methodology X, not what that methodology contains.
+
+**Harness** (claude code, codex, and similar). Runs the agent loop,
+mediates tool calls, and — critically for this document —
+**loads and invokes skills**. Skills live at the harness layer
+operationally: they are markdown files the harness reads into the
+agent's context on activation, and the harness is what decides, based
+on the agent's judgment and the harness's own activation rules, when
+to invoke them. Runa does not see skills; they are not part of runa's
+contract.
+
+**Runa.** The cognitive runtime. Its interface to groundwork is three
+primitives only: artifact types, protocol declarations, and trigger
+conditions. Runa orchestrates protocols, validates artifacts against
+their schemas, and injects context when a protocol activates. It
+derives all workflow state from artifacts on disk. Runa does not know
+about skills, does not know about the harness, and does not participate
+in agent cognition.
+
+**Groundwork.** The methodology content itself: protocols (runa-managed,
+declared in the manifest), skills (harness-managed, not declared in
+the manifest), schemas (what runa validates against), and the manifest
+that wires the topology. This repository.
+
+The important boundary for the rest of this document: **skills and
+runa are disjoint worlds** — runa never sees a skill, and a skill has
+no direct channel to runa. Anything a skill produces that needs to
+enter runa's validated artifact store must cross through an active
+protocol session. The next section describes the specific mechanism.
+
+## Skill-Produced Artifacts and the `may_produce` Bridge
+
+A skill can be loaded by the harness only during an agent session,
+which always runs under some active runa protocol. The harness
+invokes the skill, the agent does the skill's cognitive work, and the
+skill may cognitively produce an artifact-shaped output — a
+research-record in the concrete case. For that output to enter runa's
+validated artifact store, runa-mcp must expose a tool that writes it,
+and runa-mcp will only expose such a tool when the active protocol
+declares the artifact type in its `may_produce` field.
+
+This is the bridge:
+
+- `produces`: the artifact a protocol's completion depends on. Runa
+  requires it before the protocol ends; runa-mcp exposes a tool for it.
+- `may_produce`: an artifact a protocol may optionally emit during
+  execution, typically by a skill invoked inside the session. Runa
+  does not require it; runa-mcp exposes a tool for it.
+
+From runa-mcp's perspective the two fields are symmetric for tool
+generation — one tool per declared output artifact, named after the
+type, with the artifact's schema as the tool's input schema. The
+distinction is semantic: `produces` is the protocol's capstone,
+`may_produce` is the protocol's sanctioned side-emission surface.
+
+### Default pattern: `accepts ⊇ may_produce`
+
+When a skill-produced artifact is intended to flow into subsequent
+protocols' context (i.e., later protocols `accepts` it), the default
+manifest pattern is:
+
+> Every protocol that `accepts` the artifact also declares it in
+> `may_produce`.
+
+This yields a verifiable correspondence between two manifest fields
+— a future reader can check it mechanically rather than reckoning
+protocol-by-protocol whether a skill should be reachable.
+
+The concrete application in this manifest: `research-record` is
+accepted by `survey`, `decompose`, `specify`, and `plan`, and those
+same four protocols declare it in `may_produce`. An agent invoking
+the research skill during any of those protocols can deliver a
+validated research-record, and that record is available to every
+downstream protocol that accepts it.
+
+### Non-default configurations
+
+The `accepts ⊇ may_produce` rule is not universal. Two exceptions
+are possible:
+
+- **Protocol-internal skill outputs.** A skill output that should
+  not flow downstream may appear in `may_produce` without appearing
+  in any protocol's `accepts`. Runa validates it, but no later
+  protocol receives it as injected context.
+- **Read-only consumers.** A protocol that `accepts` an artifact but
+  should not produce new instances of it (because the artifact is
+  structurally upstream or produced only by specific protocols) may
+  legitimately omit it from `may_produce`.
+
+The default pattern applies when a skill's output is a cross-cutting
+enrichment of the protocol topology. Deviations should be justified
+explicitly where they occur.
+
+### Authoring a new skill-produced artifact
+
+For a methodology author wiring a new skill whose output should be
+persisted through runa:
+
+1. Declare the artifact type in `[[artifact_types]]` and define its
+   schema in `schemas/`.
+2. Decide which protocols the skill's output should enrich. List the
+   artifact in each of those protocols' `accepts`.
+3. By default, mirror that set into each of those protocols'
+   `may_produce`. Deviate only with justification.
+4. The skill itself does not need to declare anything for runa's
+   sake — runa does not read skill frontmatter. (Skill frontmatter
+   serves the harness and methodology authors; see the skill-authoring
+   convention for what it should carry.)
 
 ## Agent Interface
 
