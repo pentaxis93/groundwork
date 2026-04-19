@@ -2,7 +2,7 @@
 name: decompose
 description: >-
   Transfer problem understanding across context boundaries through well-formed
-  work units. Use for creating, decomposing, refining, triaging, and closing GitHub issues
+  work units. Use for creating, decomposing, refining, triaging, and closing work units
   in GitHub projects.
 requires: ["requirements"]
 accepts: ["research-record"]
@@ -92,7 +92,7 @@ the earlier discussion" to understand, it is incomplete.
 
 ## Procedures
 
-### create-issue
+### create-work-unit
 
 1. Reckon constraints. Before framing the work unit, establish what is
    actually needed — verified constraints, not inherited assumptions.
@@ -146,7 +146,7 @@ A well-bounded task has:
 4. Re-verify the central discipline — does any criterion or scope statement
    prescribe an implementation approach?
 
-### triage-issues
+### triage-work-units
 
 1. Refine non-ready work units first.
 2. Build dependency graph for the backlog.
@@ -158,13 +158,13 @@ A well-bounded task has:
 ### close-work-unit
 
 1. Verify all acceptance criteria against implementation.
-2. Check scope deviations — split unintended extra work into new issues.
+2. Check scope deviations — split unintended extra work into new work units.
 3. Update parent epic checklist.
 4. Close with commit/PR reference (`Closes #N`).
 
 ## Triggers
 
-- creating or refining issues
+- creating or refining work units
 - decomposing large goals into executable work
 - triaging or prioritizing a backlog
 - closing completed work
@@ -195,8 +195,8 @@ A well-bounded task has:
   *Recognition: if you cannot state the epic's done condition in one sentence,
   it is too broad.*
 
-- `premature-issues`: filing detailed task issues for work that depends on
-  unresolved design decisions. The issues will need rewriting when the
+- `premature-work-units`: filing detailed task work units for work that depends on
+  unresolved design decisions. The work units will need rewriting when the
   decisions land.
   *Recognition: if the work unit's scope would change based on an open question,
   the question must be answered first (spike work unit).*

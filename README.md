@@ -108,7 +108,7 @@ symptoms.
 **Friction is structural.** Workarounds compound debt. Operational friction — a
 missing tool, broken configuration, stale convention — gets resolved
 structurally before work continues. Friction that exceeds side-quest scope
-becomes an issue.
+becomes a work unit.
 → [`skills/resolve/SKILL.md`](skills/resolve/SKILL.md)
 
 ## What the Repo Contains

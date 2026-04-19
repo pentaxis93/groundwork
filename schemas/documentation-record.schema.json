@@ -2,9 +2,9 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://raw.githubusercontent.com/pentaxis93/groundwork/main/schemas/documentation-record.schema.json",
   "title": "Documentation Record",
-  "description": "Validates the content of a documentation-record artifact. Records which docs were updated, which were verified accurate, and which were deferred to tracking issues.",
+  "description": "Validates the content of a documentation-record artifact. Records which docs were updated, which were verified accurate, and which were deferred to tracking work-units.",
   "type": "object",
-  "required": ["work_unit", "updated_docs", "verified_accurate_docs", "tracking_issues"],
+  "required": ["work_unit", "updated_docs", "verified_accurate_docs", "tracking_work_units"],
   "additionalProperties": false,
   "properties": {
     "work_unit": {
@@ -28,9 +28,9 @@
         "minLength": 1
       }
     },
-    "tracking_issues": {
+    "tracking_work_units": {
       "type": "array",
-      "description": "Issues filed for documentation follow-up.",
+      "description": "Work-units filed for documentation follow-up.",
       "items": {
         "type": "string",
         "minLength": 1

@@ -20,7 +20,7 @@ State is determined by reading GitHub issue content, not forge metadata (labels,
 | draft       | Intent captured, not yet agent-executable     | GitHub issue created without full criteria | Criteria, scope, and size filled in |
 | ready       | Agent-executable and unblocked                | All fields complete, deps closed   | Session claims it                   |
 | in-progress | Active session is working on it               | Session declares goal against it   | Session closes or blocks            |
-| blocked     | Waiting on one or more open dependencies      | Dependency discovered or reopened  | All blocking issues closed          |
+| blocked     | Waiting on one or more open dependencies      | Dependency discovered or reopened  | All blocking work units closed      |
 | closed      | All acceptance criteria verified              | Verified and merged                | Reopened for regression             |
 | stale       | No progress for 14+ days while still open     | Clock expires                      | Resumed, split, or closed as wont-fix |
 
@@ -46,7 +46,7 @@ Epics with 4+ tasks include a dependency graph in two representations:
 
 ## Graph Maintenance
 
-- **Stale detection**: flag issues with no progress comment for 14+ days. Resolution: resume, split into smaller work, or close as wont-fix with rationale.
+- **Stale detection**: flag work units with no progress comment for 14+ days. Resolution: resume, split into smaller work, or close as wont-fix with rationale.
 - **Splitting**: when an in-progress work unit exceeds session size, split remaining work into new work units and close the original with a pointer.
-- **Merging**: when two issues converge on the same deliverable, merge into one and close the duplicate with a cross-reference.
-- **Validation after mutation**: after adding, closing, splitting, or merging issues, verify the graph has no orphaned dependencies or cycles.
+- **Merging**: when two work units converge on the same deliverable, merge into one and close the duplicate with a cross-reference.
+- **Validation after mutation**: after adding, closing, splitting, or merging work units, verify the graph has no orphaned dependencies or cycles.

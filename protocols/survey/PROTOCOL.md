@@ -44,7 +44,7 @@ exigence before separating descriptive truth from normative need. You cannot
 recommend work before rejecting the frames that would distort it.
 
 The depth of each step scales with the territory. A tiny repo with three open
-issues and a clear README may need only a light survey. An unfamiliar codebase
+work units and a clear README may need only a light survey. An unfamiliar codebase
 with no documentation, contested boundaries, or weak evidence needs a deeper
 one. The requirement is honest coverage of the territory at hand, not ritual
 completion of every step at maximum depth.
@@ -74,7 +74,7 @@ actually examined.
 
 ### `descriptive-state`
 
-Observed facts about what exists now: code, docs, issues, workflows,
+Observed facts about what exists now: code, docs, work units, workflows,
 architecture, operator signals, and evidence gathered from the territory.
 
 This forces observation before prescription. It resists fantasy, premature
@@ -114,7 +114,7 @@ the first plausible frame must be the right one.
 
 ### `recommended-work`
 
-The bounded work package that `decompose` should turn into executable issues.
+The bounded work package that `decompose` should turn into executable work units.
 
 This forces translation from assessment into action. It resists purely
 descriptive reporting that never crosses into an actionable body of work.
@@ -150,7 +150,7 @@ else is safe to claim.
 
 ### observe-descriptive-state
 
-Gather evidence about what exists. Read the relevant code, docs, issues,
+Gather evidence about what exists. Read the relevant code, docs, work units,
 artifacts, and system signals. Use `research` when local evidence is
 insufficient.
 
@@ -185,7 +185,7 @@ Ask:
   exists?
 - Am I projecting a familiar repo pattern onto this one?
 - Am I trying to fix everything?
-- Am I retreating to the safest visible surface issue?
+- Am I retreating to the safest visible surface work unit?
 
 Record the alternatives that fail this scrutiny and why they were rejected.
 
@@ -213,9 +213,9 @@ protocols.
 
 ## Corruption Modes
 
-**Backlog anchoring.** The assessment merely restates the open issues as "what
+**Backlog anchoring.** The assessment merely restates the open work units as "what
 needs doing."
-*Recognition:* Remove the issue list and the survey says nothing different.
+*Recognition:* Remove the work-unit list and the survey says nothing different.
 
 **Architecture legitimism.** The assessment treats the current structure as
 evidence that the structure is correct.
@@ -228,7 +228,7 @@ this kind of repo instead of reading this repo.
 assessment would still read the same.
 
 **Scope collapse.** The survey either tries to fix everything or picks only the
-nearest surface issue.
+nearest surface work unit.
 *Recognition:* The chosen exigence is either unbounded or trivially local.
 
 **Descriptive-normative confusion.** What exists is reported as if it were what
@@ -246,6 +246,6 @@ rejection, or judgment.
   for deriving normative need.
 - `research`: evidence gathering when local inspection is insufficient.
 - `decompose`: consumes `requirements` and turns the selected work into executable
-  issues.
+  work units.
 - `take`: starts a session once the work-unit graph reflects the work chosen
   through survey.

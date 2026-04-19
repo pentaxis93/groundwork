@@ -3,7 +3,7 @@ name: land
 description: >-
   One-word closeout: land this branch. Closing ceremony verifies completion and
   documentation before mechanical merge. Merge to main, sync, delete feature
-  branch, close satisfied issues, comment progress on partial issues.
+  branch, close satisfied work units, comment progress on partial work units.
   Trigger on: 'land', 'land this', 'merge and close', 'ship it'.
 requires: ["patch"]
 accepts: ["completion-evidence", "behavior-contract", "documentation-record", "work-unit"]
@@ -30,7 +30,7 @@ Phase 0 (gather, verify, review, seal) is to `land` what Phase 0 (orient,
 observe, frame, banish) is to `take`. The opening ceremony prepares the agent
 for work; the closing ceremony prepares the work for delivery.
 
-Do not stop after merge — stopping leaves branches dangling and issues unclosed. The full sequence is atomic: ceremony through close.
+Do not stop after merge — stopping leaves branches dangling and work units unclosed. The full sequence is atomic: ceremony through close.
 
 Do not ask for confirmation before landing. Invoking `land` IS the user's approval to execute the entire workflow.
 
@@ -112,20 +112,20 @@ documentation drift blocks the seal.
 
 ```
 ◈ REVIEW
-Docs: [clean | fixed: list | tracked: GitHub issue numbers]
+Docs: [clean | fixed: list | tracked: work-unit refs]
 ```
 
 Implementation: invoke the `document` protocol's documentation-review
 procedure via the Skill tool. Check whether changed files affect areas with documentation artifacts
 (README, ARCHITECTURE, API docs). Fix drift directly and commit;
-file tracking issues for anything deeper. Record a coverage summary: each
+file tracking work units for anything deeper. Record a coverage summary: each
 artifact checked, its status, and any action taken.
 
 #### 0d. Seal
 
 Gate check before mechanical merge. All three conditions must hold:
 
-1. Verification passed or all issues classified (Phase 0b complete)
+1. Verification passed or all linked work units classified (Phase 0b complete)
 2. Documentation reviewed — drift fixed or tracked (Phase 0c complete)
 3. CHANGELOG entry present if changes are user-visible (Phase 0a flagged)
 
@@ -189,7 +189,7 @@ Delete any remaining branch references:
 
 #### 1e. Comment and close GitHub issue(s) (GitHub-issue-linked branches only)
 
-If no issues were provided or inferred, skip this step.
+If no linked work units were provided or inferred, skip this step.
 
 Apply the classifications from Phase 0b.
 
@@ -212,7 +212,7 @@ Then close: `gh issue close <number> --reason completed`.
 > **Remaining:**
 > - criterion 3
 
-If any comment or close operation fails, continue processing remaining issues, then report which operations failed.
+If any comment or close operation fails, continue processing remaining work units, then report which operations failed.
 
 #### 1f. Verify and report
 
@@ -241,7 +241,7 @@ Report the final state including:
 - If branch deletion fails after successful merge: warn about the deletion failure and continue to GitHub issue close/comment steps. The code is safely on `main`; branch cleanup is not a prerequisite for issue closure.
 - If GitHub issue comment/close API fails for one GitHub issue: continue processing remaining GitHub issues, then report failed GitHub issue number(s) explicitly.
 - If acceptance criteria evaluation fails in Phase 0b (GitHub issue fetch error, criteria unparseable): the inline handling applies — treat the GitHub issue as partial, log a warning. Partial classification does not block the seal; it flows through to Phase 1e where the GitHub issue is left open with a progress comment.
-- **Documentation drift blocks the seal.** Drift discovered in Phase 0c must be fixed directly or tracked via a GitHub issue before the seal can pass. Do not proceed with unresolved drift.
+- **Documentation drift blocks the seal.** Drift discovered in Phase 0c must be fixed directly or tracked via a work unit before the seal can pass. Do not proceed with unresolved drift.
 - If no GitHub issue numbers are available: do not prompt for GitHub issue IDs during `land`; proceed with merge/sync/cleanup and report a no-GitHub-issue landing.
 - If commit history evaluation is uncertain: default to preserve (`--no-ff`). Squashing is an optimization; when in doubt, keep the original history.
 
@@ -258,4 +258,4 @@ Report the final state including:
   acceptance criteria and verify completion evidence before merge
 - `document`: invoked during Phase 0c for documentation-review — confirms
   documentation reflects the changes being landed
-- `decompose` for GitHub issue lifecycle patterns and tracking issues from doc review
+- `decompose` for work-unit lifecycle patterns and tracking work units from doc review

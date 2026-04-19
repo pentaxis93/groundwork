@@ -705,7 +705,7 @@ tracks and threads by work-unit identity.
 
 ### decompose
 
-- **requires:** requirements. Cannot break work into issues without
+- **requires:** requirements. Cannot break work into work units without
   knowing what the work is.
 - **accepts:** research-record. Research may inform decomposition decisions.
 - **trigger:** `on_artifact("requirements")`
@@ -1052,7 +1052,7 @@ The existing schema structure survives — it tracks the right things.
 | work_unit | string (work-unit ref) | yes | Common envelope |
 | updated_docs | array of strings | yes | Documentation files updated in this change |
 | verified_accurate_docs | array of strings | yes | Documentation reviewed and confirmed accurate |
-| tracking_issues | array of strings | yes | Issues filed for documentation follow-up |
+| tracking_work_units | array of strings | yes | Work units filed for documentation follow-up |
 
 ### patch
 

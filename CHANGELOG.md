@@ -78,7 +78,7 @@ protocols, skills, and artifact schemas that a runa instance orchestrates.
   `LICENSE-UPSTREAM`.
 - **resolve** — friction resolution through the reconciling force. When
   operational friction appears, stop and resolve structurally instead of
-  routing around. Scope guidance distinguishes inline side quests from issues.
+  routing around. Scope guidance distinguishes inline side quests from work units.
 - **research** — systematic multi-source research with citations. Six-phase
   workflow (clarify, decompose, gather, evaluate, resolve, synthesize).
   Produces a typed artifact (research-record) that other protocols can accept.
