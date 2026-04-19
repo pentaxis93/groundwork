@@ -4,7 +4,7 @@ description: Protocol for writing and maintaining executable behavior specificat
 metadata:
   version: "2.1.0"
   updated: "2026-03-17"
-requires: ["claim", "issue"]
+requires: ["claim", "work-unit"]
 accepts: ["research-record"]
 produces: ["behavior-contract"]
 may_produce: []
@@ -105,7 +105,7 @@ refactor that preserves the behavior.
 
 1. List existing behaviors from test names; these are the current
    specification.
-2. Extract needed behaviors from acceptance criteria, issue description, or
+2. Extract needed behaviors from acceptance criteria, work-unit description, or
    module purpose.
 3. Compute missing behaviors (needed minus existing).
 4. Rank by importance:
@@ -166,7 +166,7 @@ describe behaviors nobody needs are noise, not safety.
 
 ## Cross-References
 
-- `begin`: session-level prioritization and execution sequencing.
-- `decompose`: acceptance-criteria rigor, issue decomposition, and behavior traceability.
+- `take`: session-level prioritization and execution sequencing.
+- `decompose`: acceptance-criteria rigor, work-unit decomposition, and behavior traceability.
 - `implement`: executes RED-GREEN-REFACTOR for specified behaviors.
 - `verify`: requires fresh evidence for behavior-level completion claims.

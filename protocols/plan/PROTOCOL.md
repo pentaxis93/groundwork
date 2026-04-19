@@ -65,7 +65,7 @@ Explore the codebase to build a concrete understanding of current state.
 Without this, plans describe imagined systems that collide with the actual
 code.
 
-1. Read the issue, task, or request to identify what must change.
+1. Read the work unit, task, or request to identify what must change.
 2. Search for relevant files: entrypoints, configs, schemas, types,
    manifests, docs, and existing implementations of similar behavior.
 3. Trace the code paths that the change will touch or interact with.
@@ -78,7 +78,7 @@ Clarify what the change must achieve and what is out of scope. Without
 intent boundaries, every approach looks equally valid and trade-offs
 cannot be evaluated.
 
-1. State the goal and success criteria derived from the issue and
+1. State the goal and success criteria derived from the work unit and
    exploration.
 2. Identify in-scope and out-of-scope boundaries.
 3. Surface constraints from the codebase: dependencies, API contracts,
@@ -154,7 +154,7 @@ When producing a plan for handoff to another agent, write it to a file.
   the problem space itself is unclear.
 - `specify`: behavior contract — provides the behavior statements the plan
   must implement.
-- `begin`: work initiation — selects which issue to plan for and prepares the session.
-- `decompose`: executable work-unit decomposition and issue quality —
-  turns a decision-complete design into agent-executable issues with
+- `take`: work initiation — selects which work unit to plan for and prepares the session.
+- `decompose`: executable work-unit decomposition and work-unit quality —
+  turns a decision-complete design into agent-executable work units with
   binary acceptance criteria.

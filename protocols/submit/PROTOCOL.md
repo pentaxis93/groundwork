@@ -2,8 +2,8 @@
 name: submit
 description: >-
   Package working changes into a PR: ensure feature branch, analyze and commit
-  changes, push, create PR with derived title/body linked to issue(s).
-  The middle phase of the session lifecycle between begin and land.
+  changes, push, create PR with derived title/body linked to GitHub issue(s).
+  The middle phase of the session lifecycle between take and land.
   Trigger on: 'submit', 'submit pr', 'create pr', 'open pr',
   'send for review', 'package this up'.
 requires: ["completion-evidence", "documentation-record"]
@@ -25,10 +25,10 @@ Use this skill when implementation is complete and changes need to become a PR.
 2. Ensure a feature branch exists (guard rail if on `main`)
 3. Analyze changes and produce well-formed commits
 4. Push to remote
-5. Create a PR with derived title/body and issue linkage
+5. Create a PR with derived title/body and GitHub issue linkage
 6. Report the result and suggest next steps
 
-The session lifecycle is: `begin` (initiate session) → implement → `submit`
+The session lifecycle is: `take` (initiate session) → implement → `submit`
 (package for review) → review → `land` (merge and close). `submit` is the
 transition from execution to review.
 
@@ -59,13 +59,13 @@ Determine:
 - Whether uncommitted changes exist (`git status`).
 - Whether unpushed commits exist (`git log origin/main..HEAD` or
   `git log main..HEAD`).
-- Issue number(s), resolved in priority order:
-  1. Explicit operator-provided issue number(s).
+- GitHub issue number(s), resolved in priority order:
+  1. Explicit operator-provided GitHub issue number(s).
   2. Branch name pattern: `issue-<N>/<slug>` (single) or
      `issues-<N>-<M>-.../<slug>` (multi).
-  3. None — proceed without issue linkage.
+  3. None — proceed without GitHub issue linkage.
 
-If issue number(s) are available, fetch issue title(s) and body(ies) via
+If GitHub issue number(s) are available, fetch GitHub issue title(s) and body(ies) via
 `gh issue view` for use in steps 3 and 5.
 
 Check for an existing open PR on the current branch
@@ -78,10 +78,10 @@ If already on a feature branch: record the branch name and continue.
 
 If on `main` (or detached HEAD):
 1. Derive a branch name:
-   - If issue number(s) known: `issue-<N>/<slug>` (single) or
-     `issues-<N>-<M>/<slug>` (multi), where slug is the issue title —
+   - If GitHub issue number(s) known: `issue-<N>/<slug>` (single) or
+     `issues-<N>-<M>/<slug>` (multi), where slug is the GitHub issue title —
      lowercase, hyphenated, truncated to 40 chars.
-   - If no issue: `feat/<slug>`, `fix/<slug>`, or `chore/<slug>` based on
+   - If no linked GitHub issue: `feat/<slug>`, `fix/<slug>`, or `chore/<slug>` based on
      change classification, where slug summarizes the changes.
 2. Create and switch to the branch: `git checkout -b <branch>`.
 
@@ -95,7 +95,7 @@ If all changes are already committed (only unpushed commits exist), skip to
 step 4.
 
 **3a. Understand intent.** Examine all uncommitted modifications
-(`git diff`, `git diff --staged`). If issue context is available,
+(`git diff`, `git diff --staged`). If GitHub issue context is available,
 cross-reference changes against acceptance criteria.
 
 **3b. Identify logical groups.** Find related changes that belong in the same
@@ -105,7 +105,7 @@ they document.
 
 **3c. Plan commits.** Design atomic commits, each serving a single purpose.
 Use conventional commit format: `type(scope): description` where type is
-`feat`, `fix`, `refactor`, `docs`, `test`, or `chore`. If issue number(s) are
+`feat`, `fix`, `refactor`, `docs`, `test`, or `chore`. If GitHub issue number(s) are
 known, reference them in the commit body (not the title): `Refs #N`. Commit
 messages explain **why**, not just what.
 
@@ -131,10 +131,10 @@ Push the feature branch to origin:
 Create a pull request via `gh pr create`.
 
 **Title** (under 70 chars):
-- Single issue: use the issue title, condensed if needed. Prefix with
+- Single GitHub issue: use the issue title, condensed if needed. Prefix with
   conventional commit type if not already present.
-- Multi-issue: synthesize a title capturing the combined scope.
-- No issue: derive from commit message(s).
+- Multi-GitHub-issue: synthesize a title capturing the combined scope.
+- No linked GitHub issue: derive from commit message(s).
 
 **Body:**
 
@@ -147,7 +147,7 @@ Create a pull request via `gh pr create`.
 
 [Grouped description derived from commit messages]
 
-## Issue(s)
+## GitHub Issue(s)
 
 Closes #N
 [or "Refs #N" for partial progress]
@@ -196,7 +196,7 @@ Output:
 - PR URL.
 - Branch name.
 - Commit summary (count and brief subjects).
-- Issue linkage (which issues referenced, close vs. ref).
+- GitHub issue linkage (which GitHub issues are referenced, close vs. ref).
 - Next step: "Get review, then `land` when approved."
 
 ---
@@ -220,8 +220,8 @@ Output:
   corrupted or command output is injected, rebuild the body in a file and
   repair using `gh pr edit --body-file <path>`. Do not retry with inline
   double-quoted multiline `--body`.
-- **Issue fetch fails:** Continue without issue context. Derive PR title/body
-  from commits alone. Warn that issue linkage is manual.
+- **GitHub issue fetch fails:** Continue without GitHub issue context. Derive PR title/body
+  from commits alone. Warn that GitHub issue linkage is manual.
 
 ---
 
@@ -235,8 +235,8 @@ Output:
 - `split-avoidance`: dumping all changes into one commit to skip analysis.
   Recognition: single commit touching many unrelated files with a vague
   message. The analysis phase exists to prevent this.
-- `orphan-pr`: no issue linkage when issues are clearly relevant. Recognition:
-  branch name contains an issue number but the PR body omits it. Detect issue
+- `orphan-pr`: no GitHub issue linkage when GitHub issues are clearly relevant. Recognition:
+  branch name contains a GitHub issue number but the PR body omits it. Detect GitHub issue
   numbers from branch names automatically.
 - `title-shrug`: uninformative PR title ("Update files", "Changes"). The title
   is the first thing reviewers see — it must communicate the change's purpose.
@@ -252,7 +252,7 @@ Output:
 
 ## Related Skills
 
-- `begin` for work initiation — select issue(s), prepare workspace, declare direction (the preceding phase)
-- `land` for merge, cleanup, and issue closure (the following phase)
+- `take` for work initiation — select work unit(s), prepare workspace, declare direction (the preceding phase)
+- `land` for merge, cleanup, and GitHub issue closure (the following phase)
 - `verify` — should fire before `submit`
 - `document` for documentation review before submission

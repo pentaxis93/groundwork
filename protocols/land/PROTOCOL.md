@@ -6,7 +6,7 @@ description: >-
   branch, close satisfied issues, comment progress on partial issues.
   Trigger on: 'land', 'land this', 'merge and close', 'ship it'.
 requires: ["patch"]
-accepts: ["completion-evidence", "behavior-contract", "documentation-record", "issue"]
+accepts: ["completion-evidence", "behavior-contract", "documentation-record", "work-unit"]
 produces: ["completion-record"]
 may_produce: []
 trigger:
@@ -22,12 +22,12 @@ Use this skill when the user wants full delivery closure in one command.
 `land` operates in two phases:
 
 - **Phase 0: Closing** — a ceremony that prepares the work for delivery. Four
-  steps mirror `begin`'s opening ceremony in reverse: gather context, verify
+  steps mirror `take`'s opening ceremony in reverse: gather context, verify
   acceptance, review documentation, seal the gate.
 - **Phase 1: Mechanical** — the merge-and-close sequence, gated by Phase 0.
 
 Phase 0 (gather, verify, review, seal) is to `land` what Phase 0 (orient,
-observe, frame, banish) is to `begin`. The opening ceremony prepares the agent
+observe, frame, banish) is to `take`. The opening ceremony prepares the agent
 for work; the closing ceremony prepares the work for delivery.
 
 Do not stop after merge — stopping leaves branches dangling and issues unclosed. The full sequence is atomic: ceremony through close.
@@ -40,12 +40,12 @@ Do not ask for confirmation before landing. Invoking `land` IS the user's approv
 
 - Working tree must be clean before starting.
 - Current branch must not be `main`.
-- Issue numbers are optional:
-  - Prefer explicit user-provided issue number(s).
+- GitHub issue numbers are optional:
+  - Prefer explicit user-provided GitHub issue number(s).
   - Else infer from branch name using one of:
-    - `issue-<number>/<slug>` (single issue)
-    - `issues-<number>-<number>-.../<slug>` (multi-issue, unbounded)
-  - If no issue numbers are available, continue with the no-issue closeout path.
+    - `issue-<number>/<slug>` (single GitHub issue)
+    - `issues-<number>-<number>-.../<slug>` (multi-GitHub-issue, unbounded)
+  - If no GitHub issue numbers are available, continue with the no-GitHub-issue closeout path.
 
 ---
 
@@ -76,10 +76,10 @@ CHANGELOG: [present | missing — needs entry | not needed]
 
 Implementation:
 - Confirm the current branch is not `main` and the working tree is clean. Record the feature branch name.
-- Extract issue numbers from the branch name:
-  - `issue-42/fix-login` → issue 42
+- Extract GitHub issue numbers from the branch name:
+  - `issue-42/fix-login` → GitHub issue 42
   - `issues-5-8/license-cleanup` → issues 5 and 8
-  - If neither the user nor the branch name provides issue numbers, mark the landing as no-issue.
+  - If neither the user nor the branch name provides issue numbers, mark the landing as no-GitHub-issue.
 - Summarize the branch diff: `git diff origin/main...HEAD --stat`.
 - Summarize the commit log: `git log origin/main..HEAD --oneline`.
 - Check whether `CHANGELOG.md` appears in the branch diff (`git diff origin/main...HEAD --name-only`). The changelog is how users discover what changed between versions. Evaluate whether the branch changes are significant enough to warrant an entry. New features, behavior changes, bug fixes, and breaking changes generally belong in the changelog. Internal refactoring, typo fixes, and CI tweaks generally don't. If the changes look user-visible but no entry exists, flag it to the user before proceeding.
@@ -96,12 +96,12 @@ Criteria: [all met | partial — list remaining]
 ```
 
 Implementation: invoke the `verify` skill. For
-issue-linked branches, fetch each target issue (`gh issue view`) and evaluate
-acceptance criteria against the branch diff. Classify each issue as satisfied
+GitHub-issue-linked branches, fetch each target GitHub issue (`gh issue view`) and evaluate
+acceptance criteria against the branch diff. Classify each GitHub issue as satisfied
 (all criteria met) or partial (some remain). If no acceptance criteria can be
-extracted from the issue body, classify as partial — an issue without explicit
-criteria may have unstated requirements. If an issue fetch fails, treat that
-issue as partial and log a warning. For no-issue landings, skip acceptance
+extracted from the GitHub issue body, classify as partial — a GitHub issue without explicit
+criteria may have unstated requirements. If a GitHub issue fetch fails, treat that
+GitHub issue as partial and log a warning. For no-GitHub-issue landings, skip acceptance
 criteria evaluation — `verify` still runs to confirm
 the work itself is complete. Store classifications for Phase 1e.
 
@@ -112,7 +112,7 @@ documentation drift blocks the seal.
 
 ```
 ◈ REVIEW
-Docs: [clean | fixed: list | tracked: issue numbers]
+Docs: [clean | fixed: list | tracked: GitHub issue numbers]
 ```
 
 Implementation: invoke the `document` protocol's documentation-review
@@ -134,7 +134,7 @@ Gate check before mechanical merge. All three conditions must hold:
 [PASSED — proceed to Phase 1 | BLOCKED — list failures]
 ```
 
-If the seal fails, fix the blocking issue(s) and re-evaluate. Do not proceed to
+If the seal fails, fix the blocking GitHub issue(s) and re-evaluate. Do not proceed to
 Phase 1 until the seal passes.
 
 ### Phase 1: Mechanical
@@ -165,7 +165,7 @@ Merge through GitHub's PR API so the PR is recorded as "merged," not just "close
 1. Run `gh pr merge <number>` with the appropriate strategy flag: `--squash` if squashing (with `--subject` and `--body` for the drafted commit message), `--merge` if preserving history.
 2. Include `--delete-branch` to let GitHub clean up the remote branch.
 3. After the API merge completes, sync local state: `git checkout main`, `git pull --ff-only origin main`.
-4. Record the merge commit SHA from the local main HEAD for use in issue comments.
+4. Record the merge commit SHA from the local main HEAD for use in GitHub issue comments.
 
 **Why not local merge:** A local `git merge` + `git push` lands the code on main but bypasses GitHub's PR merge tracking. GitHub sees the PR's commits already on main and auto-closes the PR as "closed" rather than "merged" when the branch is deleted. This loses PR merge metadata and breaks PR history.
 
@@ -187,13 +187,13 @@ Delete any remaining branch references:
 - Local: `git branch -D <branch>`. The `-D` flag (force delete) is required because squash merges don't record merge parentage, so `-d` refuses even though the content is safely on `main`.
 - Prune stale remote-tracking references: `git fetch origin --prune`.
 
-#### 1e. Comment and close issue(s) (issue-linked branches only)
+#### 1e. Comment and close GitHub issue(s) (GitHub-issue-linked branches only)
 
 If no issues were provided or inferred, skip this step.
 
 Apply the classifications from Phase 0b.
 
-**For satisfied issues**, post a close comment and close the issue:
+**For satisfied GitHub issues**, post a close comment and close the GitHub issue:
 
 > Implemented and merged in PR #`<number>` (commit `<sha>`). Closing as complete.
 >
@@ -201,7 +201,7 @@ Apply the classifications from Phase 0b.
 
 Then close: `gh issue close <number> --reason completed`.
 
-**For partial issues**, post a progress comment but leave the issue open:
+**For partial GitHub issues**, post a progress comment but leave the GitHub issue open:
 
 > Progress from PR #`<number>` (commit `<sha>`):
 >
@@ -221,14 +221,14 @@ Confirm success conditions:
 - Working tree is clean
 - Feature branch absent on origin
 - PR state is `MERGED` (not just `CLOSED`)
-- For issue-linked landings: every satisfied issue state is `CLOSED`
-- For issue-linked landings: every partial issue has a progress comment listing remaining criteria
+- For GitHub-issue-linked landings: every satisfied GitHub issue state is `CLOSED`
+- For GitHub-issue-linked landings: every partial GitHub issue has a progress comment listing remaining criteria
 - Documentation coverage summary reported
 
 Report the final state including:
-- Issue disposition:
-  - Issue-linked: satisfied (closed) and partial (open with remaining criteria)
-  - No-issue: explicitly report "no issue linked"
+- GitHub issue disposition:
+  - GitHub-issue-linked: satisfied (closed) and partial (open with remaining criteria)
+  - No-GitHub-issue: explicitly report "no GitHub issue linked"
 - Documentation coverage summary from Phase 0c
 - Any warnings or failed operations from earlier steps
 
@@ -236,21 +236,21 @@ Report the final state including:
 
 ## Failure Policy
 
-- **Seal failure blocks Phase 1.** If the seal (Phase 0d) fails, fix the blocking issue(s) and re-enter the ceremony from the failed step. Do not proceed to mechanical merge until the seal passes.
-- If `gh pr merge` fails: stop immediately, do not close issue. If the failure is transient (network), retry once. If structural (merge conflict, check failure), report and stop. Do not fall back to local merge — the whole point of using the API is to preserve PR merge metadata.
-- If branch deletion fails after successful merge: warn about the deletion failure and continue to issue close/comment steps. The code is safely on `main`; branch cleanup is not a prerequisite for issue closure.
-- If issue comment/close API fails for one issue: continue processing remaining issues, then report failed issue number(s) explicitly.
-- If acceptance criteria evaluation fails in Phase 0b (issue fetch error, criteria unparseable): the inline handling applies — treat the issue as partial, log a warning. Partial classification does not block the seal; it flows through to Phase 1e where the issue is left open with a progress comment.
-- **Documentation drift blocks the seal.** Drift discovered in Phase 0c must be fixed directly or tracked via issue before the seal can pass. Do not proceed with unresolved drift.
-- If no issue numbers are available: do not prompt for issue IDs during `land`; proceed with merge/sync/cleanup and report a no-issue landing.
+- **Seal failure blocks Phase 1.** If the seal (Phase 0d) fails, fix the blocking GitHub issue(s) and re-enter the ceremony from the failed step. Do not proceed to mechanical merge until the seal passes.
+- If `gh pr merge` fails: stop immediately, do not close the GitHub issue. If the failure is transient (network), retry once. If structural (merge conflict, check failure), report and stop. Do not fall back to local merge — the whole point of using the API is to preserve PR merge metadata.
+- If branch deletion fails after successful merge: warn about the deletion failure and continue to GitHub issue close/comment steps. The code is safely on `main`; branch cleanup is not a prerequisite for issue closure.
+- If GitHub issue comment/close API fails for one GitHub issue: continue processing remaining GitHub issues, then report failed GitHub issue number(s) explicitly.
+- If acceptance criteria evaluation fails in Phase 0b (GitHub issue fetch error, criteria unparseable): the inline handling applies — treat the GitHub issue as partial, log a warning. Partial classification does not block the seal; it flows through to Phase 1e where the GitHub issue is left open with a progress comment.
+- **Documentation drift blocks the seal.** Drift discovered in Phase 0c must be fixed directly or tracked via a GitHub issue before the seal can pass. Do not proceed with unresolved drift.
+- If no GitHub issue numbers are available: do not prompt for GitHub issue IDs during `land`; proceed with merge/sync/cleanup and report a no-GitHub-issue landing.
 - If commit history evaluation is uncertain: default to preserve (`--no-ff`). Squashing is an optimization; when in doubt, keep the original history.
 
 ---
 
 ## Cross-References
 
-- `begin`: the opening bookend — opening ceremony and session initiation before
-  implementation. `begin`'s opening ceremony (orient, observe, frame, banish)
+- `take`: the opening bookend — opening ceremony and session initiation before
+  implementation. `take`'s opening ceremony (orient, observe, frame, banish)
   prepares the agent for work; `land`'s closing ceremony (gather, verify, review,
   seal) prepares the work for delivery. Parallel structure, inverse direction.
 - `submit` for the preceding phase: commit, push, and PR creation
@@ -258,4 +258,4 @@ Report the final state including:
   acceptance criteria and verify completion evidence before merge
 - `document`: invoked during Phase 0c for documentation-review — confirms
   documentation reflects the changes being landed
-- `decompose` for issue lifecycle patterns and tracking issues from doc review
+- `decompose` for GitHub issue lifecycle patterns and tracking issues from doc review

@@ -247,5 +247,5 @@ rejection, or judgment.
 - `research`: evidence gathering when local inspection is insufficient.
 - `decompose`: consumes `requirements` and turns the selected work into executable
   issues.
-- `begin`: starts a session once the issue graph reflects the work chosen
+- `take`: starts a session once the work-unit graph reflects the work chosen
   through survey.

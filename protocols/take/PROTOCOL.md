@@ -1,33 +1,33 @@
 ---
-name: begin
+name: take
 description: >-
-  Session work initiation: select issue(s), prepare workspace, declare
+  Session work initiation: select work-unit(s), prepare workspace, declare
   direction. Opening bookend of the session lifecycle — `land` is the closing
-  bookend. Trigger on: 'begin', 'begin work', 'start session', 'start issue'.
-requires: ["issue"]
+  bookend. Trigger on: 'take', 'take work', 'start session', 'start work-unit'.
+requires: ["work-unit"]
 accepts: []
 produces: ["claim"]
 may_produce: []
 trigger:
-  on_artifact: "issue"
+  on_artifact: "work-unit"
 ---
 
-# Begin — Work Selection & Initiation
+# Take — Work Selection & Initiation
 
 ## Overview
 
 Use this skill to start a work session: choose what to work on, prepare the
 workspace, and declare the session's direction.
 
-`begin` is the opening bookend of the session lifecycle:
-`begin` (select + prepare) → implement → `submit` (package for review) →
+`take` is the opening bookend of the session lifecycle:
+`take` (select + prepare) → implement → `submit` (package for review) →
 review → `land` (merge and close).
 
-Plan from the issue graph, not from memory. Agent sessions end and context
-windows close, but the issue graph persists — it is the only working memory
+Plan from the work-unit graph, not from memory. Agent sessions end and context
+windows close, but the work-unit graph persists — it is the only working memory
 that survives across sessions.
 
-For issue decomposition and boundary contracts, use `decompose`.
+For work-unit decomposition and boundary contracts, use `decompose`.
 For first-principles design decisions, use `reckon`.
 
 ## Procedures
@@ -48,7 +48,7 @@ Follows the LBRP sequence: orient → observe → frame → banish.
 ##### 0a. Orient
 
 The agent receives its operating methodology — the connected system that makes
-later skills work together rather than in isolation. `begin` opens individual
+later skills work together rather than in isolation. `take` opens individual
 work sessions; `orient` establishes the methodology those sessions operate
 within. If `orient` has not been loaded this session, load it now before
 proceeding.
@@ -84,9 +84,9 @@ Establish the session's purpose using the Four Touches:
 | **In scope** | What boundaries contain this work? |
 | **Out of scope** | What nearby work is explicitly excluded? |
 
-Frame depth varies by what is known at invocation. When issue number(s) are
-provided, derive all four touches from the issue body — purpose from the
-summary, success from acceptance criteria, scope from the issue boundary. This
+Frame depth varies by what is known at invocation. When GitHub issue number(s) are
+provided, derive all four touches from the GitHub issue body — purpose from the
+summary, success from acceptance criteria, scope from the work-unit boundary. This
 yields a full frame. When invoked with a topic or no arguments, frame
 directionally — purpose is "advance the project," success is "one session-sized
 increment," scope sharpens after selection. A partial frame is expected; do not
@@ -119,32 +119,32 @@ Evaluate workspace state (observed in 0b) against the frame (established in
 Determine what to work on. Use observations from Phase 0b — do not re-run
 status checks.
 
-**If issue number(s) provided:** selection is already resolved. Fetch issue
+**If GitHub issue number(s) provided:** selection is already resolved. Fetch GitHub issue
 thread(s) via `gh issue view`, confirm they are open and unblocked, then
-proceed to Phase 2. When multiple issue numbers are given, they may be batched:
-2-3 cohesive issues can be addressed in a single session and packaged as one PR
+proceed to Phase 2. When multiple GitHub issue numbers are given, they may be batched:
+2-3 cohesive work units can be addressed in a single session and packaged as one PR
 when they share a concern boundary.
 
 **If topic string provided:**
 
-1. List open issues: `gh issue list --state open`.
-2. Identify open issues related to the topic (title, labels, body content).
+1. List open GitHub issues: `gh issue list --state open`.
+2. Identify open GitHub issues related to the topic (title, labels, body content).
 3. Shortlist 3-5 matches, rank by relevance and impact.
-4. Select one issue (or a cohesive batch of 2-3).
+4. Select one work unit (or a cohesive batch of 2-3).
 5. Proceed to Phase 2.
 
 **If no arguments:**
 
-1. List open issues: `gh issue list --state open`.
-2. Identify all ready (unblocked) candidate issues — an issue is ready when its
-   body is agent-executable and every hard dependency is closed.
+1. List open GitHub issues: `gh issue list --state open`.
+2. Identify all ready (unblocked) candidate work units — a work unit is ready when its
+   GitHub issue body is agent-executable and every hard dependency is closed.
 3. Apply force filters first: a direct operator request or hard deadline wins
    immediately.
 4. Shortlist 3-5 candidates from the lowest available execution layer. Rank by
    value, time criticality, and unblock leverage relative to effort. Be
    decisive — selection should not consume significant session time.
 5. If candidates tie: choose the one that unblocks the most downstream work.
-6. Select one issue (or a cohesive batch of 2-3).
+6. Select one work unit (or a cohesive batch of 2-3).
 
 #### Phase 2: Preparation
 
@@ -152,13 +152,13 @@ Set up the workspace for the selected work.
 
 1. Ensure on `main` and up-to-date: `git checkout main && git pull --ff-only`.
 2. Create a feature branch:
-   - Single issue: `issue-<N>/<slug>`
-   - Issue batch: `issues-<N>-<M>-.../<slug>` (unbounded)
-   - Topic without issue: `feat/<slug>`, `fix/<slug>`, or `chore/<slug>`
+   - Single GitHub issue: `issue-<N>/<slug>`
+   - GitHub issue batch: `issues-<N>-<M>-.../<slug>` (unbounded)
+   - Topic without a linked GitHub issue: `feat/<slug>`, `fix/<slug>`, or `chore/<slug>`
 
-   Where slug is the issue title (or topic string, when no issue) — lowercase,
+   Where slug is the GitHub issue title (or topic string, when no linked GitHub issue) — lowercase,
    hyphenated, truncated to 40 chars.
-3. Load issue context: read issue body, comments, and linked issues to build
+3. Load work-unit context: read the GitHub issue body, comments, and linked GitHub issues to build
    working understanding.
 
 #### Phase 3: Declaration
@@ -169,37 +169,37 @@ this — refine it with what you learned during selection and preparation.
 - **Starting direction**: what you intend to accomplish (a direction, not a
   rigid prediction — this will sharpen as you work).
 - **Scope gate**: specific nearby work intentionally excluded this session.
-- **Issue(s) in scope**: which issue(s) this session addresses.
+- **Work unit(s) in scope**: which work unit(s) this session addresses.
 
 ### session-close
 
 1. Reach a stable checkpoint (done increment or explicit WIP note).
-2. Update issue state and leave a concise progress comment.
+2. Update work-unit state and leave a concise progress comment on the GitHub issue.
 3. Record decisions, blockers, and the exact next step.
-4. Ensure any follow-up work is represented as issue(s).
+4. Ensure any follow-up work is represented as GitHub issue(s).
 5. Sync workspace and close.
 
 ## Key Terms
 
 Brief definitions for self-contained use. See
-[`issue-model.md`](../../docs/architecture/issue-model.md) for the full treatment.
+[`work-unit-model.md`](../../docs/architecture/work-unit-model.md) for the full treatment.
 
-- **Issue graph**: the set of open issues and their dependency edges — the live
+- **Work-unit graph**: the set of open work units and their dependency edges — the live
   map of what remains and what blocks what.
-- **Unblocked**: an issue whose hard dependencies are all closed.
-- **Execution layer**: a set of issues that share no mutual dependencies and can
+- **Unblocked**: a work unit whose hard dependencies are all closed.
+- **Execution layer**: a set of work units that share no mutual dependencies and can
   be worked in parallel once their shared ancestors are closed. Layer 0 has no
   dependencies; layer 1 depends only on layer 0; and so on.
-- **Session-sized**: an issue that one agent can complete — from reading context
+- **Session-sized**: a work unit that one agent can complete — from reading context
   through passing verification — in a single focused session.
-- **Issue batch**: 2-3 cohesive issues addressed together when they share a
+- **Work-unit batch**: 2-3 cohesive work units addressed together when they share a
   concern boundary and their combined scope is still session-sized.
 
 ## Operating Principles
 
-- **Issue tracker is the source of truth.** Planning state lives in forge
+- **GitHub issue tracker is the source of truth.** Planning state lives in forge
   issues, not local task trackers or agent memory. Sessions end; the graph
-  doesn't. Issue status and comments reflect actual implementation state —
+  doesn't. GitHub issue status and comments reflect actual implementation state —
   inaccurate state is planning debt.
 - **Direction over prediction.** Capture starting direction at session open.
   Goals sharpen through implementation — rigid upfront done conditions are
@@ -225,7 +225,7 @@ Brief definitions for self-contained use. See
 - `recency-drift`: picking last-touched work instead of highest leverage.
 - `scope-creep`: crossing concern boundaries mid-session.
 - `blocker-bypass`: beginning blocked work anyway.
-- `state-lag`: issue tracker not reflecting real implementation state.
+- `state-lag`: GitHub issue tracker not reflecting real implementation state.
 - `open-loop-close`: ending session without a concrete next step.
 - `skip-preparation`: jumping from selection to implementation without setting
   up a feature branch — loses workspace isolation and makes `submit` harder.
@@ -235,13 +235,13 @@ Brief definitions for self-contained use. See
 - `submit`: the next lifecycle phase — commit, push, and PR creation after
   implementation.
 - `land`: the closing bookend — closing ceremony and mechanical merge after
-  review. `begin`'s opening ceremony (orient, observe, frame, banish) prepares
+  review. `take`'s opening ceremony (orient, observe, frame, banish) prepares
   the agent for work; `land`'s closing ceremony (gather, verify, review, seal)
   prepares the work for delivery. Parallel structure, inverse direction.
-- `decompose`: decomposition, issue boundaries, acceptance criteria contracts.
+- `decompose`: decomposition, work-unit boundaries, acceptance criteria contracts.
 - `reckon`: validate assumptions before committing to an approach.
 - `specify`: behavior-first contract definition for implementation increments.
 - `orient`: the methodology map — activates the connected skill
-  system that `begin` operates within. Loaded during orient (Phase 0a).
+  system that `take` operates within. Loaded during orient (Phase 0a).
 - Opening ceremony pattern adapted from LBRP (`aiandi-dev-environment`) —
   internalized, no runtime dependency.

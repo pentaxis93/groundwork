@@ -1,23 +1,23 @@
-# Issue-Based Development
+# Work-Unit-Based Development
 
-The issue graph is the persistence layer across sessions. Agent sessions end, context windows close, agents rotate — the issue graph survives. Work from the graph, not from memory.
+The work-unit graph is the persistence layer across sessions. Agent sessions end, context windows close, agents rotate — the work-unit graph survives. Work from the graph, not from memory.
 
 ## Definitions
 
-- **Issue graph**: the set of open issues and their dependency edges. It is the working memory of the project — not a backlog to be groomed, but the live map of what remains and what blocks what.
-- **Unblocked**: an issue whose hard dependencies are all closed. Transitively unblocked means every ancestor in the dependency chain is closed.
-- **Execution layer**: a set of issues that share no mutual dependencies and can be worked in parallel once their shared ancestors are closed. Layer 0 has no dependencies; layer 1 depends only on layer 0; and so on.
-- **Session-sized**: an issue that one agent can complete — from reading context through passing verification — in a single focused session.
+- **Work-unit graph**: the set of open work units and their dependency edges. It is the working memory of the project — not a backlog to be groomed, but the live map of what remains and what blocks what.
+- **Unblocked**: a work unit whose hard dependencies are all closed. Transitively unblocked means every ancestor in the dependency chain is closed.
+- **Execution layer**: a set of work units that share no mutual dependencies and can be worked in parallel once their shared ancestors are closed. Layer 0 has no dependencies; layer 1 depends only on layer 0; and so on.
+- **Session-sized**: a work unit that one agent can complete — from reading context through passing verification — in a single focused session.
 
 ## State Source Rule
 
-State is determined by reading issue content, not forge metadata (labels, columns). An issue's state is what its body and comments say it is.
+State is determined by reading GitHub issue content, not forge metadata (labels, columns). A work unit's state is what its issue body and comments say it is.
 
-## Issue Working States
+## Work-Unit Working States
 
 | State       | Meaning                                      | Enters when                        | Exits when                          |
 |-------------|----------------------------------------------|------------------------------------|-------------------------------------|
-| draft       | Intent captured, not yet agent-executable     | Issue created without full criteria | Criteria, scope, and size filled in |
+| draft       | Intent captured, not yet agent-executable     | GitHub issue created without full criteria | Criteria, scope, and size filled in |
 | ready       | Agent-executable and unblocked                | All fields complete, deps closed   | Session claims it                   |
 | in-progress | Active session is working on it               | Session declares goal against it   | Session closes or blocks            |
 | blocked     | Waiting on one or more open dependencies      | Dependency discovered or reopened  | All blocking issues closed          |
@@ -47,6 +47,6 @@ Epics with 4+ tasks include a dependency graph in two representations:
 ## Graph Maintenance
 
 - **Stale detection**: flag issues with no progress comment for 14+ days. Resolution: resume, split into smaller work, or close as wont-fix with rationale.
-- **Splitting**: when an in-progress issue exceeds session size, split remaining work into new issues and close the original with a pointer.
+- **Splitting**: when an in-progress work unit exceeds session size, split remaining work into new work units and close the original with a pointer.
 - **Merging**: when two issues converge on the same deliverable, merge into one and close the duplicate with a cross-reference.
 - **Validation after mutation**: after adding, closing, splitting, or merging issues, verify the graph has no orphaned dependencies or cycles.

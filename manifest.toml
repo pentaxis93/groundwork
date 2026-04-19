@@ -14,7 +14,7 @@ name = "request"
 name = "requirements"
 
 [[artifact_types]]
-name = "issue"
+name = "work-unit"
 
 [[artifact_types]]
 name = "claim"
@@ -46,7 +46,7 @@ name = "research-record"
 # --- Protocols ---
 #
 # Planning phase: survey → decompose
-# Execution phase: begin → specify → plan → implement → verify
+# Execution phase: take → specify → plan → implement → verify
 #                  → document → submit → land
 
 [[protocols]]
@@ -61,23 +61,23 @@ trigger = { type = "on_artifact", name = "request" }
 name = "decompose"
 requires = ["requirements"]
 accepts = ["research-record"]
-produces = ["issue"]
+produces = ["work-unit"]
 may_produce = ["research-record"]
 trigger = { type = "on_artifact", name = "requirements" }
 
 [[protocols]]
-name = "begin"
+name = "take"
 scoped = true
-requires = ["issue"]
+requires = ["work-unit"]
 accepts = []
 produces = ["claim"]
 may_produce = []
-trigger = { type = "on_artifact", name = "issue" }
+trigger = { type = "on_artifact", name = "work-unit" }
 
 [[protocols]]
 name = "specify"
 scoped = true
-requires = ["claim", "issue"]
+requires = ["claim", "work-unit"]
 accepts = ["research-record"]
 produces = ["behavior-contract"]
 may_produce = ["research-record"]
@@ -104,7 +104,7 @@ trigger = { type = "on_artifact", name = "implementation-plan" }
 [[protocols]]
 name = "verify"
 scoped = true
-requires = ["behavior-contract", "test-evidence", "issue"]
+requires = ["behavior-contract", "test-evidence", "work-unit"]
 accepts = []
 produces = ["completion-evidence"]
 may_produce = []
@@ -132,7 +132,7 @@ trigger = { type = "on_artifact", name = "documentation-record" }
 name = "land"
 scoped = true
 requires = ["patch"]
-accepts = ["completion-evidence", "behavior-contract", "documentation-record", "issue"]
+accepts = ["completion-evidence", "behavior-contract", "documentation-record", "work-unit"]
 produces = ["completion-record"]
 may_produce = []
 trigger = { type = "on_artifact", name = "patch" }

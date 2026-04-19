@@ -8,6 +8,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Changed
 
+- Breaking vocabulary rename: artifact type `issue` becomes `work-unit`, and
+  protocol `begin` becomes `take`. Consumers using the old vocabulary must
+  update manifests, schema paths, protocol references, and fixture names.
 - Four planning/specification protocols (survey, decompose, specify,
   plan) now declare `may_produce = ["research-record"]` in
   `manifest.toml`. With this wiring, an agent inside any of these
@@ -36,10 +39,10 @@ protocols, skills, and artifact schemas that a runa instance orchestrates.
   conditions, and scoping. This is the single file runa reads to understand
   the methodology.
 - Two planning-phase protocols (unscoped): **survey** produces requirements
-  from an external request; **decompose** produces session-sized issues with
+  from an external request; **decompose** produces session-sized work units with
   acceptance criteria and dependency edges.
 - Eight execution-phase protocols (all `scoped = true`, work-unit threaded):
-  **begin** claims an issue and opens the session → **specify** writes the
+  **take** claims a work unit and opens the session → **specify** writes the
   behavior contract as Given/When/Then scenarios → **plan** converges on a
   decision-complete design → **implement** executes through RED-GREEN-REFACTOR
   → **verify** gates completion with behavior-level evidence → **document**
@@ -91,7 +94,7 @@ protocols, skills, and artifact schemas that a runa instance orchestrates.
   `manifest.toml`.
 - Planning-phase artifacts carry no `work_unit` field: **request** (external
   input), **requirements** (scope, constraints, priorities),
-  **issue** (work unit with acceptance criteria and dependencies).
+  **work-unit** (work unit with acceptance criteria and dependencies).
 - Execution-phase artifacts carry a `work_unit` envelope for runa's scoped
   validation: **claim** (threading root), **behavior-contract** (Given/When/Then
   scenarios), **implementation-plan** (design decisions, affected files,
@@ -110,7 +113,7 @@ protocols, skills, and artifact schemas that a runa instance orchestrates.
 - `docs/architecture/connecting-structure.md` — artifact flow design, trigger
   semantics, work-unit scoping model, schema design rationale, and agent
   interface.
-- `docs/architecture/issue-model.md` — issue working states (draft, ready,
+- `docs/architecture/work-unit-model.md` — work-unit working states (draft, ready,
   in-progress, blocked, closed, stale), dependency graph format, and graph
   maintenance rules.
 - `docs/architecture/decisions/0001-internal-development-history-policy.md` —
