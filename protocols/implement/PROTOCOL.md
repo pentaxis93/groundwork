@@ -338,13 +338,14 @@ skip the `implement` discipline are slower, not faster.
 
 ## Cross-References
 
-- `specify`: identifies behaviors before this protocol executes the cycle.
-  Each RED test corresponds to a named behavior scenario from `specify`.
-- `verify`: owns behavior-level completion evidence. This protocol owns
-  per-test cycle evidence (watched it fail, watched it pass).
-- `debug`: the skill that owns root-cause analysis. This protocol provides
-  the entry point ("write a failing test reproducing the bug") but defers
+- `specify` (protocol): identifies behaviors before this protocol executes
+  the cycle. Each RED test corresponds to a named behavior scenario from
+  `specify`.
+- `verify` (protocol): owns behavior-level completion evidence. This
+  protocol owns per-test cycle evidence (watched it fail, watched it pass).
+- `debug` (skill): owns root-cause analysis. This protocol provides the
+  entry point ("write a failing test reproducing the bug") but defers
   methodology to the `debug` skill when root cause is unclear.
-- `document`: doc comments and type annotations are written alongside
-  code during GREEN and REFACTOR phases — they are implementation work,
-  not afterthought.
+- `document` (protocol): doc comments and type annotations are written
+  alongside code during GREEN and REFACTOR phases — they are implementation
+  work, not afterthought.
