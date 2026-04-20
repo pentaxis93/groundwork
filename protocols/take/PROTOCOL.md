@@ -16,8 +16,9 @@ trigger:
 
 ## Overview
 
-Use this skill to start a work session: choose what to work on, prepare the
-workspace, and declare the session's direction.
+Protocol for opening a work session: consume the selected work-unit,
+prepare the repository-local workspace, and produce a `claim` that threads
+all downstream artifacts.
 
 `take` is the opening bookend of the session lifecycle:
 `take` (select + prepare) → implement → `submit` (package for review) →
@@ -36,22 +37,22 @@ For first-principles design decisions, use `reckon`.
 
 #### Phase 0: Opening
 
-The opening ceremony equips the session with everything subsequent phases need:
-the methodology context that connects skills into a coherent system, awareness
-of the current workspace state, a directional frame that guides selection, and
-a clean starting surface. Each step builds on the previous — orient loads the
-methodology, observe reads the workspace, frame sets direction, banish clears
-the path.
+The opening ceremony equips the session with everything subsequent phases
+need: the methodology context that connects the protocol-and-skill system
+into a coherent whole, awareness of the current workspace state, a
+directional frame that guides the session, and a clean starting surface.
+Each step builds on the previous — orient loads the methodology, observe
+reads the workspace, frame sets direction, banish clears the path.
 
 Follows the LBRP sequence: orient → observe → frame → banish.
 
 ##### 0a. Orient
 
-The agent receives its operating methodology — the connected system that makes
-later skills work together rather than in isolation. `take` opens individual
-work sessions; `orient` establishes the methodology those sessions operate
-within. If `orient` has not been loaded this session, load it now before
-proceeding.
+The agent receives its operating methodology — the connected system that
+makes later protocols and skills work together rather than in isolation.
+`take` opens individual work sessions; `orient` establishes the methodology
+those sessions operate within. If `orient` has not been loaded this
+session, load it now before proceeding.
 
 ```
 ◈ ORIENT
@@ -84,13 +85,10 @@ Establish the session's purpose using the Four Touches:
 | **In scope** | What boundaries contain this work? |
 | **Out of scope** | What nearby work is explicitly excluded? |
 
-Frame depth varies by what is known at invocation. When GitHub issue number(s) are
-provided, derive all four touches from the GitHub issue body — purpose from the
-summary, success from acceptance criteria, scope from the work-unit boundary. This
-yields a full frame. When invoked with a topic or no arguments, frame
-directionally — purpose is "advance the project," success is "one session-sized
-increment," scope sharpens after selection. A partial frame is expected; do not
-block here.
+The work-unit artifact is always present — runa activates the protocol on the
+selected work-unit. Derive all four touches from the work-unit body: purpose
+from the summary, success from acceptance criteria, scope from the work-unit
+boundary, out-of-scope from the work-unit's explicit exclusions.
 
 ```
 ◈ FRAME
@@ -114,62 +112,65 @@ Evaluate workspace state (observed in 0b) against the frame (established in
 [CLEAN | kept: reason | stashed: reason]
 ```
 
-#### Phase 1: Selection
+#### Phase 1: Consume work-unit
 
-Determine what to work on. Use observations from Phase 0b — do not re-run
-status checks.
+Selection happened upstream — either by operator direction (the operator
+names the work-unit and directs runa to activate `take` on it) or by
+`decompose` producing the `work-unit` artifact that runa activates `take`
+on. Runa is always the activator; the protocol does not select work and is
+never invoked CLI-direct.
 
-**If GitHub issue number(s) provided:** selection is already resolved. Fetch GitHub issue
-thread(s) via `gh issue view`, confirm they are open and unblocked, then
-proceed to Phase 2. When multiple GitHub issue numbers are given, they may be batched:
-2-3 cohesive work units can be addressed in a single session and packaged as one PR
-when they share a concern boundary.
-
-**If topic string provided:**
-
-1. List open GitHub issues: `gh issue list --state open`.
-2. Identify open GitHub issues related to the topic (title, labels, body content).
-3. Shortlist 3-5 matches, rank by relevance and impact.
-4. Select one work unit (or a cohesive batch of 2-3).
-5. Proceed to Phase 2.
-
-**If no arguments:**
-
-1. List open GitHub issues: `gh issue list --state open`.
-2. Identify all ready (unblocked) candidate work units — a work unit is ready when its
-   GitHub issue body is agent-executable and every hard dependency is closed.
-3. Apply force filters first: a direct operator request or hard deadline wins
-   immediately.
-4. Shortlist 3-5 candidates from the lowest available execution layer. Rank by
-   value, time criticality, and unblock leverage relative to effort. Be
-   decisive — selection should not consume significant session time.
-5. If candidates tie: choose the one that unblocks the most downstream work.
-6. Select one work unit (or a cohesive batch of 2-3).
+Read the injected work-unit artifact to load the context that Phase 2
+preparation and Phase 3 capstone will build on. When the upstream scope
+legitimately spans 2–3 cohesive work-units that share a concern boundary,
+runa activates `take` on each in turn; the session may address them as a
+batch and package them as one PR at `submit`.
 
 #### Phase 2: Preparation
 
-Set up the workspace for the selected work.
+Set up the repository-local workspace for the selected work.
 
 1. Ensure on `main` and up-to-date: `git checkout main && git pull --ff-only`.
-2. Create a feature branch:
-   - Single GitHub issue: `issue-<N>/<slug>`
-   - GitHub issue batch: `issues-<N>-<M>-.../<slug>` (unbounded)
-   - Topic without a linked GitHub issue: `feat/<slug>`, `fix/<slug>`, or `chore/<slug>`
+2. Create a feature branch. The work-unit artifact is always present; what
+   varies is tracker linkage and, when linked, whether scope is single or
+   batched:
+   - Linked, single work-unit: `issue-<N>/<slug>`
+   - Linked, cohesive batch: `issues-<N>-<M>-.../<slug>` (unbounded)
+   - No tracker linkage: `feat/<slug>`, `fix/<slug>`, or `chore/<slug>`
 
-   Where slug is the GitHub issue title (or topic string, when no linked GitHub issue) — lowercase,
-   hyphenated, truncated to 40 chars.
-3. Load work-unit context: read the GitHub issue body, comments, and linked GitHub issues to build
-   working understanding.
+   Slug is the work-unit title — lowercase, hyphenated, truncated to 40
+   chars. The `issue-` prefix on linked branch names is a repository-local
+   naming convention; `<N>` encodes the work-unit's tracker identifier.
+3. Resolve referenced work-units. Runa injects the active work-unit; when
+   it references other work-units as dependencies or context, prefer runa's
+   injected context. Where runa does not carry a referenced work-unit, fall
+   back to the tracker surface (`gh issue view`) if available.
 
-#### Phase 3: Declaration
+#### Phase 3: Claim — produce the session capstone
 
-Declare the session's direction. The frame from Phase 0c feeds directly into
-this — refine it with what you learned during selection and preparation.
+The capstone is delivery of the `claim` artifact. `claim` threads every
+downstream artifact (behavior-contract, implementation-plan, test-evidence,
+completion-evidence, documentation-record, patch, completion-record) to
+the active work-unit.
 
-- **Starting direction**: what you intend to accomplish (a direction, not a
-  rigid prediction — this will sharpen as you work).
-- **Scope gate**: specific nearby work intentionally excluded this session.
-- **Work unit(s) in scope**: which work unit(s) this session addresses.
+Invoke the `claim` MCP tool. Runa injects `work_unit` from session context;
+the agent supplies `instance_id` and `scope`:
+
+```
+claim({
+  instance_id: "<slug-naming-this-claim>",
+  scope: "<what is being claimed from the work-unit in this session>"
+})
+```
+
+The `scope` field captures the session's starting direction — what the
+agent intends to accomplish from this work-unit. It is a direction, not a
+rigid prediction; implementation will sharpen it. Name nearby work
+intentionally excluded inline in the scope statement.
+
+Runa validates the payload against the `claim` schema, persists the
+artifact, and records it in the artifact store. The agent does not write
+files, construct filenames, or supply `work_unit`.
 
 ### session-close
 
@@ -241,7 +242,8 @@ Brief definitions for self-contained use. See
 - `decompose`: decomposition, work-unit boundaries, acceptance criteria contracts.
 - `reckon`: validate assumptions before committing to an approach.
 - `specify`: behavior-first contract definition for implementation increments.
-- `orient`: the methodology map — activates the connected skill
-  system that `take` operates within. Loaded during orient (Phase 0a).
+- `orient`: the methodology map — activates the connected system of
+  protocols and skills that `take` operates within. Loaded during
+  orient (Phase 0a).
 - Opening ceremony pattern adapted from LBRP (`aiandi-dev-environment`) —
   internalized, no runtime dependency.

@@ -17,7 +17,10 @@ trigger:
 
 ## Overview
 
-Use this skill when the user wants full delivery closure in one command.
+Protocol for closing the session lifecycle: verify the work satisfies its
+contract, review documentation coverage, merge the branch, close the
+satisfied work-units, and deliver the `completion-record` that seals the
+archival trail.
 
 `land` operates in two phases:
 
@@ -46,6 +49,12 @@ Do not ask for confirmation before landing. Invoking `land` IS the user's approv
     - `issue-<number>/<slug>` (single GitHub issue)
     - `issues-<number>-<number>-.../<slug>` (multi-GitHub-issue, unbounded)
   - If no GitHub issue numbers are available, continue with the no-GitHub-issue closeout path.
+- Forge tooling (`gh`) is the primary path for PR lookup, PR merge,
+  acceptance-criteria evaluation against tracker state, and work-unit
+  closure. Where `gh` is unavailable, the protocol falls back to local
+  merge (step 1c fallback) and records unclosed work-units in the
+  `completion-record` for manual follow-up. The protocol does not
+  hard-fail on `gh` absence.
 
 ---
 
@@ -95,15 +104,22 @@ available.
 Criteria: [all met | partial — list remaining]
 ```
 
-Implementation: invoke the `verify` skill. For
-GitHub-issue-linked branches, fetch each target GitHub issue (`gh issue view`) and evaluate
-acceptance criteria against the branch diff. Classify each GitHub issue as satisfied
-(all criteria met) or partial (some remain). If no acceptance criteria can be
-extracted from the GitHub issue body, classify as partial — a GitHub issue without explicit
-criteria may have unstated requirements. If a GitHub issue fetch fails, treat that
-GitHub issue as partial and log a warning. For no-GitHub-issue landings, skip acceptance
-criteria evaluation — `verify` still runs to confirm
-the work itself is complete. Store classifications for Phase 1e.
+Implementation: the `verify` protocol has already run upstream — its
+`completion-evidence` artifact is available through runa's session context.
+Phase 0b is a seal spot-check, not re-invocation of `verify`: confirm that
+acceptance-criteria coverage against the current branch diff still matches
+the upstream `completion-evidence` baseline, and stop there. If drift is
+detected, the seal fails and `land` halts (per the Failure Policy); running
+`verify` again is an upstream repair, not part of this phase. Where `gh` is
+available and the branch is GitHub-issue-linked, fetch each target issue
+(`gh issue view`) to cross-reference acceptance criteria against the diff.
+Classify each work-unit as satisfied (all criteria met) or partial (some
+remain). If no acceptance criteria can be extracted from the work-unit body,
+classify as partial — a work-unit without explicit criteria may have
+unstated requirements. If an issue fetch fails, treat that work-unit as
+partial and log a warning. For no-GitHub-issue landings, skip the
+tracker-evaluation branch and rely on the upstream `completion-evidence`.
+Store classifications for Phase 1e.
 
 #### 0c. Review
 
@@ -115,11 +131,13 @@ documentation drift blocks the seal.
 Docs: [clean | fixed: list | tracked: work-unit refs]
 ```
 
-Implementation: invoke the `document` protocol's documentation-review
-procedure via the Skill tool. Check whether changed files affect areas with documentation artifacts
-(README, ARCHITECTURE, API docs). Fix drift directly and commit;
-file tracking work units for anything deeper. Record a coverage summary: each
-artifact checked, its status, and any action taken.
+Implementation: perform the documentation-review discipline that the
+`document` protocol encodes against the current branch diff, confirming
+coverage has not drifted since `document` ran. Check whether changed files
+affect areas with documentation artifacts (README, ARCHITECTURE, API
+docs). Fix drift directly and commit; file tracking work-units for
+anything deeper. Record a coverage summary: each artifact checked, its
+status, and any action taken.
 
 #### 0d. Seal
 
@@ -156,7 +174,10 @@ Record the squash decision. If squashing, also record the drafted commit message
 
 #### 1b. Discover PR number
 
-Look up the open PR for the feature branch (`gh pr list --head <branch> --state open`). This must happen before merge because `gh pr merge` requires the PR number. If no PR is found, fall back to local merge (step 1c fallback).
+Where `gh` is available, look up the open PR for the feature branch
+(`gh pr list --head <branch> --state open`). This must happen before merge
+because `gh pr merge` requires the PR number. If no PR is found — or if
+`gh` is unavailable — fall back to local merge (step 1c fallback).
 
 #### 1c. Merge via PR API
 
@@ -189,7 +210,9 @@ Delete any remaining branch references:
 
 #### 1e. Comment and close GitHub issue(s) (GitHub-issue-linked branches only)
 
-If no linked work units were provided or inferred, skip this step.
+If no linked work units were provided or inferred, skip this step. Where
+`gh` is unavailable, skip this step and record the would-have-been-closed
+work-unit IDs in the `completion-record` for manual follow-up.
 
 Apply the classifications from Phase 0b.
 
@@ -214,21 +237,46 @@ Then close: `gh issue close <number> --reason completed`.
 
 If any comment or close operation fails, continue processing remaining work units, then report which operations failed.
 
-#### 1f. Verify and report
+#### 1f. Deliver `completion-record`
+
+The capstone is delivery of the `completion-record` artifact — the terminal
+archival record for the work-unit. Invoke the `completion-record` MCP tool:
+
+```
+completion-record({
+  instance_id: "<slug>",
+  criterion_summary: "<how acceptance criteria were met>",
+  gaps: ["<known gaps or deferred work — empty array if none>"],
+  merge_reference: "<merge commit SHA or PR URL from step 1c>",
+  documentation_status: "<summary of coverage from Phase 0c>"
+})
+```
+
+Runa injects `work_unit` from session context, validates the payload
+against the completion-record schema, persists the artifact, and records
+it in the artifact store.
+
+If work-units could not be closed in the tracker (e.g., `gh` unavailable
+in step 1e), include those IDs and the reason in `gaps` so the manual
+follow-up is discoverable from the archival record.
+
+#### 1g. Verify and report
 
 Confirm success conditions:
 - Current branch is `main`
 - Working tree is clean
 - Feature branch absent on origin
 - PR state is `MERGED` (not just `CLOSED`)
-- For GitHub-issue-linked landings: every satisfied GitHub issue state is `CLOSED`
+- For GitHub-issue-linked landings: every satisfied GitHub issue state is `CLOSED` (or recorded in `gaps` if `gh` was unavailable)
 - For GitHub-issue-linked landings: every partial GitHub issue has a progress comment listing remaining criteria
+- `completion-record` artifact delivered
 - Documentation coverage summary reported
 
 Report the final state including:
 - GitHub issue disposition:
   - GitHub-issue-linked: satisfied (closed) and partial (open with remaining criteria)
   - No-GitHub-issue: explicitly report "no GitHub issue linked"
+- `completion-record` instance_id
 - Documentation coverage summary from Phase 0c
 - Any warnings or failed operations from earlier steps
 
@@ -236,7 +284,7 @@ Report the final state including:
 
 ## Failure Policy
 
-- **Seal failure blocks Phase 1.** If the seal (Phase 0d) fails, fix the blocking GitHub issue(s) and re-enter the ceremony from the failed step. Do not proceed to mechanical merge until the seal passes.
+- **Seal failure blocks Phase 1.** If the seal (Phase 0d) fails, the operator resolves the blocking condition (GitHub issue, documentation drift, upstream verify drift, etc.) and directs runa to re-activate `land`; runa resumes the ceremony at the failed step. Do not proceed to mechanical merge until the seal passes.
 - If `gh pr merge` fails: stop immediately, do not close the GitHub issue. If the failure is transient (network), retry once. If structural (merge conflict, check failure), report and stop. Do not fall back to local merge — the whole point of using the API is to preserve PR merge metadata.
 - If branch deletion fails after successful merge: warn about the deletion failure and continue to GitHub issue close/comment steps. The code is safely on `main`; branch cleanup is not a prerequisite for issue closure.
 - If GitHub issue comment/close API fails for one GitHub issue: continue processing remaining GitHub issues, then report failed GitHub issue number(s) explicitly.

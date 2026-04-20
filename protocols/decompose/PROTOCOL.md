@@ -2,8 +2,9 @@
 name: decompose
 description: >-
   Transfer problem understanding across context boundaries through well-formed
-  work units. Use for creating, decomposing, refining, triaging, and closing work units
-  in GitHub projects.
+  work units. Produce `work-unit` artifacts: creating, decomposing, refining,
+  and triaging. Close-state review happens here; the close itself is performed
+  by `land`.
 requires: ["requirements"]
 accepts: ["research-record"]
 produces: ["work-unit"]
@@ -67,10 +68,10 @@ implementer from treating them as optional.
 
 ### Dependencies
 
-**Explicit and hard only.** Dependencies are GitHub issue references (`#N`) that
-represent true blockers — work that literally cannot proceed without the
-dependency being complete. Preferred ordering is not a dependency. Soft
-dependencies create false bottlenecks that serialize work unnecessarily.
+**Explicit and hard only.** Dependencies name other work-units that represent
+true blockers — work that literally cannot proceed without the dependency being
+complete. Preferred ordering is not a dependency. Soft dependencies create
+false bottlenecks that serialize work unnecessarily.
 
 ### Epics and decomposition
 
@@ -103,12 +104,13 @@ the earlier discussion" to understand, it is incomplete.
 4. Define scope with concrete files or modules.
 5. Write acceptance criteria as observable outcomes — functional behavior,
    testing expectations, documentation updates where applicable.
-6. Identify dependencies by searching existing GitHub issues. Link with `#N`.
+6. Identify dependencies by searching existing work-units in the tracker.
+   Record each as a work-unit reference.
 7. Assemble using template from `references/templates.md`. Title format:
    `<type>(<scope>): <what>`.
 
 A structural linter is available at `scripts/issue_lint.py` for validating
-GitHub issue bodies against template schemas.
+work-unit bodies against template schemas.
 
 ### decompose-epic
 
@@ -155,19 +157,22 @@ A well-bounded task has:
 5. Flag stale work units (no progress for 14+ days) for review. Resolution:
    resume, split, or close as wont-fix with rationale.
 
-### close-work-unit
+### review-work-unit-closure
 
 1. Verify all acceptance criteria against implementation.
 2. Check scope deviations — split unintended extra work into new work units.
 3. Update parent epic checklist.
-4. Close with commit/PR reference (`Closes #N`).
+
+The close event itself — marking the work-unit closed in the forge tracker —
+is performed by `land` when it produces the `completion-record`. `decompose`
+owns the pre-close review; `land` owns the seal.
 
 ## Triggers
 
 - creating or refining work units
 - decomposing large goals into executable work
 - triaging or prioritizing a backlog
-- closing completed work
+- reviewing work-units before closure
 - planning milestones or releases
 
 ## Corruption Modes
