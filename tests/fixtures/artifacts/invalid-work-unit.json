@@ -1,5 +1,16 @@
 {
   "title": "Validate record schema before ingestion",
-  "description": "Add a schema validation step at the ingestion entry point",
-  "acceptance_criteria": "Records missing required fields are rejected"
+  "description": "Add a schema validation step at the ingestion entry point that rejects records missing required fields or containing invalid types",
+  "acceptance_criteria": [
+    "Records missing required fields are rejected with a 400 status",
+    "Rejected records are logged with a reason code",
+    "Valid records pass through unchanged"
+  ],
+  "scope": [],
+  "out_of_scope": [
+    ""
+  ],
+  "dependencies": [
+    "work-unit-175.pipeline-refactor"
+  ]
 }

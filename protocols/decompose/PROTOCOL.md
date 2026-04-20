@@ -167,6 +167,72 @@ The close event itself — marking the work-unit closed in the forge tracker —
 is performed by `land` when it produces the `completion-record`. `decompose`
 owns the pre-close review; `land` owns the seal.
 
+### deliver-work-unit
+
+Tracker operations in the procedures above — searching existing work-units,
+labels, stale-age review, and parent-epic checklist updates — remain required
+for `decompose`'s current forge-tracker-coupled workflow. Delivering the
+`work-unit` artifact through runa's MCP tool does not replace those tracker
+surfaces. Full runa-native `decompose` — where work-units live as runa
+artifacts with tracker as an optional sync target — is separate future work.
+
+Deliver each `work-unit` artifact by invoking the `work-unit` MCP tool once
+per delivered artifact. Use a fresh `instance_id` when creating a new
+work-unit. Reuse the existing `instance_id` when refining an already-delivered
+work-unit artifact so artifact identity and inbound dependency references
+remain stable. For a work-unit that exists in the tracker but has not
+previously been delivered through this MCP flow, the first MCP delivery
+uses the reversible tracker-backed convention
+`work-unit-<N>-<short-slug>`, where `<N>` is the tracker identifier. For a
+work-unit with no tracker linkage, first delivery uses `<short-slug>` directly.
+Subsequent updates reuse the `instance_id` established at first delivery. In
+this section, "refining an existing work-unit" means refining an existing
+artifact, not merely refining a tracker item.
+
+For new work-units produced by `create-work-unit` or `decompose-epic`:
+
+```
+work-unit({
+  instance_id: "work-unit-123-pipeline-refactor",
+  title: "<type(scope): what>",
+  description: "<what needs doing and why>",
+  acceptance_criteria: ["..."],
+  scope: ["decompose delivery", "take framing"],
+  out_of_scope: ["submit protocol", "land protocol"],
+  dependencies: ["work-unit-122-artifact-store-cleanup"]
+})
+```
+
+For refinements produced by `refine-work-unit`:
+
+```
+work-unit({
+  instance_id: "<existing-instance-id>",
+  title: "<type(scope): what>",
+  description: "<what needs doing and why>",
+  acceptance_criteria: ["..."],
+  scope: ["decompose delivery", "take framing"],
+  out_of_scope: ["submit protocol", "land protocol"],
+  dependencies: ["work-unit-122-artifact-store-cleanup"]
+})
+```
+
+Choosing a new slug during refinement creates a duplicate artifact and leaves
+inbound `dependencies` pointing at the stale work-unit instead of the refined
+one.
+
+Runa validates the payload against the `work-unit` schema, persists the
+artifact under the given `instance_id`, and records it in the artifact store.
+The `dependencies` field takes the target work-units' exact `instance_id`
+values, not tracker references such as `#123`. For tracker-backed
+dependencies, first delivery uses the same reversible
+`work-unit-<N>-<short-slug>` convention, so later sessions can recover the
+tracker identifier directly from the artifact identifier without maintaining a
+separate mapping. For non-tracker-backed dependencies, use the dependency's
+bare `<short-slug>` `instance_id`. `work-unit` is a planning-phase artifact:
+the agent supplies the schema fields shown above, and runa does not inject
+`work_unit`.
+
 ## Triggers
 
 - creating or refining work units

@@ -25,12 +25,30 @@
         "type": "string"
       }
     },
+    "scope": {
+      "type": "array",
+      "description": "In-scope boundaries for this work unit.",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "out_of_scope": {
+      "type": "array",
+      "description": "Explicit exclusions adjacent to this work unit.",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
     "dependencies": {
       "type": "array",
       "description": "Work units that must be complete before this starts.",
       "items": {
         "type": "string",
-        "pattern": "^[a-z][a-z0-9]*([-.][a-z0-9]+)*$"
+        "pattern": "^[a-z][a-z0-9]*(-[a-z0-9]+)*$"
       }
     }
   }

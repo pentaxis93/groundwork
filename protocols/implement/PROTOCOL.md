@@ -243,6 +243,27 @@ gone. The choice now is between trusted code (test-driven) and untrusted code
 (implementation-first with tests bolted on). Trusted code is faster in the
 long run.
 
+### deliver-test-evidence
+
+The capstone is delivery of the `test-evidence` artifact. Invoke the
+`test-evidence` MCP tool:
+
+```
+test-evidence({
+  instance_id: "<slug>",
+  evidence: [{
+    scenario: "<scenario name from behavior-contract>",
+    result: "pass",
+    command: "<verification command>",
+    output_summary: "<proof the test ran>"
+  }]
+})
+```
+
+Runa injects `work_unit` from session context, validates the payload against
+the test-evidence schema, persists the artifact, and records it in the
+artifact store.
+
 ## Anti-Rationalization
 
 Every excuse in this table has been offered sincerely. Every one leads to

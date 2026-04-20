@@ -62,8 +62,8 @@ Fires after verification, before `submit`.
    references, or explicitly verify and trace any remaining dynamic numbers.
 6. **Apply audience test.** For each updated or created doc: "Would the
    intended reader know what to do after reading this?"
-7. **Deliver `documentation-record`.** Invoke the `documentation-record` MCP
-   tool:
+7. **Deliver `documentation-record`.** Invoke the
+   `documentation-record` MCP tool:
 
    ```
    documentation-record({
@@ -76,7 +76,7 @@ Fires after verification, before `submit`.
 
    Runa injects `work_unit` from session context, validates the payload
    against the documentation-record schema, persists the artifact, and
-   records the coverage summary.
+   records it in the artifact store.
 
 ### evaluate-existing-docs
 
