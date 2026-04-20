@@ -178,9 +178,14 @@ artifacts with tracker as an optional sync target — is separate future work.
 
 Deliver each `work-unit` artifact by invoking the `work-unit` MCP tool once
 per delivered artifact. Use a fresh `instance_id` when creating a new
-work-unit; reuse the existing `instance_id` when refining an existing
-work-unit so artifact identity and inbound dependency references remain
-stable.
+work-unit. Reuse the existing `instance_id` when refining an already-delivered
+work-unit artifact so artifact identity and inbound dependency references
+remain stable. For a work-unit that exists in the tracker but has not
+previously been delivered through this MCP flow, the first MCP delivery
+follows the create pattern and mints a fresh slug; subsequent updates to that
+work-unit reuse the slug minted there. In this section, "refining an existing
+work-unit" means refining an existing artifact, not merely refining a
+tracker item.
 
 For new work-units produced by `create-work-unit` or `decompose-epic`:
 
@@ -190,7 +195,7 @@ work-unit({
   title: "<type(scope): what>",
   description: "<what needs doing and why>",
   acceptance_criteria: ["..."],
-  dependencies: ["..."]
+  dependencies: ["work-unit-123.pipeline-refactor"]
 })
 ```
 
@@ -202,7 +207,7 @@ work-unit({
   title: "<type(scope): what>",
   description: "<what needs doing and why>",
   acceptance_criteria: ["..."],
-  dependencies: ["..."]
+  dependencies: ["work-unit-123.pipeline-refactor"]
 })
 ```
 
@@ -212,8 +217,15 @@ one.
 
 Runa validates the payload against the `work-unit` schema, persists the
 artifact under the given `instance_id`, and records it in the artifact store.
-`work-unit` is a planning-phase artifact: the agent supplies the schema fields
-shown above, and runa does not inject `work_unit`.
+The `dependencies` field takes the slug-form `instance_id` values of the
+target work-units, not tracker references such as `#123`. Where earlier
+procedures identify a dependency by tracker reference, delivery must translate
+that tracker item to the target work-unit's artifact `instance_id` before
+invoking the MCP tool. If a dependency exists only as a legacy tracker-backed
+item and has not yet been delivered through this MCP flow, first deliver that
+dependency by minting its artifact slug as described above, then reference that
+slug in `dependencies`. `work-unit` is a planning-phase artifact: the agent
+supplies the schema fields shown above, and runa does not inject `work_unit`.
 
 ## Triggers
 
