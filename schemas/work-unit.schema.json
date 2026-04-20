@@ -25,6 +25,20 @@
         "type": "string"
       }
     },
+    "scope": {
+      "type": "array",
+      "description": "In-scope boundaries for this work unit.",
+      "items": {
+        "type": "string"
+      }
+    },
+    "out_of_scope": {
+      "type": "array",
+      "description": "Explicit exclusions adjacent to this work unit.",
+      "items": {
+        "type": "string"
+      }
+    },
     "dependencies": {
       "type": "array",
       "description": "Work units that must be complete before this starts.",

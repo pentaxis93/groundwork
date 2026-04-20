@@ -87,8 +87,10 @@ Establish the session's purpose using the Four Touches:
 
 The work-unit artifact is always present — runa activates the protocol on the
 selected work-unit. Derive all four touches from the work-unit body: purpose
-from the summary, success from acceptance criteria, scope from the work-unit
-boundary, out-of-scope from the work-unit's explicit exclusions.
+from `description`, success from `acceptance_criteria`, scope from the
+work-unit's `scope` array, and out-of-scope from the work-unit's
+`out_of_scope` array. When either boundary array is absent, fall back to
+description-inferred framing.
 
 ```
 ◈ FRAME

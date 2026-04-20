@@ -1,5 +1,5 @@
 {
-  "work_unit": "work-unit-178.test-fixtures",
+  "work_unit": "work-unit-178-test-fixtures",
   "summary": "Add a JSON Schema validation middleware to the ingestion endpoint that checks records against the expected schema before forwarding to the pipeline",
   "design_decisions": [
     {

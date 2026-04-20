@@ -1,5 +1,5 @@
 {
-  "work_unit": "work-unit-178.test-fixtures",
+  "work_unit": "work-unit-178-test-fixtures",
   "title": "Schema validation at ingestion entry point",
   "scenarios": [
     {

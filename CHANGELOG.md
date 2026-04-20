@@ -22,7 +22,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   `documentation-record`, `patch`, `completion-record`) distinguish
   agent-supplied fields from runa-injected `work_unit`; `submit` and `land`
   no longer hard-require the `gh` CLI — forge tooling becomes conditional
-  with graceful degradation (closes #214, #215, #216, #217, #218, #222).
+  with graceful degradation. `work-unit` now also carries optional `scope`
+  and `out_of_scope` boundary arrays, and tracker-backed first delivery uses
+  reversible `instance_id` convention `work-unit-<N>-<short-slug>` so
+  `take` framing and dependency references remain structurally recoverable
+  across protocol boundaries (closes #214, #215, #216, #217, #218, #222).
 - Protocol self-description language aligned across five runa-managed
   protocols: `take`, `implement`, `verify`, `submit`, and `land` now
   describe themselves as protocols rather than skills, matching the
