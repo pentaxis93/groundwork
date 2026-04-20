@@ -4,12 +4,6 @@ description: Protocol for writing and maintaining executable behavior specificat
 metadata:
   version: "2.1.0"
   updated: "2026-03-17"
-requires: ["claim", "work-unit"]
-accepts: ["research-record"]
-produces: ["behavior-contract"]
-may_produce: []
-trigger:
-  on_artifact: "claim"
 ---
 
 # Specify

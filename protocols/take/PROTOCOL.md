@@ -4,12 +4,6 @@ description: >-
   Session work initiation: select work-unit(s), prepare workspace, declare
   direction. Opening bookend of the session lifecycle — `land` is the closing
   bookend. Trigger on: 'take', 'take work', 'start session', 'start work-unit'.
-requires: ["work-unit"]
-accepts: []
-produces: ["claim"]
-may_produce: []
-trigger:
-  on_artifact: "work-unit"
 ---
 
 # Take — Work Selection & Initiation
