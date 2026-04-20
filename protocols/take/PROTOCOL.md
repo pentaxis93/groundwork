@@ -16,8 +16,9 @@ trigger:
 
 ## Overview
 
-Use this skill to start a work session: choose what to work on, prepare the
-workspace, and declare the session's direction.
+Protocol for opening a work session: consume the selected work-unit,
+prepare the repository-local workspace, and produce a `claim` that threads
+all downstream artifacts.
 
 `take` is the opening bookend of the session lifecycle:
 `take` (select + prepare) → implement → `submit` (package for review) →
@@ -36,22 +37,22 @@ For first-principles design decisions, use `reckon`.
 
 #### Phase 0: Opening
 
-The opening ceremony equips the session with everything subsequent phases need:
-the methodology context that connects skills into a coherent system, awareness
-of the current workspace state, a directional frame that guides selection, and
-a clean starting surface. Each step builds on the previous — orient loads the
-methodology, observe reads the workspace, frame sets direction, banish clears
-the path.
+The opening ceremony equips the session with everything subsequent phases
+need: the methodology context that connects the protocol-and-skill system
+into a coherent whole, awareness of the current workspace state, a
+directional frame that guides the session, and a clean starting surface.
+Each step builds on the previous — orient loads the methodology, observe
+reads the workspace, frame sets direction, banish clears the path.
 
 Follows the LBRP sequence: orient → observe → frame → banish.
 
 ##### 0a. Orient
 
-The agent receives its operating methodology — the connected system that makes
-later skills work together rather than in isolation. `take` opens individual
-work sessions; `orient` establishes the methodology those sessions operate
-within. If `orient` has not been loaded this session, load it now before
-proceeding.
+The agent receives its operating methodology — the connected system that
+makes later protocols and skills work together rather than in isolation.
+`take` opens individual work sessions; `orient` establishes the methodology
+those sessions operate within. If `orient` has not been loaded this
+session, load it now before proceeding.
 
 ```
 ◈ ORIENT
@@ -237,7 +238,8 @@ Brief definitions for self-contained use. See
 - `decompose`: decomposition, work-unit boundaries, acceptance criteria contracts.
 - `reckon`: validate assumptions before committing to an approach.
 - `specify`: behavior-first contract definition for implementation increments.
-- `orient`: the methodology map — activates the connected skill
-  system that `take` operates within. Loaded during orient (Phase 0a).
+- `orient`: the methodology map — activates the connected system of
+  protocols and skills that `take` operates within. Loaded during
+  orient (Phase 0a).
 - Opening ceremony pattern adapted from LBRP (`aiandi-dev-environment`) —
   internalized, no runtime dependency.

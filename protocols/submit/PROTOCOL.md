@@ -18,7 +18,9 @@ trigger:
 
 ## Overview
 
-Use this skill when implementation is complete and changes need to become a PR.
+Protocol for packaging verified, documented changes into a PR and delivering
+the `patch` artifact. Fires when implementation is complete and reviewed
+changes need to cross into the review stage.
 
 `submit` means:
 1. Resolve the working context (branch, changes, linked issues)
@@ -91,9 +93,9 @@ If on `main` (or detached HEAD):
 
 ### 3. Analyze changes and commit
 
-This step is the skill's core analytical value: understanding changes well
-enough to produce meaningful commit structure, not just staging everything at
-once.
+This step is the protocol's core analytical value: understanding changes
+well enough to produce meaningful commit structure, not just staging
+everything at once.
 
 If all changes are already committed (only unpushed commits exist), skip to
 step 4.
@@ -279,9 +281,13 @@ Output:
 
 ---
 
-## Related Skills
+## Cross-References
 
-- `take` for work initiation — select work unit(s), prepare workspace, declare direction (the preceding phase)
-- `land` for merge, cleanup, and GitHub issue closure (the following phase)
-- `verify` — should fire before `submit`
-- `document` for documentation review before submission
+- `take`: the opening bookend of the session lifecycle — consumes the
+  selected work-unit, prepares the workspace, and produces the `claim`.
+- `land`: the closing bookend — closing ceremony, merge, and work-unit
+  closure after review.
+- `verify`: runs before `submit`; its `completion-evidence` output is
+  a required input (per `manifest.toml`).
+- `document`: runs between `verify` and `submit`; its
+  `documentation-record` output is a required input.

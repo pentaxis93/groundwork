@@ -1,11 +1,10 @@
 ---
 name: verify
 description: >-
-  Use when about to claim work is complete, fixed, or passing. Use before
-  committing, creating PRs, or moving to the next task. Requires running
-  verification commands and confirming output before making any success
-  claims. Evidence before assertions, always. If you are about to say
-  something is done, working, fixed, or passing, this skill applies.
+  Protocol for gating completion claims with fresh verification evidence.
+  Fires after execution, before claiming work is complete, fixed, or
+  passing. Requires running verification commands and confirming output
+  before making any success claims. Evidence before assertions, always.
 metadata:
   version: "1.0.0"
   updated: "2026-03-09"
@@ -49,11 +48,11 @@ Skip any step = the claim has no basis
 
 ## Lifecycle Role
 
-This skill owns **aggregate completion claims** — the moment before you say
-"done." It fires after execution, before packaging work for review.
+This protocol owns **aggregate completion claims** — the moment before you
+say "done." It fires after execution, before packaging work for review.
 
 It does not own per-test cycle evidence (that belongs to the `implement`
-discipline — each test watched failing, then passing). It owns the final
+protocol — each test watched failing, then passing). It owns the final
 gate: all tests pass, all requirements met, the build succeeds, the work is
 actually complete.
 
@@ -165,10 +164,10 @@ the claim — the claim does not select the evidence.
 ## Cross-References
 
 - `implement` owns per-test cycle evidence (each test watched failing, then
-  passing). This skill owns aggregate completion claims.
-- `document` review fires after code changes, before this skill's gate.
+  passing). This protocol owns aggregate completion claims.
+- `document` review fires after code changes, before this protocol's gate.
   Documentation accuracy is completion evidence.
-- `submit` consumes this skill's output — work must be verified before
+- `submit` consumes this protocol's output — work must be verified before
   packaging for review.
 
 ## The Bottom Line

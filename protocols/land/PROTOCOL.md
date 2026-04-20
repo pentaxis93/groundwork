@@ -17,7 +17,10 @@ trigger:
 
 ## Overview
 
-Use this skill when the user wants full delivery closure in one command.
+Protocol for closing the session lifecycle: verify the work satisfies its
+contract, review documentation coverage, merge the branch, close the
+satisfied work-units, and deliver the `completion-record` that seals the
+archival trail.
 
 `land` operates in two phases:
 
@@ -101,15 +104,19 @@ available.
 Criteria: [all met | partial — list remaining]
 ```
 
-Implementation: invoke the `verify` skill. For
-GitHub-issue-linked branches, fetch each target GitHub issue (`gh issue view`) and evaluate
-acceptance criteria against the branch diff. Classify each GitHub issue as satisfied
-(all criteria met) or partial (some remain). If no acceptance criteria can be
-extracted from the GitHub issue body, classify as partial — a GitHub issue without explicit
-criteria may have unstated requirements. If a GitHub issue fetch fails, treat that
-GitHub issue as partial and log a warning. For no-GitHub-issue landings, skip acceptance
-criteria evaluation — `verify` still runs to confirm
-the work itself is complete. Store classifications for Phase 1e.
+Implementation: the `verify` protocol has already run upstream — its
+`completion-evidence` artifact is available through runa's session context.
+Re-check acceptance-criteria coverage against the current branch diff as a
+final seal, using the upstream `completion-evidence` as the baseline. Where
+`gh` is available and the branch is GitHub-issue-linked, fetch each target
+issue (`gh issue view`) and evaluate acceptance criteria against the diff.
+Classify each work-unit as satisfied (all criteria met) or partial (some
+remain). If no acceptance criteria can be extracted from the work-unit body,
+classify as partial — a work-unit without explicit criteria may have
+unstated requirements. If an issue fetch fails, treat that work-unit as
+partial and log a warning. For no-GitHub-issue landings, skip the
+tracker-evaluation branch and rely on the upstream `completion-evidence`.
+Store classifications for Phase 1e.
 
 #### 0c. Review
 
@@ -121,11 +128,13 @@ documentation drift blocks the seal.
 Docs: [clean | fixed: list | tracked: work-unit refs]
 ```
 
-Implementation: invoke the `document` protocol's documentation-review
-procedure via the Skill tool. Check whether changed files affect areas with documentation artifacts
-(README, ARCHITECTURE, API docs). Fix drift directly and commit;
-file tracking work units for anything deeper. Record a coverage summary: each
-artifact checked, its status, and any action taken.
+Implementation: perform the documentation-review discipline that the
+`document` protocol encodes against the current branch diff, confirming
+coverage has not drifted since `document` ran. Check whether changed files
+affect areas with documentation artifacts (README, ARCHITECTURE, API
+docs). Fix drift directly and commit; file tracking work-units for
+anything deeper. Record a coverage summary: each artifact checked, its
+status, and any action taken.
 
 #### 0d. Seal
 
