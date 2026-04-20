@@ -157,7 +157,7 @@ A well-bounded task has:
 5. Flag stale work units (no progress for 14+ days) for review. Resolution:
    resume, split, or close as wont-fix with rationale.
 
-### close-work-unit
+### review-work-unit-closure
 
 1. Verify all acceptance criteria against implementation.
 2. Check scope deviations — split unintended extra work into new work units.
@@ -172,7 +172,7 @@ owns the pre-close review; `land` owns the seal.
 - creating or refining work units
 - decomposing large goals into executable work
 - triaging or prioritizing a backlog
-- closing completed work
+- reviewing work-units before closure
 - planning milestones or releases
 
 ## Corruption Modes

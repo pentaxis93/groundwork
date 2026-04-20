@@ -231,11 +231,12 @@ Output:
 
 ## Failure Policy
 
-- **Forge tooling (`gh`) unavailable or remote unreachable:** The protocol
-  cannot produce a PR reference and therefore cannot deliver the `patch`
-  capstone. Report what was committed and pushed locally, note the missing
-  forge action, and stop. Do not synthesize a `patch` artifact without a
-  real `pr_reference`.
+- **Forge tooling (`gh`) unavailable or unauthenticated:** The protocol can
+  still commit and push (steps 1–4) but cannot create a PR and therefore
+  cannot deliver the `patch` capstone. Report what was committed and pushed,
+  note the missing forge action, and stop. Do not synthesize a `patch`
+  artifact without a real `pr_reference`. Remote-side failures are covered
+  by the push bullets below.
 - **Branch creation fails** (name collision, unresolvable dirty state): Stop
   and report. Do not force-create or silently choose an alternate name.
 - **Push rejected** (remote diverged): Stop and report. Do not force-push. Do

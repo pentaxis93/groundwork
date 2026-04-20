@@ -131,18 +131,16 @@ batch and package them as one PR at `submit`.
 Set up the repository-local workspace for the selected work.
 
 1. Ensure on `main` and up-to-date: `git checkout main && git pull --ff-only`.
-2. Create a feature branch:
-   - Single work-unit: `issue-<N>/<slug>`
-   - Work-unit batch: `issues-<N>-<M>-.../<slug>` (unbounded)
-   - Work-unit without tracker linkage: `feat/<slug>`, `fix/<slug>`, or
-     `chore/<slug>`
+2. Create a feature branch. The work-unit artifact is always present; what
+   varies is tracker linkage and, when linked, whether scope is single or
+   batched:
+   - Linked, single work-unit: `issue-<N>/<slug>`
+   - Linked, cohesive batch: `issues-<N>-<M>-.../<slug>` (unbounded)
+   - No tracker linkage: `feat/<slug>`, `fix/<slug>`, or `chore/<slug>`
 
-   The work-unit artifact itself is always present — runa injects it
-   regardless. What varies is tracker linkage and — when linked — whether
-   a single work-unit or a cohesive batch is in scope. The slug is the
-   work-unit title — lowercase, hyphenated, truncated to 40 chars. The
-   `issue-` prefix on linked branch names is a repository-local naming
-   convention; the `<N>` encodes the work-unit's tracker identifier.
+   Slug is the work-unit title — lowercase, hyphenated, truncated to 40
+   chars. The `issue-` prefix on linked branch names is a repository-local
+   naming convention; `<N>` encodes the work-unit's tracker identifier.
 3. Resolve referenced work-units. Runa injects the active work-unit; when
    it references other work-units as dependencies or context, prefer runa's
    injected context. Where runa does not carry a referenced work-unit, fall
