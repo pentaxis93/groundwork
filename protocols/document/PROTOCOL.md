@@ -62,8 +62,21 @@ Fires after verification, before `submit`.
    references, or explicitly verify and trace any remaining dynamic numbers.
 6. **Apply audience test.** For each updated or created doc: "Would the
    intended reader know what to do after reading this?"
-7. **Record coverage.** In the PR or commit, state which docs were updated,
-   which were verified accurate, and which were flagged with tracking work units.
+7. **Deliver `documentation-record`.** Invoke the `documentation-record` MCP
+   tool:
+
+   ```
+   documentation-record({
+     instance_id: "<slug>",
+     updated_docs: ["..."],
+     verified_accurate_docs: ["..."],
+     tracking_work_units: ["..."]
+   })
+   ```
+
+   Runa injects `work_unit` from session context, validates the payload
+   against the documentation-record schema, persists the artifact, and
+   records the coverage summary.
 
 ### evaluate-existing-docs
 

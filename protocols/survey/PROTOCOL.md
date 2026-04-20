@@ -199,11 +199,30 @@ priority. State why it wins now and what remains outside the boundary.
 The output here is not "a list of interesting problems." It is a bounded
 judgment about what should move forward first.
 
-### write-requirements
+### deliver-requirements
 
-Write the `requirements` artifact using the required fields. The artifact is
-valid only if it preserves the inquiry that produced it. If the writing hides
-the reasoning, the survey has not been transmitted.
+Deliver the `requirements` artifact by invoking the `requirements` MCP tool:
+
+```
+requirements({
+  instance_id: "<slug>",
+  scope: "<purpose and boundaries — from § Requirements Structure>",
+  functional_requirements: ["..."],
+  non_functional_requirements: ["..."],
+  constraints: ["..."],
+  assumptions: ["..."],
+  dependencies: ["..."]
+})
+```
+
+Runa validates the payload against the requirements schema, persists the
+artifact under the given `instance_id`, and records it in the artifact store.
+
+Delivery is successful when the tool returns without error; the survey is
+transmitted when the payload preserves the inquiry that produced it. Schema
+validity is not substance validity — if the content hides the reasoning
+behind the choices, the survey has not been transmitted even when the call
+succeeds.
 
 ## Invocation Pattern
 
