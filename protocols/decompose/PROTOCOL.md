@@ -169,18 +169,46 @@ owns the pre-close review; `land` owns the seal.
 
 ### deliver-work-unit
 
+Tracker operations in the procedures above — searching existing work-units,
+labels, stale-age review, and parent-epic checklist updates — remain required
+for `decompose`'s current forge-tracker-coupled workflow. Delivering the
+`work-unit` artifact through runa's MCP tool does not replace those tracker
+surfaces. Full runa-native `decompose` — where work-units live as runa
+artifacts with tracker as an optional sync target — is separate future work.
+
 Deliver each `work-unit` artifact by invoking the `work-unit` MCP tool once
-per work unit:
+per delivered artifact. Use a fresh `instance_id` when creating a new
+work-unit; reuse the existing `instance_id` when refining an existing
+work-unit so artifact identity and inbound dependency references remain
+stable.
+
+For new work-units produced by `create-work-unit` or `decompose-epic`:
 
 ```
 work-unit({
-  instance_id: "<slug>",
+  instance_id: "<new-slug>",
   title: "<type(scope): what>",
   description: "<what needs doing and why>",
   acceptance_criteria: ["..."],
   dependencies: ["..."]
 })
 ```
+
+For refinements produced by `refine-work-unit`:
+
+```
+work-unit({
+  instance_id: "<existing-instance-id>",
+  title: "<type(scope): what>",
+  description: "<what needs doing and why>",
+  acceptance_criteria: ["..."],
+  dependencies: ["..."]
+})
+```
+
+Choosing a new slug during refinement creates a duplicate artifact and leaves
+inbound `dependencies` pointing at the stale work-unit instead of the refined
+one.
 
 Runa validates the payload against the `work-unit` schema, persists the
 artifact under the given `instance_id`, and records it in the artifact store.
