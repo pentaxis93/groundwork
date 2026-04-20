@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://raw.githubusercontent.com/pentaxis93/groundwork/main/schemas/patch.schema.json",
+  "$id": "https://raw.githubusercontent.com/tesserine/groundwork/main/schemas/patch.schema.json",
   "title": "Patch",
   "description": "Validates the content of a patch artifact. The artifact representation of a submitted PR — where the change is and what it contains.",
   "type": "object",

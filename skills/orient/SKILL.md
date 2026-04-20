@@ -37,7 +37,7 @@ Read the work-unit graph first. Whether starting a session, picking up work, or 
 
 Why the work-unit graph matters: agent sessions are bounded — context windows end, sessions close, agents rotate. The work-unit graph is the persistence layer that survives those boundaries. It holds what remains to be done, what blocks what, and what state each piece of work is in. Working from the graph instead of from memory is what makes multi-session progress reliable.
 
-See [`work-unit-model.md`](https://github.com/pentaxis93/groundwork/blob/main/docs/architecture/work-unit-model.md) for the work-unit state model, dependency graph format, and graph maintenance rules.
+See [`work-unit-model.md`](https://github.com/tesserine/groundwork/blob/main/docs/architecture/work-unit-model.md) for the work-unit state model, dependency graph format, and graph maintenance rules.
 
 ## The Flow
 
@@ -73,7 +73,7 @@ These thread across the topology. They aren't phases — they're disciplines tha
 
 **Introduce third force on friction.** Friction is a two-force collision: task momentum vs obstacle. Routing around is the collapsed triad — both forces lose. When operational friction appears — a missing tool, broken config, stale convention, undocumented requirement — stop and introduce the reconciling move: resolve it structurally before continuing. `resolve` provides the assessment methodology and scope guidance. Friction that exceeds side-quest scope becomes a follow-up work unit via `decompose`. Unresolved friction compounds.
 
-For the connecting structure — artifacts, manifest edges, schemas, and protocol topology — see [`connecting-structure.md`](https://github.com/pentaxis93/groundwork/blob/main/docs/architecture/connecting-structure.md).
+For the connecting structure — artifacts, manifest edges, schemas, and protocol topology — see [`connecting-structure.md`](https://github.com/tesserine/groundwork/blob/main/docs/architecture/connecting-structure.md).
 
 ## Corruption Modes
 

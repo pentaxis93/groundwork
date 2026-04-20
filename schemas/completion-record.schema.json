@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://raw.githubusercontent.com/pentaxis93/groundwork/main/schemas/completion-record.schema.json",
+  "$id": "https://raw.githubusercontent.com/tesserine/groundwork/main/schemas/completion-record.schema.json",
   "title": "Completion Record",
   "description": "Validates the content of a completion-record artifact. The terminal artifact — captures the final state of a work unit for archival.",
   "type": "object",
