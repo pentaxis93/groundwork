@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://raw.githubusercontent.com/pentaxis93/groundwork/main/schemas/documentation-record.schema.json",
+  "$id": "https://raw.githubusercontent.com/tesserine/groundwork/main/schemas/documentation-record.schema.json",
   "title": "Documentation Record",
   "description": "Validates the content of a documentation-record artifact. Records which docs were updated, which were verified accurate, and which were deferred to tracking work-units.",
   "type": "object",

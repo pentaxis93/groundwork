@@ -8,6 +8,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Changed
 
+- Canonical repository references now point at the `tesserine` organization
+  across schema `$id` values, documentation links, and artifact fixtures,
+  replacing stale pre-migration repository URLs left behind by the org move.
 - Breaking vocabulary rename: artifact type `issue` becomes `work-unit`, and
   protocol `begin` becomes `take`. Consumers using the old vocabulary must
   update manifests, schema paths, protocol references, and fixture names.

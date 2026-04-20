@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://raw.githubusercontent.com/pentaxis93/groundwork/main/schemas/implementation-plan.schema.json",
+  "$id": "https://raw.githubusercontent.com/tesserine/groundwork/main/schemas/implementation-plan.schema.json",
   "title": "Implementation Plan",
   "description": "Validates the content of an implementation-plan artifact. Bridges behavior (from specify) to code (in implement) with design decisions and scenario-to-step mappings.",
   "type": "object",

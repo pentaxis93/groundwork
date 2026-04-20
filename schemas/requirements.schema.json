@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://raw.githubusercontent.com/pentaxis93/groundwork/main/schemas/requirements.schema.json",
+  "$id": "https://raw.githubusercontent.com/tesserine/groundwork/main/schemas/requirements.schema.json",
   "title": "Requirements",
   "description": "Validates the content of a requirements artifact. A software requirements specification structured to support decomposition into work units.",
   "type": "object",

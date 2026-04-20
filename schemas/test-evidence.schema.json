@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://raw.githubusercontent.com/pentaxis93/groundwork/main/schemas/test-evidence.schema.json",
+  "$id": "https://raw.githubusercontent.com/tesserine/groundwork/main/schemas/test-evidence.schema.json",
   "title": "Test Evidence",
   "description": "Validates the content of a test-evidence artifact. Records test results against behavior-contract scenarios.",
   "type": "object",

@@ -1,6 +1,6 @@
 # Groundwork
 
-Groundwork is a methodology plugin for [runa](https://github.com/pentaxis93/runa),
+Groundwork is a methodology plugin for [runa](https://github.com/tesserine/runa),
 a cognitive runtime for AI coding agents.
 It encodes opinions about how software should be built into protocols, skills,
 and artifact schemas that a runa instance orchestrates. It is not a runtime, a
@@ -12,7 +12,7 @@ work traces from requirement to merged code, completion claims require evidence,
 and progress survives session boundaries.
 
 For what methodology plugins are and how runa executes them, see runa's
-[core concepts](https://github.com/pentaxis93/runa#core-concepts).
+[core concepts](https://github.com/tesserine/runa#core-concepts).
 
 ## The Shape of the Methodology
 
@@ -47,7 +47,7 @@ not completeness.
 → [`skills/orient/SKILL.md`](skills/orient/SKILL.md)
 
 For how runa orchestrates this topology at runtime, see the
-[interface contract](https://github.com/pentaxis93/runa/blob/main/docs/interface-contract.md).
+[interface contract](https://github.com/tesserine/runa/blob/main/docs/interface-contract.md).
 
 ## What Groundwork Believes
 
@@ -122,7 +122,7 @@ becomes a work unit.
 | [`docs/architecture/`](docs/architecture/) | Topology design rationale and work-unit state model |
 
 For how these pieces compose into a methodology plugin, see runa's
-[methodology authoring guide](https://github.com/pentaxis93/runa/blob/main/docs/methodology-authoring-guide.md).
+[methodology authoring guide](https://github.com/tesserine/runa/blob/main/docs/methodology-authoring-guide.md).
 
 ## License
 

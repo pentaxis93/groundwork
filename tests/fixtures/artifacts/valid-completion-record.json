@@ -2,6 +2,6 @@
   "work_unit": "work-unit-178.test-fixtures",
   "criterion_summary": "All three acceptance criteria covered — missing-field rejection, reason-code logging, and valid-record passthrough verified by tests",
   "gaps": [],
-  "merge_reference": "https://github.com/pentaxis93/groundwork/pull/179",
+  "merge_reference": "https://github.com/tesserine/groundwork/pull/179",
   "documentation_status": "API docs updated; architecture docs verified accurate"
 }

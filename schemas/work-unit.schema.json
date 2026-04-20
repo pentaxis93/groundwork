@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://raw.githubusercontent.com/pentaxis93/groundwork/main/schemas/work-unit.schema.json",
+  "$id": "https://raw.githubusercontent.com/tesserine/groundwork/main/schemas/work-unit.schema.json",
   "title": "Work Unit",
   "description": "Validates the content of a work-unit artifact. A work unit decomposed from requirements, with acceptance criteria that thread through the entire execution phase.",
   "type": "object",

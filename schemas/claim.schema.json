@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://raw.githubusercontent.com/pentaxis93/groundwork/main/schemas/claim.schema.json",
+  "$id": "https://raw.githubusercontent.com/tesserine/groundwork/main/schemas/claim.schema.json",
   "title": "Claim",
   "description": "Validates the content of a claim artifact. The threading root of a work unit — establishes work-unit identity for all downstream artifacts.",
   "type": "object",

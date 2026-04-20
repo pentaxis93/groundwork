@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://raw.githubusercontent.com/pentaxis93/groundwork/main/schemas/behavior-contract.schema.json",
+  "$id": "https://raw.githubusercontent.com/tesserine/groundwork/main/schemas/behavior-contract.schema.json",
   "title": "Behavior Contract",
   "description": "Validates the content of a behavior-contract artifact. Defines expected system behavior as Given/When/Then scenarios that trace to acceptance criteria.",
   "type": "object",
