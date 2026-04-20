@@ -106,10 +106,13 @@ Criteria: [all met | partial — list remaining]
 
 Implementation: the `verify` protocol has already run upstream — its
 `completion-evidence` artifact is available through runa's session context.
-Re-check acceptance-criteria coverage against the current branch diff as a
-final seal, using the upstream `completion-evidence` as the baseline. Where
-`gh` is available and the branch is GitHub-issue-linked, fetch each target
-issue (`gh issue view`) and evaluate acceptance criteria against the diff.
+Phase 0b is a seal spot-check, not re-invocation of `verify`: confirm that
+acceptance-criteria coverage against the current branch diff still matches
+the upstream `completion-evidence` baseline, and stop there. If drift is
+detected, the seal fails and `land` halts (per the Failure Policy); running
+`verify` again is an upstream repair, not part of this phase. Where `gh` is
+available and the branch is GitHub-issue-linked, fetch each target issue
+(`gh issue view`) to cross-reference acceptance criteria against the diff.
 Classify each work-unit as satisfied (all criteria met) or partial (some
 remain). If no acceptance criteria can be extracted from the work-unit body,
 classify as partial — a work-unit without explicit criteria may have
@@ -281,7 +284,7 @@ Report the final state including:
 
 ## Failure Policy
 
-- **Seal failure blocks Phase 1.** If the seal (Phase 0d) fails, fix the blocking GitHub issue(s) and re-enter the ceremony from the failed step. Do not proceed to mechanical merge until the seal passes.
+- **Seal failure blocks Phase 1.** If the seal (Phase 0d) fails, the operator resolves the blocking condition (GitHub issue, documentation drift, upstream verify drift, etc.) and directs runa to re-activate `land`; runa resumes the ceremony at the failed step. Do not proceed to mechanical merge until the seal passes.
 - If `gh pr merge` fails: stop immediately, do not close the GitHub issue. If the failure is transient (network), retry once. If structural (merge conflict, check failure), report and stop. Do not fall back to local merge — the whole point of using the API is to preserve PR merge metadata.
 - If branch deletion fails after successful merge: warn about the deletion failure and continue to GitHub issue close/comment steps. The code is safely on `main`; branch cleanup is not a prerequisite for issue closure.
 - If GitHub issue comment/close API fails for one GitHub issue: continue processing remaining GitHub issues, then report failed GitHub issue number(s) explicitly.

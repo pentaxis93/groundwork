@@ -114,9 +114,11 @@ Evaluate workspace state (observed in 0b) against the frame (established in
 
 #### Phase 1: Consume work-unit
 
-Selection happened upstream — by operator direction when the session is
-human-initiated, or by `decompose` producing the `work-unit` artifact that
-runa then activates `take` on. The protocol does not select work.
+Selection happened upstream — either by operator direction (the operator
+names the work-unit and directs runa to activate `take` on it) or by
+`decompose` producing the `work-unit` artifact that runa activates `take`
+on. Runa is always the activator; the protocol does not select work and is
+never invoked CLI-direct.
 
 Read the injected work-unit artifact to load the context that Phase 2
 preparation and Phase 3 capstone will build on. When the upstream scope
@@ -132,15 +134,19 @@ Set up the repository-local workspace for the selected work.
 2. Create a feature branch:
    - Single work-unit: `issue-<N>/<slug>`
    - Work-unit batch: `issues-<N>-<M>-.../<slug>` (unbounded)
-   - No linked work-unit (bare invocation): `feat/<slug>`, `fix/<slug>`, or
+   - Work-unit without tracker linkage: `feat/<slug>`, `fix/<slug>`, or
      `chore/<slug>`
 
-   Where slug is the work-unit title — lowercase, hyphenated, truncated to
-   40 chars. The `issue-` prefix on linked branch names is a repository-local
-   naming convention; the `<N>` encodes the work-unit's tracker identifier.
-3. Resolve referenced work-units. Runa injects the active work-unit; when it
-   references other work-units as dependencies or context, read those via
-   the tracker surface (or runa's context, where available).
+   The work-unit artifact itself is always present — runa injects it
+   regardless. What varies across these three patterns is whether the
+   work-unit carries a forge tracker identifier. Where slug is the
+   work-unit title — lowercase, hyphenated, truncated to 40 chars. The
+   `issue-` prefix on linked branch names is a repository-local naming
+   convention; the `<N>` encodes the work-unit's tracker identifier.
+3. Resolve referenced work-units. Runa injects the active work-unit; when
+   it references other work-units as dependencies or context, prefer runa's
+   injected context. Where runa does not carry a referenced work-unit, fall
+   back to the tracker surface (`gh issue view`) if available.
 
 #### Phase 3: Claim — produce the session capstone
 

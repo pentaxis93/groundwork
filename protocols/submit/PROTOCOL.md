@@ -245,8 +245,9 @@ Output:
 - **`gh pr create` fails:**
   - Branch already has an open PR: report the existing PR URL (not an error).
   - Permissions error: stop and report.
-  - Other: report. The branch is pushed; the operator can retry or create
-    manually.
+  - Other: report and stop. The branch is pushed; the operator resolves
+    the cause and directs runa to re-activate `submit`. Manual forge
+    intervention is outside the protocol surface.
 - **PR body corruption from shell interpolation:** If generated content appears
   corrupted or command output is injected, rebuild the body in a file and
   repair using `gh pr edit --body-file <path>`. Do not retry with inline
