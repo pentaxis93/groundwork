@@ -8,6 +8,24 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Changed
 
+- Protocol bodies now describe runa-managed execution end-to-end: `survey`
+  activates on a `request` artifact rather than being self-invoked by the
+  agent; `decompose` is reframed as `work-unit` artifact production rather
+  than GitHub-issue management (the close event moves to `land`); `take`
+  consumes the injected `work-unit` and produces its `claim` capstone
+  rather than listing the forge tracker to select work; `survey`, `plan`,
+  and `document` deliver their capstones (`requirements`,
+  `implementation-plan`, `documentation-record`) via the runa MCP tool
+  surface rather than prose, files, or PR text; `submit` and `land`
+  deliver `patch` and `completion-record` via MCP and no longer hard-
+  require the `gh` CLI — forge tooling becomes conditional with graceful
+  degradation (closes #214, #215, #216, #217, #218).
+- Protocol self-description language aligned across five runa-managed
+  protocols: `take`, `implement`, `verify`, `submit`, and `land` now
+  describe themselves as protocols rather than skills, matching the
+  protocol/skill distinction runa makes operational. Legitimate skill
+  delegations (to `orient`, `reckon`, `research`, `debug`) remain framed
+  as skill invocations (closes #219).
 - Canonical repository references now point at the `tesserine` organization
   across schema `$id` values, documentation links, and artifact fixtures,
   replacing stale pre-migration repository URLs left behind by the org move.
