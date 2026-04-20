@@ -53,9 +53,9 @@ The stages are in order but not all required for every piece of work. Enter the 
 
 These thread across the topology. They aren't phases — they're disciplines that engage when relevant and stay active from that point forward.
 
-**Sovereignty.** Every handoff passes outcomes (WHAT must be true), never implementation steps (HOW to achieve it). Work units define acceptance criteria, not procedure. Plans define interfaces and decisions, not copy-paste instructions. Example: GitHub issue #5 prescribed "Replace ATTRIBUTION.md with a standard NOTICE file." An implementing agent planned exactly that — but NOTICE is an Apache convention (wrong for MIT), and the file should have been deleted. This skill teaches the map; agent judgment navigates it.
+**Sovereignty.** Every handoff passes outcomes (WHAT must be true), never implementation steps (HOW to achieve it). Work-units define acceptance criteria, not procedure. Plans define interfaces and decisions, not copy-paste instructions. Example: GitHub issue #5 prescribed "Replace ATTRIBUTION.md with a standard NOTICE file." An implementing agent planned exactly that — but NOTICE is an Apache convention (wrong for MIT), and the file should have been deleted. This skill teaches the map; agent judgment navigates it.
 
-**Behavior traceability.** The behavior contract from stage 2 should be traceable at every subsequent stage. Plans link design decisions to behavior statements. Work units map acceptance criteria to behaviors. Tests correspond to named scenarios. Verification cites behavior-level evidence. Landing records what coverage shipped.
+**Behavior traceability.** The behavior contract from stage 2 should be traceable at every subsequent stage. Plans link design decisions to behavior statements. Work-units map acceptance criteria to behaviors. Tests correspond to named scenarios. Verification cites behavior-level evidence. Landing records what coverage shipped.
 
 **Documentation obligation.** User-facing changes carry documentation obligations: acceptance criteria include doc updates, completion claims include doc accuracy evidence, and landing records documentation coverage status. User-visible changes require a CHANGELOG entry.
 

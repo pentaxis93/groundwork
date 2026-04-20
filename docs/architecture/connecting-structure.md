@@ -55,7 +55,7 @@ together with the code it explains. Submit is gated on documentation-record.
 | Protocol  | Produces | Purpose of capstone |
 |-----------|----------|---------------------|
 | survey    | requirements | Declaration of what needs doing, at any scope |
-| decompose | work-unit | Work units decomposed from requirements |
+| decompose | work-unit | Work-units decomposed from requirements |
 | take      | claim | Root node: work-unit identity and orientation |
 | specify   | behavior-contract | Behavioral scenarios for the work-unit |
 | plan      | implementation-plan | Design decisions informing execution |
@@ -891,7 +891,7 @@ how to know it's done, and whether it's ready to start.
 | acceptance_criteria | array of strings | yes | Discrete, verifiable conditions for "done" |
 | scope | array of strings | no | In-scope boundaries for the session frame |
 | out_of_scope | array of strings | no | Explicit nearby exclusions |
-| dependencies | array of work-unit refs | no | Work units that must be complete before this starts, referenced by `instance_id` |
+| dependencies | array of work-unit refs | no | Work-units that must be complete before this starts, referenced by `instance_id` |
 
 Tracker-backed work-units use `instance_id` convention
 `work-unit-<N>-<short-slug>` on first delivery; work-units without tracker
@@ -1086,7 +1086,7 @@ The existing schema structure survives — it tracks the right things.
 | work_unit | string (work-unit ref) | yes | Common envelope |
 | updated_docs | array of strings | yes | Documentation files updated in this change |
 | verified_accurate_docs | array of strings | yes | Documentation reviewed and confirmed accurate |
-| tracking_work_units | array of strings | yes | Work units filed for documentation follow-up |
+| tracking_work_units | array of strings | yes | Work-units filed for documentation follow-up |
 
 ### patch
 
