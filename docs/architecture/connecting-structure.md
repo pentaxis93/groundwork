@@ -416,6 +416,31 @@ no direct channel to runa. Anything a skill produces that needs to
 enter runa's validated artifact store must cross through an active
 protocol session. The next section describes the specific mechanism.
 
+### Authoring surfaces and authority
+
+The four layers imply a single authoritative place for each kind of
+declaration:
+
+- `manifest.toml` is the sole contract surface for runa-managed
+  protocol declarations: `requires`, `accepts`, `produces`,
+  `may_produce`, and `trigger`.
+- Skill frontmatter is a harness-and-reader surface, not a runa
+  surface. The harness uses identifying fields such as `name` and
+  `description`; optional `metadata` remains for human-oriented
+  context such as version or attribution.
+- Protocol frontmatter is reader-facing only. Runa reads the
+  `PROTOCOL.md` file as instructions text; it does not parse mirrored
+  contract declarations from the markdown header.
+
+Duplicating manifest-shaped fields into skill or protocol frontmatter
+creates a second unsynchronized surface. The repository already saw
+this drift: after `manifest.toml` added
+`may_produce = ["research-record"]` to four protocols, those
+protocols' markdown frontmatter still said `may_produce: []`.
+Removing the duplicate fields eliminates that inconsistency class
+rather than asking future authors to maintain two declarations by
+hand.
+
 ## Skill-Produced Artifacts and the `may_produce` Bridge
 
 A skill can be loaded by the harness only during an agent session,
@@ -492,8 +517,10 @@ persisted through runa:
    plausibly need to produce a fresh instance of the artifact during
    that protocol's session. Add the artifact to that protocol's
    `may_produce` if yes. This decision is independent of step 2.
-4. The skill itself does not need to declare anything for runa's
-   sake — runa does not read skill frontmatter.
+4. Keep any skill frontmatter limited to harness/reader identification
+   fields. The runa-facing declaration lives only in `manifest.toml`;
+   do not mirror `accepts`, `produces`, `may_produce`, or `trigger`
+   into the skill file.
 
 ## Agent Interface
 

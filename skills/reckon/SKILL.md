@@ -13,12 +13,6 @@ description: >-
 metadata:
   version: "4.1.0"
   updated: "2026-04-03"
-requires: []
-accepts: ["research-record"]
-produces: []
-may_produce: []
-trigger:
-  on_signal: "frame-constraints"
 ---
 
 # Reckon

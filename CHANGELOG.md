@@ -44,6 +44,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   `manifest.toml`. With this wiring, an agent inside any of these
   protocol sessions can persist a fresh research-record through runa
   rather than producing it as a loose skill artifact.
+- Skill and protocol frontmatter now keeps only minimal
+  harness/reader-facing identification data. Runa contract
+  declarations live only in `manifest.toml`, and removing the mirrored
+  protocol `may_produce` fields eliminates the already-existing
+  `research-record` drift case those duplicates had accumulated.
 - Canonical reference (`docs/architecture/connecting-structure.md`)
   gains Runtime Layers and Skill-Produced Artifacts sections that
   document the four-layer agentd/harness/runa/groundwork model and

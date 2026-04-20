@@ -5,12 +5,6 @@ description: >-
   documentation before mechanical merge. Merge to main, sync, delete feature
   branch, close satisfied work units, comment progress on partial work units.
   Trigger on: 'land', 'land this', 'merge and close', 'ship it'.
-requires: ["patch"]
-accepts: ["completion-evidence", "behavior-contract", "documentation-record", "work-unit"]
-produces: ["completion-record"]
-may_produce: []
-trigger:
-  on_artifact: "patch"
 ---
 
 # Land — Close, Verify, Merge

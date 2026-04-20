@@ -6,12 +6,6 @@ description: >-
   The middle phase of the session lifecycle between take and land.
   Trigger on: 'submit', 'submit pr', 'create pr', 'open pr',
   'send for review', 'package this up'.
-requires: ["completion-evidence", "documentation-record"]
-accepts: []
-produces: ["patch"]
-may_produce: []
-trigger:
-  on_artifact: "documentation-record"
 ---
 
 # Submit — Commit, Push, PR

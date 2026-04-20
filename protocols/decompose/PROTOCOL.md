@@ -5,12 +5,6 @@ description: >-
   work units. Produce `work-unit` artifacts: creating, decomposing, refining,
   and triaging. Close-state review happens here; the close itself is performed
   by `land`.
-requires: ["requirements"]
-accepts: ["research-record"]
-produces: ["work-unit"]
-may_produce: []
-trigger:
-  on_artifact: "requirements"
 ---
 
 # Work-Unit Craft

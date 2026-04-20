@@ -5,12 +5,6 @@ description: >-
   submission, or when existing docs need classification for drift, missing
   coverage, or obsolescence. This is the focused documentation review protocol
   that records documentation coverage and tracking outcomes.
-requires: ["completion-evidence"]
-accepts: ["behavior-contract", "implementation-plan"]
-produces: ["documentation-record"]
-may_produce: []
-trigger:
-  on_artifact: "completion-evidence"
 ---
 
 # Document
