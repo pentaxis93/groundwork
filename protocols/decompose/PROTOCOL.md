@@ -167,6 +167,26 @@ The close event itself — marking the work-unit closed in the forge tracker —
 is performed by `land` when it produces the `completion-record`. `decompose`
 owns the pre-close review; `land` owns the seal.
 
+### deliver-work-unit
+
+Deliver each `work-unit` artifact by invoking the `work-unit` MCP tool once
+per work unit:
+
+```
+work-unit({
+  instance_id: "<slug>",
+  title: "<type(scope): what>",
+  description: "<what needs doing and why>",
+  acceptance_criteria: ["..."],
+  dependencies: ["..."]
+})
+```
+
+Runa validates the payload against the `work-unit` schema, persists the
+artifact under the given `instance_id`, and records it in the artifact store.
+`work-unit` is a planning-phase artifact: the agent supplies the schema fields
+shown above, and runa does not inject `work_unit`.
+
 ## Triggers
 
 - creating or refining work units

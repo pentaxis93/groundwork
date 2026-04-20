@@ -13,13 +13,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   agent; `decompose` is reframed as `work-unit` artifact production rather
   than GitHub-issue management (the close event moves to `land`); `take`
   consumes the injected `work-unit` and produces its `claim` capstone
-  rather than listing the forge tracker to select work; `survey`, `plan`,
-  and `document` deliver their capstones (`requirements`,
-  `implementation-plan`, `documentation-record`) via the runa MCP tool
-  surface rather than prose, files, or PR text; `submit` and `land`
-  deliver `patch` and `completion-record` via MCP and no longer hard-
-  require the `gh` CLI — forge tooling becomes conditional with graceful
-  degradation (closes #214, #215, #216, #217, #218).
+  rather than listing the forge tracker to select work; all ten producing
+  protocols now name their capstone delivery path through runa's MCP tool
+  surface instead of leaving agents to infer a non-MCP path. Planning-phase
+  artifacts (`requirements`, `work-unit`) describe agent-supplied payloads
+  directly; scoped execution artifacts (`claim`, `behavior-contract`,
+  `implementation-plan`, `test-evidence`, `completion-evidence`,
+  `documentation-record`, `patch`, `completion-record`) distinguish
+  agent-supplied fields from runa-injected `work_unit`; `submit` and `land`
+  no longer hard-require the `gh` CLI — forge tooling becomes conditional
+  with graceful degradation (closes #214, #215, #216, #217, #218, #222).
 - Protocol self-description language aligned across five runa-managed
   protocols: `take`, `implement`, `verify`, `submit`, and `land` now
   describe themselves as protocols rather than skills, matching the

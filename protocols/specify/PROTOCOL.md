@@ -129,6 +129,29 @@ refactor that preserves the behavior.
 4. **Green:** implement minimal code to pass. Resist the urge to generalize.
 5. **Refactor** while keeping the full suite green.
 
+### deliver-behavior-contract
+
+The capstone is delivery of the `behavior-contract` artifact. Invoke the
+`behavior-contract` MCP tool:
+
+```
+behavior-contract({
+  instance_id: "<slug>",
+  title: "<human-readable contract title>",
+  scenarios: [{
+    name: "<scenario name>",
+    criterion: "<acceptance criterion this refines>",
+    given: "<initial context>",
+    when: "<action or event>",
+    then: "<expected outcome>"
+  }]
+})
+```
+
+Runa injects `work_unit` from session context, validates the payload against
+the behavior-contract schema, persists the artifact, and records it in the
+artifact store.
+
 ## Corruption Modes
 
 **Vague names.** Test names that do not describe the behavior.

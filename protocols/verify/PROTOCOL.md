@@ -141,6 +141,27 @@ Unverified: Trust agent report at face value
 - Implications of success ("Ready for review")
 - Any communication suggesting completion or correctness
 
+### deliver-completion-evidence
+
+The capstone is delivery of the `completion-evidence` artifact. Invoke the
+`completion-evidence` MCP tool:
+
+```
+completion-evidence({
+  instance_id: "<slug>",
+  criterion_coverage: [{
+    criterion: "<acceptance criterion>",
+    status: "covered",
+    scenarios: ["<covering scenario names>"],
+    failures: []
+  }]
+})
+```
+
+Runa injects `work_unit` from session context, validates the payload against
+the completion-evidence schema, persists the artifact, and records it in the
+artifact store.
+
 ## Corruption Modes
 
 **Performative verification.** Going through the motions without actually
