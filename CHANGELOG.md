@@ -8,6 +8,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Changed
 
+- Normalized in-scope prose to the canonical hyphenated `work-unit` /
+  `work-units` spelling across protocols, skills, architecture docs, README,
+  and changelog entries. Machine-facing `work_unit` identifiers remain
+  unchanged (closes #242).
 - Protocol bodies now describe runa-managed execution end-to-end: `survey`
   activates on a `request` artifact rather than being self-invoked by the
   agent; `decompose` is reframed as `work-unit` artifact production rather
@@ -72,10 +76,10 @@ protocols, skills, and artifact schemas that a runa instance orchestrates.
   conditions, and scoping. This is the single file runa reads to understand
   the methodology.
 - Two planning-phase protocols (unscoped): **survey** produces requirements
-  from an external request; **decompose** produces session-sized work units with
+  from an external request; **decompose** produces session-sized work-units with
   acceptance criteria and dependency edges.
 - Eight execution-phase protocols (all `scoped = true`, work-unit threaded):
-  **take** claims a work unit and opens the session → **specify** writes the
+  **take** claims a work-unit and opens the session → **specify** writes the
   behavior contract as Given/When/Then scenarios → **plan** converges on a
   decision-complete design → **implement** executes through RED-GREEN-REFACTOR
   → **verify** gates completion with behavior-level evidence → **document**
@@ -111,7 +115,7 @@ protocols, skills, and artifact schemas that a runa instance orchestrates.
   `LICENSE-UPSTREAM`.
 - **resolve** — friction resolution through the reconciling force. When
   operational friction appears, stop and resolve structurally instead of
-  routing around. Scope guidance distinguishes inline side quests from work units.
+  routing around. Scope guidance distinguishes inline side quests from work-units.
 - **research** — systematic multi-source research with citations. Six-phase
   workflow (clarify, decompose, gather, evaluate, resolve, synthesize).
   Produces a typed artifact (research-record) that other protocols can accept.
@@ -127,7 +131,7 @@ protocols, skills, and artifact schemas that a runa instance orchestrates.
   `manifest.toml`.
 - Planning-phase artifacts carry no `work_unit` field: **request** (external
   input), **requirements** (scope, constraints, priorities),
-  **work-unit** (work unit with acceptance criteria and dependencies).
+  **work-unit** (work-unit with acceptance criteria and dependencies).
 - Execution-phase artifacts carry a `work_unit` envelope for runa's scoped
   validation: **claim** (threading root), **behavior-contract** (Given/When/Then
   scenarios), **implementation-plan** (design decisions, affected files,

@@ -18,12 +18,12 @@ For what methodology plugins are and how runa executes them, see runa's
 
 Work moves through two phases connected by the work-unit artifact.
 
-**Planning** takes an external request and produces work units.
+**Planning** takes an external request and produces work-units.
 Survey examines what actually needs doing; decompose breaks that into work
 units with acceptance criteria and dependency edges.
 
-**Execution** takes one work unit and carries it through to a merged increment:
-take claims the work unit and opens the session → specify writes the behavior
+**Execution** takes one work-unit and carries it through to a merged increment:
+take claims the work-unit and opens the session → specify writes the behavior
 contract as Given/When/Then scenarios → plan converges on a decision-complete
 design → implement executes through RED-GREEN-REFACTOR → verify gates
 completion with evidence → document ensures accuracy → submit packages the
@@ -41,7 +41,7 @@ Six skills operate across the topology:
 - **research** — external evidence gathering when facts are missing
 - **contract** — behavior traceability through execution
 
-Not every piece of work needs every stage. A bug with an existing work unit enters
+Not every piece of work needs every stage. A bug with an existing work-unit enters
 at execution. A new capability enters at planning. The constraint is sequence,
 not completeness.
 → [`skills/orient/SKILL.md`](skills/orient/SKILL.md)
@@ -63,7 +63,7 @@ memory.
 → [`docs/architecture/work-unit-model.md`](docs/architecture/work-unit-model.md)
 
 **Sovereignty.** Every handoff passes outcomes — what must be true — never
-implementation steps. Work units define acceptance criteria, not procedure. Plans
+implementation steps. Work-units define acceptance criteria, not procedure. Plans
 define interfaces and decisions, not scripts to follow.
 → [`protocols/decompose/PROTOCOL.md`](protocols/decompose/PROTOCOL.md)
 
@@ -108,7 +108,7 @@ symptoms.
 **Friction is structural.** Workarounds compound debt. Operational friction — a
 missing tool, broken configuration, stale convention — gets resolved
 structurally before work continues. Friction that exceeds side-quest scope
-becomes a work unit.
+becomes a work-unit.
 → [`skills/resolve/SKILL.md`](skills/resolve/SKILL.md)
 
 ## What the Repo Contains

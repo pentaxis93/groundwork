@@ -22,7 +22,7 @@ These survived prior reckoning sessions and are ground for this design.
    itself.
 
 4. **Work-unit identity.** Every artifact instance carries a reference to
-   the work unit it belongs to. Runa uses this to resolve which instances
+   the work-unit it belongs to. Runa uses this to resolve which instances
    are related. Manifest edges stay type-level; instance-level linking
    lives in artifact content.
 
@@ -35,7 +35,7 @@ These survived prior reckoning sessions and are ground for this design.
 
 ## The Forward Flow
 
-The full flow for a single work unit is:
+The full flow for a single work-unit is:
 
 ```
 take → specify → plan → implement → verify → document → submit → land
@@ -43,7 +43,7 @@ take → specify → plan → implement → verify → document → submit → l
 
 Survey and decompose precede take when project-level planning is needed.
 Survey produces requirements; decompose breaks requirements into work-unit
-artifacts. Take picks up a work unit and starts the work-unit lifecycle.
+artifacts. Take picks up a work-unit and starts the work-unit lifecycle.
 
 Document sits between verify and submit. Documentation is submitted
 together with the code it explains. Submit is gated on documentation-record.
@@ -55,9 +55,9 @@ together with the code it explains. Submit is gated on documentation-record.
 | Protocol  | Produces | Purpose of capstone |
 |-----------|----------|---------------------|
 | survey    | requirements | Declaration of what needs doing, at any scope |
-| decompose | work-unit | Work units decomposed from requirements |
+| decompose | work-unit | Work-units decomposed from requirements |
 | take      | claim | Root node: work-unit identity and orientation |
-| specify   | behavior-contract | Behavioral scenarios for the work unit |
+| specify   | behavior-contract | Behavioral scenarios for the work-unit |
 | plan      | implementation-plan | Design decisions informing execution |
 | implement | test-evidence | Proof of correct implementation — passing tests mapped to scenarios |
 | verify    | completion-evidence | Aggregated behavior coverage status |
@@ -78,7 +78,7 @@ from the artifact graph.
 
 Take currently produces no artifact for runa. It should. Take does the
 most consequential work in the topology — selecting and orienting to a
-work unit — but leaves no trace in the artifact system.
+work-unit — but leaves no trace in the artifact system.
 
 Take's capstone is the **root node** of the work-unit artifact chain.
 It establishes the work-unit identifier that every downstream artifact
@@ -104,7 +104,7 @@ thread would break without it. An input is `accepts` when the capstone
 can be valid but would be better informed by the context.
 
 Requires edges form the **structural backbone** of the topology — the
-chain that must be unbroken for the work unit to flow. Accepts edges
+chain that must be unbroken for the work-unit to flow. Accepts edges
 provide **contextual enrichment** — cross-cutting artifacts that improve
 quality but whose absence doesn't break the chain.
 
@@ -136,24 +136,24 @@ request → requirements → work-unit → claim → behavior-contract
 ```
 
 Cross-cutting: research-record feeds in via accepts edges where needed.
-Research-record may optionally be scoped to a work unit when the research
-is specific to a work unit.
+Research-record may optionally be scoped to a work-unit when the research
+is specific to a work-unit.
 
 ## Work-Unit-Scoped Evaluation
 
 The manifest declares type-level edges. Runa evaluates triggers per work
 unit at runtime, using the `work_unit` field to partition the workspace.
 
-When multiple work units are active simultaneously, plan triggering on
-`on_artifact("behavior-contract")` fires for a specific work unit's
+When multiple work-units are active simultaneously, plan triggering on
+`on_artifact("behavior-contract")` fires for a specific work-unit's
 behavior-contract — not every behavior-contract in the workspace. The
 manifest doesn't express this scoping. Runa computes it from artifact
 content.
 
 Planning-phase artifacts (request, requirements, work-unit) predate work-unit
 identity and are not partitioned this way. Research-record is always
-scoped by topic; optionally scoped by work unit when research is
-specific to a work unit.
+scoped by topic; optionally scoped by work-unit when research is
+specific to a work-unit.
 
 ## Consolidated Manifest
 
@@ -362,8 +362,8 @@ declare it in `may_produce` so that, when an agent's research skill
 emits one mid-session, runa exposes a tool to validate and persist it.
 See "Runtime Layers" and "Skill-Produced Artifacts and the `may_produce`
 Bridge" below for the full mechanism. Research-record may carry
-`work_unit` when the research is specific to a work unit; when it does,
-runa can scope it to the relevant work unit's context. When `work_unit`
+`work_unit` when the research is specific to a work-unit; when it does,
+runa can scope it to the relevant work-unit's context. When `work_unit`
 is absent, the research is cross-cutting. This is the two-population
 principle in action: skills produce artifacts that runa validates
 but doesn't trigger on.
@@ -619,14 +619,14 @@ progressive authoring — are design directions, not current behavior.*
 
 The MCP server is not just an artifact I/O layer. It is the agent's
 entire interface to the methodology. The agent doesn't know about runa,
-manifests, schemas, work units, artifact types, or the topology. It
+manifests, schemas, work-units, artifact types, or the topology. It
 has tools. The tools guide the work. The shape of the tools IS the
 methodology.
 
 ### The agent knows nothing about infrastructure
 
 The MCP server can infer from execution context:
-- **work_unit** — which work unit is being worked
+- **work_unit** — which work-unit is being worked
 - **protocol** — which protocol is executing
 - **artifact type** — what this protocol produces
 - **available context** — what requires/accepts artifacts exist
@@ -667,7 +667,7 @@ amend, flag gaps — not data assembly.
 Every tool call is a structured event. The MCP server sits at the
 chokepoint between agent and system. This enables:
 
-- **Telemetry** — which agent, which protocol, which work unit, what
+- **Telemetry** — which agent, which protocol, which work-unit, what
   was produced, when, whether it validated. Without the agent doing
   anything extra.
 - **Cost tracking** — tool calls correlated with LLM calls. Cost per
@@ -698,15 +698,15 @@ The topology has two specification artifacts at different scales:
 
 - **requirements** (produced by survey) — declares what needs doing at
   any scope: a new tool, a feature, a system change, a migration.
-  Consumed by decompose, which breaks it into work units.
+  Consumed by decompose, which breaks it into work-units.
   This is the project-level specification.
 
 - **behavior-contract** (produced by specify) — declares how a single
-  work unit should behave as Given/When/Then scenarios. This is the
+  work-unit should behave as Given/When/Then scenarios. This is the
   implementation-level specification.
 
 Decompose bridges the two levels. It consumes requirements and produces
-work-unit artifacts — the work units that take picks up.
+work-unit artifacts — the work-units that take picks up.
 
 ## Two Phases
 
@@ -732,14 +732,14 @@ tracks and threads by work-unit identity.
 
 ### decompose
 
-- **requires:** requirements. Cannot break work into work units without
+- **requires:** requirements. Cannot break work into work-units without
   knowing what the work is.
 - **accepts:** research-record. Research may inform decomposition decisions.
 - **trigger:** `on_artifact("requirements")`
 
 ### take
 
-- **requires:** work-unit. A work unit whose dependencies are satisfied.
+- **requires:** work-unit. A work-unit whose dependencies are satisfied.
 - **accepts:** nothing. Planning-phase artifacts feed decompose, not
   take. The work-unit artifact is the bridge.
 - **trigger:** `on_artifact("work-unit")`
@@ -747,7 +747,7 @@ tracks and threads by work-unit identity.
 ### specify
 
 - **requires:** claim, work-unit. The claim provides work-unit identity.
-  The work unit provides acceptance criteria that specify transforms into
+  The work-unit provides acceptance criteria that specify transforms into
   behavioral scenarios — traceability requires seeing the criteria.
 - **accepts:** research-record. Research may inform behavioral scenarios,
   but specify can produce valid GWT scenarios without it.
@@ -773,7 +773,7 @@ tracks and threads by work-unit identity.
 
 - **requires:** behavior-contract, test-evidence, work-unit. Verify checks
   behavior coverage against the contract using test results as evidence.
-  The work unit is required because verify must detect acceptance criteria
+  The work-unit is required because verify must detect acceptance criteria
   that have no scenario coverage — gaps that only the original criteria
   list reveals.
 - **accepts:** nothing currently identified.
@@ -826,7 +826,7 @@ Not from a guess about what the producer might write.
 **Execution-phase artifacts** (claim through completion-record) carry a
 `work_unit` field — the work-unit reference that threads them together. Runa
 uses this to scope context injection: when plan activates, it delivers
-the behavior-contract for this work unit, not every behavior-contract in
+the behavior-contract for this work-unit, not every behavior-contract in
 the workspace.
 
 **Planning-phase artifacts** (request, requirements, work-unit) do not carry
@@ -862,7 +862,7 @@ that survey has something to work from.
 
 **Consumer:** decompose.
 **What decompose needs:** understand the full scope, identify natural seams
-for breaking work into work units, respect constraints and
+for breaking work into work-units, respect constraints and
 dependencies when drawing boundaries.
 
 This is a software requirements specification. Its structure follows
@@ -881,17 +881,17 @@ decomposition.
 ### work-unit
 
 **Consumer:** take.
-**What take needs:** understand the work unit being claimed — what to do,
+**What take needs:** understand the work-unit being claimed — what to do,
 how to know it's done, and whether it's ready to start.
 
 | Field | Type | Required | Purpose |
 |-------|------|----------|---------|
-| title | string | yes | What this work unit is |
+| title | string | yes | What this work-unit is |
 | description | string | yes | What needs doing |
 | acceptance_criteria | array of strings | yes | Discrete, verifiable conditions for "done" |
 | scope | array of strings | no | In-scope boundaries for the session frame |
 | out_of_scope | array of strings | no | Explicit nearby exclusions |
-| dependencies | array of work-unit refs | no | Work units that must be complete before this starts, referenced by `instance_id` |
+| dependencies | array of work-unit refs | no | Work-units that must be complete before this starts, referenced by `instance_id` |
 
 Tracker-backed work-units use `instance_id` convention
 `work-unit-<N>-<short-slug>` on first delivery; work-units without tracker
@@ -900,7 +900,7 @@ linkage use `<short-slug>`. Dependency references use those exact
 
 ### Traceability Thread
 
-Acceptance criteria on the work unit are the high-level "done" statements.
+Acceptance criteria on the work-unit are the high-level "done" statements.
 Behavior-contract scenarios are the precise behavioral refinement of
 those criteria into Given/When/Then. The traceability thread runs the
 full length of the execution chain:
@@ -923,15 +923,15 @@ Schema implications:
 ### claim
 
 **Consumer:** specify (and all downstream protocols via work_unit threading).
-**What specify needs:** the work-unit identity and a reference to the work unit
+**What specify needs:** the work-unit identity and a reference to the work-unit
 being implemented. The claim is the threading root — thin by design.
 
 | Field | Type | Required | Purpose |
 |-------|------|----------|---------|
-| work_unit | string (work-unit ref) | yes | The work unit being claimed — threads all downstream artifacts |
-| scope | string | yes | Brief statement of what's being claimed from the work unit |
+| work_unit | string (work-unit ref) | yes | The work-unit being claimed — threads all downstream artifacts |
+| scope | string | yes | Brief statement of what's being claimed from the work-unit |
 
-The claim does not duplicate acceptance criteria from the work unit. Runa's
+The claim does not duplicate acceptance criteria from the work-unit. Runa's
 context injection delivers a protocol's own requires and accepts — not
 transitive dependencies. Protocols that need the acceptance criteria
 must declare the work-unit artifact in their own edges.
@@ -939,7 +939,7 @@ must declare the work-unit artifact in their own edges.
 ### Context Injection Is Not Transitive
 
 Runa injects a protocol's declared requires and accepts instances. It
-does not inject transitive dependencies. If specify needs the work unit
+does not inject transitive dependencies. If specify needs the work-unit
 artifact (to read acceptance criteria), specify must declare it in its
 own edges. The claim alone is not sufficient — it carries the work-unit
 reference but not the work-unit content.
@@ -957,7 +957,7 @@ criteria, structured as executable Given/When/Then.
 The existing schema had the right core — title and GWT scenarios. Two
 changes from this design: each scenario now carries a `criterion`
 reference for traceability, and the common `work_unit` field threads it
-to the work unit.
+to the work-unit.
 
 The existing `metadata` block (produced_by, date) is eliminated.
 Runa knows the producing protocol from the manifest. It tracks
@@ -966,7 +966,7 @@ already knows. By sufficiency, it has no place in the schema.
 
 | Field | Type | Required | Purpose |
 |-------|------|----------|---------|
-| work_unit | string (work-unit ref) | yes | Common envelope — threads to work unit |
+| work_unit | string (work-unit ref) | yes | Common envelope — threads to work-unit |
 | title | string | yes | Human-readable title for the contract |
 | scenarios | array of scenario | yes (min 1) | Behavioral scenarios |
 
@@ -1067,7 +1067,7 @@ submit handles the PR. Those fields belonged to a different flow.
 
 | Field | Type | Required | Purpose |
 |-------|------|----------|---------|
-| criterion | string | yes | Acceptance criterion from the work unit |
+| criterion | string | yes | Acceptance criterion from the work-unit |
 | status | enum: covered, partial, uncovered | yes | Coverage status |
 | scenarios | array of strings | no | Scenario names that cover this criterion |
 | failures | array of strings | no | Scenario names that failed for this criterion |
@@ -1086,7 +1086,7 @@ The existing schema structure survives — it tracks the right things.
 | work_unit | string (work-unit ref) | yes | Common envelope |
 | updated_docs | array of strings | yes | Documentation files updated in this change |
 | verified_accurate_docs | array of strings | yes | Documentation reviewed and confirmed accurate |
-| tracking_work_units | array of strings | yes | Work units filed for documentation follow-up |
+| tracking_work_units | array of strings | yes | Work-units filed for documentation follow-up |
 
 ### patch
 
@@ -1104,7 +1104,7 @@ contains. This is the artifact representation of the PR.
 ### completion-record
 
 **Consumer:** none (terminal artifact — archival record).
-**What it captures:** the final state of the work unit. This is a summary
+**What it captures:** the final state of the work-unit. This is a summary
 artifact — the structured enforcement lives upstream in completion-evidence.
 The record distills the conclusion.
 
@@ -1121,11 +1121,11 @@ The record distills the conclusion.
 **Consumers:** specify (accepts), plan (accepts), survey (accepts),
 decompose (accepts).
 **What consumers need:** research findings and their sources, scoped
-by topic. May serve multiple work units when cross-cutting, or be
-scoped to a specific work unit via the optional `work_unit` field.
+by topic. May serve multiple work-units when cross-cutting, or be
+scoped to a specific work-unit via the optional `work_unit` field.
 
 Research-record is always scoped by topic. It optionally carries
-`work_unit` when the research is specific to a work unit — for example,
+`work_unit` when the research is specific to a work-unit — for example,
 researching a particular library for a particular implementation task.
 When `work_unit` is absent, the research is cross-cutting and available
 to any protocol that accepts it. It belongs to neither the planning nor
@@ -1137,7 +1137,7 @@ principle. Runa tracks timestamps from filesystem state.
 | Field | Type | Required | Purpose |
 |-------|------|----------|---------|
 | topic | string | yes | What was researched (kebab-case slug) |
-| work_unit | string | no | Optional work-unit reference — scopes research to a work unit |
+| work_unit | string | no | Optional work-unit reference — scopes research to a work-unit |
 | findings | array of strings | yes (min 1) | Key findings |
 | sources | array of source | yes (min 1) | Sources consulted |
 

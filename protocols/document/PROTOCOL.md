@@ -20,7 +20,7 @@ Ensure documentation remains accurate and tracked as code evolves.
 - `drift-is-debt`: stale documentation compounds. Each drifted doc trains
   readers to distrust all docs, making accurate docs worthless too.
 - `same-pr`: documentation updates ship in the same PR as the code change that
-  caused them. If deeper work is needed, create a tracking work unit rather than
+  caused them. If deeper work is needed, create a tracking work-unit rather than
   leaving drift untracked.
 
 ## Requirements
@@ -28,7 +28,7 @@ Ensure documentation remains accurate and tracked as code evolves.
 - `changelog-before-land`: user-visible changes include a CHANGELOG entry
   before landing so consumers can understand what changed without reading code.
 - `docs-in-acceptance-criteria`: user-facing changes include documentation
-  updates as explicit acceptance criteria in the work unit.
+  updates as explicit acceptance criteria in the work-unit.
 
 ## Procedures
 
@@ -51,7 +51,7 @@ Fires after verification, before `submit`.
    - `missing` — should exist but does not (creation required)
    - `obsolete` — references removed functionality (rewrite or delete)
 4. **Update or track.** Update drifted or missing docs in the same PR. If
-   deeper work is needed, create a tracking work unit with `decompose`.
+   deeper work is needed, create a tracking work-unit with `decompose`.
 5. **Audit numeric claims.** Replace brittle counts with source-of-truth
    references, or explicitly verify and trace any remaining dynamic numbers.
 6. **Apply audience test.** For each updated or created doc: "Would the
@@ -80,7 +80,7 @@ When encountering existing documentation:
    `missing`, or `obsolete` by comparing claims against actual code behavior.
 2. Prioritize fixes: `missing` critical docs first, then `drifted`, then
    `obsolete`.
-3. Create work units for each fix using `decompose`.
+3. Create work-units for each fix using `decompose`.
 
 ## Triggers
 
@@ -118,7 +118,7 @@ When encountering existing documentation:
 - `specify`: behavior contracts are the authoritative source for what public
   behavior must be reflected in documentation.
 - `decompose`: user-facing changes include documentation expectations in work-unit
-  acceptance criteria; create tracking work units here when review finds deeper
+  acceptance criteria; create tracking work-units here when review finds deeper
   follow-up work.
 - `implement`: inline documentation changes alongside implementation; review checks
   whether those claims still match behavior.
