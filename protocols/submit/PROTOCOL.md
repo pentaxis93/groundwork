@@ -26,15 +26,16 @@ Use this skill when implementation is complete and changes need to become a PR.
 3. Analyze changes and produce well-formed commits
 4. Push to remote
 5. Create a PR with derived title/body and GitHub issue linkage
-6. Report the result and suggest next steps
+6. Deliver the `patch` artifact via the MCP tool
+7. Report the result and suggest next steps
 
 The session lifecycle is: `take` (initiate session) → implement → `submit`
 (package for review) → review → `land` (merge and close). `submit` is the
 transition from execution to review.
 
-Do not stop after creating the PR — the report step (step 6) is part of the
-skill. Invoking `submit` IS the operator's approval to execute the full
-sequence.
+Do not stop after creating the PR — the delivery and report steps (6 and 7)
+are part of the protocol. Invoking `submit` IS the operator's approval to
+execute the full sequence.
 
 ---
 
@@ -45,7 +46,10 @@ sequence.
   submit — report and stop.
 - If the current feature branch already has an open PR, report the PR URL and
   stop. The PR already exists; the operator likely wants `land`, not `submit`.
-- `gh` CLI must be authenticated and the remote accessible.
+- Producing the `patch` capstone requires a real PR reference, which in turn
+  requires forge tooling (`gh` authenticated against the remote). Where forge
+  tooling is absent, the protocol can commit and push locally but cannot
+  deliver the `patch` artifact — see step 5 for the failure path.
 
 ---
 
@@ -65,12 +69,12 @@ Determine:
      `issues-<N>-<M>-.../<slug>` (multi).
   3. None — proceed without GitHub issue linkage.
 
-If GitHub issue number(s) are available, fetch GitHub issue title(s) and body(ies) via
-`gh issue view` for use in steps 3 and 5.
+If GitHub issue number(s) are available and `gh` is installed, fetch issue
+title(s) and body(ies) via `gh issue view` for use in steps 3 and 5.
 
-Check for an existing open PR on the current branch
-(`gh pr list --head <branch> --state open`). If one exists, report its URL and
-stop.
+Where `gh` is available, check for an existing open PR on the current branch
+(`gh pr list --head <branch> --state open`). If one exists, report its URL
+and stop.
 
 ### 2. Ensure feature branch
 
@@ -128,7 +132,11 @@ Push the feature branch to origin:
 
 ### 5. Create PR
 
-Create a pull request via `gh pr create`.
+The `patch` capstone requires a real PR reference. Where `gh` is available
+and authenticated against the remote, create the PR via `gh pr create`.
+Where forge tooling is absent, the protocol cannot complete — report what
+was committed and pushed locally, note that no `patch` artifact was
+delivered, and stop. Do not synthesize a PR reference.
 
 **Title** (under 70 chars):
 - Single GitHub issue: use the issue title, condensed if needed. Prefix with
@@ -190,21 +198,42 @@ gh pr edit <pr-number-or-url> --body-file /tmp/pr-body.md
   work is ready for review. If the operator explicitly says "draft" or "submit
   as draft," use `--draft`.
 
-### 6. Report
+### 6. Deliver `patch`
+
+The capstone is delivery of the `patch` artifact via the `patch` MCP tool:
+
+```
+patch({
+  instance_id: "<slug>",
+  pr_reference: "<PR URL from step 5>",
+  branch: "<feature branch name>",
+  commit: "<head commit SHA at submission>"
+})
+```
+
+Runa injects `work_unit` from session context, validates the payload
+against the patch schema, persists the artifact, and records it in the
+artifact store.
+
+### 7. Report
 
 Output:
 - PR URL.
 - Branch name.
 - Commit summary (count and brief subjects).
 - GitHub issue linkage (which GitHub issues are referenced, close vs. ref).
+- `patch` artifact instance_id.
 - Next step: "Get review, then `land` when approved."
 
 ---
 
 ## Failure Policy
 
-- **`gh` not authenticated or remote unreachable:** Stop immediately. This is
-  infrastructure the operator must fix.
+- **Forge tooling (`gh`) unavailable or remote unreachable:** The protocol
+  cannot produce a PR reference and therefore cannot deliver the `patch`
+  capstone. Report what was committed and pushed locally, note the missing
+  forge action, and stop. Do not synthesize a `patch` artifact without a
+  real `pr_reference`.
 - **Branch creation fails** (name collision, unresolvable dirty state): Stop
   and report. Do not force-create or silently choose an alternate name.
 - **Push rejected** (remote diverged): Stop and report. Do not force-push. Do

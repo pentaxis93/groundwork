@@ -46,6 +46,12 @@ Do not ask for confirmation before landing. Invoking `land` IS the user's approv
     - `issue-<number>/<slug>` (single GitHub issue)
     - `issues-<number>-<number>-.../<slug>` (multi-GitHub-issue, unbounded)
   - If no GitHub issue numbers are available, continue with the no-GitHub-issue closeout path.
+- Forge tooling (`gh`) is the primary path for PR lookup, PR merge,
+  acceptance-criteria evaluation against tracker state, and work-unit
+  closure. Where `gh` is unavailable, the protocol falls back to local
+  merge (step 1c fallback) and records unclosed work-units in the
+  `completion-record` for manual follow-up. The protocol does not
+  hard-fail on `gh` absence.
 
 ---
 
@@ -156,7 +162,10 @@ Record the squash decision. If squashing, also record the drafted commit message
 
 #### 1b. Discover PR number
 
-Look up the open PR for the feature branch (`gh pr list --head <branch> --state open`). This must happen before merge because `gh pr merge` requires the PR number. If no PR is found, fall back to local merge (step 1c fallback).
+Where `gh` is available, look up the open PR for the feature branch
+(`gh pr list --head <branch> --state open`). This must happen before merge
+because `gh pr merge` requires the PR number. If no PR is found — or if
+`gh` is unavailable — fall back to local merge (step 1c fallback).
 
 #### 1c. Merge via PR API
 
@@ -189,7 +198,9 @@ Delete any remaining branch references:
 
 #### 1e. Comment and close GitHub issue(s) (GitHub-issue-linked branches only)
 
-If no linked work units were provided or inferred, skip this step.
+If no linked work units were provided or inferred, skip this step. Where
+`gh` is unavailable, skip this step and record the would-have-been-closed
+work-unit IDs in the `completion-record` for manual follow-up.
 
 Apply the classifications from Phase 0b.
 
@@ -214,21 +225,46 @@ Then close: `gh issue close <number> --reason completed`.
 
 If any comment or close operation fails, continue processing remaining work units, then report which operations failed.
 
-#### 1f. Verify and report
+#### 1f. Deliver `completion-record`
+
+The capstone is delivery of the `completion-record` artifact — the terminal
+archival record for the work-unit. Invoke the `completion-record` MCP tool:
+
+```
+completion-record({
+  instance_id: "<slug>",
+  criterion_summary: "<how acceptance criteria were met>",
+  gaps: ["<known gaps or deferred work — empty array if none>"],
+  merge_reference: "<merge commit SHA or PR URL from step 1c>",
+  documentation_status: "<summary of coverage from Phase 0c>"
+})
+```
+
+Runa injects `work_unit` from session context, validates the payload
+against the completion-record schema, persists the artifact, and records
+it in the artifact store.
+
+If work-units could not be closed in the tracker (e.g., `gh` unavailable
+in step 1e), include those IDs and the reason in `gaps` so the manual
+follow-up is discoverable from the archival record.
+
+#### 1g. Verify and report
 
 Confirm success conditions:
 - Current branch is `main`
 - Working tree is clean
 - Feature branch absent on origin
 - PR state is `MERGED` (not just `CLOSED`)
-- For GitHub-issue-linked landings: every satisfied GitHub issue state is `CLOSED`
+- For GitHub-issue-linked landings: every satisfied GitHub issue state is `CLOSED` (or recorded in `gaps` if `gh` was unavailable)
 - For GitHub-issue-linked landings: every partial GitHub issue has a progress comment listing remaining criteria
+- `completion-record` artifact delivered
 - Documentation coverage summary reported
 
 Report the final state including:
 - GitHub issue disposition:
   - GitHub-issue-linked: satisfied (closed) and partial (open with remaining criteria)
   - No-GitHub-issue: explicitly report "no GitHub issue linked"
+- `completion-record` instance_id
 - Documentation coverage summary from Phase 0c
 - Any warnings or failed operations from earlier steps
 
