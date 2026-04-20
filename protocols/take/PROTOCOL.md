@@ -139,7 +139,7 @@ Set up the repository-local workspace for the selected work.
 
    The work-unit artifact itself is always present — runa injects it
    regardless. What varies is tracker linkage and — when linked — whether
-   a single work-unit or a cohesive batch is in scope. Where slug is the
+   a single work-unit or a cohesive batch is in scope. The slug is the
    work-unit title — lowercase, hyphenated, truncated to 40 chars. The
    `issue-` prefix on linked branch names is a repository-local naming
    convention; the `<N>` encodes the work-unit's tracker identifier.
