@@ -9,12 +9,12 @@
   "properties": {
     "work_unit": {
       "type": "string",
-      "description": "The issue being claimed — threads all downstream artifacts.",
+      "description": "The work unit being claimed — threads all downstream artifacts.",
       "pattern": "^[a-z][a-z0-9]*([-.][a-z0-9]+)*$"
     },
     "scope": {
       "type": "string",
-      "description": "Brief statement of what is being claimed from the issue.",
+      "description": "Brief statement of what is being claimed from the work unit.",
       "minLength": 1
     }
   }

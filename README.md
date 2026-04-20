@@ -16,14 +16,14 @@ For what methodology plugins are and how runa executes them, see runa's
 
 ## The Shape of the Methodology
 
-Work moves through two phases connected by the issue artifact.
+Work moves through two phases connected by the work-unit artifact.
 
-**Planning** takes an external request and produces issue-sized work units.
-Survey examines what actually needs doing; decompose breaks that into issues
-with acceptance criteria and dependency edges.
+**Planning** takes an external request and produces work units.
+Survey examines what actually needs doing; decompose breaks that into work
+units with acceptance criteria and dependency edges.
 
-**Execution** takes one issue and carries it through to a merged increment:
-begin claims the issue and opens the session → specify writes the behavior
+**Execution** takes one work unit and carries it through to a merged increment:
+take claims the work unit and opens the session → specify writes the behavior
 contract as Given/When/Then scenarios → plan converges on a decision-complete
 design → implement executes through RED-GREEN-REFACTOR → verify gates
 completion with evidence → document ensures accuracy → submit packages the
@@ -41,7 +41,7 @@ Six skills operate across the topology:
 - **research** — external evidence gathering when facts are missing
 - **contract** — behavior traceability through execution
 
-Not every piece of work needs every stage. A bug with an existing issue enters
+Not every piece of work needs every stage. A bug with an existing work unit enters
 at execution. A new capability enters at planning. The constraint is sequence,
 not completeness.
 → [`skills/orient/SKILL.md`](skills/orient/SKILL.md)
@@ -56,14 +56,14 @@ Each traces to the file where it lives.
 
 ### How work is understood
 
-**The issue graph is working memory.** Agent sessions end, context windows
-close, agents rotate. The issue graph is the persistence layer that survives
+**The work-unit graph is working memory.** Agent sessions end, context windows
+close, agents rotate. The work-unit graph is the persistence layer that survives
 those boundaries. Multi-session progress depends on the graph, not on agent
 memory.
-→ [`docs/architecture/issue-model.md`](docs/architecture/issue-model.md)
+→ [`docs/architecture/work-unit-model.md`](docs/architecture/work-unit-model.md)
 
 **Sovereignty.** Every handoff passes outcomes — what must be true — never
-implementation steps. Issues define acceptance criteria, not procedure. Plans
+implementation steps. Work units define acceptance criteria, not procedure. Plans
 define interfaces and decisions, not scripts to follow.
 → [`protocols/decompose/PROTOCOL.md`](protocols/decompose/PROTOCOL.md)
 
@@ -108,7 +108,7 @@ symptoms.
 **Friction is structural.** Workarounds compound debt. Operational friction — a
 missing tool, broken configuration, stale convention — gets resolved
 structurally before work continues. Friction that exceeds side-quest scope
-becomes an issue.
+becomes a work unit.
 → [`skills/resolve/SKILL.md`](skills/resolve/SKILL.md)
 
 ## What the Repo Contains
@@ -119,7 +119,7 @@ becomes an issue.
 | [`protocols/`](protocols/) | 10 protocol definitions — one per stage |
 | [`skills/`](skills/) | 6 skills — orientation and cross-cutting disciplines |
 | [`schemas/`](schemas/) | JSON Schema contracts for each artifact type |
-| [`docs/architecture/`](docs/architecture/) | Topology design rationale and issue state model |
+| [`docs/architecture/`](docs/architecture/) | Topology design rationale and work-unit state model |
 
 For how these pieces compose into a methodology plugin, see runa's
 [methodology authoring guide](https://github.com/pentaxis93/runa/blob/main/docs/methodology-authoring-guide.md).

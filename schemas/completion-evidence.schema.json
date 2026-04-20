@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://raw.githubusercontent.com/pentaxis93/groundwork/main/schemas/completion-evidence.schema.json",
   "title": "Completion Evidence",
-  "description": "Validates the content of a completion-evidence artifact. Reports coverage at the acceptance-criterion level by joining issue criteria, behavior-contract scenarios, and test results.",
+  "description": "Validates the content of a completion-evidence artifact. Reports coverage at the acceptance-criterion level by joining work-unit criteria, behavior-contract scenarios, and test results.",
   "type": "object",
   "required": ["work_unit", "criterion_coverage"],
   "additionalProperties": false,
@@ -30,7 +30,7 @@
       "properties": {
         "criterion": {
           "type": "string",
-          "description": "Acceptance criterion from the issue.",
+          "description": "Acceptance criterion from the work unit.",
           "minLength": 1
         },
         "status": {

@@ -33,11 +33,11 @@ whose triggers match — not over-use. The triggers themselves provide the scope
 
 ## Entry Point
 
-Read the issue graph first. Whether starting a session, picking up work, or orienting mid-task, the issue graph tells you where you are: what's in progress, what's blocked, what's next. Work from the graph, not from memory.
+Read the work-unit graph first. Whether starting a session, picking up work, or orienting mid-task, the work-unit graph tells you where you are: what's in progress, what's blocked, what's next. Work from the graph, not from memory.
 
-Why the issue graph matters: agent sessions are bounded — context windows end, sessions close, agents rotate. The issue graph is the persistence layer that survives those boundaries. It holds what remains to be done, what blocks what, and what state each piece of work is in. Working from the graph instead of from memory is what makes multi-session progress reliable.
+Why the work-unit graph matters: agent sessions are bounded — context windows end, sessions close, agents rotate. The work-unit graph is the persistence layer that survives those boundaries. It holds what remains to be done, what blocks what, and what state each piece of work is in. Working from the graph instead of from memory is what makes multi-session progress reliable.
 
-See [`issue-model.md`](https://github.com/pentaxis93/groundwork/blob/main/docs/architecture/issue-model.md) for the issue state model, dependency graph format, and graph maintenance rules.
+See [`work-unit-model.md`](https://github.com/pentaxis93/groundwork/blob/main/docs/architecture/work-unit-model.md) for the work-unit state model, dependency graph format, and graph maintenance rules.
 
 ## The Flow
 
@@ -47,21 +47,21 @@ Five stages, in dependency order. Each produces what the next consumes.
 
 2. **Define behavior.** `specify` defines the behavior contract in Given/When/Then scenarios. This contract threads through every subsequent stage.
 
-3. **Decompose.** Converge to a decision-complete design (`plan`), break the design into agent-executable issues (`decompose`), and initiate the work session (`begin`).
+3. **Decompose.** Converge to a decision-complete design (`plan`), break the design into agent-executable work units (`decompose`), and initiate the work session (`take`).
 
 4. **Execute and verify.** Implement through RED-GREEN-REFACTOR (`implement`), review documentation accuracy with `document`, verify behavior-level evidence before claiming done (`verify`), and package verified changes into a PR (`submit`). When a plan contains independent tasks, dispatch fresh subagents for each to keep execution context clean — stale context from earlier tasks pollutes later ones. Match subagent model to task complexity: use cheaper/faster models for straightforward work, reserve the most capable model for subtle or cross-cutting changes.
 
-5. **Land.** `land` closes the loop: merge, cleanup, behavior coverage record, documentation coverage status, and issue closure.
+5. **Land.** `land` closes the loop: merge, cleanup, behavior coverage record, documentation coverage status, and work-unit closure.
 
-The stages are in order but not all required for every piece of work. Enter the topology where the work needs you. A bug fix with an existing issue enters at Execute. A new capability enters at Frame. The constraint is sequence — you can't land before executing — not completeness.
+The stages are in order but not all required for every piece of work. Enter the topology where the work needs you. A bug fix with an existing work unit enters at Execute. A new capability enters at Frame. The constraint is sequence — you can't land before executing — not completeness.
 
 ## Integration Principles
 
 These thread across the topology. They aren't phases — they're disciplines that engage when relevant and stay active from that point forward.
 
-**Sovereignty.** Every handoff passes outcomes (WHAT must be true), never implementation steps (HOW to achieve it). Issues define acceptance criteria, not procedure. Plans define interfaces and decisions, not copy-paste instructions. Example: Issue #5 prescribed "Replace ATTRIBUTION.md with a standard NOTICE file." An implementing agent planned exactly that — but NOTICE is an Apache convention (wrong for MIT), and the file should have been deleted. This skill teaches the map; agent judgment navigates it.
+**Sovereignty.** Every handoff passes outcomes (WHAT must be true), never implementation steps (HOW to achieve it). Work units define acceptance criteria, not procedure. Plans define interfaces and decisions, not copy-paste instructions. Example: GitHub issue #5 prescribed "Replace ATTRIBUTION.md with a standard NOTICE file." An implementing agent planned exactly that — but NOTICE is an Apache convention (wrong for MIT), and the file should have been deleted. This skill teaches the map; agent judgment navigates it.
 
-**Behavior traceability.** The behavior contract from stage 2 should be traceable at every subsequent stage. Plans link design decisions to behavior statements. Issues map acceptance criteria to behaviors. Tests correspond to named scenarios. Verification cites behavior-level evidence. Landing records what coverage shipped.
+**Behavior traceability.** The behavior contract from stage 2 should be traceable at every subsequent stage. Plans link design decisions to behavior statements. Work units map acceptance criteria to behaviors. Tests correspond to named scenarios. Verification cites behavior-level evidence. Landing records what coverage shipped.
 
 **Documentation obligation.** User-facing changes carry documentation obligations: acceptance criteria include doc updates, completion claims include doc accuracy evidence, and landing records documentation coverage status. User-visible changes require a CHANGELOG entry.
 
@@ -71,7 +71,7 @@ These thread across the topology. They aren't phases — they're disciplines tha
 
 **Root cause before fixes.** When a test fails or behavior is unexpected, do not guess. Investigate root cause before proposing any fix. `debug` provides the investigation methodology — a cross-cutting discipline that fires at any stage, not only during execution. Once root cause is established, `implement` fix-bug owns the execution cycle. After 3 failed fix attempts, stop fixing and invoke `reckon` via the Skill tool to question the architecture.
 
-**Introduce third force on friction.** Friction is a two-force collision: task momentum vs obstacle. Routing around is the collapsed triad — both forces lose. When operational friction appears — a missing tool, broken config, stale convention, undocumented requirement — stop and introduce the reconciling move: resolve it structurally before continuing. `resolve` provides the assessment methodology and scope guidance. Friction that exceeds side-quest scope becomes an issue via `decompose`. Unresolved friction compounds.
+**Introduce third force on friction.** Friction is a two-force collision: task momentum vs obstacle. Routing around is the collapsed triad — both forces lose. When operational friction appears — a missing tool, broken config, stale convention, undocumented requirement — stop and introduce the reconciling move: resolve it structurally before continuing. `resolve` provides the assessment methodology and scope guidance. Friction that exceeds side-quest scope becomes a follow-up work unit via `decompose`. Unresolved friction compounds.
 
 For the connecting structure — artifacts, manifest edges, schemas, and protocol topology — see [`connecting-structure.md`](https://github.com/pentaxis93/groundwork/blob/main/docs/architecture/connecting-structure.md).
 
@@ -81,9 +81,9 @@ For the connecting structure — artifacts, manifest edges, schemas, and protoco
 
 **Behavior traceability loss.** Recognition: your tests pass but you can't name which behavior scenario each test verifies, or your completion claim says "all tests pass" without mapping results to named behaviors. Treating `specify` as a one-time preface rather than a contract that threads through execution.
 
-**Issue discipline failure.** Recognition: you're deciding what to work on from the conversation or your own reasoning instead of reading the issue graph, or you've started implementation without checking whether the issue is blocked. The issue graph is the project's working memory — working from anything else means you're navigating from a snapshot that may already be stale.
+**Work-unit discipline failure.** Recognition: you're deciding what to work on from the conversation or your own reasoning instead of reading the work-unit graph, or you've started implementation without checking whether the work unit is blocked. The work-unit graph is the project's working memory — working from anything else means you're navigating from a snapshot that may already be stale.
 
-**Sovereignty violation.** Recognition: your issue's acceptance criteria describe steps to perform rather than outcomes to verify, or your plan reads like a script to follow rather than decisions that constrain a solution space. When this fires, agents execute instructions instead of solving problems — and prescribed steps that encode wrong assumptions propagate unchallenged.
+**Sovereignty violation.** Recognition: your work unit's acceptance criteria describe steps to perform rather than outcomes to verify, or your plan reads like a script to follow rather than decisions that constrain a solution space. When this fires, agents execute instructions instead of solving problems — and prescribed steps that encode wrong assumptions propagate unchallenged.
 
 **Documentation drift.** Recognition: you're claiming completion but haven't checked whether the change affects any documentation, or you're aware of drifted docs but treating the update as separate future work. Drifted docs compound — each one trains readers to distrust all docs.
 
@@ -101,7 +101,7 @@ what documentation exists, who it serves, and how much detail it needs.
 | ARCHITECTURE.md | Contributors, agents understanding system structure | After grounding; significant structural changes |
 | ADR | Future decision-makers (human and AI) | When a significant decision is made (MADR 4.0 format) |
 | CHANGELOG.md | Users, operators, downstream consumers | Before landing user-visible changes (Keep a Changelog format) |
-| issue-model.md | Contributors, agents working from the issue graph | When issue states, graph format, or maintenance rules change |
+| work-unit-model.md | Contributors, agents working from the work-unit graph | When work-unit states, graph format, or maintenance rules change |
 | API reference | API consumers, agents calling functions | During implementation, alongside code |
 | Inline comments | Future maintainers, agents modifying code | At non-obvious decision points during implementation |
 
@@ -168,7 +168,7 @@ Audience profiles:
   docs or ADRs.
 - `specify`: behavior contracts define what public behaviors documentation must
   explain.
-- `decompose`: user-facing changes include documentation expectations in issue
+- `decompose`: user-facing changes include documentation expectations in work-unit
   acceptance criteria.
 - `implement`: inline comments and type-level documentation are written alongside
   implementation.

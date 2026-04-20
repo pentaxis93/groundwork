@@ -1,5 +1,5 @@
 {
-  "work_unit": "issue-178.test-fixtures",
+  "work_unit": "work-unit-178.test-fixtures",
   "criterion_summary": "All acceptance criteria met",
   "gaps": [],
   "merge_reference": "https://github.com/pentaxis93/groundwork/pull/179"

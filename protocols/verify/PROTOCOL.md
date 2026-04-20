@@ -10,7 +10,7 @@ metadata:
   version: "1.0.0"
   updated: "2026-03-09"
   origin: "Adapted from obra/superpowers (MIT). See LICENSE-UPSTREAM."
-requires: ["behavior-contract", "test-evidence", "issue"]
+requires: ["behavior-contract", "test-evidence", "work-unit"]
 accepts: []
 produces: ["completion-evidence"]
 may_produce: []

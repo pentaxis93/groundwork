@@ -1,6 +1,6 @@
 {
   "topic": "json-schema-validation",
-  "work_unit": "ISSUE 184!!",
+  "work_unit": "WORK UNIT 184!!",
   "findings": [
     "Draft 2020-12 supports dynamic references"
   ],

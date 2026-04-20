@@ -7,6 +7,6 @@
     "Valid records pass through unchanged"
   ],
   "dependencies": [
-    "issue-175.pipeline-refactor"
+    "work-unit-175.pipeline-refactor"
   ]
 }

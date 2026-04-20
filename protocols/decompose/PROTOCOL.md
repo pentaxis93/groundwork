@@ -2,54 +2,54 @@
 name: decompose
 description: >-
   Transfer problem understanding across context boundaries through well-formed
-  issues. Use for creating, decomposing, refining, triaging, and closing issues
+  work units. Use for creating, decomposing, refining, triaging, and closing work units
   in GitHub projects.
 requires: ["requirements"]
 accepts: ["research-record"]
-produces: ["issue"]
+produces: ["work-unit"]
 may_produce: []
 trigger:
   on_artifact: "requirements"
 ---
 
-# Issue Craft
+# Work-Unit Craft
 
-An issue transfers problem understanding across a context boundary — from the
+A work unit transfers problem understanding across a context boundary — from the
 person who sees the problem to the agent who will solve it. The agent has no
 access to your context, your codebase familiarity, or your unstated assumptions.
-Everything it needs must be in the issue.
+Everything it needs must be in the work unit.
 
 For concrete templates, see [references/templates.md](references/templates.md).
-For the issue state model and dependency graph format, see
-[`issue-model.md`](../../docs/architecture/issue-model.md).
-For first-principles constraint verification before framing issues, use
+For the work-unit state model and dependency graph format, see
+[`work-unit-model.md`](../../docs/architecture/work-unit-model.md).
+For first-principles constraint verification before framing work units, use
 `reckon`.
 
 ## The Central Discipline
 
-**Issues describe what must be true, not how to get there.**
+**Work units describe what must be true, not how to get there.**
 
-An issue that says "Replace X with Y" has already made the design decision. If
+A work unit that says "Replace X with Y" has already made the design decision. If
 that decision is wrong, the implementing agent will faithfully execute the wrong
 solution — and the further the prescription travels through decomposition,
-planning, and implementation, the harder it is to catch. The issue author's job
+planning, and implementation, the harder it is to catch. The work-unit author's job
 is to describe the problem and the desired end state. The implementer's job is
 to find the path.
 
 This is not a stylistic preference. It is the structural defense against the
-most common failure mode in issue-driven development.
+most common failure mode in work-unit-driven development.
 
 ## Guidelines
 
 ### Scope and sizing
 
-**One concern per issue.** An issue that touches unrelated modules forces the
+**One concern per work unit.** A work unit that touches unrelated modules forces the
 implementer to hold multiple problem contexts simultaneously and makes partial
 completion ambiguous. When you notice scope creeping across boundaries, split.
 
-**Session-sized work.** Each task issue should be completable in one focused
+**Session-sized work.** Each task work unit should be completable in one focused
 agent session — from reading context through passing verification. Oversized
-issues cause context loss mid-execution; undersized issues create coordination
+work units cause context loss mid-execution; undersized work units create coordination
 overhead that exceeds the work itself.
 
 ### Acceptance criteria
@@ -67,7 +67,7 @@ implementer from treating them as optional.
 
 ### Dependencies
 
-**Explicit and hard only.** Dependencies are issue references (`#N`) that
+**Explicit and hard only.** Dependencies are GitHub issue references (`#N`) that
 represent true blockers — work that literally cannot proceed without the
 dependency being complete. Preferred ordering is not a dependency. Soft
 dependencies create false bottlenecks that serialize work unnecessarily.
@@ -77,38 +77,38 @@ dependencies create false bottlenecks that serialize work unnecessarily.
 **Vertical slices with dependency graphs.** Decompose epics into independently
 shippable slices, not horizontal layers. Each slice delivers observable value.
 For epics with 4+ tasks, include a dependency graph showing execution layers
-(see [`issue-model.md`](../../docs/architecture/issue-model.md) § Dependency
+(see [`work-unit-model.md`](../../docs/architecture/work-unit-model.md) § Dependency
 Graph Format) so implementers can parallelize independent work.
 
-### The issue as contract
+### The work unit as contract
 
-**Must stand alone without external context.** An issue is a contract, not a
+**Must stand alone without external context.** A work unit is a contract, not a
 conversation. The implementer may be a different agent, in a different session,
-with no access to the discussion that produced the issue. Summary states what
+with no access to the discussion that produced the work unit. Summary states what
 and why. Scope names concrete files or modules. Criteria are binary pass/fail.
-Task issues reference their parent epic or milestone so the work has context
-in the issue graph. If the issue requires reading a Slack thread or "seeing
+Task work units reference their parent epic or milestone so the work has context
+in the work-unit graph. If the work unit requires reading a Slack thread or "seeing
 the earlier discussion" to understand, it is incomplete.
 
 ## Procedures
 
-### create-issue
+### create-work-unit
 
-1. Reckon constraints. Before framing the issue, establish what is
+1. Reckon constraints. Before framing the work unit, establish what is
    actually needed — verified constraints, not inherited assumptions.
-   If the issue originated from an existing solution or implementation
+   If the work unit originated from an existing solution or implementation
    detail, separate the need from the approach.
-2. Classify issue type (`task`, `epic`, `bug`, `spike`).
+2. Classify work-unit type (`task`, `epic`, `bug`, `spike`).
 3. Write summary: what needs to exist and why. Not how.
 4. Define scope with concrete files or modules.
 5. Write acceptance criteria as observable outcomes — functional behavior,
    testing expectations, documentation updates where applicable.
-6. Identify dependencies by searching existing issues. Link with `#N`.
+6. Identify dependencies by searching existing GitHub issues. Link with `#N`.
 7. Assemble using template from `references/templates.md`. Title format:
    `<type>(<scope>): <what>`.
 
 A structural linter is available at `scripts/issue_lint.py` for validating
-issue bodies against template schemas.
+GitHub issue bodies against template schemas.
 
 ### decompose-epic
 
@@ -119,9 +119,9 @@ issue bodies against template schemas.
 3. Split into vertical slices that are independently verifiable.
 4. Group by module boundary where it clarifies ownership.
 5. Build dependency graph (Mermaid `graph TD` + layered text summary —
-   see [`issue-model.md`](../../docs/architecture/issue-model.md) § Dependency Graph Format).
+   see [`work-unit-model.md`](../../docs/architecture/work-unit-model.md) § Dependency Graph Format).
 6. Size-check each candidate: split if oversized, merge if trivial.
-7. Create task issues in topological order (lowest execution layer first).
+7. Create task work units in topological order (lowest execution layer first).
 8. Create or update parent epic with task checklist and dependency graph.
 
 ### define-task-boundary
@@ -135,9 +135,9 @@ A well-bounded task has:
 - **Test plan**: exact verification command or scenario
 - **Effort**: `small`, `medium`, or `large`
 
-### refine-issue
+### refine-work-unit
 
-1. Reckon the issue's framing. Before editing, verify that the problem
+1. Reckon the work unit's framing. Before editing, verify that the problem
    statement reflects actual need — not an inherited solution dressed as
    a requirement.
 2. Diagnose: vague summary, missing scope, untestable criteria, implicit
@@ -146,25 +146,25 @@ A well-bounded task has:
 4. Re-verify the central discipline — does any criterion or scope statement
    prescribe an implementation approach?
 
-### triage-issues
+### triage-work-units
 
-1. Refine non-ready issues first.
+1. Refine non-ready work units first.
 2. Build dependency graph for the backlog.
 3. Create topological execution layers.
 4. Apply labels (`size:*`, module/area).
-5. Flag stale issues (no progress for 14+ days) for review. Resolution:
+5. Flag stale work units (no progress for 14+ days) for review. Resolution:
    resume, split, or close as wont-fix with rationale.
 
-### close-issue
+### close-work-unit
 
 1. Verify all acceptance criteria against implementation.
-2. Check scope deviations — split unintended extra work into new issues.
+2. Check scope deviations — split unintended extra work into new work units.
 3. Update parent epic checklist.
 4. Close with commit/PR reference (`Closes #N`).
 
 ## Triggers
 
-- creating or refining issues
+- creating or refining work units
 - decomposing large goals into executable work
 - triaging or prioritizing a backlog
 - closing completed work
@@ -173,7 +173,7 @@ A well-bounded task has:
 ## Corruption Modes
 
 - `implicit-how`: implementation prescription leaks into scope or criteria.
-  The issue says "use library X" or "replace A with B" instead of describing
+  The work unit says "use library X" or "replace A with B" instead of describing
   the required end state.
   *Recognition: read scope and criteria aloud — if they name tools, patterns,
   or implementation steps rather than observable outcomes, prescription has
@@ -195,11 +195,11 @@ A well-bounded task has:
   *Recognition: if you cannot state the epic's done condition in one sentence,
   it is too broad.*
 
-- `premature-issues`: filing detailed task issues for work that depends on
-  unresolved design decisions. The issues will need rewriting when the
+- `premature-work-units`: filing detailed task work units for work that depends on
+  unresolved design decisions. The work units will need rewriting when the
   decisions land.
-  *Recognition: if the issue's scope would change based on an open question,
-  the question must be answered first (spike issue).*
+  *Recognition: if the work unit's scope would change based on an open question,
+  the question must be answered first (spike work unit).*
 
 - `graph-omission`: an epic with 4+ tasks has no dependency graph or layered
   execution order, forcing implementers to discover sequencing by reading
@@ -209,9 +209,9 @@ A well-bounded task has:
 
 ## Cross-References
 
-- `reckon`: first-principles constraint verification before issue framing,
+- `reckon`: first-principles constraint verification before work-unit framing,
   refinement, and epic decomposition.
-- `begin`: session-level prioritization and execution discipline.
+- `take`: session-level prioritization and execution discipline.
 - `specify`: behavior framing and test naming discipline.
 - `plan`: design convergence before implementation.
 - `land`: merge-and-close completion events.

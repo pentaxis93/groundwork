@@ -75,7 +75,7 @@ matters, fix the implementation. If it does not, delete the test.
 
 ## Triggers
 
-- Implementing issue acceptance criteria
+- Implementing work-unit acceptance criteria
 - Deciding what to implement next from an existing behavior contract
 - Mapping plan tasks to behavior statements
 - Validating completion claims against behavior coverage

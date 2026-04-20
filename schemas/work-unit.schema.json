@@ -1,8 +1,8 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://raw.githubusercontent.com/pentaxis93/groundwork/main/schemas/issue.schema.json",
-  "title": "Issue",
-  "description": "Validates the content of an issue artifact. A work unit decomposed from requirements, with acceptance criteria that thread through the entire execution phase.",
+  "$id": "https://raw.githubusercontent.com/pentaxis93/groundwork/main/schemas/work-unit.schema.json",
+  "title": "Work Unit",
+  "description": "Validates the content of a work-unit artifact. A work unit decomposed from requirements, with acceptance criteria that thread through the entire execution phase.",
   "type": "object",
   "required": ["title", "description", "acceptance_criteria"],
   "additionalProperties": false,
@@ -27,7 +27,7 @@
     },
     "dependencies": {
       "type": "array",
-      "description": "Issues that must be complete before this starts.",
+      "description": "Work units that must be complete before this starts.",
       "items": {
         "type": "string",
         "pattern": "^[a-z][a-z0-9]*([-.][a-z0-9]+)*$"
