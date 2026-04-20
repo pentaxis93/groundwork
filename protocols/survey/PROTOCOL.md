@@ -20,9 +20,11 @@ trigger:
 
 # Survey
 
-Survey is the entry point for the autonomous groundwork pipeline. It is the one
-protocol the agent chooses to invoke for itself. The agent pulls the starter
-cord; once `requirements` exists, runa manages the downstream cascade.
+Survey is the entry point to the groundwork pipeline. Runa activates the
+protocol when a `request` artifact enters the system — an external change
+request, question, bug report, or feature idea. Request intake is external;
+once survey produces `requirements`, runa manages the downstream cascade
+through decompose and the execution-phase protocols.
 
 Survey exists because "what needs doing here?" is the most dangerous judgment
 an unsupervised agent makes. This is where anchoring, pattern-matching, and
