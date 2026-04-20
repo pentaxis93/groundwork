@@ -181,15 +181,15 @@ files, construct filenames, or supply `work_unit`.
 Brief definitions for self-contained use. See
 [`work-unit-model.md`](../../docs/architecture/work-unit-model.md) for the full treatment.
 
-- **Work-unit graph**: the set of open work units and their dependency edges — the live
+- **Work-unit graph**: the set of open work-units and their dependency edges — the live
   map of what remains and what blocks what.
-- **Unblocked**: a work unit whose hard dependencies are all closed.
-- **Execution layer**: a set of work units that share no mutual dependencies and can
+- **Unblocked**: a work-unit whose hard dependencies are all closed.
+- **Execution layer**: a set of work-units that share no mutual dependencies and can
   be worked in parallel once their shared ancestors are closed. Layer 0 has no
   dependencies; layer 1 depends only on layer 0; and so on.
-- **Session-sized**: a work unit that one agent can complete — from reading context
+- **Session-sized**: a work-unit that one agent can complete — from reading context
   through passing verification — in a single focused session.
-- **Work-unit batch**: 2-3 cohesive work units addressed together when they share a
+- **Work-unit batch**: 2-3 cohesive work-units addressed together when they share a
   concern boundary and their combined scope is still session-sized.
 
 ## Operating Principles

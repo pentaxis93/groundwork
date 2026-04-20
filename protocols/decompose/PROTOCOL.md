@@ -2,29 +2,29 @@
 name: decompose
 description: >-
   Transfer problem understanding across context boundaries through well-formed
-  work units. Produce `work-unit` artifacts: creating, decomposing, refining,
+  work-units. Produce `work-unit` artifacts: creating, decomposing, refining,
   and triaging. Close-state review happens here; the close itself is performed
   by `land`.
 ---
 
 # Work-Unit Craft
 
-A work unit transfers problem understanding across a context boundary — from the
+A work-unit transfers problem understanding across a context boundary — from the
 person who sees the problem to the agent who will solve it. The agent has no
 access to your context, your codebase familiarity, or your unstated assumptions.
-Everything it needs must be in the work unit.
+Everything it needs must be in the work-unit.
 
 For concrete templates, see [references/templates.md](references/templates.md).
 For the work-unit state model and dependency graph format, see
 [`work-unit-model.md`](../../docs/architecture/work-unit-model.md).
-For first-principles constraint verification before framing work units, use
+For first-principles constraint verification before framing work-units, use
 `reckon`.
 
 ## The Central Discipline
 
-**Work units describe what must be true, not how to get there.**
+**Work-units describe what must be true, not how to get there.**
 
-A work unit that says "Replace X with Y" has already made the design decision. If
+A work-unit that says "Replace X with Y" has already made the design decision. If
 that decision is wrong, the implementing agent will faithfully execute the wrong
 solution — and the further the prescription travels through decomposition,
 planning, and implementation, the harder it is to catch. The work-unit author's job
@@ -38,13 +38,13 @@ most common failure mode in work-unit-driven development.
 
 ### Scope and sizing
 
-**One concern per work unit.** A work unit that touches unrelated modules forces the
+**One concern per work-unit.** A work-unit that touches unrelated modules forces the
 implementer to hold multiple problem contexts simultaneously and makes partial
 completion ambiguous. When you notice scope creeping across boundaries, split.
 
-**Session-sized work.** Each task work unit should be completable in one focused
+**Session-sized work.** Each task work-unit should be completable in one focused
 agent session — from reading context through passing verification. Oversized
-work units cause context loss mid-execution; undersized work units create coordination
+work-units cause context loss mid-execution; undersized work-units create coordination
 overhead that exceeds the work itself.
 
 ### Acceptance criteria
@@ -75,23 +75,23 @@ For epics with 4+ tasks, include a dependency graph showing execution layers
 (see [`work-unit-model.md`](../../docs/architecture/work-unit-model.md) § Dependency
 Graph Format) so implementers can parallelize independent work.
 
-### The work unit as contract
+### The work-unit as contract
 
-**Must stand alone without external context.** A work unit is a contract, not a
+**Must stand alone without external context.** A work-unit is a contract, not a
 conversation. The implementer may be a different agent, in a different session,
-with no access to the discussion that produced the work unit. Summary states what
+with no access to the discussion that produced the work-unit. Summary states what
 and why. Scope names concrete files or modules. Criteria are binary pass/fail.
-Task work units reference their parent epic or milestone so the work has context
-in the work-unit graph. If the work unit requires reading a Slack thread or "seeing
+Task work-units reference their parent epic or milestone so the work has context
+in the work-unit graph. If the work-unit requires reading a Slack thread or "seeing
 the earlier discussion" to understand, it is incomplete.
 
 ## Procedures
 
 ### create-work-unit
 
-1. Reckon constraints. Before framing the work unit, establish what is
+1. Reckon constraints. Before framing the work-unit, establish what is
    actually needed — verified constraints, not inherited assumptions.
-   If the work unit originated from an existing solution or implementation
+   If the work-unit originated from an existing solution or implementation
    detail, separate the need from the approach.
 2. Classify work-unit type (`task`, `epic`, `bug`, `spike`).
 3. Write summary: what needs to exist and why. Not how.
@@ -117,7 +117,7 @@ work-unit bodies against template schemas.
 5. Build dependency graph (Mermaid `graph TD` + layered text summary —
    see [`work-unit-model.md`](../../docs/architecture/work-unit-model.md) § Dependency Graph Format).
 6. Size-check each candidate: split if oversized, merge if trivial.
-7. Create task work units in topological order (lowest execution layer first).
+7. Create task work-units in topological order (lowest execution layer first).
 8. Create or update parent epic with task checklist and dependency graph.
 
 ### define-task-boundary
@@ -133,7 +133,7 @@ A well-bounded task has:
 
 ### refine-work-unit
 
-1. Reckon the work unit's framing. Before editing, verify that the problem
+1. Reckon the work-unit's framing. Before editing, verify that the problem
    statement reflects actual need — not an inherited solution dressed as
    a requirement.
 2. Diagnose: vague summary, missing scope, untestable criteria, implicit
@@ -144,17 +144,17 @@ A well-bounded task has:
 
 ### triage-work-units
 
-1. Refine non-ready work units first.
+1. Refine non-ready work-units first.
 2. Build dependency graph for the backlog.
 3. Create topological execution layers.
 4. Apply labels (`size:*`, module/area).
-5. Flag stale work units (no progress for 14+ days) for review. Resolution:
+5. Flag stale work-units (no progress for 14+ days) for review. Resolution:
    resume, split, or close as wont-fix with rationale.
 
 ### review-work-unit-closure
 
 1. Verify all acceptance criteria against implementation.
-2. Check scope deviations — split unintended extra work into new work units.
+2. Check scope deviations — split unintended extra work into new work-units.
 3. Update parent epic checklist.
 
 The close event itself — marking the work-unit closed in the forge tracker —
@@ -229,7 +229,7 @@ the agent supplies the schema fields shown above, and runa does not inject
 
 ## Triggers
 
-- creating or refining work units
+- creating or refining work-units
 - decomposing large goals into executable work
 - triaging or prioritizing a backlog
 - reviewing work-units before closure
@@ -238,7 +238,7 @@ the agent supplies the schema fields shown above, and runa does not inject
 ## Corruption Modes
 
 - `implicit-how`: implementation prescription leaks into scope or criteria.
-  The work unit says "use library X" or "replace A with B" instead of describing
+  The work-unit says "use library X" or "replace A with B" instead of describing
   the required end state.
   *Recognition: read scope and criteria aloud — if they name tools, patterns,
   or implementation steps rather than observable outcomes, prescription has
@@ -260,11 +260,11 @@ the agent supplies the schema fields shown above, and runa does not inject
   *Recognition: if you cannot state the epic's done condition in one sentence,
   it is too broad.*
 
-- `premature-work-units`: filing detailed task work units for work that depends on
-  unresolved design decisions. The work units will need rewriting when the
+- `premature-work-units`: filing detailed task work-units for work that depends on
+  unresolved design decisions. The work-units will need rewriting when the
   decisions land.
-  *Recognition: if the work unit's scope would change based on an open question,
-  the question must be answered first (spike work unit).*
+  *Recognition: if the work-unit's scope would change based on an open question,
+  the question must be answered first (spike work-unit).*
 
 - `graph-omission`: an epic with 4+ tasks has no dependency graph or layered
   execution order, forcing implementers to discover sequencing by reading
