@@ -1,8 +1,13 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://raw.githubusercontent.com/tesserine/groundwork/main/schemas/request.schema.json",
   "title": "Request",
-  "description": "Validates the content of a request artifact. The entry point to the system — a lightweight door that triggers survey.",
+  "description": "Canonical schema for the request artifact — the entry point that triggers a session. Version 1.0.0. commons is the spec authority; REQUEST.md carries the governing prose and ADR-0005 describes the system-conventions pattern under which this lives. When this schema and REQUEST.md disagree, REQUEST.md is authoritative.",
+  "$comment": "Groundwork vendors this runtime copy of the commons canonical request schema.",
+  "x-tesserine-canonical": {
+    "version": "1.0.0",
+    "schema_url": "https://raw.githubusercontent.com/tesserine/commons/v0.1.1/schemas/request/v1/request.schema.json",
+    "prose_url": "https://raw.githubusercontent.com/tesserine/commons/v0.1.1/REQUEST.md"
+  },
   "type": "object",
   "required": ["description", "source"],
   "additionalProperties": false,

@@ -8,6 +8,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Changed
 
+- `schemas/request.schema.json` now vendors the commons canonical request
+  schema with inline provenance metadata, and `schemas/README.md` documents
+  the vendoring discipline for methodology runtime schemas (closes #247).
 - Normalized in-scope prose to the canonical hyphenated `work-unit` /
   `work-units` spelling across protocols, skills, architecture docs, README,
   and changelog entries. Machine-facing `work_unit` identifiers remain
