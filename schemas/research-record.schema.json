@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://raw.githubusercontent.com/tesserine/groundwork/main/schemas/research-record.schema.json",
   "title": "Research Record",
-  "description": "Validates the content of a research-record artifact. Research scoped by topic; optionally scoped by work unit when research is specific to a work unit. Naming convention: research-record-{topic-slug}.yaml where topic-slug matches the topic field.",
+  "description": "Validates the content of a research-record artifact. Research scoped by topic; optionally scoped by work unit when research is specific to a work unit.",
   "type": "object",
   "required": ["topic", "findings", "sources"],
   "additionalProperties": false,
