@@ -441,6 +441,9 @@ Removing the duplicate fields eliminates that inconsistency class
 rather than asking future authors to maintain two declarations by
 hand.
 
+For the skill-frontmatter convention in follow-direct form, see
+[`docs/authoring/skills.md`](../authoring/skills.md).
+
 ## Skill-Produced Artifacts and the `may_produce` Bridge
 
 A skill can be loaded by the harness only during an agent session,

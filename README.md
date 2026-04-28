@@ -120,6 +120,7 @@ becomes a work-unit.
 | [`skills/`](skills/) | 6 skills — orientation and cross-cutting disciplines |
 | [`schemas/`](schemas/) | JSON Schema contracts for each artifact type |
 | [`docs/architecture/`](docs/architecture/) | Topology design rationale and work-unit state model |
+| [`docs/authoring/`](docs/authoring/) | Follow-direct guides for methodology authors |
 
 For how these pieces compose into a methodology plugin, see runa's
 [methodology authoring guide](https://github.com/tesserine/runa/blob/main/docs/methodology-authoring-guide.md).

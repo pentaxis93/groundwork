@@ -6,6 +6,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Added
+
+- New authoring guide `docs/authoring/skills.md` for the `SKILL.md`
+  frontmatter convention. Compiles the post-audit convention
+  (settled in #245) into follow-direct form so a methodology author
+  writing a new skill can produce valid frontmatter from one document
+  alone, without reverse-engineering it from existing skills or the
+  canonical reference. `docs/architecture/connecting-structure.md`
+  forward-references the new guide from the "Authoring surfaces and
+  authority" section (closes #227).
+
 ### Changed
 
 - `schemas/request.schema.json` now vendors the commons canonical request
