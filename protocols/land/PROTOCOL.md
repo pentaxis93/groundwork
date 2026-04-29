@@ -179,7 +179,7 @@ Merge through GitHub's PR API so the PR is recorded as "merged," not just "close
 
 1. Run `gh pr merge <number>` with the appropriate strategy flag: `--squash` if squashing (with `--subject` and `--body` for the drafted commit message), `--merge` if preserving history.
 2. Include `--delete-branch` to let GitHub clean up the remote branch.
-3. After the API merge completes, sync local state: `git checkout main`, `git pull --ff-only origin main`.
+3. After the API merge completes, sync local state: `git checkout main`, `git fetch origin --prune`, `git merge --ff-only origin/main`.
 4. Record the merge commit SHA from the local main HEAD for use in GitHub issue comments.
 
 **Why not local merge:** A local `git merge` + `git push` lands the code on main but bypasses GitHub's PR merge tracking. GitHub sees the PR's commits already on main and auto-closes the PR as "closed" rather than "merged" when the branch is deleted. This loses PR merge metadata and breaks PR history.
@@ -190,7 +190,7 @@ This path is only for branches that never had a PR — not a fallback for when `
 
 If no PR was found in step 1b, merge locally:
 
-1. Fetch and fast-forward `main` to match origin (`git fetch origin --prune`, `git checkout main`, `git pull --ff-only origin main`).
+1. Fetch and fast-forward `main` to match origin (`git fetch origin --prune`, `git checkout main`, `git merge --ff-only origin/main`).
 2. Merge the feature branch. If squashing: `git merge --squash`, then `git commit` with the drafted message. If preserving: `git merge --no-ff`.
 3. Push `main` to origin.
 4. Record the merge commit SHA.

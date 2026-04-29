@@ -126,7 +126,7 @@ batch and package them as one PR at `submit`.
 
 Set up the repository-local workspace for the selected work.
 
-1. Ensure on `main` and up-to-date: `git checkout main && git pull --ff-only`.
+1. Ensure on `main` and up-to-date: `git checkout main`, `git fetch origin --prune`, `git merge --ff-only origin/main`.
 2. Create a feature branch. The work-unit artifact is always present; what
    varies is tracker linkage and, when linked, whether scope is single or
    batched:
