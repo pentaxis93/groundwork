@@ -19,6 +19,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Changed
 
+- Main-sync guidance in `take` and `land` now uses explicit fetch plus
+  fast-forward merge instead of `git pull --ff-only`, so protocol execution
+  does not inherit a user's global `pull.rebase` setting (closes #251).
 - `schemas/request.schema.json` now vendors the commons canonical request
   schema with inline provenance metadata, and `schemas/README.md` documents
   the vendoring discipline for methodology runtime schemas (closes #247).
