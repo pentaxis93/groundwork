@@ -59,9 +59,14 @@ Determine:
 - Whether on `main` or a feature branch.
 - Whether uncommitted changes exist (`git status`).
 - Whether an open PR exists for the current branch (`gh pr list --head <branch>
-  --state open --json url,headRefOid`) when `gh` is available. For an open PR,
-  record the PR URL as the downstream PR reference and the PR head SHA
-  (`headRefOid`) for ancestry classification.
+  --state open --json url,number,headRefOid`) when `gh` is available. For an
+  open PR, record the PR URL as the downstream PR reference, the PR number, and
+  the PR head SHA (`headRefOid`) for ancestry classification. Fetch the PR head
+  into the local object database before classification: `git fetch origin
+  pull/<number>/head`. This is the GitHub PR refspec paired with `gh` discovery;
+  adapting the protocol to another forge requires changing both discovery and
+  the PR-head fetch together. After fetching, verify that `headRefOid` resolves
+  as a commit before any operation consumes it.
 - Whether committed local work is deliverable:
   - **With upstream:** commits ahead of the branch's remote
     tracking ref (`git log @{upstream}..HEAD`).
@@ -278,6 +283,9 @@ Output:
   not rebase automatically. Commits are safely local; the operator decides how
   to reconcile.
 - **Push network error:** Retry once. If still failing, report.
+- **PR head fetch or resolvability check fails:** Report the recorded PR URL and
+  stop before ancestry classification. Do not run `git merge-base` against an
+  unresolvable `headRefOid`.
 - **`gh pr create` fails:**
   - Branch already has an open PR: treat as the existing PR update path if
     deliverable local work was pushed; otherwise report the existing PR URL and

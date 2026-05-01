@@ -43,6 +43,25 @@ class SubmitProtocolTests(unittest.TestCase):
         self.assertIn("PR head SHA", protocol)
         self.assertIn("headRefOid", protocol)
 
+    def test_existing_pr_discovery_fetches_resolvable_pr_head_before_classification(self) -> None:
+        protocol = normalized_submit_protocol()
+
+        self.assertIn("--json url,number,headRefOid", protocol)
+        self.assertIn("git fetch origin pull/<number>/head", protocol)
+        self.assertIn("GitHub PR refspec", protocol)
+        self.assertIn("verify that `headRefOid` resolves", protocol)
+        self.assertLess(
+            protocol.index("git fetch origin pull/<number>/head"),
+            protocol.index("git merge-base --is-ancestor"),
+        )
+
+    def test_existing_pr_head_fetch_failure_stops_with_pr_url(self) -> None:
+        protocol = normalized_submit_protocol()
+
+        self.assertIn("PR head fetch or resolvability check fails", protocol)
+        self.assertIn("recorded PR URL", protocol)
+        self.assertIn("stop before ancestry classification", protocol)
+
     def test_no_upstream_existing_pr_classifies_all_ancestry_states(self) -> None:
         protocol = normalized_submit_protocol()
 

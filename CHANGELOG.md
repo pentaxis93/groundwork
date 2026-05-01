@@ -21,10 +21,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 - `submit` now treats an open PR with deliverable local commits as a
   push-to-existing-PR delivery path, including branches checked out without
-  upstream tracking by recording the PR URL plus head SHA and classifying local
-  `HEAD` against the PR head by ancestry. It still reports an existing PR and
-  recommends `land` when there is no new local work to submit, and stops rather
-  than pushing when local and PR heads have diverged (closes #253).
+  upstream tracking by recording the PR URL plus head SHA, fetching the PR head
+  object, and classifying local `HEAD` against the PR head by ancestry. It still
+  reports an existing PR and recommends `land` when there is no new local work
+  to submit, and stops rather than pushing when local and PR heads have diverged
+  (closes #253).
 - Main-sync guidance in `take` and `land` now uses explicit fetch plus
   fast-forward merge instead of `git pull --ff-only`, so protocol execution
   does not inherit a user's global `pull.rebase` setting (closes #251).
