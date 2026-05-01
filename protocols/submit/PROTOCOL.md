@@ -59,18 +59,27 @@ Determine:
 - Whether on `main` or a feature branch.
 - Whether uncommitted changes exist (`git status`).
 - Whether an open PR exists for the current branch (`gh pr list --head <branch>
-  --state open`) when `gh` is available. For an open PR, record the PR head SHA
-  (`headRefOid`).
+  --state open --json url,headRefOid`) when `gh` is available. For an open PR,
+  record the PR URL as the downstream PR reference and the PR head SHA
+  (`headRefOid`) for ancestry classification.
 - Whether committed local work is deliverable:
   - **With upstream:** commits ahead of the branch's remote
     tracking ref (`git log @{upstream}..HEAD`).
   - **No upstream and no open PR:** local commits on the feature branch are
     deliverable under first-push semantics.
-  - **No upstream and open PR:** compare local `HEAD` (`git rev-parse HEAD`)
-    with the PR head SHA (`headRefOid`). If they match, no committed local work
-    is deliverable and the existing PR state should be reported. If they differ,
-    the divergent local commits are deliverable through the existing PR update
-    path.
+  - **No upstream and open PR:** classify local `HEAD` (`git rev-parse HEAD`)
+    against the PR head SHA (`headRefOid`) by ancestry, using
+    `git merge-base --is-ancestor` in both directions:
+    - If `HEAD` and `headRefOid` are the same SHA, no committed local work is
+      deliverable and the existing PR state should be reported.
+    - If `HEAD` is an ancestor of `headRefOid`, the local checkout is behind the
+      PR. No committed local work is deliverable; report the existing PR state
+      and stop.
+    - If `headRefOid` is an ancestor of `HEAD`, local commits are deliverable
+      through the existing PR update path.
+    - If neither commit is an ancestor of the other, the local branch and PR
+      head have diverged. Report the divergence and stop; do not force-push or
+      rebase automatically.
 - GitHub issue number(s), resolved in priority order:
   1. Explicit operator-provided GitHub issue number(s).
   2. Branch name pattern: `issue-<N>/<slug>` (single) or

@@ -35,6 +35,25 @@ class SubmitProtocolTests(unittest.TestCase):
         self.assertIn("headRefOid", protocol)
         self.assertIn("git rev-parse HEAD", protocol)
 
+    def test_existing_pr_context_captures_pr_reference_and_head_sha(self) -> None:
+        protocol = normalized_submit_protocol()
+
+        self.assertIn("record the PR URL", protocol)
+        self.assertIn("downstream PR reference", protocol)
+        self.assertIn("PR head SHA", protocol)
+        self.assertIn("headRefOid", protocol)
+
+    def test_no_upstream_existing_pr_classifies_all_ancestry_states(self) -> None:
+        protocol = normalized_submit_protocol()
+
+        self.assertIn("If `HEAD` and `headRefOid` are the same SHA", protocol)
+        self.assertIn("If `HEAD` is an ancestor of `headRefOid`", protocol)
+        self.assertIn("local checkout is behind the PR", protocol)
+        self.assertIn("If `headRefOid` is an ancestor of `HEAD`", protocol)
+        self.assertIn("deliverable through the existing PR update path", protocol)
+        self.assertIn("If neither commit is an ancestor of the other", protocol)
+        self.assertIn("Report the divergence and stop", protocol)
+
     def test_analyze_and_commit_applies_to_both_pr_delivery_paths(self) -> None:
         protocol = normalized_submit_protocol()
 
