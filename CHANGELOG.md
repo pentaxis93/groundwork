@@ -20,10 +20,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ### Changed
 
 - `submit` now treats PR presence as the primary deliverability rule: when an
-  open PR exists, it records the PR URL plus head SHA, fetches the PR head
-  object, and classifies local `HEAD` against that PR head by ancestry
-  regardless of upstream tracking. When no PR exists, upstream tracking and
-  first-push semantics continue to determine deliverability (closes #253).
+  open PR exists, it records the PR URL plus head SHA, head branch, and head
+  repository, fetches the PR head object, classifies local `HEAD` against that
+  PR head by ancestry regardless of upstream tracking, and pushes updates to
+  the discovered PR head repo/ref instead of assuming `origin <branch>` backs
+  the PR. When no PR exists, upstream tracking and first-push semantics
+  continue to determine deliverability (closes #253).
 - Main-sync guidance in `take` and `land` now uses explicit fetch plus
   fast-forward merge instead of `git pull --ff-only`, so protocol execution
   does not inherit a user's global `pull.rebase` setting (closes #251).

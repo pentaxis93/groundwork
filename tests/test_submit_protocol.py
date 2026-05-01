@@ -49,10 +49,20 @@ class SubmitProtocolTests(unittest.TestCase):
         self.assertIn("PR head SHA", protocol)
         self.assertIn("headRefOid", protocol)
 
+    def test_existing_pr_context_captures_pr_head_repo_and_ref(self) -> None:
+        protocol = normalized_submit_protocol()
+
+        self.assertIn("--json url,number,headRefOid,headRefName,headRepository,headRepositoryOwner", protocol)
+        self.assertIn("PR head branch", protocol)
+        self.assertIn("headRefName", protocol)
+        self.assertIn("PR head repository", protocol)
+        self.assertIn("headRepositoryOwner.login", protocol)
+        self.assertIn("headRepository.name", protocol)
+
     def test_existing_pr_discovery_fetches_resolvable_pr_head_before_classification(self) -> None:
         protocol = normalized_submit_protocol()
 
-        self.assertIn("--json url,number,headRefOid", protocol)
+        self.assertIn("--json url,number,headRefOid,headRefName,headRepository,headRepositoryOwner", protocol)
         self.assertIn("git fetch origin pull/<number>/head", protocol)
         self.assertIn("GitHub PR refspec", protocol)
         self.assertIn("verify that `headRefOid` resolves", protocol)
@@ -78,6 +88,45 @@ class SubmitProtocolTests(unittest.TestCase):
         self.assertIn("deliverable through the existing PR update path", protocol)
         self.assertIn("If neither commit is an ancestor of the other", protocol)
         self.assertIn("Report the divergence and stop", protocol)
+
+    def test_existing_pr_push_targets_discovered_pr_head_ref(self) -> None:
+        protocol = normalized_submit_protocol()
+
+        self.assertIn("Existing PR update path", protocol)
+        self.assertIn("local remote whose effective push URL points at the PR head repository", protocol)
+        self.assertIn("git push <head-repo-remote> HEAD:<headRefName>", protocol)
+        self.assertIn("Do not push the local branch name to `origin`", protocol)
+
+    def test_existing_pr_remote_matching_is_part_of_github_forge_shape(self) -> None:
+        protocol = normalized_submit_protocol()
+
+        self.assertIn("GitHub-shaped commitment", protocol)
+        self.assertIn("`gh` discovery", protocol)
+        self.assertIn("`pull/<number>/head`", protocol)
+        self.assertIn("remote URL normalization", protocol)
+        self.assertIn("git remote get-url --push <remote>", protocol)
+        self.assertIn("SSH and HTTPS GitHub URLs", protocol)
+        self.assertIn("strip `.git`", protocol)
+        self.assertIn("lowercase `<owner>/<repo>`", protocol)
+        self.assertIn("non-GitHub URL forms as non-matches", protocol)
+
+    def test_existing_pr_without_matching_head_remote_stops_before_patch(self) -> None:
+        protocol = normalized_submit_protocol()
+
+        self.assertIn("No local remote matches the PR head repository", protocol)
+        self.assertIn("Stop before push", protocol)
+        self.assertIn("PR URL", protocol)
+        self.assertIn("PR head repository", protocol)
+        self.assertIn("headRefName", protocol)
+        self.assertIn("Do not deliver a `patch` artifact", protocol)
+
+    def test_new_pr_path_still_pushes_feature_branch_to_origin(self) -> None:
+        protocol = normalized_submit_protocol()
+
+        self.assertIn("New PR path", protocol)
+        self.assertIn("push the feature branch to origin", protocol)
+        self.assertIn("git push -u origin <branch>", protocol)
+        self.assertIn("if upstream exists, run `git push`", protocol)
 
     def test_analyze_and_commit_applies_to_both_pr_delivery_paths(self) -> None:
         protocol = normalized_submit_protocol()

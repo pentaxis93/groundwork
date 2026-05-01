@@ -59,14 +59,18 @@ Determine:
 - Whether on `main` or a feature branch.
 - Whether uncommitted changes exist (`git status`).
 - Whether an open PR exists for the current branch (`gh pr list --head <branch>
-  --state open --json url,number,headRefOid`) when `gh` is available. For an
-  open PR, record the PR URL as the downstream PR reference, the PR number, and
-  the PR head SHA (`headRefOid`) for ancestry classification. Fetch the PR head
-  into the local object database before classification: `git fetch origin
-  pull/<number>/head`. This is the GitHub PR refspec paired with `gh` discovery;
-  adapting the protocol to another forge requires changing both discovery and
-  the PR-head fetch together. After fetching, verify that `headRefOid` resolves
-  as a commit before any operation consumes it.
+  --state open --json url,number,headRefOid,headRefName,headRepository,headRepositoryOwner`)
+  when `gh` is available. For an open PR, record the PR URL as the downstream PR
+  reference, the PR number, the PR head SHA (`headRefOid`) for ancestry
+  classification, the PR head branch (`headRefName`), and the PR head
+  repository (`<headRepositoryOwner.login>/<headRepository.name>`) for existing
+  PR push delivery. Fetch the PR head into the local object database before
+  classification: `git fetch origin pull/<number>/head`. This is the GitHub PR
+  refspec paired with `gh` discovery. Existing-PR delivery is a single
+  GitHub-shaped commitment across `gh` discovery, the `pull/<number>/head`
+  refspec, and remote URL normalization; adapting the protocol to another forge
+  requires changing all three together. After fetching, verify that
+  `headRefOid` resolves as a commit before any operation consumes it.
 - Whether committed local work is deliverable:
   - **Open PR exists:** regardless of whether the branch has upstream tracking,
     classify local `HEAD` (`git rev-parse HEAD`) against the PR head SHA
@@ -160,12 +164,20 @@ Use the context from step 1 after commit analysis has completed:
 
 ### 5. Push
 
-Push the feature branch to origin:
-- No upstream set: `git push -u origin <branch>`.
-- Upstream exists: `git push`.
+Use the delivery path from step 4:
 
-For an existing PR update, this push is the delivery action: it updates the
-remote branch backing the open PR. Report this path as `pushed to existing PR`.
+- **Existing PR update path:** resolve a local remote whose effective push URL
+  points at the PR head repository recorded in step 1. For each remote, inspect
+  `git remote get-url --push <remote>`. Push the submitted commits to the PR head
+  branch: `git push <head-repo-remote> HEAD:<headRefName>`. Remote matching uses
+  GitHub-form normalization: accept SSH and HTTPS GitHub URLs, strip `.git`,
+  compare the lowercase `<owner>/<repo>`, and treat non-GitHub URL forms as
+  non-matches.
+  Do not push the local branch name to `origin` and assume that it updates the
+  open PR. This push is the delivery action; after it succeeds, report this path
+  as `pushed to existing PR`.
+- **New PR path:** push the feature branch to origin. If no upstream is set, run
+  `git push -u origin <branch>`; if upstream exists, run `git push`.
 
 ### 6. Create or identify PR
 
@@ -285,6 +297,9 @@ Output:
   not rebase automatically. Commits are safely local; the operator decides how
   to reconcile.
 - **Push network error:** Retry once. If still failing, report.
+- **No local remote matches the PR head repository:** Stop before push. Report
+  the PR URL, PR head repository, and `headRefName`. Do not deliver a `patch`
+  artifact because the PR was not updated.
 - **PR head fetch or resolvability check fails:** Report the recorded PR URL and
   stop before ancestry classification. Do not run `git merge-base` against an
   unresolvable `headRefOid`.
