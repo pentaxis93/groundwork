@@ -2,7 +2,7 @@
 name: submit
 description: >-
   Package working changes into a PR: ensure feature branch, analyze and commit
-  changes, push, create PR with derived title/body linked to GitHub issue(s).
+  changes, push, then create or update a PR linked to GitHub issue(s).
   The middle phase of the session lifecycle between take and land.
   Trigger on: 'submit', 'submit pr', 'create pr', 'open pr',
   'send for review', 'package this up'.
@@ -20,32 +20,33 @@ changes need to cross into the review stage.
 1. Resolve the working context (branch, changes, linked issues)
 2. Ensure a feature branch exists (guard rail if on `main`)
 3. Analyze changes and produce well-formed commits
-4. Push to remote
-5. Create a PR with derived title/body and GitHub issue linkage
-6. Deliver the `patch` artifact via the MCP tool
-7. Report the result and suggest next steps
+4. Resolve whether delivery updates an existing PR or opens a new PR
+5. Push to remote
+6. Create a PR when needed
+7. Deliver the `patch` artifact via the MCP tool
+8. Report the result and suggest next steps
 
 The session lifecycle is: `take` (initiate session) → implement → `submit`
 (package for review) → review → `land` (merge and close). `submit` is the
 transition from execution to review.
 
-Do not stop after creating the PR — the delivery and report steps (6 and 7)
-are part of the protocol. Invoking `submit` IS the operator's approval to
-execute the full sequence.
+Do not stop after creating or updating the PR — the delivery and report steps
+(7 and 8) are part of the protocol. Invoking `submit` IS the operator's
+approval to execute the full sequence.
 
 ---
 
 ## Preconditions
 
-- Uncommitted changes OR unpushed commits on a feature branch must exist. If
-  the working tree is clean and no unpushed commits exist, there is nothing to
-  submit — report and stop.
-- If the current feature branch already has an open PR, report the PR URL and
-  stop. The PR already exists; the operator likely wants `land`, not `submit`.
+- Deliverable local work means uncommitted changes OR commits ahead of the
+  branch's remote tracking ref. If the working tree is clean and no
+  deliverable commits exist, there is nothing new to submit. When an open PR
+  exists, report its current state and recommend `land` if appropriate; when no
+  open PR exists, report and stop.
 - Producing the `patch` capstone requires a real PR reference, which in turn
   requires forge tooling (`gh` authenticated against the remote). Where forge
   tooling is absent, the protocol can commit and push locally but cannot
-  deliver the `patch` artifact — see step 5 for the failure path.
+  deliver the `patch` artifact — see step 6 for the failure path.
 
 ---
 
@@ -57,8 +58,13 @@ Determine:
 - Current branch name.
 - Whether on `main` or a feature branch.
 - Whether uncommitted changes exist (`git status`).
-- Whether unpushed commits exist (`git log origin/main..HEAD` or
-  `git log main..HEAD`).
+- Whether committed local work is deliverable:
+  - If the branch has an upstream, commits ahead of the branch's remote
+    tracking ref (`git log @{upstream}..HEAD`).
+  - If the feature branch has no upstream, local commits on that branch are
+    deliverable when the branch is first pushed.
+- Whether an open PR exists for the current branch (`gh pr list --head <branch>
+  --state open`) when `gh` is available.
 - GitHub issue number(s), resolved in priority order:
   1. Explicit operator-provided GitHub issue number(s).
   2. Branch name pattern: `issue-<N>/<slug>` (single) or
@@ -66,11 +72,7 @@ Determine:
   3. None — proceed without GitHub issue linkage.
 
 If GitHub issue number(s) are available and `gh` is installed, fetch issue
-title(s) and body(ies) via `gh issue view` for use in steps 3 and 5.
-
-Where `gh` is available, check for an existing open PR on the current branch
-(`gh pr list --head <branch> --state open`). If one exists, report its URL
-and stop.
+title(s) and body(ies) via `gh issue view` for use in steps 3 and 6.
 
 ### 2. Ensure feature branch
 
@@ -91,8 +93,11 @@ This step is the protocol's core analytical value: understanding changes
 well enough to produce meaningful commit structure, not just staging
 everything at once.
 
-If all changes are already committed (only unpushed commits exist), skip to
-step 4.
+This shared step applies before either PR delivery path. The same commit
+analysis discipline applies whether the deliverable is a new PR or an existing
+PR update.
+
+If all deliverable work is already committed, skip to step 4.
 
 **3a. Understand intent.** Examine all uncommitted modifications
 (`git diff`, `git diff --staged`). If GitHub issue context is available,
@@ -120,19 +125,36 @@ If analysis produces no clear grouping (one tangled change), fall back to a
 single commit with a comprehensive message. A single honest commit is better
 than artificial splitting.
 
-### 4. Push
+### 4. Resolve PR delivery path
+
+Use the context from step 1 after commit analysis has completed:
+
+- **open PR exists and deliverable local work exists:** push to the existing PR
+  branch. This is the normal review-fix path after a PR already exists.
+- **open PR exists and no deliverable local work exists:** report the PR URL
+  and current state, recommend `land` when review status makes that
+  appropriate, and stop. There is nothing new for `submit` to deliver.
+- **no open PR exists:** deliver by opening a new PR after pushing the branch.
+
+### 5. Push
 
 Push the feature branch to origin:
 - No upstream set: `git push -u origin <branch>`.
 - Upstream exists: `git push`.
 
-### 5. Create PR
+For an existing PR update, this push is the delivery action: it updates the
+remote branch backing the open PR. Report this path as `pushed to existing PR`.
+
+### 6. Create or identify PR
 
 The `patch` capstone requires a real PR reference. Where `gh` is available
-and authenticated against the remote, create the PR via `gh pr create`.
-Where forge tooling is absent, the protocol cannot complete — report what
-was committed and pushed locally, note that no `patch` artifact was
-delivered, and stop. Do not synthesize a PR reference.
+and authenticated against the remote:
+- Existing PR update path: reuse the open PR reference found in step 1.
+- New PR path: create the PR via `gh pr create`.
+
+Where forge tooling is absent, the protocol cannot complete — report what was
+committed and pushed locally, note that no `patch` artifact was delivered, and
+stop. Do not synthesize a PR reference.
 
 **Title** (under 70 chars):
 - Single GitHub issue: use the issue title, condensed if needed. Prefix with
@@ -194,14 +216,16 @@ gh pr edit <pr-number-or-url> --body-file /tmp/pr-body.md
   work is ready for review. If the operator explicitly says "draft" or "submit
   as draft," use `--draft`.
 
-### 6. Deliver `patch`
+### 7. Deliver `patch`
 
-The capstone is delivery of the `patch` artifact via the `patch` MCP tool:
+The capstone is delivery of the `patch` artifact via the `patch` MCP tool.
+`patch` is the complete latest PR state snapshot after submission, with the
+same shape for both a newly opened PR and an updated existing PR:
 
 ```
 patch({
   instance_id: "<slug>",
-  pr_reference: "<PR URL from step 5>",
+  pr_reference: "<PR URL from step 6>",
   branch: "<feature branch name>",
   commit: "<head commit SHA at submission>"
 })
@@ -209,9 +233,10 @@ patch({
 
 Runa injects `work_unit` from session context, validates the payload
 against the patch schema, persists the artifact, and records it in the
-artifact store.
+artifact store. Do not emit a partial update artifact that assumes the operator
+already knows the surrounding PR context.
 
-### 7. Report
+### 8. Report
 
 Output:
 - PR URL.
@@ -219,6 +244,7 @@ Output:
 - Commit summary (count and brief subjects).
 - GitHub issue linkage (which GitHub issues are referenced, close vs. ref).
 - `patch` artifact instance_id.
+- Delivery action: "opened new PR" or "pushed to existing PR."
 - Next step: "Get review, then `land` when approved."
 
 ---
@@ -226,11 +252,11 @@ Output:
 ## Failure Policy
 
 - **Forge tooling (`gh`) unavailable or unauthenticated:** The protocol can
-  still commit and push (steps 1–4) but cannot create a PR and therefore
-  cannot deliver the `patch` capstone. Report what was committed and pushed,
-  note the missing forge action, and stop. Do not synthesize a `patch`
-  artifact without a real `pr_reference`. Remote-side failures are covered
-  by the push bullets below.
+  still commit and push (steps 1–5) but cannot create or identify a PR and
+  therefore cannot deliver the `patch` capstone. Report what was committed and
+  pushed, note the missing forge action, and stop. Do not synthesize a `patch`
+  artifact without a real `pr_reference`. Remote-side failures are covered by
+  the push bullets below.
 - **Branch creation fails** (name collision, unresolvable dirty state): Stop
   and report. Do not force-create or silently choose an alternate name.
 - **Push rejected** (remote diverged): Stop and report. Do not force-push. Do
@@ -238,7 +264,9 @@ Output:
   to reconcile.
 - **Push network error:** Retry once. If still failing, report.
 - **`gh pr create` fails:**
-  - Branch already has an open PR: report the existing PR URL (not an error).
+  - Branch already has an open PR: treat as the existing PR update path if
+    deliverable local work was pushed; otherwise report the existing PR URL and
+    stop.
   - Permissions error: stop and report.
   - Other: report and stop. The branch is pushed; the operator resolves
     the cause and directs runa to re-activate `submit`. Manual forge

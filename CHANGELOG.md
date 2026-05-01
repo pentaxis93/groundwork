@@ -19,6 +19,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Changed
 
+- `submit` now treats an open PR with new local commits as a push-to-existing-PR
+  delivery path instead of stopping. It still reports an existing PR and
+  recommends `land` when there is no new local work to submit (closes #253).
 - Main-sync guidance in `take` and `land` now uses explicit fetch plus
   fast-forward merge instead of `git pull --ff-only`, so protocol execution
   does not inherit a user's global `pull.rebase` setting (closes #251).
