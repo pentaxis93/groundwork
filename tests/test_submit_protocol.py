@@ -19,21 +19,27 @@ class SubmitProtocolTests(unittest.TestCase):
         self.assertIn("push to the existing PR branch", protocol)
         self.assertIn("pushed to existing PR", protocol)
 
-    def test_deliverable_commits_are_measured_against_remote_tracking_ref(self) -> None:
+    def test_open_pr_deliverability_uses_pr_head_regardless_of_upstream(self) -> None:
         protocol = normalized_submit_protocol()
 
+        self.assertIn("Open PR exists", protocol)
+        self.assertIn("regardless of whether the branch has upstream tracking", protocol)
+        self.assertIn("classify local `HEAD`", protocol)
+        self.assertIn("PR head SHA (`headRefOid`)", protocol)
+        self.assertIn("git merge-base --is-ancestor", protocol)
+
+    def test_no_open_pr_with_upstream_uses_remote_tracking_ref(self) -> None:
+        protocol = normalized_submit_protocol()
+
+        self.assertIn("No open PR and upstream exists", protocol)
         self.assertIn("branch's remote tracking ref", protocol)
-        self.assertNotIn("git log origin/main..HEAD", protocol)
-        self.assertNotIn("git log main..HEAD", protocol)
+        self.assertIn("git log @{upstream}..HEAD", protocol)
 
-    def test_deliverability_distinguishes_no_upstream_existing_pr_by_pr_head(self) -> None:
+    def test_no_open_pr_without_upstream_uses_first_push_semantics(self) -> None:
         protocol = normalized_submit_protocol()
 
-        self.assertIn("No upstream and no open PR", protocol)
-        self.assertIn("No upstream and open PR", protocol)
-        self.assertIn("PR head SHA", protocol)
-        self.assertIn("headRefOid", protocol)
-        self.assertIn("git rev-parse HEAD", protocol)
+        self.assertIn("No open PR and no upstream", protocol)
+        self.assertIn("first-push semantics", protocol)
 
     def test_existing_pr_context_captures_pr_reference_and_head_sha(self) -> None:
         protocol = normalized_submit_protocol()
@@ -62,7 +68,7 @@ class SubmitProtocolTests(unittest.TestCase):
         self.assertIn("recorded PR URL", protocol)
         self.assertIn("stop before ancestry classification", protocol)
 
-    def test_no_upstream_existing_pr_classifies_all_ancestry_states(self) -> None:
+    def test_existing_pr_classifies_all_ancestry_states(self) -> None:
         protocol = normalized_submit_protocol()
 
         self.assertIn("If `HEAD` and `headRefOid` are the same SHA", protocol)

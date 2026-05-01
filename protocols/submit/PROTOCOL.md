@@ -68,13 +68,11 @@ Determine:
   the PR-head fetch together. After fetching, verify that `headRefOid` resolves
   as a commit before any operation consumes it.
 - Whether committed local work is deliverable:
-  - **With upstream:** commits ahead of the branch's remote
-    tracking ref (`git log @{upstream}..HEAD`).
-  - **No upstream and no open PR:** local commits on the feature branch are
-    deliverable under first-push semantics.
-  - **No upstream and open PR:** classify local `HEAD` (`git rev-parse HEAD`)
-    against the PR head SHA (`headRefOid`) by ancestry, using
-    `git merge-base --is-ancestor` in both directions:
+  - **Open PR exists:** regardless of whether the branch has upstream tracking,
+    classify local `HEAD` (`git rev-parse HEAD`) against the PR head SHA
+    (`headRefOid`) by ancestry, using `git merge-base --is-ancestor` in both
+    directions. The upstream tracking ref plays no role in deliverability when
+    a PR exists; the fetched PR head is the ground truth.
     - If `HEAD` and `headRefOid` are the same SHA, no committed local work is
       deliverable and the existing PR state should be reported.
     - If `HEAD` is an ancestor of `headRefOid`, the local checkout is behind the
@@ -85,6 +83,10 @@ Determine:
     - If neither commit is an ancestor of the other, the local branch and PR
       head have diverged. Report the divergence and stop; do not force-push or
       rebase automatically.
+  - **No open PR and upstream exists:** commits ahead of the branch's remote
+    tracking ref (`git log @{upstream}..HEAD`) are deliverable.
+  - **No open PR and no upstream:** local commits on the feature branch are
+    deliverable under first-push semantics.
 - GitHub issue number(s), resolved in priority order:
   1. Explicit operator-provided GitHub issue number(s).
   2. Branch name pattern: `issue-<N>/<slug>` (single) or
