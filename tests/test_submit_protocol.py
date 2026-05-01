@@ -26,6 +26,15 @@ class SubmitProtocolTests(unittest.TestCase):
         self.assertNotIn("git log origin/main..HEAD", protocol)
         self.assertNotIn("git log main..HEAD", protocol)
 
+    def test_deliverability_distinguishes_no_upstream_existing_pr_by_pr_head(self) -> None:
+        protocol = normalized_submit_protocol()
+
+        self.assertIn("No upstream and no open PR", protocol)
+        self.assertIn("No upstream and open PR", protocol)
+        self.assertIn("PR head SHA", protocol)
+        self.assertIn("headRefOid", protocol)
+        self.assertIn("git rev-parse HEAD", protocol)
+
     def test_analyze_and_commit_applies_to_both_pr_delivery_paths(self) -> None:
         protocol = normalized_submit_protocol()
 

@@ -38,8 +38,8 @@ approval to execute the full sequence.
 
 ## Preconditions
 
-- Deliverable local work means uncommitted changes OR commits ahead of the
-  branch's remote tracking ref. If the working tree is clean and no
+- Deliverable local work means uncommitted changes OR committed work identified
+  from the branch's tracking and PR state. If the working tree is clean and no
   deliverable commits exist, there is nothing new to submit. When an open PR
   exists, report its current state and recommend `land` if appropriate; when no
   open PR exists, report and stop.
@@ -58,13 +58,19 @@ Determine:
 - Current branch name.
 - Whether on `main` or a feature branch.
 - Whether uncommitted changes exist (`git status`).
-- Whether committed local work is deliverable:
-  - If the branch has an upstream, commits ahead of the branch's remote
-    tracking ref (`git log @{upstream}..HEAD`).
-  - If the feature branch has no upstream, local commits on that branch are
-    deliverable when the branch is first pushed.
 - Whether an open PR exists for the current branch (`gh pr list --head <branch>
-  --state open`) when `gh` is available.
+  --state open`) when `gh` is available. For an open PR, record the PR head SHA
+  (`headRefOid`).
+- Whether committed local work is deliverable:
+  - **With upstream:** commits ahead of the branch's remote
+    tracking ref (`git log @{upstream}..HEAD`).
+  - **No upstream and no open PR:** local commits on the feature branch are
+    deliverable under first-push semantics.
+  - **No upstream and open PR:** compare local `HEAD` (`git rev-parse HEAD`)
+    with the PR head SHA (`headRefOid`). If they match, no committed local work
+    is deliverable and the existing PR state should be reported. If they differ,
+    the divergent local commits are deliverable through the existing PR update
+    path.
 - GitHub issue number(s), resolved in priority order:
   1. Explicit operator-provided GitHub issue number(s).
   2. Branch name pattern: `issue-<N>/<slug>` (single) or
