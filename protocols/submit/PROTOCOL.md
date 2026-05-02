@@ -71,26 +71,8 @@ Determine:
   refspec, and remote URL normalization; adapting the protocol to another forge
   requires changing all three together. After fetching, verify that
   `headRefOid` resolves as a commit before any operation consumes it.
-- Whether committed local work is deliverable:
-  - **Open PR exists:** regardless of whether the branch has upstream tracking,
-    classify local `HEAD` (`git rev-parse HEAD`) against the PR head SHA
-    (`headRefOid`) by ancestry, using `git merge-base --is-ancestor` in both
-    directions. The upstream tracking ref plays no role in deliverability when
-    a PR exists; the fetched PR head is the ground truth.
-    - If `HEAD` and `headRefOid` are the same SHA, no committed local work is
-      deliverable and the existing PR state should be reported.
-    - If `HEAD` is an ancestor of `headRefOid`, the local checkout is behind the
-      PR. No committed local work is deliverable; report the existing PR state
-      and stop.
-    - If `headRefOid` is an ancestor of `HEAD`, local commits are deliverable
-      through the existing PR update path.
-    - If neither commit is an ancestor of the other, the local branch and PR
-      head have diverged. Report the divergence and stop; do not force-push or
-      rebase automatically.
-  - **No open PR and upstream exists:** commits ahead of the branch's remote
-    tracking ref (`git log @{upstream}..HEAD`) are deliverable.
-  - **No open PR and no upstream:** local commits on the feature branch are
-    deliverable under first-push semantics.
+- Whether upstream tracking exists for the current branch. This is input for
+  post-commit deliverability classification when no open PR exists.
 - GitHub issue number(s), resolved in priority order:
   1. Explicit operator-provided GitHub issue number(s).
   2. Branch name pattern: `issue-<N>/<slug>` (single) or
@@ -123,7 +105,8 @@ This shared step applies before either PR delivery path. The same commit
 analysis discipline applies whether the deliverable is a new PR or an existing
 PR update.
 
-If all deliverable work is already committed, skip to step 4.
+If the working tree has no uncommitted changes, skip to step 4; committed-work
+deliverability is classified there against the final submission `HEAD`.
 
 **3a. Understand intent.** Examine all uncommitted modifications
 (`git diff`, `git diff --staged`). If GitHub issue context is available,
@@ -153,14 +136,36 @@ than artificial splitting.
 
 ### 4. Resolve PR delivery path
 
-Use the context from step 1 after commit analysis has completed:
+After commit analysis has completed, classify current `HEAD` and select exactly
+one delivery path. This classification is post-commit: if step 3 created a
+commit from uncommitted changes, that new commit is part of the `HEAD` being
+classified. Step 4 consumes the substrate captured in step 1, but the
+deliverability result is produced here.
 
-- **open PR exists and deliverable local work exists:** push to the existing PR
-  branch. This is the normal review-fix path after a PR already exists.
-- **open PR exists and no deliverable local work exists:** report the PR URL
-  and current state, recommend `land` when review status makes that
-  appropriate, and stop. There is nothing new for `submit` to deliver.
-- **no open PR exists:** deliver by opening a new PR after pushing the branch.
+- **Open PR exists:** regardless of whether the branch has upstream tracking,
+  classify current `HEAD` by ancestry. To classify local `HEAD`, run
+  `git rev-parse HEAD` after commit analysis and compare it against the PR head
+  SHA (`headRefOid`) using `git merge-base --is-ancestor` in both directions.
+  The upstream tracking ref plays no role in deliverability when a PR exists;
+  the fetched PR head is the ground truth.
+  - If `HEAD` and `headRefOid` are the same SHA, no committed local work is
+    deliverable and the existing PR state should be reported.
+  - If `HEAD` is an ancestor of `headRefOid`, the local checkout is behind the
+    PR. No committed local work is deliverable; report the existing PR state
+    and stop.
+  - If `headRefOid` is an ancestor of `HEAD`, open PR exists and deliverable
+    local work exists: local commits are deliverable through the existing PR
+    update path, so push to the existing PR branch. This is the normal
+    review-fix path after a PR already exists.
+  - If neither commit is an ancestor of the other, the local branch and PR head
+    have diverged. Report the divergence and stop; do not force-push or rebase
+    automatically.
+- **No open PR and upstream exists:** commits ahead of the branch's remote
+  tracking ref (`git log @{upstream}..HEAD`) are deliverable by opening a new PR
+  after pushing the branch.
+- **No open PR and no upstream:** local commits on the feature branch are
+  deliverable under first-push semantics by opening a new PR after pushing the
+  branch.
 
 ### 5. Push
 

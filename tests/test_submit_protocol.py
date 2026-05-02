@@ -11,6 +11,13 @@ def normalized_submit_protocol() -> str:
     return re.sub(r"\s+", " ", SUBMIT_PROTOCOL_PATH.read_text())
 
 
+def normalized_section(start: str, end: str) -> str:
+    protocol = SUBMIT_PROTOCOL_PATH.read_text()
+    section_start = protocol.index(start)
+    section_end = protocol.index(end, section_start)
+    return re.sub(r"\s+", " ", protocol[section_start:section_end])
+
+
 class SubmitProtocolTests(unittest.TestCase):
     def test_existing_pr_with_local_work_is_a_push_path_not_a_stop_path(self) -> None:
         protocol = normalized_submit_protocol()
@@ -59,6 +66,21 @@ class SubmitProtocolTests(unittest.TestCase):
         self.assertIn("headRepositoryOwner.login", protocol)
         self.assertIn("headRepository.name", protocol)
 
+    def test_step_1_captures_pr_discovery_substrate(self) -> None:
+        step_1 = normalized_section("### 1. Resolve context", "### 2. Ensure feature branch")
+
+        self.assertIn("--json url,number,headRefOid,headRefName,headRepository,headRepositoryOwner", step_1)
+        self.assertIn("record the PR URL", step_1)
+        self.assertIn("PR number", step_1)
+        self.assertIn("PR head SHA (`headRefOid`)", step_1)
+        self.assertIn("PR head branch (`headRefName`)", step_1)
+        self.assertIn("PR head repository", step_1)
+        self.assertIn("headRepositoryOwner.login", step_1)
+        self.assertIn("headRepository.name", step_1)
+        self.assertIn("git fetch origin pull/<number>/head", step_1)
+        self.assertIn("verify that `headRefOid` resolves", step_1)
+        self.assertIn("post-commit deliverability classification", step_1)
+
     def test_existing_pr_discovery_fetches_resolvable_pr_head_before_classification(self) -> None:
         protocol = normalized_submit_protocol()
 
@@ -88,6 +110,19 @@ class SubmitProtocolTests(unittest.TestCase):
         self.assertIn("deliverable through the existing PR update path", protocol)
         self.assertIn("If neither commit is an ancestor of the other", protocol)
         self.assertIn("Report the divergence and stop", protocol)
+
+    def test_step_4_classifies_post_commit_deliverability_for_all_paths(self) -> None:
+        step_4 = normalized_section("### 4. Resolve PR delivery path", "### 5. Push")
+
+        self.assertIn("After commit analysis has completed", step_4)
+        self.assertIn("classify current `HEAD`", step_4)
+        self.assertIn("Open PR exists", step_4)
+        self.assertIn("If `HEAD` and `headRefOid` are the same SHA", step_4)
+        self.assertIn("If `HEAD` is an ancestor of `headRefOid`", step_4)
+        self.assertIn("If `headRefOid` is an ancestor of `HEAD`", step_4)
+        self.assertIn("If neither commit is an ancestor of the other", step_4)
+        self.assertIn("No open PR and upstream exists", step_4)
+        self.assertIn("No open PR and no upstream", step_4)
 
     def test_existing_pr_push_targets_discovered_pr_head_ref(self) -> None:
         protocol = normalized_submit_protocol()
