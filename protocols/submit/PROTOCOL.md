@@ -60,17 +60,27 @@ Determine:
 - Whether uncommitted changes exist (`git status`).
 - Whether an open PR exists for the current branch (`gh pr list --head <branch>
   --state open --json url,number,headRefOid,headRefName,headRepository,headRepositoryOwner`)
-  when `gh` is available. For an open PR, record the PR URL as the downstream PR
-  reference, the PR number, the PR head SHA (`headRefOid`) for ancestry
-  classification, the PR head branch (`headRefName`), and the PR head
-  repository (`<headRepositoryOwner.login>/<headRepository.name>`) for existing
-  PR push delivery. Fetch the PR head into the local object database before
-  classification: `git fetch origin pull/<number>/head`. This is the GitHub PR
+  when `gh` is available. Run `gh repo view --json nameWithOwner,url` in the
+  same repository context as the PR listing, and record that value as the PR
+  base repository identity. For an open PR, record the PR URL as the downstream
+  PR reference, the PR number, the PR head SHA (`headRefOid`) for ancestry
+  classification, the PR head branch (`headRefName`), the PR head repository
+  (`<headRepositoryOwner.login>/<headRepository.name>`) for existing PR push
+  delivery, and the PR base repository for PR-head fetch. Resolve a local remote
+  matching the PR base repository, using that remote's fetch URL, and fetch the
+  PR head into the local object database before classification:
+  `git fetch <base-repo-remote> pull/<number>/head`. This is the GitHub PR
   refspec paired with `gh` discovery. Existing-PR delivery is a single
   GitHub-shaped commitment across `gh` discovery, the `pull/<number>/head`
-  refspec, and remote URL normalization; adapting the protocol to another forge
-  requires changing all three together. After fetching, verify that
+  refspec, and shared GitHub remote matching; adapting the protocol to another
+  forge requires changing all three together. After fetching, verify that
   `headRefOid` resolves as a commit before any operation consumes it.
+- Shared GitHub remote matching uses one normalization rule for every consumer:
+  accept SSH and HTTPS GitHub URLs, strip `.git`, compare the lowercase
+  `<owner>/<repo>`, and treat non-GitHub URL forms as non-matches. Fetch
+  resolution inspects `git remote get-url <remote>` against the PR base
+  repository; push resolution inspects
+  `git remote get-url --push <remote>` against the PR head repository.
 - Whether upstream tracking exists for the current branch. This is input for
   post-commit deliverability classification when no open PR exists.
 - GitHub issue number(s), resolved in priority order:
@@ -163,21 +173,21 @@ deliverability result is produced here.
 - **No open PR and upstream exists:** commits ahead of the branch's remote
   tracking ref (`git log @{upstream}..HEAD`) are deliverable by opening a new PR
   after pushing the branch.
-- **No open PR and no upstream:** local commits on the feature branch are
-  deliverable under first-push semantics by opening a new PR after pushing the
-  branch.
+- **No open PR and no upstream:** run `git log main..HEAD` to verify that local
+  commits exist ahead of the base branch. If commits exist, local commits on the
+  feature branch are deliverable under first-push semantics by opening a new PR
+  after pushing the branch. If no commits exist, no committed local work is
+  deliverable; report `clean-branch-no-changes` and stop.
 
 ### 5. Push
 
 Use the delivery path from step 4:
 
 - **Existing PR update path:** resolve a local remote whose effective push URL
-  points at the PR head repository recorded in step 1. For each remote, inspect
-  `git remote get-url --push <remote>`. Push the submitted commits to the PR head
-  branch: `git push <head-repo-remote> HEAD:<headRefName>`. Remote matching uses
-  GitHub-form normalization: accept SSH and HTTPS GitHub URLs, strip `.git`,
-  compare the lowercase `<owner>/<repo>`, and treat non-GitHub URL forms as
-  non-matches.
+  points at the PR head repository recorded in step 1, using shared GitHub
+  remote matching. For each remote, inspect `git remote get-url --push <remote>`.
+  Push the submitted commits to the PR head branch:
+  `git push <head-repo-remote> HEAD:<headRefName>`.
   Do not push the local branch name to `origin` and assume that it updates the
   open PR. This push is the delivery action; after it succeeds, report this path
   as `pushed to existing PR`.
@@ -302,6 +312,10 @@ Output:
   not rebase automatically. Commits are safely local; the operator decides how
   to reconcile.
 - **Push network error:** Retry once. If still failing, report.
+- **No local remote matches the PR base repository:** Stop before PR head fetch
+  and ancestry classification. Report the PR URL, PR base repository, and that
+  no matching local remote was found. Do not run `git merge-base` against an
+  unfetched or unresolvable `headRefOid`.
 - **No local remote matches the PR head repository:** Stop before push. Report
   the PR URL, PR head repository, and `headRefName`. Do not deliver a `patch`
   artifact because the PR was not updated.

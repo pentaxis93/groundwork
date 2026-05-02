@@ -5,10 +5,15 @@ import unittest
 
 ROOT = Path(__file__).resolve().parents[1]
 SUBMIT_PROTOCOL_PATH = ROOT / "protocols" / "submit" / "PROTOCOL.md"
+CHANGELOG_PATH = ROOT / "CHANGELOG.md"
 
 
 def normalized_submit_protocol() -> str:
     return re.sub(r"\s+", " ", SUBMIT_PROTOCOL_PATH.read_text())
+
+
+def normalized_changelog() -> str:
+    return re.sub(r"\s+", " ", CHANGELOG_PATH.read_text())
 
 
 def normalized_section(start: str, end: str) -> str:
@@ -66,10 +71,19 @@ class SubmitProtocolTests(unittest.TestCase):
         self.assertIn("headRepositoryOwner.login", protocol)
         self.assertIn("headRepository.name", protocol)
 
+    def test_existing_pr_context_captures_pr_base_repo_from_same_gh_context(self) -> None:
+        protocol = normalized_submit_protocol()
+
+        self.assertIn("gh repo view --json nameWithOwner,url", protocol)
+        self.assertIn("same repository context", protocol)
+        self.assertIn("PR base repository", protocol)
+        self.assertIn("base repository identity", protocol)
+
     def test_step_1_captures_pr_discovery_substrate(self) -> None:
         step_1 = normalized_section("### 1. Resolve context", "### 2. Ensure feature branch")
 
         self.assertIn("--json url,number,headRefOid,headRefName,headRepository,headRepositoryOwner", step_1)
+        self.assertIn("gh repo view --json nameWithOwner,url", step_1)
         self.assertIn("record the PR URL", step_1)
         self.assertIn("PR number", step_1)
         self.assertIn("PR head SHA (`headRefOid`)", step_1)
@@ -77,7 +91,8 @@ class SubmitProtocolTests(unittest.TestCase):
         self.assertIn("PR head repository", step_1)
         self.assertIn("headRepositoryOwner.login", step_1)
         self.assertIn("headRepository.name", step_1)
-        self.assertIn("git fetch origin pull/<number>/head", step_1)
+        self.assertIn("PR base repository", step_1)
+        self.assertIn("git fetch <base-repo-remote> pull/<number>/head", step_1)
         self.assertIn("verify that `headRefOid` resolves", step_1)
         self.assertIn("post-commit deliverability classification", step_1)
 
@@ -85,13 +100,23 @@ class SubmitProtocolTests(unittest.TestCase):
         protocol = normalized_submit_protocol()
 
         self.assertIn("--json url,number,headRefOid,headRefName,headRepository,headRepositoryOwner", protocol)
-        self.assertIn("git fetch origin pull/<number>/head", protocol)
+        self.assertIn("matching the PR base repository", protocol)
+        self.assertIn("git fetch <base-repo-remote> pull/<number>/head", protocol)
         self.assertIn("GitHub PR refspec", protocol)
         self.assertIn("verify that `headRefOid` resolves", protocol)
         self.assertLess(
-            protocol.index("git fetch origin pull/<number>/head"),
+            protocol.index("git fetch <base-repo-remote> pull/<number>/head"),
             protocol.index("git merge-base --is-ancestor"),
         )
+
+    def test_existing_pr_base_remote_failure_stops_before_classification(self) -> None:
+        protocol = normalized_submit_protocol()
+
+        self.assertIn("No local remote matches the PR base repository", protocol)
+        self.assertIn("Stop before PR head fetch and ancestry classification", protocol)
+        self.assertIn("PR URL", protocol)
+        self.assertIn("PR base repository", protocol)
+        self.assertIn("matching local remote", protocol)
 
     def test_existing_pr_head_fetch_failure_stops_with_pr_url(self) -> None:
         protocol = normalized_submit_protocol()
@@ -138,8 +163,9 @@ class SubmitProtocolTests(unittest.TestCase):
         self.assertIn("GitHub-shaped commitment", protocol)
         self.assertIn("`gh` discovery", protocol)
         self.assertIn("`pull/<number>/head`", protocol)
-        self.assertIn("remote URL normalization", protocol)
+        self.assertIn("shared GitHub remote matching", protocol)
         self.assertIn("git remote get-url --push <remote>", protocol)
+        self.assertIn("git remote get-url <remote>", protocol)
         self.assertIn("SSH and HTTPS GitHub URLs", protocol)
         self.assertIn("strip `.git`", protocol)
         self.assertIn("lowercase `<owner>/<repo>`", protocol)
@@ -163,6 +189,17 @@ class SubmitProtocolTests(unittest.TestCase):
         self.assertIn("git push -u origin <branch>", protocol)
         self.assertIn("if upstream exists, run `git push`", protocol)
 
+    def test_no_open_pr_without_upstream_checks_main_ahead_before_first_push(self) -> None:
+        step_4 = normalized_section("### 4. Resolve PR delivery path", "### 5. Push")
+
+        self.assertIn("No open PR and no upstream", step_4)
+        self.assertIn("git log main..HEAD", step_4)
+        self.assertIn("If commits exist", step_4)
+        self.assertIn("first-push semantics", step_4)
+        self.assertIn("If no commits exist", step_4)
+        self.assertIn("clean-branch-no-changes", step_4)
+        self.assertIn("stop", step_4)
+
     def test_analyze_and_commit_applies_to_both_pr_delivery_paths(self) -> None:
         protocol = normalized_submit_protocol()
 
@@ -177,6 +214,14 @@ class SubmitProtocolTests(unittest.TestCase):
             "same shape for both a newly opened PR and an updated existing PR",
             protocol,
         )
+
+    def test_changelog_describes_base_fetch_and_first_push_emptiness(self) -> None:
+        changelog = normalized_changelog()
+
+        self.assertIn("matching PR base repository remote", changelog)
+        self.assertIn("first-push", changelog)
+        self.assertIn("git log main..HEAD", changelog)
+        self.assertIn("clean-branch-no-changes", changelog)
 
 
 if __name__ == "__main__":
