@@ -60,15 +60,24 @@ Determine:
 - Whether uncommitted changes exist (`git status`).
 - Whether an open PR exists for the current branch (`gh pr list --head <branch>
   --state open --json url,number,headRefOid,headRefName,headRepository,headRepositoryOwner`)
-  when `gh` is available. Run `gh repo view --json nameWithOwner,url` in the
-  same repository context as the PR listing, and record that value as the PR
-  base repository identity. For an open PR, record the PR URL as the downstream
+  when `gh` is available. PR discovery handles result counts explicitly:
+  0 results means no open PR; 1 result means that PR is the working PR; 2+
+  results means disambiguate by head repository before recording any working
+  PR. To disambiguate multiple results, filter candidates by PR head repository
+  against local remotes using shared GitHub remote matching and each remote's
+  effective push URL. If exactly one PR survives, use it as the working PR. If
+  zero or 2+ candidates survive, stop with Ambiguous PR discovery before fetch,
+  ancestry classification, push, or patch delivery.
+- For the working PR, run `gh repo view --json nameWithOwner,url` in the same
+  repository context as the PR listing, and record that value as the PR base
+  repository identity. For the working PR, record the PR URL as the downstream
   PR reference, the PR number, the PR head SHA (`headRefOid`) for ancestry
   classification, the PR head branch (`headRefName`), the PR head repository
   (`<headRepositoryOwner.login>/<headRepository.name>`) for existing PR push
   delivery, and the PR base repository for PR-head fetch. Resolve a local remote
   matching the PR base repository, using that remote's fetch URL, and fetch the
-  PR head into the local object database before classification:
+  PR head into the local object database before post-commit deliverability
+  classification:
   `git fetch <base-repo-remote> pull/<number>/head`. This is the GitHub PR
   refspec paired with `gh` discovery. Existing-PR delivery is a single
   GitHub-shaped commitment across `gh` discovery, the `pull/<number>/head`
@@ -79,10 +88,8 @@ Determine:
   accept SSH and HTTPS GitHub URLs, strip `.git`, compare the lowercase
   `<owner>/<repo>`, and treat non-GitHub URL forms as non-matches. Fetch
   resolution inspects `git remote get-url <remote>` against the PR base
-  repository; push resolution inspects
+  repository; push resolution and PR discovery disambiguation inspect
   `git remote get-url --push <remote>` against the PR head repository.
-- Whether upstream tracking exists for the current branch. This is input for
-  post-commit deliverability classification when no open PR exists.
 - GitHub issue number(s), resolved in priority order:
   1. Explicit operator-provided GitHub issue number(s).
   2. Branch name pattern: `issue-<N>/<slug>` (single) or
@@ -149,8 +156,13 @@ than artificial splitting.
 After commit analysis has completed, classify current `HEAD` and select exactly
 one delivery path. This classification is post-commit: if step 3 created a
 commit from uncommitted changes, that new commit is part of the `HEAD` being
-classified. Step 4 consumes the substrate captured in step 1, but the
-deliverability result is produced here.
+classified. Step 4 consumes PR discovery substrate captured in step 1, then
+reads branch substrate that may have changed during step 2 or step 3 from the
+classification-time branch state. Run `git rev-parse HEAD` to capture the
+post-commit `HEAD`. When no open PR exists, determine whether upstream tracking
+exists by running
+`git rev-parse --abbrev-ref --symbolic-full-name @{upstream}` at this point.
+A failing upstream lookup means no upstream exists.
 
 - **Open PR exists:** regardless of whether the branch has upstream tracking,
   classify current `HEAD` by ancestry. To classify local `HEAD`, run
@@ -312,6 +324,12 @@ Output:
   not rebase automatically. Commits are safely local; the operator decides how
   to reconcile.
 - **Push network error:** Retry once. If still failing, report.
+- **Ambiguous PR discovery:** Stop before PR head fetch, ancestry
+  classification, push, or patch delivery. Report the candidate PR URLs, the
+  candidate head repositories, the operator's local remotes with their
+  normalized GitHub repository or sanitized non-match status, and that
+  disambiguation requires exactly one local remote pointing at exactly one
+  candidate PR head repository.
 - **No local remote matches the PR base repository:** Stop before PR head fetch
   and ancestry classification. Report the PR URL, PR base repository, and that
   no matching local remote was found. Do not run `git merge-base` against an

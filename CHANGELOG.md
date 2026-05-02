@@ -25,10 +25,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   matching PR base repository remote, classifies local `HEAD` against that PR
   head by ancestry after commit analysis has completed, and pushes updates to
   the discovered PR head repo/ref instead of assuming `origin <branch>` backs
-  the PR. When no PR exists, upstream tracking and first-push semantics
-  determine deliverability; first-push delivery now requires non-empty
-  `git log main..HEAD`, and an empty result reports `clean-branch-no-changes`
-  (closes #253).
+  the PR. When multiple open PRs share the same branch name, they are
+  disambiguated by head repository against a matching local remote before any
+  PR is selected.
+  When no PR exists, upstream tracking is read from the classification-time
+  branch state and first-push semantics determine deliverability; first-push
+  delivery now requires non-empty `git log main..HEAD`, and an empty result
+  reports `clean-branch-no-changes` (closes #253).
 - Main-sync guidance in `take` and `land` now uses explicit fetch plus
   fast-forward merge instead of `git pull --ff-only`, so protocol execution
   does not inherit a user's global `pull.rebase` setting (closes #251).

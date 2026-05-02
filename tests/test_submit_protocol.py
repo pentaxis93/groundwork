@@ -109,6 +109,36 @@ class SubmitProtocolTests(unittest.TestCase):
             protocol.index("git merge-base --is-ancestor"),
         )
 
+    def test_pr_discovery_handles_zero_one_and_multiple_results(self) -> None:
+        step_1 = normalized_section("### 1. Resolve context", "### 2. Ensure feature branch")
+
+        self.assertIn("PR discovery handles result counts explicitly", step_1)
+        self.assertIn("0 results", step_1)
+        self.assertIn("no open PR", step_1)
+        self.assertIn("1 result", step_1)
+        self.assertIn("working PR", step_1)
+        self.assertIn("2+ results", step_1)
+        self.assertIn("disambiguate by head repository", step_1)
+
+    def test_multiple_pr_discovery_uses_shared_remote_matching_for_head_repo(self) -> None:
+        step_1 = normalized_section("### 1. Resolve context", "### 2. Ensure feature branch")
+
+        self.assertIn("filter candidates by PR head repository", step_1)
+        self.assertIn("local remotes", step_1)
+        self.assertIn("shared GitHub remote matching", step_1)
+        self.assertIn("effective push URL", step_1)
+        self.assertIn("exactly one PR survives", step_1)
+
+    def test_ambiguous_pr_discovery_stops_with_candidate_and_remote_context(self) -> None:
+        protocol = normalized_submit_protocol()
+
+        self.assertIn("Ambiguous PR discovery", protocol)
+        self.assertIn("candidate PR URLs", protocol)
+        self.assertIn("candidate head repositories", protocol)
+        self.assertIn("operator's local remotes", protocol)
+        self.assertIn("exactly one local remote", protocol)
+        self.assertIn("exactly one candidate PR head repository", protocol)
+
     def test_existing_pr_base_remote_failure_stops_before_classification(self) -> None:
         protocol = normalized_submit_protocol()
 
@@ -148,6 +178,16 @@ class SubmitProtocolTests(unittest.TestCase):
         self.assertIn("If neither commit is an ancestor of the other", step_4)
         self.assertIn("No open PR and upstream exists", step_4)
         self.assertIn("No open PR and no upstream", step_4)
+
+    def test_upstream_tracking_is_determined_at_step_4_classification_time(self) -> None:
+        step_1 = normalized_section("### 1. Resolve context", "### 2. Ensure feature branch")
+        step_4 = normalized_section("### 4. Resolve PR delivery path", "### 5. Push")
+
+        self.assertNotIn("Whether upstream tracking exists", step_1)
+        self.assertIn("determine whether upstream tracking exists", step_4)
+        self.assertIn("classification-time branch state", step_4)
+        self.assertIn("git rev-parse --abbrev-ref --symbolic-full-name @{upstream}", step_4)
+        self.assertIn("A failing upstream lookup means no upstream exists", step_4)
 
     def test_existing_pr_push_targets_discovered_pr_head_ref(self) -> None:
         protocol = normalized_submit_protocol()
@@ -222,6 +262,15 @@ class SubmitProtocolTests(unittest.TestCase):
         self.assertIn("first-push", changelog)
         self.assertIn("git log main..HEAD", changelog)
         self.assertIn("clean-branch-no-changes", changelog)
+
+    def test_changelog_describes_classification_time_upstream_and_pr_disambiguation(self) -> None:
+        changelog = normalized_changelog()
+
+        self.assertIn("classification-time branch state", changelog)
+        self.assertIn("upstream tracking", changelog)
+        self.assertIn("multiple open PRs", changelog)
+        self.assertIn("head repository", changelog)
+        self.assertIn("local remote", changelog)
 
 
 if __name__ == "__main__":
