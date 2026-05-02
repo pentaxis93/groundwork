@@ -182,9 +182,16 @@ A failing upstream lookup means no upstream exists.
   - If neither commit is an ancestor of the other, the local branch and PR head
     have diverged. Report the divergence and stop; do not force-push or rebase
     automatically.
-- **No open PR and upstream exists:** commits ahead of the branch's remote
-  tracking ref (`git log @{upstream}..HEAD`) are deliverable by opening a new PR
-  after pushing the branch.
+- **No open PR and upstream exists:** run `git log main..HEAD` to verify that
+  local commits exist ahead of the base branch. If no commits exist, no
+  committed local work is deliverable; report `clean-branch-no-changes` and
+  stop. If commits exist, the branch is deliverable by opening a new PR. Then
+  inspect commits ahead of the branch's remote tracking ref
+  (`git log @{upstream}..HEAD`). Upstream-ahead commits decide whether a push is
+  needed, not whether PR creation is allowed. If upstream-ahead commits exist,
+  deliver through the new PR path after pushing the branch. If no
+  upstream-ahead commits exist, the already-pushed branch still needs a PR;
+  deliver through the new PR path without pushing again.
 - **No open PR and no upstream:** run `git log main..HEAD` to verify that local
   commits exist ahead of the base branch. If commits exist, local commits on the
   feature branch are deliverable under first-push semantics by opening a new PR
@@ -203,8 +210,11 @@ Use the delivery path from step 4:
   Do not push the local branch name to `origin` and assume that it updates the
   open PR. This push is the delivery action; after it succeeds, report this path
   as `pushed to existing PR`.
-- **New PR path:** push the feature branch to origin. If no upstream is set, run
-  `git push -u origin <branch>`; if upstream exists, run `git push`.
+- **New PR path:** push the feature branch to origin when the delivery
+  classification requires a push. If no upstream is set, run
+  `git push -u origin <branch>`; if upstream exists, run `git push` when
+  upstream-ahead commits exist. If no upstream-ahead commits exist for an
+  upstream-backed branch, open the new PR without a push.
 
 ### 6. Create or identify PR
 

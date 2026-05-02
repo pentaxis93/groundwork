@@ -47,6 +47,17 @@ class SubmitProtocolTests(unittest.TestCase):
         self.assertIn("branch's remote tracking ref", protocol)
         self.assertIn("git log @{upstream}..HEAD", protocol)
 
+    def test_no_open_pr_with_upstream_already_pushed_still_opens_pr(self) -> None:
+        step_4 = normalized_section("### 4. Resolve PR delivery path", "### 5. Push")
+        step_5 = normalized_section("### 5. Push", "### 6. Create or identify PR")
+
+        self.assertIn("No open PR and upstream exists", step_4)
+        self.assertIn("run `git log main..HEAD`", step_4)
+        self.assertIn("already-pushed branch still needs a PR", step_4)
+        self.assertIn("Upstream-ahead commits decide whether a push is needed", step_4)
+        self.assertIn("If no upstream-ahead commits exist", step_4)
+        self.assertIn("open the new PR without a push", step_5)
+
     def test_no_open_pr_without_upstream_uses_first_push_semantics(self) -> None:
         protocol = normalized_submit_protocol()
 
@@ -261,6 +272,7 @@ class SubmitProtocolTests(unittest.TestCase):
         self.assertIn("matching PR base repository remote", changelog)
         self.assertIn("first-push", changelog)
         self.assertIn("git log main..HEAD", changelog)
+        self.assertIn("already-pushed branch still needs a PR", changelog)
         self.assertIn("clean-branch-no-changes", changelog)
 
     def test_changelog_describes_classification_time_upstream_and_pr_disambiguation(self) -> None:

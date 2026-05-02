@@ -29,9 +29,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   disambiguated by head repository against a matching local remote before any
   PR is selected.
   When no PR exists, upstream tracking is read from the classification-time
-  branch state and first-push semantics determine deliverability; first-push
-  delivery now requires non-empty `git log main..HEAD`, and an empty result
-  reports `clean-branch-no-changes` (closes #253).
+  branch state, `git log main..HEAD` determines whether the branch has
+  deliverable commits for a new PR under first-push or already-pushed
+  semantics, and upstream-ahead commits determine only whether a push is needed
+  before PR creation; an already-pushed branch still needs a PR, while an empty
+  base-branch comparison reports `clean-branch-no-changes` (closes #253).
 - Main-sync guidance in `take` and `land` now uses explicit fetch plus
   fast-forward merge instead of `git pull --ff-only`, so protocol execution
   does not inherit a user's global `pull.rebase` setting (closes #251).
