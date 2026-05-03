@@ -1,6 +1,6 @@
 # ADR-0002: Methodology Sovereignty
 
-**Status:** Accepted \
+**Status:** Provisional \
 **Date:** 2026-05-02 \
 **Traces to:** `tesserine/commons` PRINCIPLES.md P1 (Sovereignty); `tesserine/commons` ADR-0001 (Sovereignty).
 
