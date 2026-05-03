@@ -16,6 +16,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   canonical reference. `docs/architecture/connecting-structure.md`
   forward-references the new guide from the "Authoring surfaces and
   authority" section (closes #227).
+- `docs/architecture/decisions/0002-methodology-sovereignty.md` —
+  ADR establishing that each methodology unit specifies content of a
+  single shape (WHAT or HOW), not both.
 
 ### Changed
 
